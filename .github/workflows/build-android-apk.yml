@@ -29,13 +29,13 @@ jobs:
           java-version: "21"
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --no-audit --no-fund
+  run: yarn install --frozen-lockfile
 
-      - name: Build web game
-        env:
-          CI: "false"
-          REACT_APP_BACKEND_URL: ""
-        run: npm run build
+- name: Build web game
+  env:
+    CI: "false"
+    REACT_APP_BACKEND_URL: ""
+  run: yarn build
 
       - name: Add Android project
         run: npx cap add android
