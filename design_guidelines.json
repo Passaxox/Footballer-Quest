@@ -1,0 +1,156 @@
+{
+  "project_title": "Inazuma Rogue: Inazuma Eleven Pokelike & Pokerogue Mobile RPG",
+  "app_type": "mobile_web_app",
+  "theme": "dark_gba_retro_pixel",
+  "language": "Italian",
+  "design_philosophy": {
+    "concept": "Fusion of Game Boy Advance Pokemon Rogue mechanics with Inazuma Eleven anime high-energy soccer moves.",
+    "core_principles": [
+      "Mobile Portrait First: Designed for single-hand phone gaming with 48px+ touch targets and bottom thumb action bar.",
+      "GBA Retro Pixel Aesthetic: Crisp 4px pixel borders, scanlines option, classic dialogue boxes with blinking cursors.",
+      "High Contrast Elemental Palette: Vivid distinction for Fuoco (Red/Orange), Aria (Cyan/Sky), Terra (Amber/Gold), Natura (Emerald/Green).",
+      "Instant Mechanical Feedback: Snappy retro UI transitions, shake effects on special hissatsu moves, Web Audio API 8-bit sound effects.",
+      "Depth & Storytelling: Linear wave progression (boss at wave 10, 20, 30...) with branching narrative events, shopkeeper, Cuneo DNA fusion, and recruitment."
+    ]
+  },
+  "typography": {
+    "font_families": {
+      "display_pixel": "'Press Start 2P', monospace, 'VT323'",
+      "header_arcade": "'Chakra Petch', 'Orbitron', sans-serif",
+      "body_ui": "'Press Start 2P', 'VT323', 'Inter', monospace"
+    },
+    "hierarchy": {
+      "title_hero": "text-2xl sm:text-3xl font-black tracking-wider uppercase font-pixel",
+      "section_heading": "text-lg sm:text-xl font-bold font-pixel tracking-wide text-amber-300",
+      "sub_heading": "text-sm sm:text-base font-semibold font-pixel text-slate-200",
+      "body_dialogue": "text-xs sm:text-sm leading-relaxed font-pixel text-white",
+      "label_micro": "text-[10px] uppercase font-pixel tracking-widest text-slate-400"
+    }
+  },
+  "colors": {
+    "backgrounds": {
+      "console_frame": "#080c14",
+      "screen_main": "#0d1322",
+      "panel_dark": "#141c2e",
+      "card_overlay": "#1c263b",
+      "dialogue_box": "#0b101d"
+    },
+    "elements": {
+      "fuoco": {
+        "primary": "#ff3b30",
+        "bg": "bg-red-950/80",
+        "border": "border-red-500",
+        "text": "text-red-400",
+        "glow": "shadow-[0_0_12px_rgba(255,59,48,0.5)]"
+      },
+      "aria": {
+        "primary": "#00d2ff",
+        "bg": "bg-sky-950/80",
+        "border": "border-sky-400",
+        "text": "text-sky-300",
+        "glow": "shadow-[0_0_12px_rgba(0,210,255,0.5)]"
+      },
+      "terra": {
+        "primary": "#e6a100",
+        "bg": "bg-amber-950/80",
+        "border": "border-amber-500",
+        "text": "text-amber-400",
+        "glow": "shadow-[0_0_12px_rgba(230,161,0,0.5)]"
+      },
+      "natura": {
+        "primary": "#10b981",
+        "bg": "bg-emerald-950/80",
+        "border": "border-emerald-500",
+        "text": "text-emerald-400",
+        "glow": "shadow-[0_0_12px_rgba(16,185,129,0.5)]"
+      }
+    },
+    "ui_accents": {
+      "brand_yellow": "#facc15",
+      "energy_cyan": "#06b6d4",
+      "danger_red": "#ef4444",
+      "success_green": "#22c55e",
+      "xp_purple": "#a855f7",
+      "dna_fusion_pink": "#ec4899"
+    }
+  },
+  "layout_and_grids": {
+    "mobile_frame": "max-w-md mx-auto min-h-screen bg-[#080c14] text-slate-100 flex flex-col justify-between border-x-4 border-slate-800 shadow-2xl relative overflow-hidden font-pixel pb-safe",
+    "battle_stage": "relative w-full h-[280px] sm:h-[320px] bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col justify-between p-3 border-b-4 border-slate-800 overflow-hidden",
+    "dialogue_area": "bg-[#0b101d] border-4 border-slate-600 rounded-none p-3 shadow-inner min-h-[90px] flex flex-col justify-center",
+    "action_bar": "grid grid-cols-2 gap-2 p-3 bg-[#111827] border-t-4 border-slate-800",
+    "bento_grid_stats": "grid grid-cols-2 gap-2 p-2"
+  },
+  "visual_enhancers": {
+    "pixel_border": "border-4 border-slate-700 shadow-[inset_-4px_-4px_0px_0px_rgba(0,0,0,0.5),inset_4px_4px_0px_0px_rgba(255,255,255,0.2)]",
+    "pixel_button": "relative border-2 border-slate-900 bg-slate-800 hover:bg-slate-700 text-white font-pixel text-xs py-3 px-3 uppercase tracking-wider active:translate-y-1 transition-transform shadow-[3px_3px_0px_0px_#000000]",
+    "pixel_button_primary": "relative border-2 border-slate-900 bg-amber-500 hover:bg-amber-400 text-slate-950 font-pixel font-bold text-xs py-3 px-3 uppercase tracking-wider active:translate-y-1 transition-transform shadow-[3px_3px_0px_0px_#000000]",
+    "scanline_effect": "before:absolute before:inset-0 before:bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%)] before:bg-[length:100%_4px] before:z-20 before:pointer-events-none",
+    "glow_boss": "shadow-[0_0_20px_rgba(239,68,68,0.6)] animate-pulse"
+  },
+  "key_functionalities_structure": {
+    "title_screen": {
+      "features": ["Nuova Run (New Game)", "Continua (Continue Saved Run)", "Albo d'Oro (Hall of Fame / Records)", "Collezione Calciatori (Unlocked Roster)", "Toggle Effetti Audio 8-bit & Scanline"],
+      "data_testid": "title-screen-container"
+    },
+    "team_selection": {
+      "description": "Scegli 3 calciatori iniziali da una rosa sbloccata di Inazuma Eleven (es. Mark Evans / Endou, Axel Blaze / Gouenji, Jude Sharp / Kidou, Shawn Froste / Fubuki, Nathan Swift / Kazemaru, Darren LaChance / Tachimukai).",
+      "data_testid": "team-selection-screen"
+    },
+    "battle_system": {
+      "type": "1v1 turn-based battle with single move per player",
+      "elements_multiplier": "Fuoco > Natura > Terra > Aria > Fuoco (2x superefficace, 0.5x resistente)",
+      "actions": ["Attacca (Usa Tecnica Hissatsu)", "Cambia (Sostituisci Giocatore)", "Oggetto (Usa Inventario)", "Fuggi (Tentativo di fuga)"],
+      "ui_components": ["Opponent Sprite Card + HP bar + Element Icon + Status", "Player Sprite Card + HP bar + Element Icon + TP Energy", "Battle Log Console (Messaggi di testo retrò in italiano)"],
+      "data_testid": "battle-screen"
+    },
+    "random_events": {
+      "event_types": [
+        "Incontro Reclutamento: Sfida o parla con un calciatore Inazuma per ingaggiarlo",
+        "Mercante Raijin: Compra oggetti / rimedi di recupero (Barretta energetica, Bibita TP, Cuneo DNA)",
+        "Cuneo DNA Fusione: Scegli due calciatori della panchina per fonderli (unendo attributi, tipo ed Hissatsu unica!)",
+        "Allenamento Inazuma: Aumenta Statistiche (Attacco, Velocità, HP max)",
+        "Evento Storia / Imprevisto: Evento narrativo casuale con scelte ad alto rischio/ricompensa"
+      ],
+      "data_testid": "event-screen"
+    },
+    "bench_and_inventory": {
+      "bench_limit": "Max 6 calciatori in squadra active",
+      "inventory_items": ["Barretta Energetica (HP Restore)", "Bibita TP (TP Restore)", "Cuneo DNA (Fusione)", "Talismano Elementale"],
+      "data_testid": "inventory-bench-screen"
+    },
+    "wave_progression": {
+      "wave_counter": "Ondata X / 100",
+      "boss_waves": "Ogni 10 ondate scontro con Squadra Boss (es. Royal Academy, Zeus, Alius Academy, Little Gigant)",
+      "data_testid": "wave-counter-badge"
+    },
+    "post_battle_rewards": {
+      "choice": "Scegli 1 premio su 3 (Es. Nuovo Calciatore, Cuneo DNA, Potenzia Hissatsu, Kit Medico)",
+      "data_testid": "reward-selection-modal"
+    },
+    "game_over_and_victory": {
+      "stats": ["Ondate completate", "Partite vinte", "Calciatori Reclutati", "Fusioni DNA effettuate", "Punti Gloria guadagnati"],
+      "persistence": "Salvataggio automatico in localStorage sia per la run attiva che per la collezione globale.",
+      "data_testid": "game-over-screen"
+    }
+  },
+  "image_urls": {
+    "retro_arcade_bg": "https://images.unsplash.com/photo-1601850494422-3cf14624b0b3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NjV8MHwxfHNlYXJjaHwxfHxyZXRybyUyMGFyY2FkZSUyMHBpeGVsJTIwc29jY2VyJTIwc3RhZGl1bSUyMGFuaW1lJTIwbmVvbnxlbnwwfHx8fDE3ODg3MDQxMjB8MA&ixlib=rb-4.1.0&q=85",
+    "neon_city_bg": "https://images.unsplash.com/photo-1765211206481-94e39ea1863e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NjV8MHwxfHNlYXJjaHw0fHxyZXRybyUyMGFyY2FkZSUyMHBpeGVsJTIwc29jY2VyJTIwc3RhZGl1bSUyMGFuaW1lJTIwbmVvbnxlbnwwfHx8fDE3ODg3MDQxMjB8MA&ixlib=rb-4.1.0&q=85"
+  },
+  "instructions_to_main_agent": [
+    "Build the application as a mobile portrait responsive web application styled with GBA pixel retro UI aesthetics.",
+    "All UI texts MUST be in Italian language as requested by user.",
+    "Implement full wave progression logic with boss encounters at every 10th wave.",
+    "Ensure 1v1 turn based combat with exact Inazuma Eleven character names (Mark Evans, Axel Blaze, Jude Sharp, Shawn Froste, Nathan Swift, Kevin Dragonfly, Xavier Foster, Jack Wallside, David Samford, Joseph King, Byron Love, etc.) and elemental affinities (Fuoco, Aria, Terra, Natura).",
+    "Include the Cuneo DNA fusion item mechanism allowing players to fuse two bench players into a custom hybrid player with merged stats and dual aesthetic/move.",
+    "Use localStorage to persist active run state (wave, team, inventory) and global statistics (unlocked characters roster, Hall of Fame / Albo d'Oro records).",
+    "Add synthesized 8-bit sound effects using Web Audio API for move attacks, menu selections, victory fanfares, and damage taken.",
+    "Include data-testid attributes on all interactive elements (buttons, inputs, cards, tabs, modal actions)."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": {
+    "data_testid_convention": "All interactive elements MUST have kebap-case data-testid attributes, e.g. data-testid='attack-button', data-testid='switch-player-btn-0'.",
+    "no_transparent_dropdowns": "Ensure all overlays, menus, and modals have solid pixel backgrounds with contrasting text.",
+    "mobile_first": "Focus layout on smartphone screen proportions (360px - 430px wide frame with scrollable/paginated views)."
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "summary": "First-run testing of Inazuma Rogue. Backend: 5/5 pytest passing after fixing a serialization bug where POST /api/runs and GET /api/leaderboard returned '_id' instead of 'id' (frontend RecordsScreen keys on r.id, so global records would have failed React key warnings and any code using .id would break). Frontend: title/records/collection/team-select/hub/battle/recruit/reward/persistence/fusion/game-over/submit-score all working on mobile 390x844; no horizontal overflow.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/runs & GET /api/leaderboard", "issue": "Previously serialized with by_alias=True returning '_id' rather than 'id'. Fixed by adding response_model_by_alias=False to both endpoints."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_backend.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Non-battle wave types (event/shop/training) are random after wave 1 — verified in code paths but did not naturally roll during 2-wave sample; if further coverage desired, main agent can seed encounter generation or test with mock RNG.",
+    "Retest overall run flow once — regression looked clean."
+  ],
+  "critical_code_review_comments": [
+    "server.py used response_model_by_alias implicitly True (FastAPI default for aliased fields) so 'id' leaked as '_id' in JSON. Fixed.",
+    "App.js is 189 lines and well organized; no split needed yet.",
+    "All interactive elements have data-testid — good testability."
+  ],
+  "updated_files": [
+    "/app/backend/server.py",
+    "/app/backend/tests/test_backend.py"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "N/A (no auth)",
+  "seed_data_creation": "Inserted 2 TEST_Axel and 1 TEST_x run records via POST /api/runs during backend tests. TEST_End submitted via UI game-over.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend endpoints now return 'id' as string (response_model_by_alias=False). Frontend flows verified: TitleScreen, RecordsScreen (loads global leaderboard from /api/leaderboard), CollectionScreen shows 8/44, TeamSelect enforces exactly 3 starters, HubScreen, BattleScreen (attack, recruit-offer-after-wild, reward), TeamScreen (captain reorder, back), Fusion (via localStorage cuneo injection creates a fused player and reduces team by 1), Persistence via reload with continue-run-btn, Abandon → game-over-screen → submit-score → submit-success → home. No horizontal overflow at 390x844."
+}

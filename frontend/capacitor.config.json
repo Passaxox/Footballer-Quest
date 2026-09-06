@@ -1,0 +1,8 @@
+{
+  "appId": "com.footballerquest.game",
+  "appName": "Footballer Quest",
+  "webDir": "build",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,75 @@
+.pixel-btn {
+  box-shadow: 3px 3px 0 0 #000;
+  transition: transform 0.08s ease, background-color 0.12s ease;
+  image-rendering: pixelated;
+}
+.pixel-btn:active { transform: translateY(2px); box-shadow: 1px 1px 0 0 #000; }
+
+.pixel-panel {
+  box-shadow: inset -3px -3px 0 0 rgba(0, 0, 0, 0.6), inset 3px 3px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.18) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.title-bg {
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(0, 210, 255, 0.18), transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba(255, 59, 48, 0.2), transparent 50%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0 2px, transparent 2px 24px),
+    #0d1322;
+}
+
+.battle-bg {
+  min-height: 250px;
+  background:
+    linear-gradient(to bottom, #0a1020 0%, #0f1a2e 55%, #12351f 55%, #0f2b1a 100%);
+  background-image:
+    linear-gradient(to bottom, rgba(10, 16, 32, 1) 0%, rgba(15, 26, 46, 1) 55%, transparent 55%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 40px),
+    linear-gradient(to bottom, #12351f 55%, #0f2b1a 100%);
+}
+.boss-glow { box-shadow: inset 0 0 40px rgba(239, 68, 68, 0.45); }
+
+.event-art {
+  background:
+    radial-gradient(circle at 70% 30%, rgba(250, 204, 21, 0.25), transparent 45%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.03) 0 4px, transparent 4px 12px),
+    #1c263b;
+}
+
+.victory-bg {
+  background: radial-gradient(ellipse at 50% 0%, rgba(250, 204, 21, 0.18), transparent 60%), #0d1322;
+}
+
+.blink { animation: blink 0.8s steps(2, start) infinite; margin-left: 4px; }
+@keyframes blink { to { visibility: hidden; } }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.animate-shake { animation: shake 0.35s linear; }
+
+@keyframes idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.animate-idle { animation: idle 1.4s steps(2, end) infinite; }
+
+@keyframes ko { to { transform: translateY(12px) rotate(8deg); opacity: 0.4; } }
+.animate-ko { animation: ko 0.5s ease forwards; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-1 { animation: fadeUp 0.4s ease both; }
+.animate-fade-2 { animation: fadeUp 0.4s ease 0.15s both; }
+.animate-fade-3 { animation: fadeUp 0.4s ease 0.3s both; }
+
+::selection { background: #facc15; color: #000; }
