@@ -29,4 +29,32 @@ jobs:
           java-version: "21"
 
       - name: Install dependencies
-        run: yarn
+        run: yarn install
+
+      - name: Build web game
+        env:
+          CI: "false"
+          REACT_APP_BACKEND_URL: ""
+        run: yarn build
+
+      - name: Add Android project
+        run: npx cap add android
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Build debug APK
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Collect APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk ../Footballer-Quest-v0.1-debug.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Footballer-Quest-v0.1-APK
+          path: Footballer-Quest-v0.1-debug.apk
+          if-no-files-found: error
