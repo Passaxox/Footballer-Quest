@@ -3,7 +3,8 @@ name: Build Android APK
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
+    branches:
+      - main
 
 jobs:
   build:
@@ -29,13 +30,13 @@ jobs:
           java-version: "21"
 
       - name: Install dependencies
-  run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile
 
-- name: Build web game
-  env:
-    CI: "false"
-    REACT_APP_BACKEND_URL: ""
-  run: yarn build
+      - name: Build web game
+        env:
+          CI: "false"
+          REACT_APP_BACKEND_URL: ""
+        run: yarn build
 
       - name: Add Android project
         run: npx cap add android
