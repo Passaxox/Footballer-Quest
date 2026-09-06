@@ -3,28 +3,30 @@ name: Build Android APK
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: frontend
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node
-  uses: actions/setup-node@v4
-  with:
-    node-version: 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps --no-audit --no-fund
