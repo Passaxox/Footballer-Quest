@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
+const { X509Certificate, createHash } = require('node:crypto');
 
 const APP_ID = 'com.footballerquest.game';
 const SECRET_NAMES = ['ANDROID_KEYSTORE_BASE64', 'ANDROID_KEYSTORE_PASSWORD', 'ANDROID_KEY_ALIAS', 'ANDROID_KEY_PASSWORD'];
@@ -32,14 +33,27 @@ function configure(source, version) {
 }
 
 function certificateFingerprint(verification) {
-  // v3.1 uses SDK-range labels; only certificate digests identify the APK signer.
-  const matches = [...verification.matchAll(/^[\t ]*Signer (?:#\d+|\(minSdkVersion=[^\r\n]+\)) certificate SHA-256 digest:[\t ]*([^\r\n]*)\r?$/gmi)];
-  const digests = matches.map(match => match[1].trim().toLowerCase());
+  // Match the digest's meaning, not a tool-version-specific signer heading.
+  const lines = verification.split(/\r?\n/).filter(line => !/source\s+stamp|public\s+key/i.test(line));
+  const pattern = /\b(?:certificate\s+SHA\s*-?\s*256\s+digest|SHA\s*-?\s*256\s+certificate\s+digest)\s*:\s*(.*)$/i;
+  const digests = lines.map(line => line.match(pattern)?.[1]).filter(value => value !== undefined)
+    .map(value => value.replace(/[\s:]/g, '').toLowerCase());
   if (!digests.length || digests.some(digest => !/^[a-f0-9]{64}$/.test(digest))) {
     throw new Error('Signing certificate fingerprint unavailable or malformed');
   }
   if (new Set(digests).size !== 1) throw new Error('Signing certificate fingerprint ambiguous: multiple certificates');
   return digests[0];
+}
+
+function verifyCertificate(verification, exportedCertificate) {
+  let expected;
+  try {
+    // keytool exports DER: no localized labels, console encoding or password output.
+    expected = createHash('sha256').update(new X509Certificate(exportedCertificate).raw).digest('hex');
+  } catch { throw new Error('Invalid exported keystore certificate'); }
+  const actual = certificateFingerprint(verification);
+  if (actual !== expected) throw new Error(`APK certificate mismatch: expected ${expected}, actual ${actual}`);
+  return actual;
 }
 
 function sign(env, version) {
@@ -67,7 +81,11 @@ function sign(env, version) {
     run(tool('apksigner'), ['sign', '--ks', key, '--ks-key-alias', env.ANDROID_KEY_ALIAS,
       '--ks-pass', 'env:ANDROID_KEYSTORE_PASSWORD', '--key-pass', 'env:ANDROID_KEY_PASSWORD', '--out', output, aligned]);
     const verification = run(tool('apksigner'), ['verify', '--verbose', '--print-certs', output]);
-    const fingerprint = certificateFingerprint(verification);
+    const exportedCertificate = path.join(temp, 'certificate.der');
+    const keytool = env.JAVA_HOME ? path.join(env.JAVA_HOME, 'bin', 'keytool') : 'keytool';
+    run(keytool, ['-exportcert', '-keystore', key, '-alias', env.ANDROID_KEY_ALIAS,
+      '-storepass:env', 'ANDROID_KEYSTORE_PASSWORD', '-file', exportedCertificate]);
+    const fingerprint = verifyCertificate(verification, fs.readFileSync(exportedCertificate));
     const badging = run(tool('aapt'), ['dump', 'badging', output]);
     const info = badging.match(/package: name='([^']+)' versionCode='([^']+)' versionName='([^']+)'/);
     if (!info || info[1] !== APP_ID || info[2] !== String(version.code) || info[3] !== version.name || badging.includes('application-debuggable')) {
@@ -101,4 +119,4 @@ if (require.main === module) {
     }
   } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { versions, configure, checkSecrets, certificateFingerprint };
+module.exports = { versions, configure, checkSecrets, certificateFingerprint, verifyCertificate };
