@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ITEMS } from "@/game/data";
-import { applyItemTo, canApplyItem, removeItem, gainXp } from "@/game/engine";
+import { applyItemTo, canApplyItem, removeItem, gainXp, canReleasePlayer } from "@/game/engine";
 import { sfx } from "@/game/audio";
-import { Btn, Header, Panel, PlayerCard, StatLine } from "./ui";
+import { Btn, Header, Panel, PlayerCard, StatLine, MoveInfo } from "./ui";
 
 export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
   const [sel, setSel] = useState(0);
@@ -24,7 +24,7 @@ export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
   };
   const makeCaptain = () => { sfx.confirm(); onUpdate({ team: [p, ...run.team.filter((_, i) => i !== sel)] }); setSel(0); };
   const release = () => {
-    if (run.team.length <= 1) return;
+    if (!canReleasePlayer(run.team, p.uid)) return;
     sfx.cancel();
     onUpdate({ team: run.team.filter((_, i) => i !== sel) });
     setSel(0);
@@ -52,11 +52,12 @@ export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
               <Panel className="space-y-2">
                 <div className="font-pixel text-[9px] text-white">{p.name} · Lv{p.level}</div>
                 <StatLine p={p} />
-                <div className="font-body text-sky-200 text-base">Tecnica: {p.move.name} · POT {p.move.power}{p.move.effect ? ` · ${EFFECT_LABEL[p.move.effect]}` : ""}</div>
+                <MoveInfo move={p.move} />
                 <div className="grid grid-cols-2 gap-2">
                   <Btn data-testid="make-captain-btn" disabled={sel === 0} onClick={makeCaptain}>Capitano</Btn>
-                  <Btn data-testid="release-player-btn" variant="danger" disabled={run.team.length <= 1} onClick={release}>Congeda</Btn>
+                  <Btn data-testid="release-player-btn" variant="danger" disabled={!canReleasePlayer(run.team, p.uid)} onClick={release}>Congeda</Btn>
                 </div>
+                {!canReleasePlayer(run.team, p.uid) && <p className="font-body text-sm text-amber-200">Deve restare almeno un giocatore vivo in squadra.</p>}
               </Panel>
             )}
             <div className="font-pixel text-[9px] text-slate-400 uppercase mt-3">Zaino</div>
@@ -78,5 +79,3 @@ export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
     </div>
   );
 }
-
-const EFFECT_LABEL = { drain: "assorbe HP", burn: "brucia", weaken: "riduce ATK", shatter: "riduce DIF", charge: "aumenta ATK", guard: "para il prossimo colpo", priority: "priorità", crit: "critici frequenti", multi: "colpi multipli", recoil: "contraccolpo", heal: "cura sé stesso" };

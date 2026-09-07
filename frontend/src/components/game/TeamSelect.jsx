@@ -24,7 +24,7 @@ export default function TeamSelect({ meta, onStart, onBack }) {
           return (
             <div key={r.id}>
               <PlayerCard p={p} selected={on} testId={`starter-${r.id}`} onClick={() => toggle(r.id)} />
-              {on && <div className="border-2 border-t-0 border-amber-400 p-2 bg-[#0b101d]"><StatLine p={p} /></div>}
+              <div className="border-2 border-t-0 border-slate-700 p-2 bg-[#0b101d]"><StatLine p={p} /></div>
             </div>
           );
         })}

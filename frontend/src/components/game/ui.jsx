@@ -116,6 +116,16 @@ export const Avatar = ({ p, size = 64, ko = false, className = "" }) => {
   );
 };
 
+const EFFECT_LABEL = { drain: "assorbe HP", burn: "brucia", weaken: "riduce ATK", shatter: "riduce DIF", charge: "aumenta ATK", guard: "para il prossimo colpo", priority: "priorità", crit: "critici frequenti", multi: "colpi multipli", recoil: "contraccolpo", heal: "cura sé stesso" };
+
+export const MoveInfo = ({ move }) => (
+  <div className="font-body text-sky-200 text-base leading-tight space-y-1 break-words" data-testid="move-info">
+    <div>{move.name}</div>
+    <div className="flex flex-wrap items-center gap-2"><ElementBadge element={move.element} /><span>POT {move.power}</span></div>
+    <div className="text-slate-300">Effetto: {move.effect ? EFFECT_LABEL[move.effect] || move.effect : "nessuno"}</div>
+  </div>
+);
+
 export const PlayerCard = ({ p, onClick, selected = false, testId, compact = false, right = null }) => {
   const ko = p.hp === 0;
   return (
@@ -127,14 +137,14 @@ export const PlayerCard = ({ p, onClick, selected = false, testId, compact = fal
       <Avatar p={p} size={compact ? 40 : 52} ko={ko} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-1">
-          <span className="font-pixel text-[9px] text-white truncate">{p.name}{p.fused && <span className="text-pink-400"> ✦</span>}</span>
+          <span className="font-pixel text-[9px] text-white break-words">{p.name}{p.fused && <span className="text-pink-400"> ✦</span>}</span>
           <span className="font-pixel text-[8px] text-amber-300 shrink-0">Lv{p.level}</span>
         </div>
         <div className="flex items-center gap-1 mt-1">
           <ElementBadge element={p.element} />
           <span className="font-body text-slate-400 text-sm leading-none">{ROLES[p.role]}</span>
         </div>
-        {!compact && <div className="font-body text-sky-200 text-sm leading-none mt-1 truncate">{p.move.name}</div>}
+        {!compact && <MoveInfo move={p.move} />}
         <div className="mt-1"><HpBar hp={p.hp} maxHp={p.maxHp} showText={false} /></div>
         <div className="flex justify-between font-body text-xs text-slate-400 leading-none mt-1">
           <span>{p.hp}/{p.maxHp} HP</span>

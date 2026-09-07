@@ -1,5 +1,5 @@
 import { ROSTER, ROLES } from "@/game/data";
-import { Btn, Header, Avatar, ElementBadge } from "./ui";
+import { Btn, Header, Avatar, ElementBadge, MoveInfo } from "./ui";
 
 export default function CollectionScreen({ meta, onBack }) {
   return (
@@ -21,7 +21,7 @@ export default function CollectionScreen({ meta, onBack }) {
                 <ElementBadge element={r.element} />
                 <span className="font-pixel text-[7px] text-amber-300">{"★".repeat(r.tier)}</span>
               </div>
-              {on && <div className="font-body text-sky-200 text-sm truncate mt-1">{r.move.name}</div>}
+              {on && <MoveInfo move={r.move} />}
             </div>
           );
         })}

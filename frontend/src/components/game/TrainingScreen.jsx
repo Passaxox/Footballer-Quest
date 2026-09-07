@@ -7,7 +7,7 @@ const DRILLS = [
   { id: "atk", label: "Tiri in porta", desc: "+4 ATK", apply: (p) => recalcStats({ ...p, bonus: { ...p.bonus, atk: p.bonus.atk + 4 } }) },
   { id: "def", label: "Placcaggi", desc: "+4 DIF", apply: (p) => recalcStats({ ...p, bonus: { ...p.bonus, def: p.bonus.def + 4 } }) },
   { id: "spd", label: "Scatti", desc: "+5 VEL", apply: (p) => recalcStats({ ...p, bonus: { ...p.bonus, spd: p.bonus.spd + 5 } }) },
-  { id: "hp", label: "Resistenza", desc: "+12 HP max", apply: (p) => { const q = recalcStats({ ...p, bonus: { ...p.bonus, hp: p.bonus.hp + 12 } }); return { ...q, hp: Math.min(q.maxHp, q.hp + 12) }; } },
+  { id: "hp", label: "Resistenza", desc: "+12 HP max", apply: (p) => { const q = recalcStats({ ...p, bonus: { ...p.bonus, hp: p.bonus.hp + 12 } }); return { ...q, hp: p.hp === 0 ? 0 : Math.min(q.maxHp, q.hp + 12) }; } },
 ];
 
 export default function TrainingScreen({ run, onDone }) {

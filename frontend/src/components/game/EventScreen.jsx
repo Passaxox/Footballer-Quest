@@ -7,11 +7,13 @@ const pickOutcome = (outcomes) => {
   return outcomes.find((o) => (x -= o.chance) < 0) || outcomes[outcomes.length - 1];
 };
 
-export default function EventScreen({ run, event, onResolve }) {
-  const [result, setResult] = useState(null);
+export default function EventScreen({ run, event, onChoose, onResolve }) {
+  const [result, setResult] = useState(run.pending.result || null);
   const choose = (c) => {
     sfx.confirm();
-    setResult(pickOutcome(c.outcomes));
+    const chosen = pickOutcome(c.outcomes);
+    onChoose(chosen);
+    setResult(chosen);
   };
   return (
     <div data-testid="event-screen" className="flex flex-col flex-1">

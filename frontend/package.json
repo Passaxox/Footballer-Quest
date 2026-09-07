@@ -65,8 +65,12 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
+    "test:foundation": "node --test tests/foundation.test.mjs",
     "android:prepare": "npm run build && npx cap sync android",
     "android:debug": "npm run android:prepare && cd android && ./gradlew assembleDebug"
+  },
+  "jest": {
+    "moduleNameMapper": { "^@/(.*)$": "<rootDir>/src/$1" }
   },
   "browserslist": {
     "production": [

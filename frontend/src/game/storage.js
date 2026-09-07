@@ -1,4 +1,5 @@
 import { STARTER_IDS } from "./data";
+import { normalizeRun } from "./engine";
 
 const RUN_KEY = "inazuma_rogue_run";
 const META_KEY = "inazuma_rogue_meta";
@@ -11,7 +12,7 @@ export const loadMeta = () => {
 export const saveMeta = (m) => localStorage.setItem(META_KEY, JSON.stringify(m));
 
 export const loadRun = () => {
-  try { return JSON.parse(localStorage.getItem(RUN_KEY)); } catch { return null; }
+  try { return normalizeRun(JSON.parse(localStorage.getItem(RUN_KEY))); } catch { return null; }
 };
-export const saveRun = (run) => (run ? localStorage.setItem(RUN_KEY, JSON.stringify(run)) : localStorage.removeItem(RUN_KEY));
+export const saveRun = (run) => (run ? localStorage.setItem(RUN_KEY, JSON.stringify(normalizeRun(run))) : localStorage.removeItem(RUN_KEY));
 export const clearRun = () => localStorage.removeItem(RUN_KEY);

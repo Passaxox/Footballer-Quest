@@ -3,7 +3,7 @@ name: Build Android APK
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
+    branches: ["main", "v0.2-foundation"]
 
 jobs:
   build:
@@ -29,7 +29,15 @@ jobs:
           java-version: "21"
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
+
+      - name: Test Foundation engine
+        run: yarn test:foundation
+
+      - name: Test frontend flows
+        env:
+          CI: "true"
+        run: yarn test --watchAll=false --runInBand
 
       - name: Build web game
         env:
@@ -50,11 +58,11 @@ jobs:
           ./gradlew assembleDebug
 
       - name: Collect APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk ../Footballer-Quest-v0.1-debug.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk ../Footballer-Quest-v0.2-foundation-debug.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Footballer-Quest-v0.1-APK
-          path: Footballer-Quest-v0.1-debug.apk
+          name: Footballer-Quest-v0.2-foundation-APK
+          path: Footballer-Quest-v0.2-foundation-debug.apk
           if-no-files-found: error

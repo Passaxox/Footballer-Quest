@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { ITEMS } from "@/game/data";
 import { sfx } from "@/game/audio";
 import { Btn, Header, Panel } from "./ui";
 import { Coins } from "lucide-react";
 
 export default function ShopScreen({ run, stock, onBuy, onLeave }) {
-  const [bought, setBought] = useState([]);
+  const bought = run.pending.bought || [];
   return (
     <div data-testid="shop-screen" className="flex flex-col flex-1">
       <Header title="Mercante Raijin" sub="«Solo roba di qualità, garantito!»" right={<div className="flex items-center gap-1 font-pixel text-[9px] text-amber-300" data-testid="shop-money"><Coins size={12} /> {run.money}</div>} />
@@ -20,7 +19,7 @@ export default function ShopScreen({ run, stock, onBuy, onLeave }) {
                 <div className="font-pixel text-[9px] text-white">{ITEMS[s.id].name}</div>
                 <div className="font-body text-slate-300 text-sm leading-tight mt-1">{ITEMS[s.id].desc}</div>
               </div>
-              <Btn data-testid={`buy-item-${i}`} variant={can ? "primary" : "default"} disabled={!can} className="min-w-[72px]" onClick={() => { sfx.confirm(); setBought([...bought, i]); onBuy(s.id, s.price); }}>
+              <Btn data-testid={`buy-item-${i}`} variant={can ? "primary" : "default"} disabled={!can} className="min-w-[72px]" onClick={() => { sfx.confirm(); onBuy(i); }}>
                 {done ? "OK" : `${s.price} P`}
               </Btn>
             </div>

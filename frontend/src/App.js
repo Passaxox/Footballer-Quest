@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "@/App.css";
 import { EVENTS, FINAL_WAVE } from "@/game/data";
-import { generateWave, generateRewards, addItem, removeItem, glory, createPlayer, randomRosterId, enemiesForEffect, fusePlayers, gainXp, recalcStats, chance, newRun } from "@/game/engine";
+import { generateWave, generateRewards, addItem, glory, createPlayer, randomRosterId, enemiesForEffect, fuseRunPlayers, gainXp, recalcStats, chance, newRun, normalizeRun, resolveActiveUid, applyEventDamage } from "@/game/engine";
 import { loadMeta, saveMeta, loadRun, saveRun, clearRun } from "@/game/storage";
 import { setSoundEnabled } from "@/game/audio";
 import TitleScreen from "@/components/game/TitleScreen";
@@ -28,15 +28,19 @@ function App() {
   const [meta, setMeta] = useState(initialMeta);
   const [ctx, setCtx] = useState({});
 
-  const updateRun = (r) => { setRun(r); saveRun(r); return r; };
+  const updateRun = (r) => { const nextRun = normalizeRun(r); setRun(nextRun); saveRun(nextRun); return nextRun; };
   const updateMeta = (m) => { setMeta(m); saveMeta(m); };
 
   const startRun = (ids) => { updateRun(newRun(ids)); setScreen("hub"); };
 
   const gotoPending = (r) => {
     const p = r.pending;
-    if (p.type === "battle") setScreen("battle");
-    else if (p.type === "recruit") { setCtx({ mode: "encounter", offer: p.player, price: p.price, after: "advance" }); setScreen("recruit"); }
+    if (p.type === "battle") {
+      if (!resolveActiveUid(r.team, r.activeUid)) { finishRun(r, "lose"); return; }
+      setScreen("battle");
+    }
+    else if (p.type === "recruit") { setCtx({ mode: "encounter", offer: p.player, price: p.price, after: "advance", ...p.context }); setScreen("recruit"); }
+    else if (p.type === "reward") { setCtx(p.context); setScreen("reward"); }
     else setScreen(p.type);
   };
 
@@ -60,23 +64,24 @@ function App() {
     setScreen("hub");
   };
 
-  const onWin = (team, items) => {
+  const onWin = (team, items, activeUid) => {
     const enc = run.pending;
     const boss = enc.kind === "boss";
     const gain = (20 + run.wave * 3) * (boss ? 3 : enc.kind === "team" ? 1.6 : 1);
-    let r = { ...run, team: boss ? team.map((p) => ({ ...p, hp: p.maxHp })) : team, items, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1 } };
+    let r = { ...run, activeUid, team: boss ? team.map((p) => ({ ...p, hp: p.maxHp })) : team, items, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1 } };
     const rewards = generateRewards();
     const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain) };
     if (enc.kind === "wild" && (r.fischietto || enc.forceRecruit || chance(40))) {
       const e = enc.enemies[0];
       const fresh = { ...createPlayer(e.baseId, e.level), uid: e.uid };
       r = { ...r, fischietto: false };
-      updateRun(r);
-      setCtx({ ...base, mode: "offer", offer: fresh, after: "rewards" });
+      const context = { ...base, mode: "offer", offer: fresh, after: "rewards" };
+      updateRun({ ...r, pending: { type: "recruit", context } });
+      setCtx(context);
       setScreen("recruit");
       return;
     }
-    updateRun(r);
+    updateRun({ ...r, pending: { type: "reward", context: base } });
     setCtx(base);
     setScreen("reward");
   };
@@ -89,7 +94,7 @@ function App() {
   };
 
   const continueAfterRecruit = (r) => {
-    if (ctx.after === "rewards") { updateRun(r); setScreen("reward"); }
+    if (ctx.after === "rewards") { updateRun({ ...r, pending: { type: "reward", context: ctx } }); setScreen("reward"); }
     else advanceWave(r);
   };
 
@@ -116,8 +121,8 @@ function App() {
         case "item": r.items = addItem(r.items, e.id); break;
         case "money": r.money = Math.max(0, r.money + e.amt); break;
         case "heal": r.team = target((p) => (p.hp > 0 ? { ...p, hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * e.pct / 100)) } : p), e.target); break;
-        case "damage": r.team = target((p) => ({ ...p, hp: Math.max(1, p.hp - Math.round(p.maxHp * e.pct / 100)) }), e.target); break;
-        case "stat": r.team = target((p) => { const q = recalcStats({ ...p, bonus: { ...p.bonus, [e.stat]: p.bonus[e.stat] + e.amt } }); return e.stat === "hp" ? { ...q, hp: Math.min(q.maxHp, q.hp + e.amt) } : q; }, e.target, e.element); break;
+        case "damage": r.team = target((p) => applyEventDamage(p, e.pct), e.target); break;
+        case "stat": r.team = target((p) => { const q = recalcStats({ ...p, bonus: { ...p.bonus, [e.stat]: p.bonus[e.stat] + e.amt } }); return e.stat === "hp" && p.hp > 0 ? { ...q, hp: Math.min(q.maxHp, q.hp + e.amt) } : q; }, e.target, e.element); break;
         case "xp": r.team = target((p) => gainXp(p, e.amt).player, e.target); break;
         case "recruit": recruitTier = e.tier; break;
         case "battle": battle = e; break;
@@ -133,13 +138,14 @@ function App() {
     r.seenEvents = [...(run.seenEvents || []), ev.id];
     if (battle) {
       const enemies = enemiesForEffect(battle, run.wave);
-      updateRun({ ...r, pending: { type: "battle", kind: enemies.length === 1 ? "wild" : "team", teamName: "Sfidanti", enemies, rewardItem: battle.reward } });
-      setScreen("battle");
+      const nextRun = updateRun({ ...r, pending: { type: "battle", kind: enemies.length === 1 ? "wild" : "team", teamName: "Sfidanti", enemies, rewardItem: battle.reward } });
+      gotoPending(nextRun);
       return;
     }
     if (recruitTier) {
-      updateRun(r);
-      setCtx({ mode: "offer", offer: createPlayer(randomRosterId(recruitTier), Math.max(1, run.wave)), after: "advance" });
+      const context = { mode: "offer", offer: createPlayer(randomRosterId(recruitTier), Math.max(1, run.wave)), after: "advance" };
+      updateRun({ ...r, pending: { type: "recruit", context } });
+      setCtx(context);
       setScreen("recruit");
       return;
     }
@@ -147,10 +153,8 @@ function App() {
   };
 
   const onFuse = (a, b, moveFrom) => {
-    const fused = fusePlayers(run.team[a], run.team[b], moveFrom);
-    const team = run.team.filter((_, i) => i !== a && i !== b);
-    team.splice(Math.min(a, b), 0, fused);
-    updateRun({ ...run, team, items: removeItem(run.items, "cuneo"), stats: { ...run.stats, fusions: run.stats.fusions + 1 } });
+    if (!(run.items.cuneo > 0) || a === b || !run.team[a] || !run.team[b] || run.team[a].fused || run.team[b].fused || !["a", "b"].includes(moveFrom)) return;
+    updateRun(fuseRunPlayers(run, a, b, moveFrom));
     setScreen("team");
   };
 
@@ -165,10 +169,15 @@ function App() {
       case "hub": return <HubScreen run={run} onNext={next} onTeam={() => setScreen("team")} onAbandon={() => { if (window.confirm("Abbandonare la run? Il progresso andrà perso.")) finishRun(run, "lose"); }} />;
       case "team": return <TeamScreen run={run} onUpdate={(patch) => updateRun({ ...run, ...patch })} onFusion={() => setScreen("fusion")} onBack={() => setScreen("hub")} />;
       case "fusion": return <FusionScreen run={run} onFuse={onFuse} onBack={() => setScreen("team")} />;
-      case "battle": return <BattleScreen key={`${run.wave}-${run.pending.enemies[0].uid}`} run={run} encounter={run.pending} onWin={onWin} onLose={() => finishRun(run, "lose")} onFlee={(team, items) => advanceWave({ ...run, team, items })} />;
+      case "battle": return <BattleScreen key={`${run.wave}-${run.pending.enemies[0].uid}`} run={run} encounter={run.pending} onWin={onWin} onActiveChange={(activeUid) => updateRun({ ...run, activeUid })} onLose={(team, items, activeUid) => finishRun({ ...run, team, items, activeUid }, "lose")} onFlee={(team, items, activeUid) => advanceWave({ ...run, team, items, activeUid })} />;
       case "reward": return <RewardScreen rewards={ctx.rewards} bonus={ctx.bonus} money={ctx.money} onPick={onPickReward} />;
-      case "event": return <EventScreen key={run.wave} run={run} event={EVENTS.find((e) => e.id === run.pending.eventId)} onResolve={onEventResolve} />;
-      case "shop": return <ShopScreen run={run} stock={run.pending.stock} onBuy={(id, price) => updateRun({ ...run, money: run.money - price, items: addItem(run.items, id) })} onLeave={() => advanceWave(run)} />;
+      case "event": return <EventScreen key={run.wave} run={run} event={EVENTS.find((e) => e.id === run.pending.eventId)} onChoose={(result) => updateRun({ ...run, pending: { ...run.pending, result } })} onResolve={onEventResolve} />;
+      case "shop": return <ShopScreen run={run} stock={run.pending.stock} onBuy={(index) => {
+        const pending = run.pending;
+        const entry = pending.stock[index];
+        if (!entry || (pending.bought || []).includes(index) || run.money < entry.price) return;
+        updateRun({ ...run, money: run.money - entry.price, items: addItem(run.items, entry.id), pending: { ...pending, bought: [...(pending.bought || []), index] } });
+      }} onLeave={() => advanceWave(run)} />;
       case "training": return <TrainingScreen run={run} onDone={(team) => advanceWave({ ...run, team })} />;
       case "recruit": return <RecruitScreen run={run} player={ctx.offer} price={ctx.price} mode={ctx.mode} onChallenge={challengeRecruit} onJoin={joinTeam} onSkip={() => continueAfterRecruit(run)} />;
       case "end": return <EndScreen run={ctx.finalRun} result={ctx.result} onHome={() => setScreen("title")} />;

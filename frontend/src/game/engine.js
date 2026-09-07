@@ -21,7 +21,7 @@ export const recalcStats = (p) => {
   const b = p.base;
   const maxHp = scale(b.hp, p.level) + p.bonus.hp;
   const ratio = p.maxHp ? p.hp / p.maxHp : 1;
-  return { ...p, maxHp, hp: Math.max(1, Math.min(maxHp, Math.round(maxHp * ratio))), atk: scale(b.atk, p.level) + p.bonus.atk, def: scale(b.def, p.level) + p.bonus.def, spd: scale(b.spd, p.level) + p.bonus.spd };
+  return { ...p, maxHp, hp: p.hp === 0 ? 0 : Math.max(1, Math.min(maxHp, Math.round(maxHp * ratio))), atk: scale(b.atk, p.level) + p.bonus.atk, def: scale(b.def, p.level) + p.bonus.def, spd: scale(b.spd, p.level) + p.bonus.spd };
 };
 
 export const createPlayer = (id, level = 1) => {
@@ -48,7 +48,7 @@ export const gainXp = (p, amount) => {
   if (ups) {
     const before = q.maxHp;
     q = recalcStats(q);
-    q.hp = Math.min(q.maxHp, q.hp + (q.maxHp - before));
+    q.hp = p.hp === 0 ? 0 : Math.min(q.maxHp, q.hp + (q.maxHp - before));
   }
   return { player: q, ups };
 };
@@ -124,6 +124,9 @@ export const resetBattleStatus = (team) => team.map((p) => ({ ...p, status: fres
 
 // ---------- Fusion ----------
 export const fusePlayers = (a, b, moveFrom) => {
+  if (!a || !b || a.uid === b.uid || a.fused || b.fused || !["a", "b"].includes(moveFrom)) {
+    throw new Error("Seleziona due giocatori diversi non ancora fusi e una tecnica valida.");
+  }
   const src = moveFrom === "b" ? b : a;
   const first = a.name.split(" ")[0];
   const last = b.name.split(" ").slice(-1)[0];
@@ -198,9 +201,31 @@ export const enemiesForEffect = (eff, wave) => {
 };
 
 // ---------- Run helpers ----------
-export const newRun = (starterIds) => ({
+export const newRun = (starterIds) => normalizeRun({
   wave: 1, team: starterIds.map((id) => createPlayer(id, 3)), items: { barretta: 2 }, money: 100,
   stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], pending: null, fischietto: false, startedAt: Date.now(),
+});
+
+export const resolveActiveUid = (team, activeUid) =>
+  team.find((p) => p.uid === activeUid && p.hp > 0)?.uid || team.find((p) => p.hp > 0)?.uid || null;
+
+export const normalizeRun = (run) => run ? {
+  ...run, saveVersion: 2, activeUid: resolveActiveUid(run.team, run.activeUid),
+} : null;
+
+export const canReleasePlayer = (team, uid) => team.some((p) => p.uid !== uid && p.hp > 0);
+
+export const fuseRunPlayers = (run, a, b, moveFrom) => {
+  if (!(run.items.cuneo > 0)) throw new Error("Serve un Cuneo DNA.");
+  const fused = fusePlayers(run.team[a], run.team[b], moveFrom);
+  const activeUid = [run.team[a].uid, run.team[b].uid].includes(run.activeUid) ? fused.uid : run.activeUid;
+  const team = run.team.filter((_, i) => i !== a && i !== b);
+  team.splice(Math.min(a, b), 0, fused);
+  return normalizeRun({ ...run, team, activeUid, items: removeItem(run.items, "cuneo"), stats: { ...run.stats, fusions: run.stats.fusions + 1 } });
+};
+
+export const applyEventDamage = (p, pct) => ({
+  ...p, hp: p.hp === 0 ? 0 : Math.max(1, p.hp - Math.round(p.maxHp * pct / 100)),
 });
 
 export const addItem = (items, id, n = 1) => ({ ...items, [id]: (items[id] || 0) + n });
@@ -214,7 +239,7 @@ export const applyItemTo = (item, p) => {
     case "fascia": return recalcStats({ ...p, bonus: { ...p.bonus, atk: p.bonus.atk + 5 } });
     case "guanti": return recalcStats({ ...p, bonus: { ...p.bonus, def: p.bonus.def + 5 } });
     case "scarpini": return recalcStats({ ...p, bonus: { ...p.bonus, spd: p.bonus.spd + 6 } });
-    case "proteine": { const q = recalcStats({ ...p, bonus: { ...p.bonus, hp: p.bonus.hp + 15 } }); return { ...q, hp: Math.min(q.maxHp, q.hp + 15) }; }
+    case "proteine": { const q = recalcStats({ ...p, bonus: { ...p.bonus, hp: p.bonus.hp + 15 } }); return { ...q, hp: p.hp === 0 ? 0 : Math.min(q.maxHp, q.hp + 15) }; }
     case "talismano": return { ...p, status: { ...p.status, talisman: true } };
     default: return p;
   }
