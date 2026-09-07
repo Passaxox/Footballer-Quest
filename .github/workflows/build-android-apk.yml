@@ -29,7 +29,7 @@ jobs:
           java-version: "21"
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn
 
       - name: Test Foundation engine
         run: yarn test:foundation
