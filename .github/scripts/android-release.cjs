@@ -19,7 +19,8 @@ function checkSecrets(env) {
 
 function configure(source, version) {
   if (!source.includes(`applicationId "${APP_ID}"`)) throw new Error('Unexpected generated applicationId');
-  if (!source.includes(`namespace "${APP_ID}"`)) throw new Error('Unexpected generated namespace');
+  const namespaces = [...source.matchAll(/^[\t ]*namespace[\t ]*(?:=[\t ]*)?(['"])([^'"\r\n]+)\1[\t ]*;?[\t ]*(?:\/\/[^\r\n]*)?\r?$/gm)];
+  if (namespaces.length !== 1 || namespaces[0][2] !== APP_ID) throw new Error('Unexpected generated namespace');
   for (const [pattern, value] of [
     [/\bversionCode\s+\d+/g, `versionCode ${version.code}`],
     [/\bversionName\s+"[^"]*"/g, `versionName "${version.name}"`],
