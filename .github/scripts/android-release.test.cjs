@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { versions, configure, checkSecrets } = require('./android-release.cjs');
+const { versions, configure, checkSecrets, certificateFingerprint } = require('./android-release.cjs');
 
 test('new workflow runs increase Android versions, independently of branch', () => {
   const a = versions({ GITHUB_RUN_NUMBER: '13', GITHUB_RUN_ATTEMPT: '1' });
@@ -19,6 +19,36 @@ test('configuration changes versions only and refuses unexpected identity/templa
 test('missing secrets fail by name, without displaying supplied values', () => {
   assert.throws(() => checkSecrets({ ANDROID_KEY_ALIAS: 'test-only-placeholder' }), error =>
     error.message.includes('ANDROID_KEYSTORE_BASE64') && !error.message.includes('test-only-placeholder'));
+});
+
+test('fingerprint supports apksigner SDK-range labels as well as numbered signers', () => {
+  const digest = 'ab'.repeat(32);
+  // ApkSignerTool prints SDK-range labels for v3.1, instead of "Signer #1".
+  const output = `Verifies
+Verified using v3.1 scheme (APK Signature Scheme v3.1): true
+Number of signers: 1
+Signer (minSdkVersion=33, maxSdkVersion=2147483647) certificate SHA-256 digest: ${digest}
+Signer (minSdkVersion=24, maxSdkVersion=32) certificate SHA-256 digest: ${digest}
+`;
+  assert.equal(certificateFingerprint(output), digest);
+  assert.equal(certificateFingerprint(`Signer #1 certificate SHA-256 digest: ${digest}\r\n`), digest);
+  assert.equal(certificateFingerprint(output.toUpperCase()), digest);
+});
+
+test('fingerprint refuses absent, malformed or different signing certificates without leaking output', () => {
+  const digest = 'ab'.repeat(32);
+  for (const output of [
+    'private-output-placeholder',
+    `Signer #1 public key SHA-256 digest: ${digest}`,
+    `Source Stamp Signer certificate SHA-256 digest: ${digest}`,
+    `Signer #1 certificate SHA-1 digest: ${'ab'.repeat(20)}`,
+    `Signer #1 certificate SHA-256 digest: ${digest}ff`,
+    `Signer #1 certificate SHA-256 digest: short`,
+    `Signer #1 certificate SHA-256 digest: ${digest}\nSigner #2 certificate SHA-256 digest: ${'cd'.repeat(32)}`,
+  ]) {
+    assert.throws(() => certificateFingerprint(output), error =>
+      /Signing certificate fingerprint/.test(error.message) && !error.message.includes(output));
+  }
 });
 
 // Capacitor 8 android-template/app/build.gradle + editProjectSettingsAndroid:

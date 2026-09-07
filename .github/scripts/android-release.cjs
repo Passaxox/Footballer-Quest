@@ -31,6 +31,17 @@ function configure(source, version) {
   return source;
 }
 
+function certificateFingerprint(verification) {
+  // v3.1 uses SDK-range labels; only certificate digests identify the APK signer.
+  const matches = [...verification.matchAll(/^[\t ]*Signer (?:#\d+|\(minSdkVersion=[^\r\n]+\)) certificate SHA-256 digest:[\t ]*([^\r\n]*)\r?$/gmi)];
+  const digests = matches.map(match => match[1].trim().toLowerCase());
+  if (!digests.length || digests.some(digest => !/^[a-f0-9]{64}$/.test(digest))) {
+    throw new Error('Signing certificate fingerprint unavailable or malformed');
+  }
+  if (new Set(digests).size !== 1) throw new Error('Signing certificate fingerprint ambiguous: multiple certificates');
+  return digests[0];
+}
+
 function sign(env, version) {
   checkSecrets(env);
   const temp = fs.mkdtempSync(path.join(env.RUNNER_TEMP, 'android-signing-'));
@@ -56,8 +67,7 @@ function sign(env, version) {
     run(tool('apksigner'), ['sign', '--ks', key, '--ks-key-alias', env.ANDROID_KEY_ALIAS,
       '--ks-pass', 'env:ANDROID_KEYSTORE_PASSWORD', '--key-pass', 'env:ANDROID_KEY_PASSWORD', '--out', output, aligned]);
     const verification = run(tool('apksigner'), ['verify', '--verbose', '--print-certs', output]);
-    const fingerprint = verification.match(/Signer #1 certificate SHA-256 digest: ([a-fA-F0-9]+)/)?.[1];
-    if (!fingerprint || fingerprint.length !== 64) throw new Error('Signing certificate fingerprint unavailable');
+    const fingerprint = certificateFingerprint(verification);
     const badging = run(tool('aapt'), ['dump', 'badging', output]);
     const info = badging.match(/package: name='([^']+)' versionCode='([^']+)' versionName='([^']+)'/);
     if (!info || info[1] !== APP_ID || info[2] !== String(version.code) || info[3] !== version.name || badging.includes('application-debuggable')) {
@@ -91,4 +101,4 @@ if (require.main === module) {
     }
   } catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { versions, configure, checkSecrets };
+module.exports = { versions, configure, checkSecrets, certificateFingerprint };
