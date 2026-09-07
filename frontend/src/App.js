@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "@/App.css";
 import { EVENTS, FINAL_WAVE } from "@/game/data";
-import { generateWave, generateRewards, addItem, glory, createPlayer, randomRosterId, enemiesForEffect, fuseRunPlayers, gainXp, recalcStats, chance, newRun, normalizeRun, resolveActiveUid, applyEventDamage, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
-import { loadMeta, saveMeta, loadRun, saveRun, clearRun } from "@/game/storage";
+import { generateWave, generateRewards, addItem, createPlayer, randomRosterId, enemiesForEffect, fuseRunPlayers, gainXp, recalcStats, chance, newRun, normalizeRun, resolveActiveUid, applyEventDamage, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
+import { loadMeta, saveMeta, loadRun, saveRun, clearRun, recordFinishedRun } from "@/game/storage";
 import { setSoundEnabled } from "@/game/audio";
 import TitleScreen from "@/components/game/TitleScreen";
 import TeamSelect from "@/components/game/TeamSelect";
@@ -19,13 +19,10 @@ import EndScreen from "@/components/game/EndScreen";
 import CollectionScreen from "@/components/game/CollectionScreen";
 import RecordsScreen from "@/components/game/RecordsScreen";
 
-const initialMeta = loadMeta();
-setSoundEnabled(initialMeta.sound);
-
 function App() {
   const [screen, setScreen] = useState("title");
   const [run, setRun] = useState(() => loadRun());
-  const [meta, setMeta] = useState(initialMeta);
+  const [meta, setMeta] = useState(() => { const saved = loadMeta(); setSoundEnabled(saved.sound); return saved; });
   const [ctx, setCtx] = useState({});
 
   const updateRun = (r) => { const nextRun = normalizeRun(r); setRun(nextRun); saveRun(nextRun); return nextRun; };
@@ -51,8 +48,7 @@ function App() {
   };
 
   const finishRun = (r, result) => {
-    const rec = { date: Date.now(), wave: r.wave, glory: glory(r), result, team: r.team.map((p) => p.name) };
-    updateMeta({ ...meta, records: [...meta.records, rec], runs: meta.runs + 1, bestWave: Math.max(meta.bestWave, r.wave) });
+    updateMeta(recordFinishedRun(meta, r, result));
     clearRun(); setRun(null);
     setCtx({ result, finalRun: r });
     setScreen("end");

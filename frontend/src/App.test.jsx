@@ -2,7 +2,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { newRun, createPlayer, grantCombatXp, gainXp } from "./game/engine";
-import { saveRun, loadRun } from "./game/storage";
+import { saveRun, loadRun, loadMeta } from "./game/storage";
 import { STARTER_IDS, EVENTS } from "./game/data";
 import TitleScreen from "./components/game/TitleScreen";
 import HubScreen from "./components/game/HubScreen";
@@ -236,4 +236,37 @@ test("fleeing an event battle never awards travel", async () => {
   await call(BattleScreen, "onFlee", run.team, run.items, run.activeUid, null);
   expect(loadRun().team).toEqual(run.team);
   expect(loadRun().lastProgression.report.rows.every((r) => r.travelXp === 0)).toBe(true);
+});
+
+test.each(["lose", "win"])("recruit unlock survives %s, new run and component reload", async (result) => {
+  const run = runWith({ type: "recruit", player: createPlayer("darren", 9), price: 0 });
+  saveRun(run);
+  await mountAndContinue();
+  expect(loadMeta().unlocked).not.toContain("darren");
+  await call(RecruitScreen, "onJoin", null, false);
+  expect(loadMeta().unlocked).toContain("darren");
+  const final = { ...loadRun(), wave: 50, pending: encounter() };
+  saveRun(final);
+  await reload();
+  if (result === "lose") await call(BattleScreen, "onLose", final.team.map(p => ({ ...p, hp: 0 })), final.items, null);
+  else {
+    await call(BattleScreen, "onWin", final.team, final.items, final.activeUid);
+    await call(RewardScreen, "onPick", null);
+  }
+  const meta = loadMeta();
+  expect(meta.unlocked).toContain("darren");
+  expect(meta.records).toHaveLength(1);
+  expect(meta.records[0].teamSnapshot.some(p => p.baseId === "darren")).toBe(true);
+  saveRun(newRun(STARTER_IDS.slice(0, 3)));
+  await act(async () => root.unmount()); root = createRoot(host);
+  await act(async () => root.render(<App />));
+  expect(props(TitleScreen).meta).toEqual(meta);
+  expect(loadMeta()).toEqual(meta);
+});
+
+test("declining an encountered player never unlocks it", async () => {
+  saveRun(runWith({ type: "recruit", player: createPlayer("darren", 9), price: 0 }));
+  await mountAndContinue();
+  await call(RecruitScreen, "onSkip");
+  expect(loadMeta().unlocked).not.toContain("darren");
 });

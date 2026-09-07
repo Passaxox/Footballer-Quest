@@ -59,6 +59,14 @@ export const gainXp = (p, amount) => {
 
 const modMult = (stage) => Math.max(0.4, 1 + stage * 0.25);
 
+// Shared by every offensive heal/drain technique, on both sides of battle.
+export const SUSTAIN_RULE = { maxHpShare: 0.1, actualDamageShare: 0.5 };
+export const sustainHealing = (attacker, actualDamage) => attacker.hp <= 0 ? 0 : Math.max(0, Math.min(
+  attacker.maxHp - attacker.hp,
+  Math.floor(attacker.maxHp * SUSTAIN_RULE.maxHpShare),
+  Math.floor(actualDamage * SUSTAIN_RULE.actualDamageShare),
+));
+
 export const calcDamage = (att, def, move) => {
   const atk = att.atk * modMult(att.status.atkMod);
   const dfn = def.def * modMult(def.status.defMod);
@@ -94,8 +102,8 @@ export const performAttack = (attacker, defender) => {
   if (def.status.guard) { def.status.guard = false; msgs.push(`${def.name} para parte del colpo!`); }
   att.status.talisman = false;
   switch (move.effect) {
-    case "drain": { const h = Math.min(att.maxHp - att.hp, Math.round(total * 0.5)); att.hp += h; if (h > 0) msgs.push(`${att.name} recupera ${h} HP!`); break; }
-    case "heal": { const h = Math.min(att.maxHp - att.hp, Math.round(att.maxHp * 0.3)); att.hp += h; if (h > 0) msgs.push(`${att.name} recupera ${h} HP!`); break; }
+    case "drain":
+    case "heal": { const h = sustainHealing(att, total); att.hp += h; msgs.push(`${move.name} recupera ${h} HP per ${att.name}!`); break; }
     case "burn": if (def.hp > 0 && !def.status.burn && chance(70)) { def.status.burn = 3; msgs.push(`${def.name} sta bruciando!`); } break;
     case "weaken": if (def.hp > 0 && def.status.atkMod > -3) { def.status.atkMod -= 1; msgs.push(`L'ATK di ${def.name} diminuisce!`); } break;
     case "shatter": if (def.hp > 0 && def.status.defMod > -3) { def.status.defMod -= 1; msgs.push(`La DIF di ${def.name} diminuisce!`); } break;
@@ -146,7 +154,11 @@ export const fusePlayers = (a, b, moveFrom) => {
 };
 
 // ---------- Enemy / wave generation ----------
-export const enemyLevel = (wave, rulesetId) => Math.max(1, wave + rand(-1, 2) + getRules(rulesetId).ordinaryEnemyLevelOffset);
+export const enemyLevel = (wave, rulesetId) => {
+  const rules = getRules(rulesetId);
+  const segment = rules.ordinaryEnemyLevelSegments?.filter(s => wave >= s.fromWave).at(-1);
+  return Math.max(1, wave + rand(-1, 2) + (segment?.offset ?? rules.ordinaryEnemyLevelOffset));
+};
 
 export const randomRosterId = (maxTier, exclude = []) => {
   const pool = ROSTER.filter((r) => r.tier <= maxTier && !exclude.includes(r.id));

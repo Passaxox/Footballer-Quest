@@ -3,18 +3,20 @@ import axios from "axios";
 import { glory, playtestSummary } from "@/game/engine";
 import { Btn, Header, Panel, PlayerCard, XpReport } from "./ui";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const backendUrl = () => (process.env.REACT_APP_BACKEND_URL || "").trim().replace(/\/$/, "");
 
 export default function EndScreen({ run, result, onHome }) {
+  const BACKEND = backendUrl();
   const [nick, setNick] = useState(localStorage.getItem("inazuma_rogue_nick") || "");
   const [sent, setSent] = useState(false);
   const [err, setErr] = useState("");
   const g = glory(run);
   const summary = playtestSummary(run);
   const submit = async () => {
+    if (!BACKEND) { setErr("Classifica globale non disponibile"); return; }
     try {
       localStorage.setItem("inazuma_rogue_nick", nick);
-      await axios.post(`${API}/runs`, { nickname: nick.trim() || "Anonimo", wave: run.wave, glory: g, result, wins: run.stats.wins, recruits: run.stats.recruits, fusions: run.stats.fusions, team: run.team.map((p) => p.name) });
+      await axios.post(`${BACKEND}/api/runs`, { nickname: nick.trim() || "Anonimo", wave: run.wave, glory: g, result, wins: run.stats.wins, recruits: run.stats.recruits, fusions: run.stats.fusions, team: run.team.map((p) => p.name) }, { timeout: 8000 });
       setSent(true);
     } catch { setErr("Invio fallito. Riprova più tardi."); }
   };
@@ -38,7 +40,7 @@ export default function EndScreen({ run, result, onHome }) {
         <div className="space-y-2">{run.team.map((p, i) => <PlayerCard key={p.uid} p={p} compact testId={`end-player-${i}`} />)}</div>
         <Panel className="space-y-2">
           <div className="font-pixel text-[9px] text-slate-300 uppercase">Albo d'Oro Globale</div>
-          {sent ? <div className="font-body text-emerald-400 text-lg" data-testid="submit-success">Punteggio inviato!</div> : (
+          {!BACKEND ? <div className="font-body text-slate-400 text-lg">Classifica globale non disponibile. Run salvata nell'archivio locale.</div> : sent ? <div className="font-body text-emerald-400 text-lg" data-testid="submit-success">Punteggio inviato!</div> : (
             <>
               <input data-testid="nickname-input" value={nick} onChange={(e) => setNick(e.target.value.slice(0, 16))} placeholder="Il tuo nickname" className="w-full bg-slate-950 border-2 border-slate-600 p-2 font-body text-lg text-white outline-none focus:border-amber-400" />
               <Btn data-testid="submit-score-btn" variant="primary" className="w-full" onClick={submit}>Invia il punteggio</Btn>

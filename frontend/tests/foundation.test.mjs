@@ -316,8 +316,8 @@ test("checkpoint levels belong to the profile, not the boss team", () => {
 test("difficulty and version survive reload; creating another run does not alter them", () => {
   const run = newRun(starters, "easy");
   assert.equal(run.difficultyId, "easy");
-  assert.equal(run.rulesetId, "easy-v1");
-  assert.equal(run.rulesetVersion, 1);
+  assert.equal(run.rulesetId, "easy-v2");
+  assert.equal(run.rulesetVersion, 2);
   storage.saveRun(run);
   newRun(starters, "normal");
   assert.deepEqual(storage.loadRun(), run);
@@ -336,4 +336,74 @@ test("local playtest summary includes all final players including KO", () => {
   run.stats.lastBossDefeated = "Previous boss";
   assert.deepEqual(engine.playtestSummary(run), { difficulty: "FACILE", wave: 10, wins: 5, recruits: 3, fusions: 1,
     averageLevel: 6, maxLevel: 7, bossReached: "Test boss", bossDefeated: "Previous boss" });
+});
+
+test("completed history extends old records and survives new run/reload with unlocks", () => {
+  values.clear();
+  const old = { unlocked: [...starters, "darren"], records: [{ wave: 8, glory: 42, team: ["Mark"] }], runs: 1, bestWave: 8 };
+  localStorage.setItem("inazuma_rogue_meta", JSON.stringify(old));
+  const run = newRun(starters, "easy");
+  run.wave = 20; run.stats = { wins: 12, recruits: 3, fusions: 1, lastBossDefeated: "Royal Academy" };
+  run.team[0] = { ...run.team[0], fused: true, hp: 0 };
+  const meta = storage.recordFinishedRun(storage.loadMeta(), run, "lose");
+  storage.saveMeta(meta);
+  storage.clearRun(); storage.saveRun(newRun(starters));
+  assert.deepEqual(storage.loadMeta(), meta);
+  assert.deepEqual(meta.records[0], old.records[0]);
+  assert.equal(meta.records[1].difficulty, "FACILE");
+  assert.equal(meta.records[1].bossDefeated, "Royal Academy");
+  assert.equal(meta.records[1].teamSnapshot[0].fused, true);
+  assert.equal(meta.records[1].teamSnapshot[0].baseId, starters[0]);
+  assert.equal(meta.records[1].averageLevel, 3);
+  assert.equal(meta.records[1].maxLevel, 3);
+  assert.equal(meta.records[1].wins, 12);
+  assert.equal(meta.records[1].recruits, 3);
+  assert.equal(meta.records[1].fusions, 1);
+  assert.equal(meta.records[1].glory, engine.glory(run));
+  assert.ok(meta.unlocked.includes("darren"));
+  assert.ok(!meta.unlocked.includes("byron"));
+  assert.deepEqual(storage.recordFinishedRun(meta, run, "lose"), meta);
+});
+
+test("every heal/drain uses actual damage and the shared cap, including Darren", () => {
+  const random = Math.random; Math.random = () => 0.5;
+  try {
+    for (const id of ["darren", "silvia", "hurley", "byron", "fidio"]) {
+      const attacker = { ...createPlayer(id, 9), hp: 1 };
+      const target = createPlayer("mark", 9);
+      const result = engine.performAttack(attacker, target);
+      const healed = result.att.hp - attacker.hp;
+      const damage = target.hp - result.def.hp;
+      assert.equal(healed, Math.min(attacker.maxHp - 1, Math.floor(attacker.maxHp * 0.1), Math.floor(damage * 0.5)));
+      assert.ok(result.msgs.some(m => m.includes(`${attacker.move.name} recupera ${healed} HP`)));
+      const generic = { ...attacker, baseId: "future-player", name: "Generic", move: { ...attacker.move, name: "Generic heal" } };
+      assert.equal(engine.performAttack(generic, target).att.hp, result.att.hp);
+      assert.equal(engine.performAttack(attacker, { ...target, hp: 1 }).att.hp, 1);
+    }
+    assert.equal(engine.sustainHealing({ hp: 95, maxHp: 100 }, 100), 5);
+    assert.equal(engine.sustainHealing({ hp: 1, maxHp: 100 }, 1000), 10);
+    assert.equal(engine.sustainHealing({ hp: 0, maxHp: 100 }, 100), 0);
+  } finally { Math.random = random; }
+});
+
+test("Easy v2 segments plateau at boundaries; Normal and old Easy profiles stay unchanged", () => {
+  const random = Math.random;
+  try {
+    for (const wave of [1, 10, 11, 15, 16, 17, 18, 19, 20, 21, 25, 26, 29, 30, 31]) {
+      for (const [roll, jitter] of [[0, -1], [0.999, 2]]) {
+        Math.random = () => roll;
+        const offset = wave >= 26 ? -4 : wave >= 21 ? -3 : wave >= 19 ? -2 : -1;
+        assert.equal(engine.enemyLevel(wave, "easy-v2"), Math.max(1, wave + jitter + offset));
+        assert.equal(engine.enemyLevel(wave, "normal-v1"), Math.max(1, wave + jitter));
+        assert.equal(engine.enemyLevel(wave, "easy-v1"), Math.max(1, wave + jitter - 1));
+      }
+    }
+    for (const [wave, level] of [[10, 10], [20, 20], [30, 29]]) {
+      assert.ok(engine.generateWave({ ...newRun(starters, "easy"), wave }).enemies.every(p => p.level === level));
+      assert.ok(engine.generateWave({ ...newRun(starters), wave }).enemies.every(p => p.level === (wave === 10 ? 11 : wave + 3)));
+    }
+    const old = { ...newRun(starters, "easy"), rulesetId: "easy-v1", rulesetVersion: 1 };
+    storage.saveRun(old);
+    assert.deepEqual(storage.loadRun(), old);
+  } finally { Math.random = random; }
 });
