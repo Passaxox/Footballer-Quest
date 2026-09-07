@@ -57,3 +57,18 @@ test("offline EndScreen does not offer an unusable score upload", async () => {
   expect(host.querySelector('[data-testid="submit-score-btn"]')).toBeNull();
   expect(axios.post).not.toHaveBeenCalled();
 });
+
+test("Game Over exposes retry and menu as separate actions without writing history", async () => {
+  process.env.REACT_APP_BACKEND_URL = "";
+  const onRetry = jest.fn(), onHome = jest.fn();
+  const before = localStorage.getItem("inazuma_rogue_meta");
+  await act(async () => root.render(<EndScreen run={newRun(STARTER_IDS.slice(0, 3))} result="lose" onRetry={onRetry} onHome={onHome} />));
+  const retry = host.querySelector('[data-testid="end-retry-btn"]');
+  expect(retry.textContent).toBe("RIPROVA / NUOVA RUN");
+  await act(async () => retry.click());
+  expect(onRetry).toHaveBeenCalledTimes(1);
+  expect(onHome).not.toHaveBeenCalled();
+  await act(async () => host.querySelector('[data-testid="end-home-btn"]').click());
+  expect(onHome).toHaveBeenCalledTimes(1);
+  expect(localStorage.getItem("inazuma_rogue_meta")).toBe(before);
+});

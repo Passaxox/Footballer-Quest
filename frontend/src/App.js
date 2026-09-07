@@ -180,7 +180,7 @@ function App() {
       }} onLeave={() => advanceWave(run, true)} />;
       case "training": return <TrainingScreen run={run} onDone={(team, hadOwnXp = false) => advanceWave({ ...run, team, pending: { ...run.pending, progression: { hadOwnXp, report: reportXpChanges(run.team, team, "node") } } }, true)} />;
       case "recruit": return <RecruitScreen run={run} player={ctx.offer} price={ctx.price} mode={ctx.mode} xpReport={ctx.xpReport} onChallenge={challengeRecruit} onJoin={joinTeam} onSkip={() => continueAfterRecruit(run)} />;
-      case "end": return <EndScreen run={ctx.finalRun} result={ctx.result} onHome={() => setScreen("title")} />;
+      case "end": return <EndScreen run={ctx.finalRun} result={ctx.result} onRetry={() => { setCtx({}); setScreen("select"); }} onHome={() => setScreen("title")} />;
       default: return null;
     }
   };

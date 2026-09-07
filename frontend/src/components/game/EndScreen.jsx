@@ -5,7 +5,7 @@ import { Btn, Header, Panel, PlayerCard, XpReport } from "./ui";
 
 const backendUrl = () => (process.env.REACT_APP_BACKEND_URL || "").trim().replace(/\/$/, "");
 
-export default function EndScreen({ run, result, onHome }) {
+export default function EndScreen({ run, result, onHome, onRetry }) {
   const BACKEND = backendUrl();
   const [nick, setNick] = useState(localStorage.getItem("inazuma_rogue_nick") || "");
   const [sent, setSent] = useState(false);
@@ -49,7 +49,10 @@ export default function EndScreen({ run, result, onHome }) {
           )}
         </Panel>
       </div>
-      <div className="p-3"><Btn data-testid="end-home-btn" className="w-full" onClick={onHome}>Torna al menu</Btn></div>
+      <div className="p-3 space-y-2">
+        <Btn data-testid="end-retry-btn" variant="primary" className="w-full" onClick={onRetry}>RIPROVA / NUOVA RUN</Btn>
+        <Btn data-testid="end-home-btn" variant="ghost" className="w-full" onClick={onHome}>TORNA AL MENU</Btn>
+      </div>
     </div>
   );
 }

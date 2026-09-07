@@ -2,7 +2,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { newRun, createPlayer, grantCombatXp, gainXp } from "./game/engine";
-import { saveRun, loadRun, loadMeta } from "./game/storage";
+import { saveRun, loadRun, loadMeta, saveMeta } from "./game/storage";
 import { STARTER_IDS, EVENTS } from "./game/data";
 import TitleScreen from "./components/game/TitleScreen";
 import HubScreen from "./components/game/HubScreen";
@@ -14,6 +14,7 @@ import EventScreen from "./components/game/EventScreen";
 import EndScreen from "./components/game/EndScreen";
 import TeamScreen from "./components/game/TeamScreen";
 import TrainingScreen from "./components/game/TrainingScreen";
+import TeamSelect from "./components/game/TeamSelect";
 
 jest.mock("./game/audio", () => ({ setSoundEnabled: jest.fn() }));
 jest.mock("./components/game/TitleScreen", () => jest.fn(() => null));
@@ -26,6 +27,7 @@ jest.mock("./components/game/EventScreen", () => jest.fn(() => null));
 jest.mock("./components/game/EndScreen", () => jest.fn(() => null));
 jest.mock("./components/game/TeamScreen", () => jest.fn(() => null));
 jest.mock("./components/game/TrainingScreen", () => jest.fn(() => null));
+jest.mock("./components/game/TeamSelect", () => jest.fn(() => null));
 
 let root, host;
 const props = (component) => component.mock.calls[component.mock.calls.length - 1][0];
@@ -43,6 +45,34 @@ const reload = async () => {
 };
 const runWith = (pending) => ({ ...newRun(STARTER_IDS.slice(0, 3)), pending });
 const encounter = (kind = "team") => ({ type: "battle", kind, forceRecruit: true, enemies: [createPlayer(STARTER_IDS[0], 2)] });
+
+test("Game Over retry opens a fresh draft and preserves one history entry across new runs", async () => {
+  saveMeta({ ...loadMeta(), unlocked: [...STARTER_IDS, "darren"] });
+  const run = runWith(encounter());
+  saveRun(run);
+  await mountAndContinue();
+  await call(BattleScreen, "onLose", run.team.map(p => ({ ...p, hp: 0 })), run.items, null);
+  const archived = loadMeta();
+  expect(archived.records).toHaveLength(1);
+  expect(archived.runs).toBe(1);
+  expect(loadRun()).toBeNull();
+  await call(EndScreen, "onRetry");
+  expect(props(TeamSelect).meta).toEqual(archived);
+  expect(loadRun()).toBeNull();
+  expect(loadMeta()).toEqual(archived);
+  const chosen = ["darren", "shawn", "jack"];
+  await call(TeamSelect, "onStart", chosen, "easy");
+  const next = loadRun();
+  expect(next.team.map(p => p.baseId)).toEqual(chosen);
+  expect(next.team.every(p => !run.team.some(old => old.uid === p.uid))).toBe(true);
+  expect(next.wave).toBe(1);
+  expect(next.difficultyId).toBe("easy");
+  expect(loadMeta()).toEqual(archived);
+  await act(async () => root.unmount()); root = createRoot(host);
+  await act(async () => root.render(<App />));
+  expect(props(TitleScreen).meta).toEqual(archived);
+  expect(loadRun()).toEqual(next);
+});
 
 beforeEach(() => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
