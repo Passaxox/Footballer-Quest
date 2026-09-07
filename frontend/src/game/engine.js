@@ -1,3 +1,4 @@
+import { DEFAULT_RULESET, DIFFICULTIES, getRules } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
 
 export const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -12,6 +13,9 @@ export const typeMultiplier = (moveEl, targetEl) => {
   if (ELEMENTS[targetEl].beats === moveEl) return 0.67;
   return 1;
 };
+
+export const effectiveTypeMultiplier = (attacker, defender, move = attacker.move) =>
+  attacker.status?.talisman ? 1.5 : typeMultiplier(move.element, defender.element);
 
 export const xpForLevel = (level) => Math.floor(20 + level * 12);
 
@@ -58,8 +62,7 @@ const modMult = (stage) => Math.max(0.4, 1 + stage * 0.25);
 export const calcDamage = (att, def, move) => {
   const atk = att.atk * modMult(att.status.atkMod);
   const dfn = def.def * modMult(def.status.defMod);
-  let mult = typeMultiplier(move.element, def.element);
-  if (att.status.talisman) mult = 1.5;
+  const mult = effectiveTypeMultiplier(att, def, move);
   const crit = chance(move.effect === "crit" ? 30 : 8);
   const stab = move.element === att.element ? 1.1 : 1;
   let dmg = (((2 * att.level) / 5 + 2) * move.power * atk / dfn) / 9 + 2;
@@ -143,7 +146,7 @@ export const fusePlayers = (a, b, moveFrom) => {
 };
 
 // ---------- Enemy / wave generation ----------
-const enemyLevel = (wave) => Math.max(1, wave + rand(-1, 2));
+export const enemyLevel = (wave, rulesetId) => Math.max(1, wave + rand(-1, 2) + getRules(rulesetId).ordinaryEnemyLevelOffset);
 
 export const randomRosterId = (maxTier, exclude = []) => {
   const pool = ROSTER.filter((r) => r.tier <= maxTier && !exclude.includes(r.id));
@@ -156,16 +159,18 @@ export const generateWave = (run) => {
   const wave = run.wave;
   const boss = BOSSES[wave];
   if (boss) {
-    return { type: "battle", kind: "boss", teamName: boss.team, intro: boss.intro, enemies: boss.ids.map((id) => createPlayer(id, wave + 3)) };
+    const rules = getRules(run.rulesetId);
+    const level = wave + (rules.checkpoints[wave]?.levelOffset ?? rules.defaultBossLevelOffset);
+    return { type: "battle", kind: "boss", teamName: boss.team, intro: boss.intro, enemies: boss.ids.map((id) => createPlayer(id, level)) };
   }
   const roll = Math.random() * 100;
   if (wave === 1 || roll < 50) {
     const solo = chance(60);
-    if (solo) return { type: "battle", kind: "wild", enemies: [createPlayer(randomRosterId(tierForWave(wave)), enemyLevel(wave))] };
+    if (solo) return { type: "battle", kind: "wild", enemies: [createPlayer(randomRosterId(tierForWave(wave)), enemyLevel(wave, run.rulesetId))] };
     const n = wave < 5 ? 2 : rand(2, 3);
     const ids = [];
     while (ids.length < n) ids.push(randomRosterId(tierForWave(wave), ids));
-    return { type: "battle", kind: "team", teamName: pick(TEAM_NAMES), enemies: ids.map((id) => createPlayer(id, enemyLevel(wave))) };
+    return { type: "battle", kind: "team", teamName: pick(TEAM_NAMES), enemies: ids.map((id) => createPlayer(id, enemyLevel(wave, run.rulesetId))) };
   }
   if (roll < 62) return { type: "recruit", player: createPlayer(randomRosterId(tierForWave(wave) + (chance(20) ? 1 : 0)), Math.max(1, wave - 1)), price: 60 + wave * 4 };
   if (roll < 74) return { type: "shop", stock: generateShop(wave) };
@@ -201,7 +206,8 @@ export const enemiesForEffect = (eff, wave) => {
 };
 
 // ---------- Run helpers ----------
-export const newRun = (starterIds) => normalizeRun({
+export const newRun = (starterIds, difficultyId = "normal") => normalizeRun({
+  difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
   wave: 1, team: starterIds.map((id) => createPlayer(id, 3)), items: { barretta: 2 }, money: 100,
   stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], pending: null, fischietto: false, startedAt: Date.now(),
 });
@@ -209,11 +215,99 @@ export const newRun = (starterIds) => normalizeRun({
 export const resolveActiveUid = (team, activeUid) =>
   team.find((p) => p.uid === activeUid && p.hp > 0)?.uid || team.find((p) => p.hp > 0)?.uid || null;
 
-export const normalizeRun = (run) => run ? {
-  ...run, saveVersion: 2, activeUid: resolveActiveUid(run.team, run.activeUid),
-} : null;
+export const normalizeRun = (run) => {
+  if (!run) return null;
+  const rulesetId = run.rulesetId || DIFFICULTIES[run.difficultyId || "normal"]?.rulesetId || DEFAULT_RULESET;
+  const rules = getRules(rulesetId);
+  return { ...run, saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
+    rulesetVersion: run.rulesetVersion ?? rules.version,
+    activeUid: resolveActiveUid(run.team, run.activeUid) };
+};
+
+export const playtestSummary = (run) => ({
+  difficulty: DIFFICULTIES[getRules(run.rulesetId).difficultyId].label,
+  wave: run.wave, wins: run.stats.wins, recruits: run.stats.recruits, fusions: run.stats.fusions,
+  averageLevel: run.team.length ? run.team.reduce((sum, p) => sum + p.level, 0) / run.team.length : 0,
+  maxLevel: Math.max(0, ...run.team.map((p) => p.level)),
+  bossReached: run.pending?.kind === "boss" ? run.pending.teamName : null,
+  bossDefeated: run.stats.lastBossDefeated || null,
+});
 
 export const canReleasePlayer = (team, uid) => team.some((p) => p.uid !== uid && p.hp > 0);
+
+export const xpProgress = (p) => ({
+  level: p.level, xp: p.xp, required: xpForLevel(p.level),
+  percent: Math.min(100, Math.max(0, p.xp / xpForLevel(p.level) * 100)),
+});
+
+const totalXp = (p) => {
+  let total = p.xp;
+  for (let level = 1; level < p.level; level++) total += xpForLevel(level);
+  return total;
+};
+
+export const reportXpChanges = (before, after, source) => ({
+  source,
+  rows: after.map((p) => {
+    const old = before.find((q) => q.uid === p.uid) || p;
+    const total = Math.max(0, totalXp(p) - totalXp(old));
+    return { uid: p.uid, name: p.name, before: xpProgress(old), after: xpProgress(p), total,
+      activeXp: 0, benchXp: 0, travelXp: source === "travel" ? total : 0,
+      otherXp: source === "node" ? total : 0, koCombat: false };
+  }),
+});
+
+export const mergeXpReports = (previous, next) => {
+  if (!previous) return next;
+  if (!next) return previous;
+  const rows = previous.rows.map((row) => ({ ...row }));
+  for (const row of next.rows) {
+    const index = rows.findIndex((p) => p.uid === row.uid);
+    if (index < 0) { rows.push(row); continue; }
+    const old = rows[index];
+    rows[index] = { ...row, before: old.before, koCombat: old.koCombat || row.koCombat };
+    for (const key of ["total", "activeXp", "benchXp", "travelXp", "otherXp"]) rows[index][key] = old[key] + row[key];
+  }
+  return { source: next.source, rows };
+};
+
+export const grantCombatXp = (team, activeUid, defeatedLevel, boss = false, rulesetId) => {
+  const rules = getRules(rulesetId);
+  // Round the full award first, then the bench share, including boss encounters.
+  const full = Math.round((18 + defeatedLevel * 6) * rules.combatXpMultiplier * (boss ? rules.bossXpMultiplier : 1));
+  // Integer percentage avoids 45 * 0.7 becoming 31.499999999999996 in JS.
+  const bench = Math.round(full * (rules.benchXpShare * 100) / 100);
+  const updated = team.map((p) => p.hp === 0 ? p : gainXp(p, p.uid === activeUid ? full : bench).player);
+  const report = reportXpChanges(team, updated, "combat");
+  report.rows = report.rows.map((row, i) => ({ ...row,
+    activeXp: team[i].uid === activeUid ? row.total : 0,
+    benchXp: team[i].uid !== activeUid ? row.total : 0,
+    benchPercent: rules.benchXpShare * 100, koCombat: team[i].hp === 0,
+  }));
+  return { team: updated, report };
+};
+
+export const finishCombatReport = (team, report) => {
+  const summary = report || reportXpChanges(team, team, "combat");
+  return { ...summary, rows: summary.rows.map((row) => {
+    const p = team.find((member) => member.uid === row.uid);
+    return p ? { ...row, after: xpProgress(p), koCombat: row.koCombat || p.hp === 0 } : row;
+  }) };
+};
+
+// Call only on resolution. Save the result atomically with the wave advance.
+export const completeNonCombatNode = (run) => {
+  const pending = run.pending;
+  if (!pending || !["shop", "event", "training", "recruit"].includes(pending.type)
+      || pending.context?.after === "rewards" || pending.progression?.hadCombat
+      || run.lastProgression?.wave === run.wave) return run;
+  const hadOwnXp = pending.progression?.hadOwnXp
+    || pending.result?.effects?.some((effect) => effect.type === "xp" && effect.amt > 0);
+  const previous = pending.progression?.report || null;
+  const team = hadOwnXp ? run.team : run.team.map((p) => p.hp > 0 ? gainXp(p, getRules(run.rulesetId).travelXp).player : p);
+  const report = hadOwnXp ? previous : mergeXpReports(previous, reportXpChanges(run.team, team, "travel"));
+  return normalizeRun({ ...run, team, lastProgression: { wave: run.wave, report } });
+};
 
 export const fuseRunPlayers = (run, a, b, moveFrom) => {
   if (!(run.items.cuneo > 0)) throw new Error("Serve un Cuneo DNA.");

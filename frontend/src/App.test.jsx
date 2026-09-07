@@ -1,7 +1,7 @@
 import { act } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import { newRun, createPlayer } from "./game/engine";
+import { newRun, createPlayer, grantCombatXp, gainXp } from "./game/engine";
 import { saveRun, loadRun } from "./game/storage";
 import { STARTER_IDS, EVENTS } from "./game/data";
 import TitleScreen from "./components/game/TitleScreen";
@@ -13,6 +13,7 @@ import ShopScreen from "./components/game/ShopScreen";
 import EventScreen from "./components/game/EventScreen";
 import EndScreen from "./components/game/EndScreen";
 import TeamScreen from "./components/game/TeamScreen";
+import TrainingScreen from "./components/game/TrainingScreen";
 
 jest.mock("./game/audio", () => ({ setSoundEnabled: jest.fn() }));
 jest.mock("./components/game/TitleScreen", () => jest.fn(() => null));
@@ -24,6 +25,7 @@ jest.mock("./components/game/ShopScreen", () => jest.fn(() => null));
 jest.mock("./components/game/EventScreen", () => jest.fn(() => null));
 jest.mock("./components/game/EndScreen", () => jest.fn(() => null));
 jest.mock("./components/game/TeamScreen", () => jest.fn(() => null));
+jest.mock("./components/game/TrainingScreen", () => jest.fn(() => null));
 
 let root, host;
 const props = (component) => component.mock.calls[component.mock.calls.length - 1][0];
@@ -165,4 +167,73 @@ test("captain reordering preserves active UID; release chooses a survivor", asyn
   expect(loadRun().activeUid).toBe(run.team[1].uid);
   await call(TeamScreen, "onUpdate", { team: reordered.slice(0, 2) });
   expect(loadRun().activeUid).toBe(run.team[2].uid);
+});
+
+test("engine EXP report survives reward reload without another award", async () => {
+  const run = runWith(encounter());
+  saveRun(run);
+  await mountAndContinue();
+  const earned = grantCombatXp(run.team, run.activeUid, 2);
+  await call(BattleScreen, "onWin", earned.team, run.items, run.activeUid, earned.report);
+  const saved = loadRun();
+  expect(props(RewardScreen).xpReport).toEqual(earned.report);
+  await reload();
+  expect(props(RewardScreen).xpReport).toEqual(earned.report);
+  expect(loadRun()).toEqual(saved);
+  await call(RewardScreen, "onPick", null);
+  expect(loadRun().team).toEqual(earned.team);
+});
+
+test("shop completion awards travel once; entering, purchases and reload do not", async () => {
+  const run = runWith({ type: "shop", stock: [{ id: "barretta", price: 20 }] });
+  saveRun(run);
+  await mountAndContinue();
+  await call(ShopScreen, "onBuy", 0);
+  await reload();
+  expect(loadRun().team).toEqual(run.team);
+  await call(ShopScreen, "onLeave");
+  const saved = loadRun();
+  expect(saved.team.map((p) => p.xp)).toEqual([12, 12, 12]);
+  expect(saved.lastProgression.report.source).toBe("travel");
+  await act(async () => root.unmount());
+  root = createRoot(host);
+  await act(async () => root.render(<App />));
+  await call(TitleScreen, "onContinue");
+  expect(loadRun()).toEqual(saved);
+});
+
+test("event with own EXP carries its receipt through recruitment and never adds travel", async () => {
+  const run = runWith({ type: "event", eventId: EVENTS[0].id });
+  const result = { effects: [{ type: "xp", amt: 25, target: "all" }, { type: "recruit", tier: 1 }] };
+  saveRun(run);
+  await mountAndContinue();
+  await call(EventScreen, "onChoose", result);
+  await reload();
+  await call(EventScreen, "onResolve", result);
+  await reload();
+  await call(RecruitScreen, "onSkip");
+  expect(loadRun().team.map((p) => p.xp)).toEqual([25, 25, 25]);
+  expect(loadRun().lastProgression.report.rows.map((r) => r.travelXp)).toEqual([0, 0, 0]);
+});
+
+test("training with its own EXP excludes travel, while a stat drill receives it", async () => {
+  const run = runWith({ type: "training" });
+  saveRun(run);
+  await mountAndContinue();
+  await call(TrainingScreen, "onDone", run.team.map((p) => gainXp(p, 30).player), true);
+  expect(loadRun().team.map((p) => p.xp)).toEqual([30, 30, 30]);
+  saveRun(run);
+  await reload();
+  await call(TrainingScreen, "onDone", run.team, false);
+  expect(loadRun().team.map((p) => p.xp)).toEqual([12, 12, 12]);
+});
+
+test("fleeing an event battle never awards travel", async () => {
+  const run = runWith({ type: "event", eventId: EVENTS[0].id });
+  saveRun(run);
+  await mountAndContinue();
+  await call(EventScreen, "onResolve", { effects: [{ type: "battle", ids: [STARTER_IDS[0]] }] });
+  await call(BattleScreen, "onFlee", run.team, run.items, run.activeUid, null);
+  expect(loadRun().team).toEqual(run.team);
+  expect(loadRun().lastProgression.report.rows.every((r) => r.travelXp === 0)).toBe(true);
 });

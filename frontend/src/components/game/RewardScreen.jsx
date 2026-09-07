@@ -1,9 +1,9 @@
 import { ITEMS } from "@/game/data";
 import { sfx } from "@/game/audio";
-import { Btn, Header, Panel } from "./ui";
+import { Btn, Header, Panel, XpReport } from "./ui";
 import { Gift } from "lucide-react";
 
-export default function RewardScreen({ rewards, bonus, money, onPick }) {
+export default function RewardScreen({ rewards, bonus, money, xpReport, onPick }) {
   return (
     <div data-testid="reward-selection-modal" className="flex flex-col flex-1">
       <Header title="Ricompensa" sub="Scegli un solo premio" />
@@ -12,6 +12,7 @@ export default function RewardScreen({ rewards, bonus, money, onPick }) {
           Vittoria! Guadagni <span className="text-amber-300">+{money} Prestigio</span>.
           {bonus && <div className="text-emerald-400 mt-1">Bonus: {ITEMS[bonus].name} aggiunto allo zaino!</div>}
         </Panel>
+        <XpReport report={xpReport} />
         {rewards.map((id, i) => (
           <button key={id + i} data-testid={`reward-option-${i}`} onClick={() => { sfx.confirm(); onPick(id); }}
             className={`w-full text-left p-3 border-4 ${id === "cuneo" ? "border-pink-500 bg-pink-950/40" : "border-slate-600 bg-[#141c2e]"} hover:border-amber-400 active:translate-y-[2px] flex gap-3 items-center`}>

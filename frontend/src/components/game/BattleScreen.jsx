@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { ITEMS, ELEMENTS, WILD_INTROS } from "@/game/data";
-import { performAttack, applyBurn, turnOrder, resetBattleStatus, gainXp, applyItemTo, canApplyItem, removeItem, pick, chance, resolveActiveUid } from "@/game/engine";
+import { ITEMS, WILD_INTROS } from "@/game/data";
+import { performAttack, applyBurn, turnOrder, resetBattleStatus, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, canApplyItem, removeItem, pick, chance, resolveActiveUid } from "@/game/engine";
 import { sfx } from "@/game/audio";
-import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard } from "./ui";
+import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, MatchupBadge } from "./ui";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -39,7 +39,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   if (!s.current) {
     s.current = {
       team: resetBattleStatus(run.team), items: { ...run.items }, active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
-      enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", hit: null, menu: "main", itemSel: null, xpGained: {},
+      enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", hit: null, menu: "main", itemSel: null, xpReport: null,
     };
   }
   const st = s.current;
@@ -103,16 +103,11 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     }
   };
 
-  const grantXp = async (defeated) => {
-    const base = Math.round((18 + defeated.level * 6) * (encounter.kind === "boss" ? 1.6 : 1));
-    for (let i = 0; i < st.team.length; i++) {
-      const p = st.team[i];
-      if (p.hp === 0) continue;
-      const amt = i === st.active ? base : Math.round(base * 0.5);
-      const { player, ups } = gainXp(p, amt);
-      st.team = st.team.map((q, j) => (j === i ? player : q));
-      if (ups) { sfx.levelup(); await say(`${player.name} sale al livello ${player.level}!`, 700); }
-    }
+  const grantXp = (defeated) => {
+    const result = grantCombatXp(st.team, active()?.uid, defeated.level, encounter.kind === "boss", run.rulesetId);
+    st.team = result.team;
+    st.xpReport = mergeXpReports(st.xpReport, result.report);
+    if (result.report.rows.some((row) => row.after.level > row.before.level)) sfx.levelup();
     rr();
   };
 
@@ -123,7 +118,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       sfx.lose();
       await say("Tutta la squadra è KO... La run finisce qui.", 1500);
       st.phase = "end"; rr();
-      onLose(st.team, st.items, active()?.uid);
+      onLose(st.team, st.items, active()?.uid, finishCombatReport(st.team, st.xpReport));
       return;
     }
     if (enemy().hp === 0) {
@@ -135,7 +130,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         sfx.win();
         await say(encounter.kind === "boss" ? `Avete sconfitto ${encounter.teamName}!` : "Vittoria!", 1100);
         st.phase = "end"; rr();
-        onWin(st.team.map((p) => ({ ...p, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false } })), st.items, resolveActiveUid(st.team, active()?.uid));
+        onWin(st.team.map((p) => ({ ...p, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false } })), st.items, resolveActiveUid(st.team, active()?.uid), finishCombatReport(st.team, st.xpReport));
         return;
       }
     }
@@ -203,7 +198,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     sfx.cancel();
     st.phase = "busy"; rr();
     const ok = chance(45 + Math.max(-30, Math.min(30, (active().spd - enemy().spd) * 2)));
-    if (ok) { await say("Siete fuggiti con successo!", 900); st.phase = "end"; rr(); onFlee(st.team, st.items, active()?.uid); return; }
+    if (ok) { await say("Siete fuggiti con successo!", 900); st.phase = "end"; rr(); onFlee(st.team, st.items, active()?.uid, finishCombatReport(st.team, st.xpReport)); return; }
     await say("La fuga è fallita!", 700);
     await enemyFreeTurn();
   };
@@ -212,7 +207,6 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
 
   const p = active();
   const e = enemy();
-  const mult = ELEMENTS[p.move.element].beats === e.element ? "▲" : ELEMENTS[e.element].beats === p.move.element ? "▼" : "";
   const battleItems = Object.entries(st.items).filter(([id, n]) => ITEMS[id].battle && n > 0);
 
   return (
@@ -252,8 +246,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         )}
         {(st.phase === "menu" || st.phase === "forcedSwitch") && st.menu === "main" && (
           <div className="grid grid-cols-2 gap-2">
-            <Btn data-testid="attack-button" variant="primary" onClick={attack} className="col-span-2 flex items-center justify-center gap-2">
-              <ElementIcon element={p.move.element} size={14} /> {p.move.name} {mult}
+            <Btn data-testid="attack-button" variant="primary" onClick={attack} className="col-span-2 flex flex-wrap items-center justify-center gap-2">
+              <ElementIcon element={p.move.element} size={14} /> {p.move.name} <MatchupBadge attacker={p} defender={e} />
               <span className="text-[8px] opacity-70">POT {p.move.power}</span>
             </Btn>
             <Btn data-testid="switch-button" onClick={() => { sfx.select(); st.menu = "switch"; rr(); }}>Cambia</Btn>
@@ -264,7 +258,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         {(st.phase === "menu" || st.phase === "forcedSwitch" || st.phase === "preBattle") && st.menu === "switch" && (
           <div className="space-y-2">
             {st.team.map((q, i) => (
-              <PlayerCard key={q.uid} p={q} compact selected={i === st.active} testId={`switch-player-btn-${i}`} onClick={() => switchTo(i)} />
+              <PlayerCard key={q.uid} p={q} compact selected={i === st.active} testId={`switch-player-btn-${i}`} onClick={() => switchTo(i)} right={q.hp > 0 ? <MatchupBadge attacker={q} defender={e} compact /> : null} />
             ))}
             {(st.phase === "menu" || st.phase === "preBattle") && <Btn data-testid="switch-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.menu = "main"; rr(); }}>Indietro</Btn>}
           </div>

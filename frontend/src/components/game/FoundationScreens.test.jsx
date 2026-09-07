@@ -4,8 +4,12 @@ import TeamSelect from "./TeamSelect";
 import TeamScreen from "./TeamScreen";
 import FusionScreen from "./FusionScreen";
 import TrainingScreen from "./TrainingScreen";
+import HubScreen from "./HubScreen";
+import EndScreen from "./EndScreen";
+import { saveRun, loadRun } from "@/game/storage";
 import { STARTER_IDS } from "@/game/data";
-import { newRun, fusePlayers } from "@/game/engine";
+import { newRun, fusePlayers, grantCombatXp, xpProgress } from "@/game/engine";
+import { XpReport, MatchupBadge } from "./ui";
 
 jest.mock("@/game/audio", () => ({ sfx: new Proxy({}, { get: () => jest.fn() }) }));
 let root, host;
@@ -73,4 +77,61 @@ test("HP training leaves a KO player at zero", async () => {
   const team = onDone.mock.calls[0][0];
   expect(team[0].hp).toBe(0);
   expect(team[0].maxHp).toBe(run.team[0].maxHp + 12);
+});
+
+test("EXP report renders engine before/after, bench share and KO with no blocking button", async () => {
+  const run = newRun(STARTER_IDS.slice(0, 3));
+  run.team[2].hp = 0;
+  const { report } = grantCombatXp(run.team, run.activeUid, 11, true);
+  await act(async () => root.render(<XpReport report={report} />));
+  expect(host.textContent).toContain("+202 EXP");
+  expect(host.textContent).toContain("Lv3 → Lv5!");
+  expect(host.textContent).toContain("Panchina 70%: +141");
+  expect(host.textContent).toContain("EXP 78 / 80");
+  expect(host.textContent).toContain("Nessuna EXP da combattimento");
+  expect(host.querySelector("button")).toBeNull();
+});
+
+test("TeamScreen exposes current and required EXP with a progress bar", async () => {
+  const run = newRun(STARTER_IDS.slice(0, 3));
+  run.team[0].xp = 17;
+  await act(async () => root.render(<TeamScreen run={run} />));
+  expect(host.textContent).toContain(`EXP 17 / ${xpProgress(run.team[0]).required}`);
+  expect(host.querySelector('[role="progressbar"]')).not.toBeNull();
+});
+
+test("neutral matchup stays silent and Talisman overrides resistance", async () => {
+  const run = newRun(STARTER_IDS.slice(0, 3));
+  const attacker = run.team[0];
+  const defender = { ...run.team[1], element: attacker.move.element };
+  await act(async () => root.render(<MatchupBadge attacker={attacker} defender={defender} />));
+  expect(host.textContent).toBe("");
+  const boosted = { ...attacker, status: { ...attacker.status, talisman: true } };
+  await act(async () => root.render(<MatchupBadge attacker={boosted} defender={defender} />));
+  expect(host.textContent).toBe("SUPEREFFICACE");
+});
+
+test("starter difficulty selection only affects the new run and clearly labels the start button", async () => {
+  const existing = newRun(STARTER_IDS.slice(0, 3), "normal");
+  saveRun(existing);
+  const onStart = jest.fn();
+  await act(async () => root.render(<TeamSelect meta={{ unlocked: STARTER_IDS }} onStart={onStart} />));
+  expect(find("difficulty-normal").checked).toBe(true);
+  await click("difficulty-easy");
+  expect(find("difficulty-easy").checked).toBe(true);
+  expect(find("start-run-btn").textContent).toContain("FACILE");
+  expect(loadRun()).toEqual(existing);
+  for (const id of STARTER_IDS.slice(0, 3)) await click(`starter-${id}`);
+  await click("start-run-btn");
+  expect(onStart).toHaveBeenCalledWith(STARTER_IDS.slice(0, 3), "easy");
+});
+
+test("Hub labels the persisted difficulty and EndScreen shows local playtest figures", async () => {
+  const run = newRun(STARTER_IDS.slice(0, 3), "easy");
+  run.stats.wins = 5; run.stats.recruits = 3; run.stats.fusions = 1;
+  await act(async () => root.render(<HubScreen run={run} />));
+  expect(find("run-difficulty").textContent).toBe("FACILE");
+  await act(async () => root.render(<EndScreen run={run} result="lose" />));
+  const summary = find("playtest-summary").textContent;
+  for (const text of ["FACILE", "Ondata raggiunta", "Partite vinte", "Calciatori reclutati", "Fusioni DNA", "Livello medio", "3.0", "Livello massimo"]) expect(summary).toContain(text);
 });

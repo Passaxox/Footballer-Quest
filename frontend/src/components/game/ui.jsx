@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ELEMENTS, ROLES } from "@/game/data";
-import { xpForLevel } from "@/game/engine";
+import { xpForLevel, effectiveTypeMultiplier } from "@/game/engine";
 import { Flame, Wind, Mountain, Leaf } from "lucide-react";
 
 const VARIANTS = {
@@ -125,6 +125,45 @@ export const MoveInfo = ({ move }) => (
     <div className="text-slate-300">Effetto: {move.effect ? EFFECT_LABEL[move.effect] || move.effect : "nessuno"}</div>
   </div>
 );
+
+export const MatchupBadge = ({ attacker, defender, compact = false }) => {
+  const multiplier = effectiveTypeMultiplier(attacker, defender);
+  if (multiplier === 1) return null;
+  const favorable = multiplier > 1;
+  return <span data-testid="matchup-badge" title="Efficacia elementale: non confronta il danno totale"
+    className={`font-body ${compact ? "text-xs max-w-[108px]" : "text-sm"} leading-tight normal-case border px-1 py-0.5 ${favorable ? "text-emerald-200 bg-emerald-950 border-emerald-700" : "text-orange-200 bg-orange-950 border-orange-700"}`}>
+    {favorable ? "SUPEREFFICACE" : "POCO EFFICACE"}
+  </span>;
+};
+
+export const XpBar = ({ progress }) => (
+  <div className="font-body text-sm text-sky-200">
+    <div>EXP {progress.xp} / {progress.required}</div>
+    <div role="progressbar" aria-label="Esperienza" aria-valuemin={0} aria-valuemax={progress.required} aria-valuenow={Math.min(progress.xp, progress.required)} className="h-2 bg-slate-950 border border-slate-600 overflow-hidden">
+      <div className="h-full bg-sky-400 transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${progress.percent}%` }} />
+    </div>
+  </div>
+);
+
+export const XpReport = ({ report }) => {
+  if (!report) return null;
+  return <Panel data-testid="xp-report" className="space-y-2">
+    <div className="font-pixel text-[9px] text-sky-300">{report.source === "travel" ? "Esperienza viaggio" : "Crescita squadra"}</div>
+    <div className="grid grid-cols-1 min-[380px]:grid-cols-2 gap-2">
+      {report.rows.map((row) => <div key={row.uid} className="font-body text-base leading-tight border-b border-slate-700 pb-2">
+        <div className="text-white">{row.name} <span className="text-sky-300">+{row.total} EXP</span></div>
+        {row.koCombat && row.activeXp + row.benchXp === 0 && <div className="text-slate-400">KO · Nessuna EXP da combattimento</div>}
+        {row.benchXp > 0 && <div className="text-slate-400 text-sm">Panchina {row.benchPercent}%: +{row.benchXp}</div>}
+        {row.activeXp > 0 && <div className="text-slate-400 text-sm">In campo: +{row.activeXp}</div>}
+        {row.travelXp > 0 && <div className="text-sky-300 text-sm">Esperienza viaggio +{row.travelXp}</div>}
+        <div className={row.after.level > row.before.level ? "text-amber-300" : "text-slate-300"}>
+          {row.after.level > row.before.level ? `Lv${row.before.level} → Lv${row.after.level}!` : `Lv${row.after.level}`}
+        </div>
+        <XpBar progress={row.after} />
+      </div>)}
+    </div>
+  </Panel>;
+};
 
 export const PlayerCard = ({ p, onClick, selected = false, testId, compact = false, right = null }) => {
   const ko = p.hp === 0;

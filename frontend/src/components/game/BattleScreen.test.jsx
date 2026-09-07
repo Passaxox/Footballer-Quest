@@ -100,7 +100,8 @@ test("defeat callback contains the actual final team and inventory", async () =>
   await settle();
   await click("attack-button");
   await settle();
-  expect(callbacks.onLose).toHaveBeenCalledWith([expect.objectContaining({ hp: 0 })], run.items, run.team[0].uid);
+  expect(callbacks.onLose).toHaveBeenCalledWith([expect.objectContaining({ hp: 0 })], run.items, run.team[0].uid,
+    expect.objectContaining({ rows: [expect.objectContaining({ total: 0, koCombat: true })] }));
   expect(run.team[0].hp).toBe(1);
 });
 
@@ -117,7 +118,7 @@ test.each([
   jest.spyOn(engine, "performAttack").mockImplementation((att, def) => ({ att: prepare(att), def: prepare(def), msgs: ["Scambio"] }));
   jest.spyOn(engine, "turnOrder").mockReturnValue("player");
   const burn = jest.spyOn(engine, "applyBurn");
-  const xp = jest.spyOn(engine, "gainXp");
+  const xp = jest.spyOn(engine, "grantCombatXp");
   const callbacks = await setup(run, false, { kind: "boss", intro: "Boss di prova" });
   await click("pre-battle-keep");
   await settle();
@@ -140,4 +141,21 @@ test.each([
     expect(find("switch-cancel")).toBeNull();
     expect(find("attack-button")).toBeNull();
   }
+});
+
+test("battle and pre-battle switch indicators use the engine's effective multiplier", async () => {
+  const run = engine.newRun(STARTER_IDS.slice(0, 3));
+  run.team[2].hp = 0;
+  const efficacy = jest.spyOn(engine, "effectiveTypeMultiplier").mockImplementation((p) => p.uid === run.team[0].uid ? 1.5 : 0.67);
+  await setup(run);
+  await click("pre-battle-change");
+  expect(find("switch-player-btn-0").textContent).toContain("SUPEREFFICACE");
+  expect(find("switch-player-btn-1").textContent).toContain("POCO EFFICACE");
+  expect(find("switch-player-btn-2").querySelector('[data-testid="matchup-badge"]')).toBeNull();
+  await click("switch-player-btn-0");
+  await settle();
+  expect(find("attack-button").textContent).toContain("SUPEREFFICACE");
+  expect(efficacy).toHaveBeenCalled();
+  await click("switch-button");
+  expect(find("switch-player-btn-1").textContent).toContain("POCO EFFICACE");
 });

@@ -12,7 +12,7 @@ const DRILLS = [
 
 export default function TrainingScreen({ run, onDone }) {
   const [sel, setSel] = useState(null);
-  const teamXp = () => { sfx.levelup(); onDone(run.team.map((p) => gainXp(p, 30).player)); };
+  const teamXp = () => { sfx.levelup(); onDone(run.team.map((p) => gainXp(p, 30).player), true); };
   const drill = (d) => { sfx.levelup(); onDone(run.team.map((p, i) => (i === sel ? d.apply(p) : p))); };
   return (
     <div data-testid="training-screen" className="flex flex-col flex-1">

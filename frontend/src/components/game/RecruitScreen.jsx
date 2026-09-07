@@ -2,10 +2,10 @@ import { useState } from "react";
 import { RECRUIT_LINES } from "@/game/data";
 import { pick } from "@/game/engine";
 import { sfx } from "@/game/audio";
-import { Btn, Header, Panel, PlayerCard, StatLine, Avatar } from "./ui";
+import { Btn, Header, Panel, PlayerCard, StatLine, Avatar, XpReport } from "./ui";
 
 // mode: "offer" (free join) | "encounter" (challenge / pay / skip)
-export default function RecruitScreen({ run, player, price, mode, onChallenge, onJoin, onSkip }) {
+export default function RecruitScreen({ run, player, price, mode, xpReport, onChallenge, onJoin, onSkip }) {
   const [replacing, setReplacing] = useState(false);
   const [paid, setPaid] = useState(false);
   const [line] = useState(() => pick(RECRUIT_LINES));
@@ -23,6 +23,7 @@ export default function RecruitScreen({ run, player, price, mode, onChallenge, o
         </div>
         <PlayerCard p={player} testId="recruit-player-card" />
         <StatLine p={player} />
+        <XpReport report={xpReport} />
         {replacing ? (
           <div className="space-y-2">
             <div className="font-body text-slate-300 text-lg">La squadra è piena (6). Chi lascia il posto a {player.name}?</div>

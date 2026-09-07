@@ -1,6 +1,7 @@
 import { BOSSES, FINAL_WAVE } from "@/game/data";
 import { glory } from "@/game/engine";
-import { Btn, Header, Panel, PlayerCard } from "./ui";
+import { DIFFICULTIES, getRules } from "@/game/rules";
+import { Btn, Header, Panel, PlayerCard, XpReport } from "./ui";
 import { Coins, Backpack } from "lucide-react";
 
 export default function HubScreen({ run, onNext, onTeam, onAbandon }) {
@@ -13,6 +14,7 @@ export default function HubScreen({ run, onNext, onTeam, onAbandon }) {
       <Header title={`Ondata ${run.wave} / ${FINAL_WAVE}`} sub={isBoss ? `BOSS: ${BOSSES[run.wave].team}` : nextBoss ? `Prossimo boss all'ondata ${nextBoss}` : "Finale!"}
         right={<div className="flex items-center gap-1 font-pixel text-[9px] text-amber-300" data-testid="money-display"><Coins size={12} /> {run.money}</div>} />
       <div className="p-3 space-y-3 flex-1 overflow-y-auto">
+        <div data-testid="run-difficulty" className="font-pixel text-[9px] text-sky-300">{DIFFICULTIES[getRules(run.rulesetId).difficultyId].label}</div>
         <Panel className="font-body text-lg leading-tight text-slate-200">
           {isBoss ? (
             <span className="text-red-400">Una squadra leggendaria vi attende. Preparatevi al meglio: dopo il boss la squadra sarà curata completamente.</span>
@@ -25,6 +27,7 @@ export default function HubScreen({ run, onNext, onTeam, onAbandon }) {
           <span>Vittorie {run.stats.wins} · Reclutati {run.stats.recruits} · Fusioni {run.stats.fusions}</span>
           <span className="text-purple-300">Gloria {glory(run)}</span>
         </div>
+        <XpReport report={!run.pending ? run.lastProgression?.report : null} />
         <div className="space-y-2">
           {run.team.map((p, i) => <PlayerCard key={p.uid} p={p} compact testId={`hub-player-${i}`} right={i === 0 ? <span className="font-pixel text-[7px] text-amber-300 border border-amber-400 px-1">CAP</span> : null} />)}
         </div>

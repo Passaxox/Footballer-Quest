@@ -6,7 +6,8 @@ import { readFile } from "node:fs/promises";
 const source = (name) => readFile(new URL(`../src/game/${name}.js`, import.meta.url), "utf8");
 const moduleUrl = (text) => `data:text/javascript;base64,${Buffer.from(text).toString("base64")}`;
 const dataUrl = moduleUrl(await source("data"));
-const engineUrl = moduleUrl((await source("engine")).replace('"./data"', JSON.stringify(dataUrl)));
+const rulesUrl = moduleUrl(await source("rules"));
+const engineUrl = moduleUrl((await source("engine")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)));
 const engine = await import(engineUrl);
 const data = await import(dataUrl);
 const storage = await import(moduleUrl((await source("storage"))
@@ -153,4 +154,186 @@ test("reward, recruit offer, shop purchases and event outcome survive save/load"
   assert.equal(storage.loadRun(), null);
   localStorage.setItem("inazuma_rogue_run", "{broken");
   assert.equal(storage.loadRun(), null);
+});
+
+test("Normal combat EXP is 1.5x, bench 70%, with full-then-share rounding", () => {
+  const team = [player(), player(), ko()];
+  const result = engine.grantCombatXp(team, team[0].uid, 2);
+  assert.deepEqual(result.report.rows.map((r) => r.total), [45, 32, 0]);
+  assert.equal(result.report.rows[1].benchXp, 32);
+  assert.equal(result.report.rows[1].benchPercent, 70);
+  assert.equal(result.report.rows[2].koCombat, true);
+  assert.equal(result.team[2].hp, 0);
+  assert.equal(team[0].xp, 0);
+});
+
+test("boss multiplier stays 1.6 and reports multiple level-ups accurately", () => {
+  const team = [player(), player()];
+  const result = engine.grantCombatXp(team, team[0].uid, 11, true);
+  assert.deepEqual(result.report.rows.map((r) => r.total), [202, 141]);
+  const row = result.report.rows[0];
+  assert.deepEqual(row.before, engine.xpProgress(team[0]));
+  assert.equal(row.after.level, 5);
+  assert.equal(row.after.xp, 78);
+  assert.equal(row.after.required, 80);
+  assert.equal(row.activeXp, 202);
+});
+
+test("combat reports accumulate by UID across active switches without double awards", () => {
+  const team = [player(), player()];
+  const first = engine.grantCombatXp(team, team[0].uid, 2);
+  const second = engine.grantCombatXp(first.team, team[1].uid, 2);
+  const report = engine.mergeXpReports(first.report, second.report);
+  for (let i = 0; i < 2; i++) {
+    assert.equal(report.rows[i].total, 77);
+    assert.equal(report.rows[i].activeXp, 45);
+    assert.equal(report.rows[i].benchXp, 32);
+    assert.deepEqual(report.rows[i].before, engine.xpProgress(team[i]));
+    assert.deepEqual(report.rows[i].after, engine.xpProgress(second.team[i]));
+  }
+});
+
+test("defeat before any enemy KO still reports zero combat EXP for each KO", () => {
+  const team = [ko(), ko()];
+  const report = engine.finishCombatReport(team, null);
+  assert.equal(report.rows.length, 2);
+  assert.ok(report.rows.every((row) => row.total === 0 && row.koCombat));
+  const alive = [player(), player()];
+  const earned = engine.grantCombatXp(alive, alive[0].uid, 2);
+  const final = engine.finishCombatReport(earned.team.map((p) => ({ ...p, hp: 0 })), earned.report);
+  assert.deepEqual(final.rows.map((row) => row.total), [45, 32]);
+  assert.ok(final.rows.every((row) => row.koCombat));
+});
+
+test("travel grants 12 only to living members, once per completed wave including reload", () => {
+  const run = newRun(starters);
+  run.team[1].hp = 0;
+  run.pending = { type: "shop", stock: [], bought: [] };
+  const done = engine.completeNonCombatNode(run);
+  assert.deepEqual(done.lastProgression.report.rows.map((r) => r.travelXp), [12, 0, 12]);
+  assert.equal(done.team[1].hp, 0);
+  assert.equal(run.team[0].xp, 0);
+  storage.saveRun(done);
+  assert.deepEqual(engine.completeNonCombatNode(storage.loadRun()), done);
+  const advanced = { ...done, wave: 2, pending: null };
+  assert.deepEqual(engine.completeNonCombatNode(advanced), advanced);
+});
+
+test("nodes with their own EXP never also grant travel EXP", () => {
+  for (const type of ["event", "training", "recruit"]) {
+    const run = newRun(starters);
+    const before = run.team;
+    run.team = run.team.map((p) => gainXp(p, 30).player);
+    run.pending = { type, progression: { hadOwnXp: true, report: engine.reportXpChanges(before, run.team, "node") } };
+    const done = engine.completeNonCombatNode(run);
+    assert.deepEqual(done.team, run.team);
+    assert.deepEqual(done.lastProgression.report.rows.map((r) => r.otherXp), [30, 30, 30]);
+    assert.equal(done.lastProgression.report.rows[0].travelXp, 0);
+  }
+});
+
+test("legacy persisted event EXP is recognized without a new progression marker", () => {
+  const run = newRun(starters);
+  run.pending = { type: "event", result: { effects: [{ type: "xp", amt: 25 }] } };
+  assert.deepEqual(engine.completeNonCombatNode(run).team, run.team);
+});
+
+test("combat, rewards, post-battle recruitment and unresolved hub never grant travel", () => {
+  for (const pending of [null, { type: "battle" }, { type: "reward" },
+    { type: "recruit", context: { after: "rewards" } },
+    { type: "event", progression: { hadCombat: true } }]) {
+    const run = { ...newRun(starters), pending };
+    assert.equal(engine.completeNonCombatNode(run), run);
+  }
+});
+
+test("checkpoint 10 uses level 11 independently of boss roster; later checkpoint unchanged", () => {
+  for (const [wave, expected] of [[10, 11], [20, 23]]) {
+    const encounter = engine.generateWave({ ...newRun(starters), wave });
+    assert.deepEqual(encounter.enemies.map((p) => p.baseId), data.BOSSES[wave].ids);
+    assert.ok(encounter.enemies.every((p) => p.level === expected));
+  }
+});
+
+test("effective elemental multiplier is shared with damage, including Talisman", () => {
+  const attacker = player();
+  attacker.move.element = "aria";
+  for (const [element, expected] of [["terra", 1.5], ["natura", 0.67], ["aria", 1]]) {
+    const defender = { ...player(), element };
+    assert.equal(engine.effectiveTypeMultiplier(attacker, defender), expected);
+    assert.equal(engine.calcDamage(attacker, defender, attacker.move).mult, expected);
+    const boosted = { ...attacker, status: { ...attacker.status, talisman: true } };
+    assert.equal(engine.effectiveTypeMultiplier(boosted, defender), 1.5);
+    assert.equal(engine.calcDamage(boosted, defender, boosted.move).mult, 1.5);
+    assert.equal(boosted.status.talisman, true);
+  }
+});
+
+test("saveVersion 2 gains optional Normal profile without changing saved pending enemies", () => {
+  const run = newRun(starters);
+  delete run.rulesetId;
+  run.pending = { type: "battle", kind: "boss", enemies: [createPlayer(starters[0], 13)] };
+  localStorage.setItem("inazuma_rogue_run", JSON.stringify(run));
+  const loaded = storage.loadRun();
+  assert.equal(loaded.saveVersion, 2);
+  assert.equal(loaded.rulesetId, "normal-v1");
+  assert.deepEqual(loaded.pending, run.pending);
+  assert.deepEqual(loaded.team, run.team);
+});
+
+test("Easy profile awards 1.75x combat, 75% bench, 16 travel and 1.6 boss EXP", () => {
+  const run = newRun(starters, "easy");
+  const earned = engine.grantCombatXp(run.team, run.activeUid, 2, false, run.rulesetId);
+  assert.deepEqual(earned.report.rows.map((r) => r.total), [53, 40, 40]);
+  const boss = engine.grantCombatXp(run.team, run.activeUid, 2, true, run.rulesetId);
+  assert.deepEqual(boss.report.rows.map((r) => r.total), [84, 63, 63]);
+  run.pending = { type: "shop" };
+  assert.deepEqual(engine.completeNonCombatNode(run).team.map((p) => p.xp), [16, 16, 16]);
+});
+
+test("ordinary enemy offsets preserve Normal and lower Easy by one with level floor", () => {
+  const random = Math.random;
+  try {
+    for (const value of [0, 0.25, 0.5, 0.999]) {
+      Math.random = () => value;
+      for (let wave = 1; wave <= 9; wave++) {
+        const raw = wave - 1 + Math.floor(value * 4);
+        assert.equal(engine.enemyLevel(wave, "normal-v1"), Math.max(1, raw));
+        assert.equal(engine.enemyLevel(wave, "easy-v1"), Math.max(1, raw - 1));
+      }
+    }
+  } finally { Math.random = random; }
+});
+
+test("checkpoint levels belong to the profile, not the boss team", () => {
+  for (const [difficulty, level] of [["normal", 11], ["easy", 10]]) {
+    const encounter = engine.generateWave({ ...newRun(starters, difficulty), wave: 10 });
+    assert.ok(encounter.enemies.every((p) => p.level === level));
+    assert.deepEqual(encounter.enemies.map((p) => p.baseId), data.BOSSES[10].ids);
+  }
+});
+
+test("difficulty and version survive reload; creating another run does not alter them", () => {
+  const run = newRun(starters, "easy");
+  assert.equal(run.difficultyId, "easy");
+  assert.equal(run.rulesetId, "easy-v1");
+  assert.equal(run.rulesetVersion, 1);
+  storage.saveRun(run);
+  newRun(starters, "normal");
+  assert.deepEqual(storage.loadRun(), run);
+  const legacy = { ...run };
+  delete legacy.difficultyId; delete legacy.rulesetId; delete legacy.rulesetVersion;
+  localStorage.setItem("inazuma_rogue_run", JSON.stringify(legacy));
+  assert.equal(storage.loadRun().difficultyId, "normal");
+  assert.equal(storage.loadRun().rulesetVersion, 1);
+});
+
+test("local playtest summary includes all final players including KO", () => {
+  const run = newRun(starters, "easy");
+  run.team = [createPlayer(starters[0], 5), { ...createPlayer(starters[1], 7), hp: 0 }];
+  run.wave = 10; run.stats.wins = 5; run.stats.recruits = 3; run.stats.fusions = 1;
+  run.pending = { kind: "boss", teamName: "Test boss" };
+  run.stats.lastBossDefeated = "Previous boss";
+  assert.deepEqual(engine.playtestSummary(run), { difficulty: "FACILE", wave: 10, wins: 5, recruits: 3, fusions: 1,
+    averageLevel: 6, maxLevel: 7, bossReached: "Test boss", bossDefeated: "Previous boss" });
 });

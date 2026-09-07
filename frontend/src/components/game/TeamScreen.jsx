@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ITEMS } from "@/game/data";
-import { applyItemTo, canApplyItem, removeItem, gainXp, canReleasePlayer } from "@/game/engine";
+import { applyItemTo, canApplyItem, removeItem, gainXp, canReleasePlayer, xpProgress } from "@/game/engine";
 import { sfx } from "@/game/audio";
-import { Btn, Header, Panel, PlayerCard, StatLine, MoveInfo } from "./ui";
+import { Btn, Header, Panel, PlayerCard, StatLine, MoveInfo, XpBar } from "./ui";
 
 export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
   const [sel, setSel] = useState(0);
@@ -51,7 +51,7 @@ export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
             {p && (
               <Panel className="space-y-2">
                 <div className="font-pixel text-[9px] text-white">{p.name} · Lv{p.level}</div>
-                <StatLine p={p} />
+                <StatLine p={p} /><XpBar progress={xpProgress(p)} />
                 <MoveInfo move={p.move} />
                 <div className="grid grid-cols-2 gap-2">
                   <Btn data-testid="make-captain-btn" disabled={sel === 0} onClick={makeCaptain}>Capitano</Btn>
