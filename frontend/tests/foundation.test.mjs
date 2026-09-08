@@ -37,7 +37,7 @@ test("V2b complete catalog validates against actual sprite files and required le
   for (const row of data.ROSTER) {
     const v = catalog.resolveVersion(row.id);
     assert.equal(v.displayName, row.name);
-    for (const key of ["gender", "rarityId", "variantId", "gameOrigin"]) assert.equal(v[key], null);
+    for (const key of ["rarityId", "variantId", "gameOrigin"]) assert.equal(v[key], null);
     assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], row.move);
     for (const level of [1, 3, 15]) {
       const p = createPlayer(v.versionId, level);
@@ -125,7 +125,7 @@ test("V2a maps legacy IDs to versions without changing playable data", () => {
     assert.equal(catalog.CHARACTERS[version.characterId].displayName, row.name);
     assert.equal(version.encounterTier, row.tier);
     assert.equal(version.rarityId, null);
-    assert.equal(version.gender, null);
+    assert.ok(version.gender === null || ["male", "female", "unknown"].includes(version.gender));
     assert.ok(Array.isArray(version.teamTags));
     assert.deepEqual(version.baseStats, { hp: row.hp, atk: row.atk, def: row.def, spd: row.spd });
     assert.deepEqual(catalog.PRIMARY_MOVES[version.primaryMoveId], row.move);
@@ -651,4 +651,33 @@ test("V2c passive metadata preserves validated V2b gameplay fixture and runtime 
   assert.deepEqual(catalog.resolveVersion("xavier").teamTags, ["genesis"]);
   assert.deepEqual(catalog.resolveVersion("jordan").teamTags, []);
   assert.deepEqual(catalog.resolveVersion("fidio").teamTags, []);
+});
+
+
+test("V2d verified batch resolves unique names and changes only supplied metadata", async () => {
+  const entries = [
+    ["Mark Evans", "mark"], ["Axel Blaze", "axel"], ["Jude Sharp", "jude"],
+    ["Nathan Swift", "nathan"], ["Shawn Froste", "shawn"], ["Jack Wallside", "jack"],
+    ["Kevin Dragonfly", "kevin"], ["Tod Ironside", "tod"], ["Tim Saunders", "tim"],
+    ["Willy Glass", "willy"], ["Jim Wraith", "malcolm"],
+  ];
+  for (const [name, id] of entries) {
+    assert.deepEqual(data.ROSTER.filter(r => r.name === name).map(r => r.id), [id]);
+    const v = catalog.resolveVersion(id);
+    assert.equal(v.versionId, id + ":base");
+    assert.equal(v.gender, "male");
+    assert.equal(v.eraId, "original");
+    assert.deepEqual(v.teamTags, id === "shawn" ? [] : ["raimon"]);
+    for (const key of ["arcId", "gameOrigin", "rarityId", "variantId"]) assert.equal(v[key], null);
+  }
+  const { VERSION_METADATA } = await import(metadataUrl);
+  assert.deepEqual(VERSION_METADATA["byron:base"], { teamTags: ["zeus"] });
+  assert.deepEqual(VERSION_METADATA["xavier:base"], { teamTags: ["genesis"], arcId: "alius", eraId: "original" });
+  assert.deepEqual(VERSION_METADATA["rococo:base"], { teamTags: ["little-gigant"], arcId: "ffi", eraId: "original" });
+  const versions = Object.values(catalog.CHARACTER_VERSIONS);
+  assert.equal(versions.length, 44);
+  for (const [key, count] of [["gender", 11], ["teamTags", 13], ["arcId", 2], ["eraId", 13], ["gameOrigin", 0], ["primaryMoveId", 44]]) {
+    assert.equal(versions.filter(v => Array.isArray(v[key]) ? v[key].length > 0 : v[key] != null).length, count, key);
+  }
+  for (const v of versions.filter(v => !entries.some(([, id]) => v.legacyRosterId === id))) assert.equal(v.gender, null);
 });
