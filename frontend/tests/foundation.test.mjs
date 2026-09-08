@@ -639,7 +639,9 @@ test("V2c metadata registries reject broken references and inconsistent eras", (
 
 test("V2c passive metadata preserves validated V2b gameplay fixture and runtime serialization", async () => {
   const baseline = JSON.parse(await readFile(new URL("./fixtures/v2b-gameplay.json", import.meta.url), "utf8"));
-  assert.deepEqual(data.ROSTER, baseline.roster);
+  // Only authorized GAME_DATA_FIX: new Joseph instances are goalkeepers. V2b fixture stays historical.
+  const expectedRoster = baseline.roster.map(r => r.id === "joseph" ? { ...r, role: "P" } : r);
+  assert.deepEqual(data.ROSTER, expectedRoster);
   assert.deepEqual(data.STARTER_IDS, baseline.starters);
   for (const row of baseline.roster) {
     const v = catalog.resolveVersion(row.id);
@@ -722,8 +724,8 @@ test("V2f complete 44-entry identity audit distinguishes technical validity from
   assert.equal(new Set(identityAudit.entries.map(r => r.versionId)).size, 44);
   const result = validateIdentityAudit(catalog.CATALOG_SOURCE, identityAudit, { spriteHashes: identityHashes });
   assert.equal(result.technicalValid, true);
-  assert.deepEqual(result.counts, { verified: 37, "legacy-weird-but-verified": 2, suspicious: 5, unresolved: 0 });
-  assert.deepEqual([...result.reviewRequiredLegacyIds].sort(), ["austin", "david", "jonas", "joseph", "paolo"]);
+  assert.deepEqual(result.counts, { verified: 39, "legacy-weird-but-verified": 2, suspicious: 2, unresolved: 1 });
+  assert.deepEqual([...result.reviewRequiredLegacyIds].sort(), ["austin", "jonas", "joseph"]);
   for (const row of identityAudit.entries) assert.ok(catalog.PRIMARY_MOVES[row.primaryMoveId]);
 });
 
@@ -750,7 +752,7 @@ test("V2f audit rejects missing, duplicate and silently hidden uncertain records
     a => { a.entries[0].canonicalCharacter = null; },
     a => { a.entries[0].sources = []; },
     a => { a.reviewRequiredLegacyIds = []; },
-    a => { a.entries.find(r => r.legacyId === "paolo").identityStatus = "verified"; },
+    a => { a.entries.find(r => r.legacyId === "austin").identityStatus = "verified"; },
   ];
   for (const mutate of mutations) {
     const a = structuredClone(identityAudit); mutate(a);
@@ -760,12 +762,12 @@ test("V2f audit rejects missing, duplicate and silently hidden uncertain records
 
 test("V2f disputed snapshots do not canonize wrong names or assets or block runtime", () => {
   const c = structuredClone(catalog.CATALOG_SOURCE);
-  const row = c.versions.find(v => v.legacyRosterId === "paolo");
+  const row = c.versions.find(v => v.legacyRosterId === "austin");
   row.displayName = "Review-only proposed name"; row.spriteId = "review_only";
   assert.equal(validateCatalog(c), true);
-  assert.ok(validateIdentityAudit(c, identityAudit).reviewRequiredLegacyIds.includes("paolo"));
+  assert.ok(validateIdentityAudit(c, identityAudit).reviewRequiredLegacyIds.includes("austin"));
   // The production catalog/save path does not call the opt-in identity audit.
-  assert.equal(catalog.resolveVersion("paolo").displayName, "Paolo Bianchi");
+  assert.equal(catalog.resolveVersion("austin").displayName, "Austin Hobbes");
   const old = newRun(starters);
   storage.saveRun(old);
   assert.deepEqual(storage.loadRun(), old);
@@ -782,12 +784,55 @@ test("V2f audit separates observed identity, runtime data and proposed remediati
     assert.equal(new Set(row.remediationCategories).size, row.remediationCategories.length);
     assert.ok(row.remediationCategories.every(c => allowed.includes(c)));
     if (row.identityStatus === "suspicious") {
-      assert.notEqual(row.declaredCharacter, row.assetCharacter);
+      if (row.legacyId === "joseph") assert.ok(row.remediationCategories.includes("GAME_DATA_FIX"));
+      else assert.notEqual(row.declaredCharacter, row.assetCharacter);
       assert.equal(row.canonicalCharacter, null);
-      assert.ok(row.remediationCategories.includes("ASSET_FIX"));
+      assert.ok(row.remediationCategories.some(c => ["ASSET_FIX", "GAME_DATA_FIX"].includes(c)));
     }
   }
   const unresolved = structuredClone(identityAudit);
-  unresolved.entries.find(r => r.legacyId === "paolo").identityStatus = "unresolved";
-  assert.equal(validateIdentityAudit(catalog.CATALOG_SOURCE, unresolved).counts.unresolved, 1);
+  unresolved.entries.find(r => r.legacyId === "austin").identityStatus = "unresolved";
+  assert.equal(validateIdentityAudit(catalog.CATALOG_SOURCE, unresolved).counts.unresolved, 2);
+});
+
+
+test("V2g repository portraits restore David, Joseph and Paolo without new assets", () => {
+  const row = id => identityAudit.entries.find(r => r.legacyId === id);
+  assert.equal(identityHashes.get(row("david").spritePath), row("joseph").v2fObservation.spriteSha256);
+  assert.equal(identityHashes.get(row("joseph").spritePath), row("david").v2fObservation.spriteSha256);
+  assert.equal(identityHashes.get(row("paolo").spritePath), identityHashes.get(row("fidio").spritePath));
+  assert.equal(row("david").identityStatus, "verified");
+  assert.equal(row("paolo").identityStatus, "verified");
+  for (const id of ["austin", "jonas"]) assert.equal(identityHashes.get(row(id).spritePath), row(id).v2fObservation.spriteSha256);
+  assert.equal(row("jonas").identityStatus, "unresolved");
+  assert.equal(row("austin").identityStatus, "suspicious");
+  assert.equal(row("joseph").identityStatus, "suspicious"); // Remaining Penguin No.1 conflict.
+});
+
+test("V2g preserves all persistent identities and legacy runtime/collection/history/fusion snapshots", async () => {
+  const baseline = JSON.parse(await readFile(new URL("./fixtures/catalog-batch3.json", import.meta.url), "utf8"));
+  assert.equal(baseline.aliases.length, 44);
+  for (const a of baseline.aliases) {
+    const v = catalog.resolveVersion(a.legacyId);
+    assert.equal(v.versionId, a.versionId);
+    assert.equal(v.characterId, a.legacyId);
+    assert.equal(v.displayName, a.displayName);
+  }
+  const run = newRun(starters);
+  const oldJoseph = { ...createPlayer("joseph", 8), role: "A", hp: 13, xp: 29 };
+  run.team = [oldJoseph, createPlayer("paolo", 7), createPlayer("fidio", 6)];
+  run.activeUid = oldJoseph.uid;
+  run.team.push(fusePlayers(run.team[1], run.team[2], "a"));
+  let meta = collection.recruitVersion(storage.loadMeta(), "paolo");
+  meta = collection.recruitVersion(meta, "fidio");
+  meta = storage.recordFinishedRun(meta, run, "lose");
+  storage.saveRun(run); storage.saveMeta(meta);
+  const loaded = storage.loadRun(); storage.saveRun(loaded);
+  assert.deepEqual(storage.loadRun(), run);
+  assert.deepEqual(storage.loadMeta(), meta);
+  assert.equal(loaded.team[0].role, "A");
+  assert.equal(createPlayer("joseph", 8).role, "P");
+  assert.deepEqual(createPlayer("joseph", 8).move, oldJoseph.move);
+  assert.equal(loaded.saveVersion, 2);
+  assert.equal(storage.loadMeta().metaSchemaVersion, 1);
 });

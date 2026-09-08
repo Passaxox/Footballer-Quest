@@ -1,3 +1,24 @@
+# V2g post-remediation status
+
+Baseline V2f: 5d44aef1e4d9a2648517f0fddde277eb3b6c2ddf. This section supersedes historical findings below where corrected. No downloads, new assets or new canonical research.
+
+- David: replaced with the already inspected V2f joseph.png (Sakuma). Identity now verified; custom C/Twin Boost retained, no proven replacement needed.
+- Joseph: replaced with V2f david.png (Genda). GAME_DATA_FIX limited to new-instance role A -> P: Genda is the goalkeeper, whereas the old attacker/Penguin representation was mixed. Stats, element and all move fields unchanged. Penguin No.1 remains suspicious because no verified replacement with project-specific parameters is available. Saved instances keep their existing role/move; no migration or reconstruction.
+- Paolo: approved intended Fidio/Paolo supported by displayName/Odin; copied existing fidio.png. Verified identity, no rename or canonical key merge. Paolo and Fidio progress remain separate and preserved.
+- Jonas: unresolved intended identity; Demeter portrait absent. No identity/gameplay/asset changes.
+- Austin: intended Austin/Toramaru preserved; no verified Toramaru portrait in repository. Kira portrait remains a known suspicious mismatch. No gameplay change.
+- Hector/Malcolm: LEGACY_COMPAT unchanged. Jordan/Dvalin and all metadata remain unchanged.
+
+Repository asset inventory contains the same 44 portrait paths previously inspected; no alternate Toramaru/Demeter file was found. Copy provenance and pre-remediation hashes are retained in audit.v2fObservation. Fetch targets corrected only for the three replaced portraits so the known error is not regenerated; script was not executed.
+
+v2g-remediation source key: user-approved V2g scope plus V2f name/asset/move findings and existing portrait bytes. Counts: 39 verified, 2 legacy-weird-but-verified, 2 suspicious (Joseph, Austin), 1 unresolved (Jonas).
+
+No compatibility mapping was needed: all 44 legacyId/characterId/versionId/displayName/primaryMoveId references are unchanged. Only Joseph role changes for newly created instances. Existing run/history/Collection/unlocked/fusion references remain exact; no save schema changes. Future canonical unification of Paolo/Fidio is explicitly deferred.
+
+Remaining remediation: Joseph GAME_DATA_FIX needs a verified replacement move specification; Austin ASSET_FIX needs an approved Toramaru portrait; Jonas needs an IDENTITY_FIX decision before ASSET_FIX/GAME_DATA_FIX. Do not choose numeric replacements merely to make the audit green.
+
+# Historical V2f evidence (before the above corrections)
+
 # Legacy identity audit (V2f)
 
 Baseline: b270d78d4b47b61c0b74fb2b0fe57ac25f35180c. All 44 actual portrait files were decoded and visually inspected; SHA-256 in the fixture identifies the bytes inspected. No portrait, roster, metadata, move, stat, role, ID or save was changed.

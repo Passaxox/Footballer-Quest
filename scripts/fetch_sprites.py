@@ -10,10 +10,10 @@ NAMES = {
     "tod": ["Kurimatsu Teppei"], "sam": ["Shourinji Ayumu"], "steve": ["Shishido Sakichi"], "bobby": ["Domon Asuka"],
     "maxwell": ["Matsuno Kuusuke"], "tim": ["Handa Shinichi"], "willy": ["Megane Kakeru"], "erik": ["Ichinose Kazuya"],
     "austin": ["Kira Hiroto"], "caleb": ["Fudou Akio"], "hurley": ["Tsunami Jousuke"], "scotty": ["Kogure Yuuya"],
-    "thor": ["Hijikata Raiden"], "archer": ["Tobitaka Seiya"], "joseph": ["Sakuma Jirou"], "david": ["Genda Koujirou"],
+    "thor": ["Hijikata Raiden"], "archer": ["Tobitaka Seiya"], "joseph": ["Genda Koujirou"], "david": ["Sakuma Jirou"],
     "byron": ["Afuro Terumi"], "jonas": ["Poseidon", "Poseidon (Zeus)"], "xavier": ["Kiyama Hiroto"], "jordan": ["Midorikawa Ryuuji"],
     "torch": ["Nagumo Haruya"], "gazelle": ["Suzuno Fuusuke"], "janus": ["Saginuma Osamu"], "rococo": ["Rococo Urupa", "Rococo Ulpa"],
-    "canon": ["Endou Canon"], "paolo": ["Hide Nakata", "Nakata Hidetoshi"], "fidio": ["Fideo Ardena", "Fidio Ardena", "Fideo Aldena"], "kruger": ["Mark Krueger", "Mark Kruger"],
+    "canon": ["Endou Canon"], "paolo": ["Fideo Ardena", "Fidio Ardena", "Fideo Aldena"], "fidio": ["Fideo Ardena", "Fidio Ardena", "Fideo Aldena"], "kruger": ["Mark Krueger", "Mark Kruger"],
     "dylan": ["Dylan Keith"], "edgar": ["Edgar Valtinas"], "teres": ["Teles Torrue", "Teres Tolue"], "chae": ["Choi Chang Soo", "Chae Chan-soo"],
     "malcolm": ["Kageno Jin"], "hector": ["Urabe Rika"], "silvia": ["Kino Aki"], "aiden": ["Fubuki Atsuya"],
 }

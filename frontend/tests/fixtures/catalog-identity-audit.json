@@ -4,9 +4,7 @@
   "reviewRequiredLegacyIds": [
     "austin",
     "joseph",
-    "david",
-    "jonas",
-    "paolo"
+    "jonas"
   ],
   "entries": [
     {
@@ -650,9 +648,10 @@
         "repo-fetch",
         "local-portrait",
         "austin",
-        "kira"
+        "kira",
+        "v2g-remediation"
       ],
-      "notes": "Actual large gray-haired portrait with pink eyes and blue cheek marking is Kira Hiroto Ares, agreeing with wrong fetch target. Austin Hobbes is Toramaru; forward role alone cannot resolve this conflict.",
+      "notes": "V2g: Austin/Toramaru intent retained. No correct Toramaru asset exists among repository portraits; Kira portrait cannot be safely replaced under repository-only constraint. Gameplay unchanged; remains suspicious.",
       "incarnation": "Asset is alternate timeline, not Austin original",
       "nameCharacter": "Utsunomiya Toramaru (Austin Hobbes)",
       "spriteCharacter": "Kira Hiroto (Ares/Orion)",
@@ -678,7 +677,13 @@
         "ASSET_FIX",
         "IDENTITY_FIX",
         "LEGACY_COMPAT"
-      ]
+      ],
+      "v2fObservation": {
+        "identityStatus": "suspicious",
+        "assetCharacter": "Kira Hiroto (Ares/Orion)",
+        "spriteSha256": "e17135450d192a7e370a07d6e69c9b61166cbce3751c66e7c4642e3259cfbc51",
+        "notes": "Actual large gray-haired portrait with pink eyes and blue cheek marking is Kira Hiroto Ares, agreeing with wrong fetch target. Austin Hobbes is Toramaru; forward role alone cannot resolve this conflict."
+      }
     },
     {
       "legacyId": "caleb",
@@ -882,27 +887,28 @@
       "displayName": "Joseph King",
       "spriteId": "joseph",
       "spritePath": "frontend/public/sprites/joseph.png",
-      "spriteSha256": "9a86041c5b038fb0a48120db0b077eb1b787d06e66bf3a680d15bc54b4ae3d68",
+      "spriteSha256": "a580dc4c2ff2cada55df8dbd5dbc3c84e0cf920d4ec9343d301c809ddf08a659",
       "primaryMoveId": "joseph:primary",
       "identityStatus": "suspicious",
       "canonicalCharacter": null,
-      "spriteObservation": "cyan hair and eyepatch",
+      "spriteObservation": "red spiky hair (reused V2f david.png)",
       "sources": [
         "repo-roster",
         "repo-fetch",
         "local-portrait",
         "royal-names",
         "sakuma",
-        "genda"
+        "genda",
+        "v2g-remediation"
       ],
-      "notes": "Actual joseph.png has Sakuma cyan hair and eyepatch; fetch target agrees. Attacker role and Penguin No.1 also fit Sakuma more than goalkeeper Genda. More than an isolated sprite issue: name and gameplay representation disagree.",
+      "notes": "V2g: Genda portrait restored and new-instance role corrected A to P. Penguin No.1 remains a demonstrated gameplay conflict; no verified replacement parameters are available. Existing saved runtime roles/moves are preserved. Record remains suspicious.",
       "incarnation": "Mixed record; do not swap IDs or stats",
       "nameCharacter": "Genda Koujirou (Joseph King)",
-      "spriteCharacter": "Sakuma Jirou (David Samford)",
+      "spriteCharacter": "Genda Koujirou (Joseph King)",
       "declaredCharacter": "Genda Koujirou (Joseph King)",
-      "assetCharacter": "Sakuma Jirou (David Samford)",
+      "assetCharacter": "Genda Koujirou (Joseph King)",
       "runtimeSnapshot": {
-        "role": "A",
+        "role": "P",
         "element": "fuoco",
         "move": {
           "name": "Pinguino Imperatore N.1",
@@ -918,10 +924,18 @@
         }
       },
       "remediationCategories": [
-        "ASSET_FIX",
-        "IDENTITY_FIX",
         "GAME_DATA_FIX",
         "LEGACY_COMPAT"
+      ],
+      "v2fObservation": {
+        "identityStatus": "suspicious",
+        "assetCharacter": "Sakuma Jirou (David Samford)",
+        "spriteSha256": "9a86041c5b038fb0a48120db0b077eb1b787d06e66bf3a680d15bc54b4ae3d68",
+        "notes": "Actual joseph.png has Sakuma cyan hair and eyepatch; fetch target agrees. Attacker role and Penguin No.1 also fit Sakuma more than goalkeeper Genda. More than an isolated sprite issue: name and gameplay representation disagree."
+      },
+      "appliedRemediation": [
+        "ASSET_FIX",
+        "GAME_DATA_FIX"
       ]
     },
     {
@@ -931,25 +945,26 @@
       "displayName": "David Samford",
       "spriteId": "david",
       "spritePath": "frontend/public/sprites/david.png",
-      "spriteSha256": "a580dc4c2ff2cada55df8dbd5dbc3c84e0cf920d4ec9343d301c809ddf08a659",
+      "spriteSha256": "9a86041c5b038fb0a48120db0b077eb1b787d06e66bf3a680d15bc54b4ae3d68",
       "primaryMoveId": "david:primary",
-      "identityStatus": "suspicious",
-      "canonicalCharacter": null,
-      "spriteObservation": "red spikes over face",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Sakuma Jirou (David Samford)",
+      "spriteObservation": "cyan hair and eyepatch (reused V2f joseph.png)",
       "sources": [
         "repo-roster",
         "repo-fetch",
         "local-portrait",
         "royal-names",
         "sakuma",
-        "genda"
+        "genda",
+        "v2g-remediation"
       ],
-      "notes": "Actual david.png has Genda red spiky hair, not Sakuma cyan hair/eyepatch. Fetch target confirms Genda. Runtime role C/Twin Boost is not a goalkeeper; Royal boss membership shared by both cannot disambiguate intended identity.",
-      "incarnation": "Mixed record; not safely original/Absolute Royal",
+      "notes": "V2g: portrait now matches David/Sakuma. Runtime C/Twin Boost unchanged: no established replacement gameplay data; canonical role is not certified by identity status.",
+      "incarnation": "Sakuma identity verified; exact original/Absolute Royal incarnation not certified",
       "nameCharacter": "Sakuma Jirou (David Samford)",
-      "spriteCharacter": "Genda Koujirou (Joseph King)",
+      "spriteCharacter": "Sakuma Jirou (David Samford)",
       "declaredCharacter": "Sakuma Jirou (David Samford)",
-      "assetCharacter": "Genda Koujirou (Joseph King)",
+      "assetCharacter": "Sakuma Jirou (David Samford)",
       "runtimeSnapshot": {
         "role": "C",
         "element": "fuoco",
@@ -967,10 +982,16 @@
         }
       },
       "remediationCategories": [
-        "ASSET_FIX",
-        "IDENTITY_FIX",
-        "GAME_DATA_FIX",
         "LEGACY_COMPAT"
+      ],
+      "v2fObservation": {
+        "identityStatus": "suspicious",
+        "assetCharacter": "Genda Koujirou (Joseph King)",
+        "spriteSha256": "a580dc4c2ff2cada55df8dbd5dbc3c84e0cf920d4ec9343d301c809ddf08a659",
+        "notes": "Actual david.png has Genda red spiky hair, not Sakuma cyan hair/eyepatch. Fetch target confirms Genda. Runtime role C/Twin Boost is not a goalkeeper; Royal boss membership shared by both cannot disambiguate intended identity."
+      },
+      "appliedRemediation": [
+        "ASSET_FIX"
       ]
     },
     {
@@ -1021,7 +1042,7 @@
       "spritePath": "frontend/public/sprites/jonas.png",
       "spriteSha256": "edcdd54a2ca5d1bf93e513c47127e2c95613706aea7d42c9d9d51f8406952d1b",
       "primaryMoveId": "jonas:primary",
-      "identityStatus": "suspicious",
+      "identityStatus": "unresolved",
       "canonicalCharacter": null,
       "spriteObservation": "broad bald head with teal side hair",
       "sources": [
@@ -1029,9 +1050,10 @@
         "repo-fetch",
         "local-portrait",
         "demeter",
-        "poseidon"
+        "poseidon",
+        "v2g-remediation"
       ],
-      "notes": "Name is Demeter; actual broad bald/teal-haired portrait and Poseidon fetch target are Poseidon. Tridente di Poseidone reinforces a mixed record; runtime defender role matches neither a reliable identity decision nor canonical goalkeeper Poseidon.",
+      "notes": "V2g: name suggests Demeter but asset and move suggest Poseidon; intended identity still unresolved. Repository has no verified Demeter portrait. No asset, identity or gameplay change.",
       "incarnation": "Zeus setting does not resolve mixed identity",
       "nameCharacter": "Demete Yutaka (Jonas Demetrius / Demeter)",
       "spriteCharacter": "Posei Donichi (Paul Siddon / Poseidon)",
@@ -1058,7 +1080,13 @@
         "IDENTITY_FIX",
         "GAME_DATA_FIX",
         "LEGACY_COMPAT"
-      ]
+      ],
+      "v2fObservation": {
+        "identityStatus": "suspicious",
+        "assetCharacter": "Posei Donichi (Paul Siddon / Poseidon)",
+        "spriteSha256": "edcdd54a2ca5d1bf93e513c47127e2c95613706aea7d42c9d9d51f8406952d1b",
+        "notes": "Name is Demeter; actual broad bald/teal-haired portrait and Poseidon fetch target are Poseidon. Tridente di Poseidone reinforces a mixed record; runtime defender role matches neither a reliable identity decision nor canonical goalkeeper Poseidon."
+      }
     },
     {
       "legacyId": "xavier",
@@ -1351,25 +1379,26 @@
       "displayName": "Paolo Bianchi",
       "spriteId": "paolo",
       "spritePath": "frontend/public/sprites/paolo.png",
-      "spriteSha256": "071a4f2b0653f8099247c967f96bfe9da945c4136b4f0b2c099730f68e85e49c",
+      "spriteSha256": "789fb8c9d0c6135f1c2237c952dc714822d4009d72b28c10333ae4f564b4d820",
       "primaryMoveId": "paolo:primary",
-      "identityStatus": "suspicious",
-      "canonicalCharacter": null,
-      "spriteObservation": "short upright brown crest, no Fidio fringe",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Fidio Aldena (Paolo Bianchi)",
+      "spriteObservation": "brown low side-swept fringe (existing fidio.png)",
       "sources": [
         "repo-roster",
         "repo-fetch",
         "local-portrait",
         "fidio",
         "nakata",
-        "paolo-localization"
+        "paolo-localization",
+        "v2g-remediation"
       ],
-      "notes": "Name and Odin technique point to Fidio/Paolo; portrait and explicit Hide Nakata fetch target point to Nakata. It is an identity conflict, not two localized names for Nakata.",
-      "incarnation": "Mixed record; intended identity requires decision",
+      "notes": "V2g: approved intent Paolo/Fidio supported by name and Odin move; reused verified Fidio portrait. Separate paolo/fidio technical characterIds and collection entries intentionally retained, not merged.",
+      "incarnation": "Paolo/Fidio identity verified; no new metadata",
       "nameCharacter": "Fidio Aldena (Paolo Bianchi)",
-      "spriteCharacter": "Nakata Hidetoshi (Hide Nakata)",
+      "spriteCharacter": "Fidio Aldena (Paolo Bianchi)",
       "declaredCharacter": "Fidio Aldena (Paolo Bianchi)",
-      "assetCharacter": "Nakata Hidetoshi (Hide Nakata)",
+      "assetCharacter": "Fidio Aldena (Paolo Bianchi)",
       "runtimeSnapshot": {
         "role": "A",
         "element": "fuoco",
@@ -1387,10 +1416,16 @@
         }
       },
       "remediationCategories": [
-        "ASSET_FIX",
-        "IDENTITY_FIX",
-        "GAME_DATA_FIX",
         "LEGACY_COMPAT"
+      ],
+      "v2fObservation": {
+        "identityStatus": "suspicious",
+        "assetCharacter": "Nakata Hidetoshi (Hide Nakata)",
+        "spriteSha256": "071a4f2b0653f8099247c967f96bfe9da945c4136b4f0b2c099730f68e85e49c",
+        "notes": "Name and Odin technique point to Fidio/Paolo; portrait and explicit Hide Nakata fetch target point to Nakata. It is an identity conflict, not two localized names for Nakata."
+      },
+      "appliedRemediation": [
+        "ASSET_FIX"
       ]
     },
     {
@@ -1795,5 +1830,6 @@
         "METADATA_FIX"
       ]
     }
-  ]
+  ],
+  "remediationBaselineCommit": "5d44aef1e4d9a2648517f0fddde277eb3b6c2ddf"
 }

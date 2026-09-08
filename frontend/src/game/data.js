@@ -35,7 +35,7 @@ export const ROSTER = [
   { id: "scotty", name: "Scotty Banyan", element: "natura", role: "C", tier: 2, hp: 70, atk: 34, def: 28, spd: 42, move: M("Corsa della Scimmia", "natura", 65, "multi") },
   { id: "thor", name: "Thor Stoutberg", element: "terra", role: "A", tier: 2, hp: 90, atk: 44, def: 32, spd: 18, move: M("Schianto del Gigante", "terra", 95, "recoil") },
   { id: "archer", name: "Archer Hawkins", element: "aria", role: "A", tier: 2, hp: 68, atk: 38, def: 24, spd: 40, move: M("Freccia Volante", "aria", 80, "crit") },
-  { id: "joseph", name: "Joseph King", element: "fuoco", role: "A", tier: 3, hp: 76, atk: 44, def: 26, spd: 34, move: M("Pinguino Imperatore N.1", "fuoco", 95, "burn") },
+  { id: "joseph", name: "Joseph King", element: "fuoco", role: "P", tier: 3, hp: 76, atk: 44, def: 26, spd: 34, move: M("Pinguino Imperatore N.1", "fuoco", 95, "burn") },
   { id: "david", name: "David Samford", element: "fuoco", role: "C", tier: 3, hp: 74, atk: 36, def: 30, spd: 36, move: M("Twin Boost", "fuoco", 80, "multi") },
   { id: "byron", name: "Byron Love", element: "aria", role: "A", tier: 4, hp: 82, atk: 50, def: 30, spd: 44, move: M("Piuma Celeste", "aria", 105, "drain") },
   { id: "jonas", name: "Jonas Demetrius", element: "aria", role: "D", tier: 3, hp: 84, atk: 34, def: 38, spd: 34, move: M("Tridente di Poseidone", "aria", 75, "shatter") },
