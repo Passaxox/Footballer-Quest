@@ -170,7 +170,7 @@ export const EVENTS = [
     id: "camelia", title: "La Manager Camelia",
     text: "Camelia Travis, la manager, vi offre un check-up completo... in cambio di 50 Punti Prestigio.",
     choices: [
-      { label: "Paga 50 Prestigio", cost: 50, outcomes: [{ chance: 100, text: "Squadra completamente curata e pronta!", effects: [{ type: "money", amt: -50 }, { type: "heal", pct: 100, target: "all" }] }] },
+      { label: "Paga 50 Prestigio: cura gli HP dei giocatori non KO", cost: 50, outcomes: [{ chance: 100, text: "HP dei giocatori non KO completamente ripristinati. I giocatori KO restano KO.", effects: [{ type: "money", amt: -50 }, { type: "heal", pct: 100, target: "all" }] }] },
       { label: "Rifiuta", outcomes: [{ chance: 100, text: "Camelia scrolla le spalle e vi regala comunque una bibita.", effects: [{ type: "item", id: "bibita" }] }] },
     ],
   },

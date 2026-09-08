@@ -1048,3 +1048,13 @@ test("V2k1 win/flee keep existing growth; simultaneous loss rolls back and prese
  const settled=engine.settleCombatProgression("lose",start,[{...award.team[0],hp:0}],award.report);
  assert.equal(settled.team[0].hp,0);assert.equal(settled.team[0].xp,start[0].xp);
 });
+
+
+test("V2l Camelia explains non-KO healing without changing price or effects", () => {
+ const choice=data.EVENTS.find(e=>e.id==="camelia").choices[0];
+ assert.match(choice.label,/50 Prestigio.*non KO/);
+ assert.match(choice.outcomes[0].text,/KO restano KO/);
+ assert.equal(choice.cost,50);
+ assert.equal(choice.outcomes[0].chance,100);
+ assert.deepEqual(choice.outcomes[0].effects,[{type:"money",amt:-50},{type:"heal",pct:100,target:"all"}]);
+});
