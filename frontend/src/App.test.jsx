@@ -280,23 +280,35 @@ test.each(["lose", "win"])("recruit unlock survives %s, new run and component re
   expect(loadMeta().unlocked).not.toContain("darren");
   await call(RecruitScreen, "onJoin", null, false);
   expect(loadMeta().unlocked).toContain("darren");
-  const final = { ...loadRun(), wave: 50, pending: encounter() };
+  const final = { ...loadRun(), wave: FINAL_WAVE, pending: encounter() };
   saveRun(final);
   await reload();
   if (result === "lose") await call(BattleScreen, "onLose", final.team.map(p => ({ ...p, hp: 0 })), final.items, null);
   else {
     await call(BattleScreen, "onWin", final.team, final.items, final.activeUid);
-    await call(RewardScreen, "onPick", null);
+    expect(RewardScreen).not.toHaveBeenCalled();
   }
+  expect(EndScreen).toHaveBeenCalled();
+  expect(props(EndScreen).result).toBe(result);
+  expect(loadRun()).toBeNull();
   const meta = loadMeta();
   expect(meta.unlocked).toContain("darren");
   expect(meta.records).toHaveLength(1);
   expect(meta.records[0].teamSnapshot.some(p => p.baseId === "darren")).toBe(true);
-  saveRun(newRun(STARTER_IDS.slice(0, 3)));
+  await call(EndScreen, "onRetry");
+  expect(props(TeamSelect).meta.collection["darren:base"].starterUnlocked).toBe(true);
+  await call(TeamSelect, "onStart", ["darren", ...STARTER_IDS.slice(0, 2)], "easy");
+  const nextRun = loadRun();
+  expect(nextRun.wave).toBe(1);
+  expect(nextRun.team[0].baseId).toBe("darren");
+  const afterNewRun = loadMeta();
+  expect(afterNewRun.records).toEqual(meta.records);
+  expect(afterNewRun.unlocked).toContain("darren");
   await act(async () => root.unmount()); root = createRoot(host);
   await act(async () => root.render(<App />));
-  expect(props(TitleScreen).meta).toEqual(meta);
-  expect(loadMeta()).toEqual(meta);
+  expect(props(TitleScreen).meta).toEqual(afterNewRun);
+  expect(loadMeta()).toEqual(afterNewRun);
+  expect(loadRun()).toEqual(nextRun);
 });
 
 test("declining an encountered player never unlocks it", async () => {
