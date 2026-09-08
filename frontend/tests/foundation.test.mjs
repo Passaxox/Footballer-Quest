@@ -836,3 +836,21 @@ test("V2g preserves all persistent identities and legacy runtime/collection/hist
   assert.equal(loaded.saveVersion, 2);
   assert.equal(storage.loadMeta().metaSchemaVersion, 1);
 });
+
+
+test("V2h feedback preserves real HP loss and pre-hit elemental/Talisman context without mutation", async () => {
+  const { attackFeedback } = await import(moduleUrl((await source("battleFeedback")).replace('"./engine"', JSON.stringify(engineUrl))));
+  const attacker = createPlayer("axel", 5), defender = { ...createPlayer("mark", 5), hp: 12 };
+  for (const [element, expected] of [["natura", "strong"], ["terra", "weak"], ["fuoco", "neutral"]]) {
+    const target = { ...defender, element };
+    const snapshot = JSON.stringify([attacker, target]);
+    const cue = attackFeedback(attacker, target, { ...target, hp: 0 });
+    assert.equal(cue.effectiveness, expected);
+    assert.equal(cue.damage, 12); // Actual HP lost, not an overkill damage estimate.
+    assert.equal(cue.element, attacker.move.element);
+    assert.equal(JSON.stringify([attacker, target]), snapshot);
+  }
+  const talisman = { ...attacker, status: { ...attacker.status, talisman: true } };
+  assert.equal(attackFeedback(talisman, defender, { ...defender, hp: 8 }).effectiveness, "strong");
+  assert.equal(attackFeedback(attacker, defender, { ...defender, hp: 20 }).damage, 0);
+});

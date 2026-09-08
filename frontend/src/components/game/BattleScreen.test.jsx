@@ -167,3 +167,22 @@ test("battle and pre-battle switch indicators use the engine's effective multipl
   await click("switch-button");
   expect(find("switch-player-btn-1").textContent).toContain("POCO EFFICACE");
 });
+
+
+test("V2h preview shows both real techniques and updates after a free prebattle switch", async () => {
+  const run = engine.newRun(STARTER_IDS.slice(0, 3));
+  const opponent = engine.createPlayer("darren", 5);
+  const attack = jest.spyOn(engine, "performAttack");
+  await setup(run, false, { enemies: [opponent] });
+  const preview = () => find("battle-decision");
+  expect(preview().textContent).toContain(run.team[0].move.name);
+  expect(preview().textContent).toContain(opponent.move.name);
+  expect(preview().textContent).toContain("POT " + opponent.move.power);
+  expect(preview().textContent).toContain("Effetto:");
+  await click("pre-battle-change");
+  await click("switch-player-btn-1");
+  await settle();
+  expect(preview().textContent).toContain(run.team[1].move.name);
+  expect(attack).not.toHaveBeenCalled();
+  expect(find("attack-button")).not.toBeNull();
+});

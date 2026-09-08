@@ -1,22 +1,26 @@
 import { useEffect, useRef, useState } from "react";
-import { ITEMS, WILD_INTROS } from "@/game/data";
-import { performAttack, applyBurn, turnOrder, resetBattleStatus, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, canApplyItem, removeItem, pick, chance, resolveActiveUid } from "@/game/engine";
+import { attackFeedback } from "@/game/battleFeedback";
+import { ITEMS, WILD_INTROS, ELEMENTS } from "@/game/data";
+import { performAttack, applyBurn, turnOrder, resetBattleStatus, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, canApplyItem, removeItem, pick, chance, resolveActiveUid, xpProgress } from "@/game/engine";
 import { sfx } from "@/game/audio";
-import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, MatchupBadge } from "./ui";
+import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const Fighter = ({ p, side, hit }) => (
+const Fighter = ({ p, side, hit, cue }) => (
   <div className={`flex ${side === "enemy" ? "flex-row-reverse" : "flex-row"} items-end gap-2 ${hit ? "animate-shake" : ""}`}>
-    <div className={`${p.hp === 0 ? "animate-ko" : "animate-idle"}`}>
-      <Avatar p={p} size={side === "enemy" ? 100 : 120} ko={p.hp === 0} />
+    <div className={`battle-portrait ${cue?.side === side && cue.stage === "windup" ? "battle-lunge" : ""}`} style={{ "--lunge-x": side === "player" ? "12px" : "-12px", "--impact-color": ELEMENTS[cue?.element]?.color || "#fff" }}>
+      {hit && cue && <div className={`battle-impact battle-impact-${cue.effectiveness}`} aria-hidden="true"><b>-{cue.damage} HP</b><span>{cue.label}</span></div>}
+      <div className={`${p.hp === 0 ? "animate-ko" : "animate-idle"} ${hit ? "battle-flash" : ""}`}>
+        <Avatar p={p} size={side === "enemy" ? 100 : 120} ko={p.hp === 0} />
+      </div>
     </div>
-    <div className={`flex-1 bg-[#0b101d]/90 border-2 border-slate-600 p-2 ${side === "enemy" ? "text-left" : ""}`}>
+    <div className={`flex-1 min-w-0 bg-[#0b101d]/90 border-2 border-slate-600 p-2 ${side === "enemy" ? "text-left" : ""}`}>
       <div className="flex items-center justify-between gap-1">
-        <span className="font-pixel text-[9px] text-white truncate" data-testid={`${side}-name`}>{p.name}</span>
+        <span className="font-pixel text-[9px] text-white break-words min-w-0 leading-relaxed" data-testid={`${side}-name`}>{p.name}</span>
         <span className="font-pixel text-[8px] text-amber-300">Lv{p.level}</span>
       </div>
-      <div className="flex items-center gap-1 my-1">
+      <div className="flex flex-wrap items-center gap-1 my-1">
         <ElementBadge element={p.element} />
         {p.status.burn > 0 && <span className="font-pixel text-[7px] text-orange-400 border border-orange-500 px-1">BRUCIA</span>}
         {p.status.guard && <span className="font-pixel text-[7px] text-sky-300 border border-sky-500 px-1">PARATA</span>}
@@ -24,6 +28,7 @@ const Fighter = ({ p, side, hit }) => (
         {p.status.defMod !== 0 && <span className="font-pixel text-[7px] text-slate-300">DIF{p.status.defMod > 0 ? "+" : ""}{p.status.defMod}</span>}
       </div>
       <HpBar hp={p.hp} maxHp={p.maxHp} testId={`${side}-hp-bar`} />
+      {side === "player" && <div className="mt-1"><XpBar progress={xpProgress(p)} /></div>}
     </div>
   </div>
 );
@@ -39,7 +44,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   if (!s.current) {
     s.current = {
       team: resetBattleStatus(run.team), items: { ...run.items }, active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
-      enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", hit: null, menu: "main", itemSel: null, xpReport: null,
+      enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", cue: null, hit: null, menu: "main", itemSel: null, xpReport: null,
     };
   }
   const st = s.current;
@@ -85,14 +90,18 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     const a = attackerSide === "player" ? active() : enemy();
     const d = attackerSide === "player" ? enemy() : active();
     const { att, def, msgs } = performAttack(a, d);
+    st.cue = { ...attackFeedback(a, d, def), side: attackerSide, stage: "windup" };
     st.log = [...st.log.slice(-5), msgs[0]]; rr();
     await sleep(450);
+    if (!mounted.current) return;
+    st.cue = { ...st.cue, stage: "impact" };
     st.hit = attackerSide === "player" ? "enemy" : "player";
     if (attackerSide === "player") { setActive(att); setEnemy(def); } else { setEnemy(att); setActive(def); }
     (msgs.includes("Colpo critico!") ? sfx.crit : sfx.hit)();
     rr();
     await sleep(350);
-    st.hit = null; rr();
+    if (!mounted.current) return;
+    st.hit = null; st.cue = null; rr();
     for (const m of msgs.slice(1)) { if (m.includes("KO")) sfx.ko(); if (m.includes("recupera")) sfx.heal(); await say(m, 650); }
   };
 
@@ -212,7 +221,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const battleItems = Object.entries(st.items).filter(([id, n]) => ITEMS[id].battle && n > 0);
 
   return (
-    <div data-testid="battle-screen" className="flex flex-col flex-1">
+    <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1">
       <div className="flex items-center justify-between px-3 py-2 bg-[#111827] border-b-4 border-slate-800">
         <span data-testid="wave-counter-badge" className="font-pixel text-[9px] text-amber-300">ONDATA {run.wave}</span>
         <span className="font-pixel text-[8px] text-slate-400 uppercase truncate mx-2">{encounter.kind === "boss" ? `BOSS: ${encounter.teamName}` : encounter.teamName || "Sfida"}</span>
@@ -220,8 +229,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       </div>
 
       <div className={`relative flex flex-col justify-between gap-3 p-3 battle-bg ${encounter.kind === "boss" ? "boss-glow" : ""}`}>
-        <Fighter p={e} side="enemy" hit={st.hit === "enemy"} />
-        <Fighter p={p} side="player" hit={st.hit === "player"} />
+        <Fighter p={e} side="enemy" hit={st.hit === "enemy"} cue={st.cue} />
+        <Fighter p={p} side="player" hit={st.hit === "player"} cue={st.cue} />
       </div>
 
       <div data-testid="battle-log" className="mx-3 mt-2 bg-[#0b101d] border-4 border-slate-600 p-2 min-h-[84px] font-body text-lg leading-tight text-white">
@@ -236,6 +245,22 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       </div>
 
       <div className="p-3 mt-auto">
+        {["preBattle", "menu", "busy"].includes(st.phase) && st.menu === "main" && (
+          <div className="battle-decision mb-3" data-testid="battle-decision">
+            <div className="grid grid-cols-2 gap-2">
+              <section className="min-w-0 p-2 border border-sky-700 bg-slate-950" aria-label="La tua tecnica">
+                <h3 className="font-pixel text-[8px] text-sky-300 mb-2">LA TUA TECNICA</h3>
+                <MoveInfo move={p.move} /><MatchupBadge attacker={p} defender={e} showNeutral />
+                {p.status.talisman && <p className="font-body text-sm text-amber-200">Talismano: prossimo colpo</p>}
+              </section>
+              <section className="min-w-0 p-2 border border-orange-800 bg-slate-950" aria-label="Tecnica avversaria">
+                <h3 className="font-pixel text-[8px] text-orange-300 mb-2">AVVERSARIO</h3>
+                <MoveInfo move={e.move} /><MatchupBadge attacker={e} defender={p} showNeutral />
+              </section>
+            </div>
+            <p className="font-body text-sm text-slate-400 mt-1">Efficacia elementale, non danno previsto.</p>
+          </div>
+        )}
         {st.phase === "preBattle" && st.menu === "main" && (
           <div className="space-y-2" data-testid="pre-battle-prompt">
             <p className="font-body text-lg">Vuoi mantenere {p.name} in campo?</p>

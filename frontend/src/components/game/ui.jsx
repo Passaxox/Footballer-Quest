@@ -130,13 +130,13 @@ export const MoveInfo = ({ move }) => (
   </div>
 );
 
-export const MatchupBadge = ({ attacker, defender, compact = false }) => {
+export const MatchupBadge = ({ attacker, defender, compact = false, showNeutral = false }) => {
   const multiplier = effectiveTypeMultiplier(attacker, defender);
-  if (multiplier === 1) return null;
+  if (multiplier === 1 && !showNeutral) return null;
   const favorable = multiplier > 1;
   return <span data-testid="matchup-badge" title="Efficacia elementale: non confronta il danno totale"
-    className={`font-body ${compact ? "text-xs max-w-[108px]" : "text-sm"} leading-tight normal-case border px-1 py-0.5 ${favorable ? "text-emerald-200 bg-emerald-950 border-emerald-700" : "text-orange-200 bg-orange-950 border-orange-700"}`}>
-    {favorable ? "SUPEREFFICACE" : "POCO EFFICACE"}
+    className={`font-body ${compact ? "text-xs max-w-[108px]" : "text-sm"} leading-tight normal-case border px-1 py-0.5 ${multiplier === 1 ? "text-slate-200 bg-slate-800 border-slate-500" : favorable ? "text-emerald-200 bg-emerald-950 border-emerald-700" : "text-orange-200 bg-orange-950 border-orange-700"}`}>
+    {multiplier === 1 ? "NEUTRO" : favorable ? "SUPEREFFICACE" : "POCO EFFICACE"}
   </span>;
 };
 

@@ -73,3 +73,20 @@
 .animate-fade-3 { animation: fadeUp 0.4s ease 0.3s both; }
 
 ::selection { background: #facc15; color: #000; }
+
+/* Replaceable cues use existing attack waits, with no added delay. */
+.battle-portrait { position: relative; flex-shrink: 0; }
+.battle-lunge { animation: battleLunge 450ms steps(3, end); }
+@keyframes battleLunge { 40%, 65% { transform: translateX(var(--lunge-x)) translateY(-3px); } }
+.battle-flash { filter: drop-shadow(0 0 7px var(--impact-color)); }
+.battle-impact { position: absolute; z-index: 2; inset: 5% -8px auto; padding: 4px; pointer-events: none; text-align: center; background: #0b101df2; border: 2px solid var(--impact-color); color: #fff; animation: battleImpact 350ms ease-out; }
+.battle-impact b { display: block; font-size: 20px; line-height: 1.1; }
+.battle-impact span { display: block; font-size: 10px; font-weight: bold; }
+.battle-impact-strong span { color: #6ee7b7; }
+.battle-impact-weak span { color: #fdba74; }
+.battle-impact-neutral span { color: #cbd5e1; }
+@keyframes battleImpact { from { transform: translateY(5px); opacity: .4; } to { transform: translateY(-3px); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .battle-milestone .battle-lunge, .battle-milestone .battle-impact,
+  .battle-milestone .animate-idle, .battle-milestone .animate-shake { animation: none; }
+}
