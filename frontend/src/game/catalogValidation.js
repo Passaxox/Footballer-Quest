@@ -66,3 +66,45 @@ export function validateCatalog({ characters, versions, moves, legacyMappings, r
   if (errors.length) throw new Error(`Invalid catalog:\n${errors.join("\n")}`);
   return true;
 }
+
+
+export const IDENTITY_STATUSES = ["verified", "legacy-weird-but-verified", "suspicious", "unresolved"];
+
+// Opt-in test/dev audit, NOT application startup or a save migration.
+// Structural validity cannot establish canon. Human-reviewed evidence lives in the audit fixture.
+// Uncertain snapshots are observations, not mandatory names/assets for future remediation.
+export function validateIdentityAudit(catalog, audit, { spriteHashes } = {}) {
+  validateCatalog(catalog);
+  const errors = [];
+  if (!Array.isArray(audit?.entries) || !Array.isArray(audit?.reviewRequiredLegacyIds)) throw new Error("Invalid identity audit arrays");
+  const mappings = new Map(catalog.legacyMappings.map(m => [m.legacyId, m.versionId]));
+  const versions = new Map(catalog.versions.map(v => [v.versionId, v]));
+  const legacyIds = new Set(), versionIds = new Set();
+  const counts = Object.fromEntries(IDENTITY_STATUSES.map(s => [s, 0]));
+  const pending = [], verifiedLegacyIds = [];
+  for (const row of audit.entries) {
+    if (!row) { errors.push("Missing audit row"); continue; }
+    const label = row.legacyId;
+    for (const [key, seen] of [["legacyId", legacyIds], ["versionId", versionIds]]) {
+      if (typeof row[key] !== "string" || !row[key].trim() || seen.has(row[key])) errors.push("Duplicate/invalid audit " + key);
+      seen.add(row[key]);
+    }
+    const v = versions.get(row.versionId);
+    if (!v || mappings.get(label) !== row.versionId || v.characterId !== row.characterId) errors.push("Audit technical mapping mismatch: " + label);
+    if (!IDENTITY_STATUSES.includes(row.identityStatus)) { errors.push("Invalid identityStatus: " + label); continue; }
+    counts[row.identityStatus]++;
+    if (!Array.isArray(row.sources) || row.sources.length < 2 || row.sources.some(s => typeof s !== "string" || !s.trim()) || !row.notes) errors.push("Missing audit evidence: " + label);
+    if (!/^[a-f0-9]{64}$/.test(row.spriteSha256 || "") || !/^[a-zA-Z0-9_-]+$/.test(row.spriteId || "") || row.spritePath !== "frontend/public/sprites/" + row.spriteId + ".png") errors.push("Invalid audit sprite snapshot: " + label);
+    if (["verified", "legacy-weird-but-verified"].includes(row.identityStatus)) {
+      verifiedLegacyIds.push(label);
+      if (typeof row.canonicalCharacter !== "string" || !row.canonicalCharacter.trim()) errors.push("Verified identity missing canon: " + label);
+      for (const key of ["displayName", "spriteId", "primaryMoveId"]) if (v?.[key] !== row[key]) errors.push("Verified identity drift " + key + ": " + label);
+      if (spriteHashes && spriteHashes.get(row.spritePath) !== row.spriteSha256) errors.push("Verified sprite content drift: " + label);
+    } else pending.push(label);
+  }
+  for (const id of mappings.keys()) if (!legacyIds.has(id)) errors.push("Missing identity audit: " + id);
+  if (audit.entries.length !== mappings.size) errors.push("Identity audit coverage mismatch");
+  if (new Set(audit.reviewRequiredLegacyIds).size !== audit.reviewRequiredLegacyIds.length || [...pending].sort().join("|") !== [...audit.reviewRequiredLegacyIds].sort().join("|")) errors.push("Uncertain identities must be explicitly enumerated");
+  if (errors.length) throw new Error("Invalid identity audit:\n" + errors.join("\n"));
+  return { technicalValid: true, counts, verifiedLegacyIds, reviewRequiredLegacyIds: pending };
+}

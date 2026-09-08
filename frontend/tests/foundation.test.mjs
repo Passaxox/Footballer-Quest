@@ -1,4 +1,5 @@
 import test from "node:test";
+import { createHash } from "node:crypto";
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 
@@ -8,7 +9,7 @@ const moduleUrl = (text) => `data:text/javascript;base64,${Buffer.from(text).toS
 const dataUrl = moduleUrl(await source("data"));
 const rulesUrl = moduleUrl(await source("rules"));
 const validationUrl = moduleUrl(await source("catalogValidation"));
-const { validateCatalog } = await import(validationUrl);
+const { validateCatalog, validateIdentityAudit } = await import(validationUrl);
 const metadataUrl = moduleUrl(await source("catalogMetadata"));
 const catalogUrl = moduleUrl((await source("catalog")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
 const collectionUrl = moduleUrl((await source("collection")).replace('"./catalog"', JSON.stringify(catalogUrl)));
@@ -708,4 +709,85 @@ test("V2e batch protects all localized legacy mappings and specific incarnation 
     assert.ok(v.teamTags.includes("alius-academy") && v.teamTags.length === 2);
     assert.equal(v.gameOrigin, "ie2");
   }
+});
+
+
+const identityAudit = JSON.parse(await readFile(new URL("./fixtures/catalog-identity-audit.json", import.meta.url), "utf8"));
+const identityHashes = new Map(await Promise.all(identityAudit.entries.map(async row => [row.spritePath,
+  createHash("sha256").update(await readFile(new URL("../../" + row.spritePath, import.meta.url))).digest("hex")])));
+
+test("V2f complete 44-entry identity audit distinguishes technical validity from canon", () => {
+  assert.equal(identityAudit.entries.length, 44);
+  assert.equal(new Set(identityAudit.entries.map(r => r.legacyId)).size, 44);
+  assert.equal(new Set(identityAudit.entries.map(r => r.versionId)).size, 44);
+  const result = validateIdentityAudit(catalog.CATALOG_SOURCE, identityAudit, { spriteHashes: identityHashes });
+  assert.equal(result.technicalValid, true);
+  assert.deepEqual(result.counts, { verified: 37, "legacy-weird-but-verified": 2, suspicious: 5, unresolved: 0 });
+  assert.deepEqual([...result.reviewRequiredLegacyIds].sort(), ["austin", "david", "jonas", "joseph", "paolo"]);
+  for (const row of identityAudit.entries) assert.ok(catalog.PRIMARY_MOVES[row.primaryMoveId]);
+});
+
+test("V2f verified identity and portrait regressions require explicit re-audit", () => {
+  for (const field of ["displayName", "spriteId", "primaryMoveId"]) {
+    const c = structuredClone(catalog.CATALOG_SOURCE);
+    c.versions[0][field] = field === "primaryMoveId" ? c.versions[1].primaryMoveId : "changed";
+    assert.throws(() => validateIdentityAudit(c, identityAudit), /Verified identity drift/);
+  }
+  const hashes = new Map(identityHashes);
+  hashes.set(identityAudit.entries[0].spritePath, "0".repeat(64));
+  assert.throws(() => validateIdentityAudit(catalog.CATALOG_SOURCE, identityAudit, { spriteHashes: hashes }), /Verified sprite content drift/);
+  const c = structuredClone(catalog.CATALOG_SOURCE);
+  c.versions.find(v => v.legacyRosterId === "hector").displayName = "Hector Helio";
+  assert.throws(() => validateIdentityAudit(c, identityAudit), /Verified identity drift/);
+});
+
+test("V2f audit rejects missing, duplicate and silently hidden uncertain records", () => {
+  const mutations = [
+    a => a.entries.pop(),
+    a => a.entries.push({ ...a.entries[0] }),
+    a => { a.entries[1].versionId = a.entries[0].versionId; },
+    a => { a.entries[0].identityStatus = "probably"; },
+    a => { a.entries[0].canonicalCharacter = null; },
+    a => { a.entries[0].sources = []; },
+    a => { a.reviewRequiredLegacyIds = []; },
+    a => { a.entries.find(r => r.legacyId === "paolo").identityStatus = "verified"; },
+  ];
+  for (const mutate of mutations) {
+    const a = structuredClone(identityAudit); mutate(a);
+    assert.throws(() => validateIdentityAudit(catalog.CATALOG_SOURCE, a), /Invalid identity audit/);
+  }
+});
+
+test("V2f disputed snapshots do not canonize wrong names or assets or block runtime", () => {
+  const c = structuredClone(catalog.CATALOG_SOURCE);
+  const row = c.versions.find(v => v.legacyRosterId === "paolo");
+  row.displayName = "Review-only proposed name"; row.spriteId = "review_only";
+  assert.equal(validateCatalog(c), true);
+  assert.ok(validateIdentityAudit(c, identityAudit).reviewRequiredLegacyIds.includes("paolo"));
+  // The production catalog/save path does not call the opt-in identity audit.
+  assert.equal(catalog.resolveVersion("paolo").displayName, "Paolo Bianchi");
+  const old = newRun(starters);
+  storage.saveRun(old);
+  assert.deepEqual(storage.loadRun(), old);
+});
+
+
+test("V2f audit separates observed identity, runtime data and proposed remediation", () => {
+  const allowed = ["IDENTITY_FIX", "ASSET_FIX", "GAME_DATA_FIX", "METADATA_FIX", "LEGACY_COMPAT"];
+  for (const row of identityAudit.entries) {
+    const r = data.ROSTER.find(r => r.id === row.legacyId);
+    assert.equal(typeof row.declaredCharacter, "string");
+    assert.equal(typeof row.assetCharacter, "string");
+    assert.deepEqual(row.runtimeSnapshot, { role: r.role, element: r.element, move: r.move, baseStats: { hp: r.hp, atk: r.atk, def: r.def, spd: r.spd } });
+    assert.equal(new Set(row.remediationCategories).size, row.remediationCategories.length);
+    assert.ok(row.remediationCategories.every(c => allowed.includes(c)));
+    if (row.identityStatus === "suspicious") {
+      assert.notEqual(row.declaredCharacter, row.assetCharacter);
+      assert.equal(row.canonicalCharacter, null);
+      assert.ok(row.remediationCategories.includes("ASSET_FIX"));
+    }
+  }
+  const unresolved = structuredClone(identityAudit);
+  unresolved.entries.find(r => r.legacyId === "paolo").identityStatus = "unresolved";
+  assert.equal(validateIdentityAudit(catalog.CATALOG_SOURCE, unresolved).counts.unresolved, 1);
 });

@@ -3,7 +3,8 @@ import { ROSTER } from "./data";
 import { validateCatalog } from "./catalogValidation";
 
 // Character = person; CharacterVersion = authored incarnation; PlayerInstance = mutable run state.
-// Legacy roster remains the verified 1:1 source. Null metadata is intentionally not guessed.
+// Legacy roster is the technical 1:1 source, not proof of canonical identity.
+// See the opt-in identity audit for verified and disputed mappings.
 export const CATALOG_SOURCE = {
   characters: ROSTER.map(r => ({ characterId: r.id, displayName: r.name })),
   versions: ROSTER.map(r => ({

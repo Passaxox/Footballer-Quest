@@ -1,0 +1,1799 @@
+{
+  "auditVersion": 1,
+  "baselineCommit": "b270d78d4b47b61c0b74fb2b0fe57ac25f35180c",
+  "reviewRequiredLegacyIds": [
+    "austin",
+    "joseph",
+    "david",
+    "jonas",
+    "paolo"
+  ],
+  "entries": [
+    {
+      "legacyId": "mark",
+      "versionId": "mark:base",
+      "characterId": "mark",
+      "displayName": "Mark Evans",
+      "spriteId": "mark",
+      "spritePath": "frontend/public/sprites/mark.png",
+      "spriteSha256": "88b34e6ae1ee8309c82c3cc4c38f21b28ee14b7178b221dc7bd02df039fff189",
+      "primaryMoveId": "mark:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Endou Mamoru",
+      "spriteObservation": "orange headband and brown crest",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Endou Mamoru",
+      "assetCharacter": "Endou Mamoru",
+      "runtimeSnapshot": {
+        "role": "P",
+        "element": "terra",
+        "move": {
+          "name": "Mano Magica",
+          "element": "terra",
+          "power": 55,
+          "effect": "guard"
+        },
+        "baseStats": {
+          "hp": 95,
+          "atk": 24,
+          "def": 40,
+          "spd": 22
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "axel",
+      "versionId": "axel:base",
+      "characterId": "axel",
+      "displayName": "Axel Blaze",
+      "spriteId": "axel",
+      "spritePath": "frontend/public/sprites/axel.png",
+      "spriteSha256": "af744583db7ae1444dc1cfb4a7d834c38b7ab865a358994bc09df12726561cc6",
+      "primaryMoveId": "axel:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Gouenji Shuuya",
+      "spriteObservation": "upright pale hair and dark brows",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Gouenji Shuuya",
+      "assetCharacter": "Gouenji Shuuya",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "fuoco",
+        "move": {
+          "name": "Tornado di Fuoco",
+          "element": "fuoco",
+          "power": 90,
+          "effect": null
+        },
+        "baseStats": {
+          "hp": 70,
+          "atk": 42,
+          "def": 24,
+          "spd": 32
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "jude",
+      "versionId": "jude:base",
+      "characterId": "jude",
+      "displayName": "Jude Sharp",
+      "spriteId": "jude",
+      "spritePath": "frontend/public/sprites/jude.png",
+      "spriteSha256": "a5a8870c7fe3e9129397ead81545d0c46faff97245939f848cea099ec898aa58",
+      "primaryMoveId": "jude:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Kidou Yuuto",
+      "spriteObservation": "goggles and tied dreadlocks",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Kidou Yuuto",
+      "assetCharacter": "Kidou Yuuto",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "aria",
+        "move": {
+          "name": "Pinguino Imperatore N.2",
+          "element": "aria",
+          "power": 75,
+          "effect": "weaken"
+        },
+        "baseStats": {
+          "hp": 72,
+          "atk": 34,
+          "def": 30,
+          "spd": 34
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "nathan",
+      "versionId": "nathan:base",
+      "characterId": "nathan",
+      "displayName": "Nathan Swift",
+      "spriteId": "nathan",
+      "spritePath": "frontend/public/sprites/nathan.png",
+      "spriteSha256": "53976f549105539d22e80d4ffb3697ce459026354a8a33901765968d8aee9664",
+      "primaryMoveId": "nathan:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Kazemaru Ichirouta",
+      "spriteObservation": "blue side-swept hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Kazemaru Ichirouta",
+      "assetCharacter": "Kazemaru Ichirouta",
+      "runtimeSnapshot": {
+        "role": "D",
+        "element": "aria",
+        "move": {
+          "name": "Scatto Turbine",
+          "element": "aria",
+          "power": 65,
+          "effect": "priority"
+        },
+        "baseStats": {
+          "hp": 68,
+          "atk": 30,
+          "def": 28,
+          "spd": 46
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "shawn",
+      "versionId": "shawn:base",
+      "characterId": "shawn",
+      "displayName": "Shawn Froste",
+      "spriteId": "shawn",
+      "spritePath": "frontend/public/sprites/shawn.png",
+      "spriteSha256": "bbbd00b3c2fdc6291df83318a0fcf7da1f5e77081a85318cd6dbce570105270e",
+      "primaryMoveId": "shawn:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Fubuki Shirou",
+      "spriteObservation": "pale lavender hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Fubuki Shirou",
+      "assetCharacter": "Fubuki Shirou",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "aria",
+        "move": {
+          "name": "Tempesta di Neve Eterna",
+          "element": "aria",
+          "power": 85,
+          "effect": "crit"
+        },
+        "baseStats": {
+          "hp": 68,
+          "atk": 40,
+          "def": 24,
+          "spd": 38
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "jack",
+      "versionId": "jack:base",
+      "characterId": "jack",
+      "displayName": "Jack Wallside",
+      "spriteId": "jack",
+      "spritePath": "frontend/public/sprites/jack.png",
+      "spriteSha256": "0f0c32f83e82505416ce10ff3a3d38e7177d8a7359a3e3bf9a9f5041ae940494",
+      "primaryMoveId": "jack:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Kabeyama Heigorou",
+      "spriteObservation": "green cap and broad face",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Kabeyama Heigorou",
+      "assetCharacter": "Kabeyama Heigorou",
+      "runtimeSnapshot": {
+        "role": "D",
+        "element": "terra",
+        "move": {
+          "name": "La Muraglia",
+          "element": "terra",
+          "power": 50,
+          "effect": "guard"
+        },
+        "baseStats": {
+          "hp": 100,
+          "atk": 26,
+          "def": 44,
+          "spd": 14
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "kevin",
+      "versionId": "kevin:base",
+      "characterId": "kevin",
+      "displayName": "Kevin Dragonfly",
+      "spriteId": "kevin",
+      "spritePath": "frontend/public/sprites/kevin.png",
+      "spriteSha256": "12913637293b3fc1f05e64bed9221a03ffb39c24321e281f25dc3a307c2a445a",
+      "primaryMoveId": "kevin:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Someoka Ryuugo",
+      "spriteObservation": "pink cropped hair and broad forehead",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Someoka Ryuugo",
+      "assetCharacter": "Someoka Ryuugo",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "natura",
+        "move": {
+          "name": "Schianto del Drago",
+          "element": "natura",
+          "power": 80,
+          "effect": "recoil"
+        },
+        "baseStats": {
+          "hp": 78,
+          "atk": 38,
+          "def": 28,
+          "spd": 26
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "darren",
+      "versionId": "darren:base",
+      "characterId": "darren",
+      "displayName": "Darren LaChance",
+      "spriteId": "darren",
+      "spritePath": "frontend/public/sprites/darren.png",
+      "spriteSha256": "14a87c5ee1d76018f328dfce656010949c9cbf6aa5f1205abd94f24c3dfe76d5",
+      "primaryMoveId": "darren:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Tachimukai Yuuki",
+      "spriteObservation": "brown spiky hair and green eyes",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Tachimukai Yuuki",
+      "assetCharacter": "Tachimukai Yuuki",
+      "runtimeSnapshot": {
+        "role": "P",
+        "element": "natura",
+        "move": {
+          "name": "Mano Mugen",
+          "element": "natura",
+          "power": 50,
+          "effect": "heal"
+        },
+        "baseStats": {
+          "hp": 88,
+          "atk": 22,
+          "def": 38,
+          "spd": 24
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "tod",
+      "versionId": "tod:base",
+      "characterId": "tod",
+      "displayName": "Tod Ironside",
+      "spriteId": "tod",
+      "spritePath": "frontend/public/sprites/tod.png",
+      "spriteSha256": "c01fe71dd4f674e61dcacc7ff15fc7d7372aded222f651688a2f780c9c5e7ffa",
+      "primaryMoveId": "tod:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Kurimatsu Teppei",
+      "spriteObservation": "pointed brown fringe",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Kurimatsu Teppei",
+      "assetCharacter": "Kurimatsu Teppei",
+      "runtimeSnapshot": {
+        "role": "D",
+        "element": "natura",
+        "move": {
+          "name": "Placcaggio Killer",
+          "element": "natura",
+          "power": 60,
+          "effect": "shatter"
+        },
+        "baseStats": {
+          "hp": 80,
+          "atk": 28,
+          "def": 34,
+          "spd": 24
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "sam",
+      "versionId": "sam:base",
+      "characterId": "sam",
+      "displayName": "Sam Kincaid",
+      "spriteId": "sam",
+      "spritePath": "frontend/public/sprites/sam.png",
+      "spriteSha256": "ebf74578528fba54163bd15831cb92e92235223efbca685f86cb1e7ddd57e4d7",
+      "primaryMoveId": "sam:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Shourinji Ayumu",
+      "spriteObservation": "shaved monk head and central tuft",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Shourinji Ayumu",
+      "assetCharacter": "Shourinji Ayumu",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "natura",
+        "move": {
+          "name": "Passaggio Bomba",
+          "element": "natura",
+          "power": 60,
+          "effect": "charge"
+        },
+        "baseStats": {
+          "hp": 70,
+          "atk": 30,
+          "def": 28,
+          "spd": 34
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "steve",
+      "versionId": "steve:base",
+      "characterId": "steve",
+      "displayName": "Steve Grim",
+      "spriteId": "steve",
+      "spritePath": "frontend/public/sprites/steve.png",
+      "spriteSha256": "9fb2690f0ab8cc4e921ce1fb47e3ac150451052ae34a0d3382c28d05b3ccf577",
+      "primaryMoveId": "steve:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Shishido Sakichi",
+      "spriteObservation": "orange curls over eyes",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Shishido Sakichi",
+      "assetCharacter": "Shishido Sakichi",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "fuoco",
+        "move": {
+          "name": "Sfrecciata Elettrica",
+          "element": "fuoco",
+          "power": 65,
+          "effect": "priority"
+        },
+        "baseStats": {
+          "hp": 66,
+          "atk": 32,
+          "def": 26,
+          "spd": 32
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "bobby",
+      "versionId": "bobby:base",
+      "characterId": "bobby",
+      "displayName": "Bobby Shearer",
+      "spriteId": "bobby",
+      "spritePath": "frontend/public/sprites/bobby.png",
+      "spriteSha256": "f069bcc0b0d119286c85c2966f238ed8775062ac00a7a4cf4ae8076f582c5963",
+      "primaryMoveId": "bobby:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Domon Asuka",
+      "spriteObservation": "teal swept hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Domon Asuka",
+      "assetCharacter": "Domon Asuka",
+      "runtimeSnapshot": {
+        "role": "D",
+        "element": "aria",
+        "move": {
+          "name": "Contrattacco Rapido",
+          "element": "aria",
+          "power": 55,
+          "effect": "guard"
+        },
+        "baseStats": {
+          "hp": 74,
+          "atk": 26,
+          "def": 36,
+          "spd": 30
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "maxwell",
+      "versionId": "maxwell:base",
+      "characterId": "maxwell",
+      "displayName": "Maxwell Carson",
+      "spriteId": "maxwell",
+      "spritePath": "frontend/public/sprites/maxwell.png",
+      "spriteSha256": "4cd7c37d5256fa54a5fcd9d157cf096f05c4899710aa3f86a078a4bf19fead72",
+      "primaryMoveId": "maxwell:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Matsuno Kuusuke",
+      "spriteObservation": "red/blue headwear",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Matsuno Kuusuke",
+      "assetCharacter": "Matsuno Kuusuke",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "terra",
+        "move": {
+          "name": "Slalom Misterioso",
+          "element": "terra",
+          "power": 60,
+          "effect": "weaken"
+        },
+        "baseStats": {
+          "hp": 72,
+          "atk": 32,
+          "def": 30,
+          "spd": 30
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "tim",
+      "versionId": "tim:base",
+      "characterId": "tim",
+      "displayName": "Tim Saunders",
+      "spriteId": "tim",
+      "spritePath": "frontend/public/sprites/tim.png",
+      "spriteSha256": "9950b1d4268e2e4d3edd3a9e4719dce6e867070516bf4f3d2dcd2930fa12880d",
+      "primaryMoveId": "tim:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Handa Shinichi",
+      "spriteObservation": "short dark fringe",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Handa Shinichi",
+      "assetCharacter": "Handa Shinichi",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "aria",
+        "move": {
+          "name": "Tornado Illusorio",
+          "element": "aria",
+          "power": 60,
+          "effect": "multi"
+        },
+        "baseStats": {
+          "hp": 64,
+          "atk": 28,
+          "def": 26,
+          "spd": 40
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "willy",
+      "versionId": "willy:base",
+      "characterId": "willy",
+      "displayName": "Willy Glass",
+      "spriteId": "willy",
+      "spritePath": "frontend/public/sprites/willy.png",
+      "spriteSha256": "8178a6fef99debeb6a9638daf3b2b202edafe7139deaee465902a809c2bbfe53",
+      "primaryMoveId": "willy:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Megane Kakeru",
+      "spriteObservation": "glasses and brown hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Megane Kakeru",
+      "assetCharacter": "Megane Kakeru",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "natura",
+        "move": {
+          "name": "Occhio Analitico",
+          "element": "natura",
+          "power": 55,
+          "effect": "shatter"
+        },
+        "baseStats": {
+          "hp": 62,
+          "atk": 26,
+          "def": 24,
+          "spd": 36
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "erik",
+      "versionId": "erik:base",
+      "characterId": "erik",
+      "displayName": "Erik Eagle",
+      "spriteId": "erik",
+      "spritePath": "frontend/public/sprites/erik.png",
+      "spriteSha256": "39f0c4adc123d5a2131474ad764397216d53a62468bd5f0e9009a119f85b60e4",
+      "primaryMoveId": "erik:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Ichinose Kazuya",
+      "spriteObservation": "brown side-parted fringe",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Ichinose Kazuya",
+      "assetCharacter": "Ichinose Kazuya",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "aria",
+        "move": {
+          "name": "Tiro Aquila",
+          "element": "aria",
+          "power": 85,
+          "effect": null
+        },
+        "baseStats": {
+          "hp": 70,
+          "atk": 40,
+          "def": 26,
+          "spd": 36
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "austin",
+      "versionId": "austin:base",
+      "characterId": "austin",
+      "displayName": "Austin Hobbes",
+      "spriteId": "austin",
+      "spritePath": "frontend/public/sprites/austin.png",
+      "spriteSha256": "e17135450d192a7e370a07d6e69c9b61166cbce3751c66e7c4642e3259cfbc51",
+      "primaryMoveId": "austin:primary",
+      "identityStatus": "suspicious",
+      "canonicalCharacter": null,
+      "spriteObservation": "gray/white hair, pink eyes and blue cheek marking",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait",
+        "austin",
+        "kira"
+      ],
+      "notes": "Actual large gray-haired portrait with pink eyes and blue cheek marking is Kira Hiroto Ares, agreeing with wrong fetch target. Austin Hobbes is Toramaru; forward role alone cannot resolve this conflict.",
+      "incarnation": "Asset is alternate timeline, not Austin original",
+      "nameCharacter": "Utsunomiya Toramaru (Austin Hobbes)",
+      "spriteCharacter": "Kira Hiroto (Ares/Orion)",
+      "declaredCharacter": "Utsunomiya Toramaru (Austin Hobbes)",
+      "assetCharacter": "Kira Hiroto (Ares/Orion)",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "fuoco",
+        "move": {
+          "name": "Tiro Fulmineo",
+          "element": "fuoco",
+          "power": 88,
+          "effect": null
+        },
+        "baseStats": {
+          "hp": 72,
+          "atk": 42,
+          "def": 24,
+          "spd": 30
+        }
+      },
+      "remediationCategories": [
+        "ASSET_FIX",
+        "IDENTITY_FIX",
+        "LEGACY_COMPAT"
+      ]
+    },
+    {
+      "legacyId": "caleb",
+      "versionId": "caleb:base",
+      "characterId": "caleb",
+      "displayName": "Caleb Stonewall",
+      "spriteId": "caleb",
+      "spritePath": "frontend/public/sprites/caleb.png",
+      "spriteSha256": "4ac489ffec776ef76e42f56159aacb4622cf93b34fdc2e404ca0a6b6d5340918",
+      "primaryMoveId": "caleb:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Fudou Akio",
+      "spriteObservation": "half-shaved head and swept brown tuft",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Fudou Akio",
+      "assetCharacter": "Fudou Akio",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "terra",
+        "move": {
+          "name": "Pugno di Roccia",
+          "element": "terra",
+          "power": 75,
+          "effect": "charge"
+        },
+        "baseStats": {
+          "hp": 74,
+          "atk": 36,
+          "def": 30,
+          "spd": 34
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "hurley",
+      "versionId": "hurley:base",
+      "characterId": "hurley",
+      "displayName": "Hurley Kane",
+      "spriteId": "hurley",
+      "spritePath": "frontend/public/sprites/hurley.png",
+      "spriteSha256": "0e09794a8380a31745f96b78aaaee3305d5e3e6f78db82d39790a74c9021ae7b",
+      "primaryMoveId": "hurley:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Tsunami Jousuke",
+      "spriteObservation": "pink spikes and goggles",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Tsunami Jousuke",
+      "assetCharacter": "Tsunami Jousuke",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "natura",
+        "move": {
+          "name": "Tsunami Boost",
+          "element": "natura",
+          "power": 85,
+          "effect": "drain"
+        },
+        "baseStats": {
+          "hp": 74,
+          "atk": 40,
+          "def": 26,
+          "spd": 30
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "scotty",
+      "versionId": "scotty:base",
+      "characterId": "scotty",
+      "displayName": "Scotty Banyan",
+      "spriteId": "scotty",
+      "spritePath": "frontend/public/sprites/scotty.png",
+      "spriteSha256": "b5f952c47d4459408f70838aa52acfa5edbcd262836cb09a4d00b5eba689dc63",
+      "primaryMoveId": "scotty:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Kogure Yuuya",
+      "spriteObservation": "dark teal pointed hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Kogure Yuuya",
+      "assetCharacter": "Kogure Yuuya",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "natura",
+        "move": {
+          "name": "Corsa della Scimmia",
+          "element": "natura",
+          "power": 65,
+          "effect": "multi"
+        },
+        "baseStats": {
+          "hp": 70,
+          "atk": 34,
+          "def": 28,
+          "spd": 42
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "thor",
+      "versionId": "thor:base",
+      "characterId": "thor",
+      "displayName": "Thor Stoutberg",
+      "spriteId": "thor",
+      "spritePath": "frontend/public/sprites/thor.png",
+      "spriteSha256": "db2b219bcebe32f1c4c3767e4ec1dac27a9f1080e0bdbd398824627bb1bb9cfd",
+      "primaryMoveId": "thor:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Hijikata Raiden",
+      "spriteObservation": "brown/yellow tied locks",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Hijikata Raiden",
+      "assetCharacter": "Hijikata Raiden",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "terra",
+        "move": {
+          "name": "Schianto del Gigante",
+          "element": "terra",
+          "power": 95,
+          "effect": "recoil"
+        },
+        "baseStats": {
+          "hp": 90,
+          "atk": 44,
+          "def": 32,
+          "spd": 18
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "archer",
+      "versionId": "archer:base",
+      "characterId": "archer",
+      "displayName": "Archer Hawkins",
+      "spriteId": "archer",
+      "spritePath": "frontend/public/sprites/archer.png",
+      "spriteSha256": "07c7e5991398af4053be9fa276419c42039f6be28053efbd87783459c164e050",
+      "primaryMoveId": "archer:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Tobitaka Seiya",
+      "spriteObservation": "purple high hair and glasses",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Tobitaka Seiya",
+      "assetCharacter": "Tobitaka Seiya",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "aria",
+        "move": {
+          "name": "Freccia Volante",
+          "element": "aria",
+          "power": 80,
+          "effect": "crit"
+        },
+        "baseStats": {
+          "hp": 68,
+          "atk": 38,
+          "def": 24,
+          "spd": 40
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "joseph",
+      "versionId": "joseph:base",
+      "characterId": "joseph",
+      "displayName": "Joseph King",
+      "spriteId": "joseph",
+      "spritePath": "frontend/public/sprites/joseph.png",
+      "spriteSha256": "9a86041c5b038fb0a48120db0b077eb1b787d06e66bf3a680d15bc54b4ae3d68",
+      "primaryMoveId": "joseph:primary",
+      "identityStatus": "suspicious",
+      "canonicalCharacter": null,
+      "spriteObservation": "cyan hair and eyepatch",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait",
+        "royal-names",
+        "sakuma",
+        "genda"
+      ],
+      "notes": "Actual joseph.png has Sakuma cyan hair and eyepatch; fetch target agrees. Attacker role and Penguin No.1 also fit Sakuma more than goalkeeper Genda. More than an isolated sprite issue: name and gameplay representation disagree.",
+      "incarnation": "Mixed record; do not swap IDs or stats",
+      "nameCharacter": "Genda Koujirou (Joseph King)",
+      "spriteCharacter": "Sakuma Jirou (David Samford)",
+      "declaredCharacter": "Genda Koujirou (Joseph King)",
+      "assetCharacter": "Sakuma Jirou (David Samford)",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "fuoco",
+        "move": {
+          "name": "Pinguino Imperatore N.1",
+          "element": "fuoco",
+          "power": 95,
+          "effect": "burn"
+        },
+        "baseStats": {
+          "hp": 76,
+          "atk": 44,
+          "def": 26,
+          "spd": 34
+        }
+      },
+      "remediationCategories": [
+        "ASSET_FIX",
+        "IDENTITY_FIX",
+        "GAME_DATA_FIX",
+        "LEGACY_COMPAT"
+      ]
+    },
+    {
+      "legacyId": "david",
+      "versionId": "david:base",
+      "characterId": "david",
+      "displayName": "David Samford",
+      "spriteId": "david",
+      "spritePath": "frontend/public/sprites/david.png",
+      "spriteSha256": "a580dc4c2ff2cada55df8dbd5dbc3c84e0cf920d4ec9343d301c809ddf08a659",
+      "primaryMoveId": "david:primary",
+      "identityStatus": "suspicious",
+      "canonicalCharacter": null,
+      "spriteObservation": "red spikes over face",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait",
+        "royal-names",
+        "sakuma",
+        "genda"
+      ],
+      "notes": "Actual david.png has Genda red spiky hair, not Sakuma cyan hair/eyepatch. Fetch target confirms Genda. Runtime role C/Twin Boost is not a goalkeeper; Royal boss membership shared by both cannot disambiguate intended identity.",
+      "incarnation": "Mixed record; not safely original/Absolute Royal",
+      "nameCharacter": "Sakuma Jirou (David Samford)",
+      "spriteCharacter": "Genda Koujirou (Joseph King)",
+      "declaredCharacter": "Sakuma Jirou (David Samford)",
+      "assetCharacter": "Genda Koujirou (Joseph King)",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "fuoco",
+        "move": {
+          "name": "Twin Boost",
+          "element": "fuoco",
+          "power": 80,
+          "effect": "multi"
+        },
+        "baseStats": {
+          "hp": 74,
+          "atk": 36,
+          "def": 30,
+          "spd": 36
+        }
+      },
+      "remediationCategories": [
+        "ASSET_FIX",
+        "IDENTITY_FIX",
+        "GAME_DATA_FIX",
+        "LEGACY_COMPAT"
+      ]
+    },
+    {
+      "legacyId": "byron",
+      "versionId": "byron:base",
+      "characterId": "byron",
+      "displayName": "Byron Love",
+      "spriteId": "byron",
+      "spritePath": "frontend/public/sprites/byron.png",
+      "spriteSha256": "303bc5fab57a9e6d794988a79d2220f0e00c09963caa5895268d56351240a87d",
+      "primaryMoveId": "byron:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Afuro Terumi",
+      "spriteObservation": "long pale hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Afuro Terumi",
+      "assetCharacter": "Afuro Terumi",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "aria",
+        "move": {
+          "name": "Piuma Celeste",
+          "element": "aria",
+          "power": 105,
+          "effect": "drain"
+        },
+        "baseStats": {
+          "hp": 82,
+          "atk": 50,
+          "def": 30,
+          "spd": 44
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "jonas",
+      "versionId": "jonas:base",
+      "characterId": "jonas",
+      "displayName": "Jonas Demetrius",
+      "spriteId": "jonas",
+      "spritePath": "frontend/public/sprites/jonas.png",
+      "spriteSha256": "edcdd54a2ca5d1bf93e513c47127e2c95613706aea7d42c9d9d51f8406952d1b",
+      "primaryMoveId": "jonas:primary",
+      "identityStatus": "suspicious",
+      "canonicalCharacter": null,
+      "spriteObservation": "broad bald head with teal side hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait",
+        "demeter",
+        "poseidon"
+      ],
+      "notes": "Name is Demeter; actual broad bald/teal-haired portrait and Poseidon fetch target are Poseidon. Tridente di Poseidone reinforces a mixed record; runtime defender role matches neither a reliable identity decision nor canonical goalkeeper Poseidon.",
+      "incarnation": "Zeus setting does not resolve mixed identity",
+      "nameCharacter": "Demete Yutaka (Jonas Demetrius / Demeter)",
+      "spriteCharacter": "Posei Donichi (Paul Siddon / Poseidon)",
+      "declaredCharacter": "Demete Yutaka (Jonas Demetrius / Demeter)",
+      "assetCharacter": "Posei Donichi (Paul Siddon / Poseidon)",
+      "runtimeSnapshot": {
+        "role": "D",
+        "element": "aria",
+        "move": {
+          "name": "Tridente di Poseidone",
+          "element": "aria",
+          "power": 75,
+          "effect": "shatter"
+        },
+        "baseStats": {
+          "hp": 84,
+          "atk": 34,
+          "def": 38,
+          "spd": 34
+        }
+      },
+      "remediationCategories": [
+        "ASSET_FIX",
+        "IDENTITY_FIX",
+        "GAME_DATA_FIX",
+        "LEGACY_COMPAT"
+      ]
+    },
+    {
+      "legacyId": "xavier",
+      "versionId": "xavier:base",
+      "characterId": "xavier",
+      "displayName": "Xavier Foster",
+      "spriteId": "xavier",
+      "spritePath": "frontend/public/sprites/xavier.png",
+      "spriteSha256": "ce76d490b908024e1c2328450a814fa9380c81afc4f6bdf72898f3f05d16f923",
+      "primaryMoveId": "xavier:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Kiyama Hiroto",
+      "spriteObservation": "red swept hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Kiyama Hiroto target and red-haired portrait agree with Xavier Foster. Genesis metadata does not certify which game/form supplied the portrait.",
+      "incarnation": "Character verified; exact portrait incarnation not certified",
+      "declaredCharacter": "Kiyama Hiroto",
+      "assetCharacter": "Kiyama Hiroto",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "fuoco",
+        "move": {
+          "name": "Meteora Ardente",
+          "element": "fuoco",
+          "power": 105,
+          "effect": "burn"
+        },
+        "baseStats": {
+          "hp": 80,
+          "atk": 50,
+          "def": 30,
+          "spd": 42
+        }
+      },
+      "remediationCategories": [
+        "METADATA_FIX"
+      ]
+    },
+    {
+      "legacyId": "jordan",
+      "versionId": "jordan:base",
+      "characterId": "jordan",
+      "displayName": "Jordan Greenway",
+      "spriteId": "jordan",
+      "spritePath": "frontend/public/sprites/jordan.png",
+      "spriteSha256": "eab5b32f6f687d680c11215385ef2953faec153a98bc745df5857cc2a567d0e5",
+      "primaryMoveId": "jordan:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Midorikawa Ryuuji (Jordan Greenway / Janus / Reize)",
+      "spriteObservation": "olive hair pulled high, dark alien eye markings",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait",
+        "midorikawa"
+      ],
+      "notes": "Civilian localized name and Reize alien portrait represent the same person. High tied olive hair and alien eyes match Gemini Storm Reize, not the later loose-fringe national-team form. Genesis boss inclusion is composite, not affiliation evidence.",
+      "incarnation": "Asset strongly supports Gemini Storm Reize; catalog assignment deferred",
+      "declaredCharacter": "Midorikawa Ryuuji (Jordan Greenway / Janus / Reize)",
+      "assetCharacter": "Midorikawa Ryuuji (Jordan Greenway / Janus / Reize)",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "aria",
+        "move": {
+          "name": "Cerchio Astrale",
+          "element": "aria",
+          "power": 85,
+          "effect": "weaken"
+        },
+        "baseStats": {
+          "hp": 76,
+          "atk": 40,
+          "def": 30,
+          "spd": 44
+        }
+      },
+      "remediationCategories": [
+        "METADATA_FIX"
+      ]
+    },
+    {
+      "legacyId": "torch",
+      "versionId": "torch:base",
+      "characterId": "torch",
+      "displayName": "Torch",
+      "spriteId": "torch",
+      "spritePath": "frontend/public/sprites/torch.png",
+      "spriteSha256": "dba5a4830a1383acc5a922cbfc972b7ed087c1e7b76a9d03d8c284b89de4353b",
+      "primaryMoveId": "torch:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Nagumo Haruya",
+      "spriteObservation": "red spikes",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Character name, Nagumo target and red spiky portrait agree. No proof here that the current portrait outfit matches catalog Chaos rather than another incarnation; previous team assertion must not certify asset provenance.",
+      "incarnation": "Character verified; outfit-to-Chaos correspondence not certified",
+      "declaredCharacter": "Nagumo Haruya",
+      "assetCharacter": "Nagumo Haruya",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "fuoco",
+        "move": {
+          "name": "Atomic Flare",
+          "element": "fuoco",
+          "power": 110,
+          "effect": "burn"
+        },
+        "baseStats": {
+          "hp": 78,
+          "atk": 52,
+          "def": 28,
+          "spd": 40
+        }
+      },
+      "remediationCategories": [
+        "METADATA_FIX"
+      ]
+    },
+    {
+      "legacyId": "gazelle",
+      "versionId": "gazelle:base",
+      "characterId": "gazelle",
+      "displayName": "Gazelle",
+      "spriteId": "gazelle",
+      "spritePath": "frontend/public/sprites/gazelle.png",
+      "spriteSha256": "05c94ae81d322542397e71222555c9bef317882c18007ce305a3e21da9a515b5",
+      "primaryMoveId": "gazelle:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Suzuno Fuusuke",
+      "spriteObservation": "white swept spikes",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Character name, Suzuno target and white-haired portrait agree. Exact outfit-to-Chaos correspondence not certified by this audit.",
+      "incarnation": "Character verified; outfit-to-Chaos correspondence not certified",
+      "declaredCharacter": "Suzuno Fuusuke",
+      "assetCharacter": "Suzuno Fuusuke",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "aria",
+        "move": {
+          "name": "Tempesta di Ghiaccio",
+          "element": "aria",
+          "power": 100,
+          "effect": "priority"
+        },
+        "baseStats": {
+          "hp": 76,
+          "atk": 48,
+          "def": 28,
+          "spd": 50
+        }
+      },
+      "remediationCategories": [
+        "METADATA_FIX"
+      ]
+    },
+    {
+      "legacyId": "dvalin",
+      "versionId": "dvalin:base",
+      "characterId": "dvalin",
+      "displayName": "Dvalin",
+      "spriteId": "dvalin",
+      "spritePath": "frontend/public/sprites/dvalin.png",
+      "spriteSha256": "b5abc9218c04adedf1f5aba9521622fed11e0ce337f3a4fb4d1b915dc531912b",
+      "primaryMoveId": "dvalin:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Saginuma Osamu (Dave Quagmire / Dvalin / Desarm)",
+      "spriteObservation": "dark cloud hair, cowl and dark sclera",
+      "sources": [
+        "repo-roster",
+        "local-portrait",
+        "saginuma"
+      ],
+      "notes": "Alien alias, goalkeeper role, dark cloud hair/cowl and non-red sclera agree on Desarm. Asset supports original Epsilon rather than red-eyed Epsilon Plus; source file/game provenance is not recorded. Fetch script janus key is stale and does not establish provenance of dvalin.png.",
+      "incarnation": "Epsilon Desarm supported by appearance; exact asset origin unrecorded",
+      "declaredCharacter": "Saginuma Osamu (Dave Quagmire / Dvalin / Desarm)",
+      "assetCharacter": "Saginuma Osamu (Dave Quagmire / Dvalin / Desarm)",
+      "runtimeSnapshot": {
+        "role": "P",
+        "element": "aria",
+        "move": {
+          "name": "Guanto Rotante",
+          "element": "aria",
+          "power": 70,
+          "effect": "guard"
+        },
+        "baseStats": {
+          "hp": 96,
+          "atk": 34,
+          "def": 44,
+          "spd": 30
+        }
+      },
+      "remediationCategories": [
+        "METADATA_FIX"
+      ]
+    },
+    {
+      "legacyId": "rococo",
+      "versionId": "rococo:base",
+      "characterId": "rococo",
+      "displayName": "Rococo Urupa",
+      "spriteId": "rococo",
+      "spritePath": "frontend/public/sprites/rococo.png",
+      "spriteSha256": "0700d1641d86bbcac27889d3684f308a6e9b7ad0e9d1c53a833a6979b39ee923",
+      "primaryMoveId": "rococo:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Rococo Urupa",
+      "spriteObservation": "teal spikes and green eyes",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Rococo Urupa",
+      "assetCharacter": "Rococo Urupa",
+      "runtimeSnapshot": {
+        "role": "P",
+        "element": "natura",
+        "move": {
+          "name": "Mano Divina X",
+          "element": "natura",
+          "power": 70,
+          "effect": "guard"
+        },
+        "baseStats": {
+          "hp": 110,
+          "atk": 30,
+          "def": 50,
+          "spd": 30
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "canon",
+      "versionId": "canon:base",
+      "characterId": "canon",
+      "displayName": "Canon Evans",
+      "spriteId": "canon",
+      "spritePath": "frontend/public/sprites/canon.png",
+      "spriteSha256": "2fe5d8af4cf83bc3e0650e24a6d8a5efee59acffbcf78d2bba35426a5b7da97b",
+      "primaryMoveId": "canon:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Endou Canon",
+      "spriteObservation": "red cap and blue-green eyes",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Endou Canon",
+      "assetCharacter": "Endou Canon",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "terra",
+        "move": {
+          "name": "Vortice Temporale",
+          "element": "terra",
+          "power": 90,
+          "effect": "priority"
+        },
+        "baseStats": {
+          "hp": 78,
+          "atk": 42,
+          "def": 32,
+          "spd": 40
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "paolo",
+      "versionId": "paolo:base",
+      "characterId": "paolo",
+      "displayName": "Paolo Bianchi",
+      "spriteId": "paolo",
+      "spritePath": "frontend/public/sprites/paolo.png",
+      "spriteSha256": "071a4f2b0653f8099247c967f96bfe9da945c4136b4f0b2c099730f68e85e49c",
+      "primaryMoveId": "paolo:primary",
+      "identityStatus": "suspicious",
+      "canonicalCharacter": null,
+      "spriteObservation": "short upright brown crest, no Fidio fringe",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait",
+        "fidio",
+        "nakata",
+        "paolo-localization"
+      ],
+      "notes": "Name and Odin technique point to Fidio/Paolo; portrait and explicit Hide Nakata fetch target point to Nakata. It is an identity conflict, not two localized names for Nakata.",
+      "incarnation": "Mixed record; intended identity requires decision",
+      "nameCharacter": "Fidio Aldena (Paolo Bianchi)",
+      "spriteCharacter": "Nakata Hidetoshi (Hide Nakata)",
+      "declaredCharacter": "Fidio Aldena (Paolo Bianchi)",
+      "assetCharacter": "Nakata Hidetoshi (Hide Nakata)",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "fuoco",
+        "move": {
+          "name": "Colpo d'Odino",
+          "element": "fuoco",
+          "power": 95,
+          "effect": "crit"
+        },
+        "baseStats": {
+          "hp": 74,
+          "atk": 44,
+          "def": 26,
+          "spd": 38
+        }
+      },
+      "remediationCategories": [
+        "ASSET_FIX",
+        "IDENTITY_FIX",
+        "GAME_DATA_FIX",
+        "LEGACY_COMPAT"
+      ]
+    },
+    {
+      "legacyId": "fidio",
+      "versionId": "fidio:base",
+      "characterId": "fidio",
+      "displayName": "Fidio Aldena",
+      "spriteId": "fidio",
+      "spritePath": "frontend/public/sprites/fidio.png",
+      "spriteSha256": "789fb8c9d0c6135f1c2237c952dc714822d4009d72b28c10333ae4f564b4d820",
+      "primaryMoveId": "fidio:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Fidio Aldena (Paolo Bianchi)",
+      "spriteObservation": "brown low side-swept fringe",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait",
+        "fidio",
+        "paolo-localization"
+      ],
+      "notes": "Fidio fetch aliases and brown side-fringe portrait agree with display name. European display name would be Paolo Bianchi; existing paolo row already uses that alias for a mixed record. Do not merge collection histories.",
+      "incarnation": "Fidio character verified; national-team version plausible, no metadata change",
+      "declaredCharacter": "Fidio Aldena (Paolo Bianchi)",
+      "assetCharacter": "Fidio Aldena (Paolo Bianchi)",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "natura",
+        "move": {
+          "name": "Fuoco Fatuo Divino",
+          "element": "natura",
+          "power": 92,
+          "effect": "drain"
+        },
+        "baseStats": {
+          "hp": 76,
+          "atk": 44,
+          "def": 28,
+          "spd": 40
+        }
+      },
+      "remediationCategories": [
+        "IDENTITY_FIX",
+        "LEGACY_COMPAT"
+      ]
+    },
+    {
+      "legacyId": "kruger",
+      "versionId": "kruger:base",
+      "characterId": "kruger",
+      "displayName": "Mark Kruger",
+      "spriteId": "kruger",
+      "spritePath": "frontend/public/sprites/kruger.png",
+      "spriteSha256": "14907636802b0497dc45c1e07a926d25b5cc8ac201366866d42520f4f180642b",
+      "primaryMoveId": "kruger:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Mark Krueger",
+      "spriteObservation": "wavy blond hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Mark Krueger",
+      "assetCharacter": "Mark Krueger",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "terra",
+        "move": {
+          "name": "Gungnir",
+          "element": "terra",
+          "power": 95,
+          "effect": null
+        },
+        "baseStats": {
+          "hp": 78,
+          "atk": 44,
+          "def": 30,
+          "spd": 36
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "dylan",
+      "versionId": "dylan:base",
+      "characterId": "dylan",
+      "displayName": "Dylan Keith",
+      "spriteId": "dylan",
+      "spritePath": "frontend/public/sprites/dylan.png",
+      "spriteSha256": "b590efeb8c15019fa06d6b77e3a7a43fec5c52e799cef0332f9419ebabeb1c9d",
+      "primaryMoveId": "dylan:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Dylan Keith",
+      "spriteObservation": "blond hair and blue glasses",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Dylan Keith",
+      "assetCharacter": "Dylan Keith",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "natura",
+        "move": {
+          "name": "Fantasma Supernova",
+          "element": "natura",
+          "power": 82,
+          "effect": "crit"
+        },
+        "baseStats": {
+          "hp": 70,
+          "atk": 40,
+          "def": 26,
+          "spd": 36
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "edgar",
+      "versionId": "edgar:base",
+      "characterId": "edgar",
+      "displayName": "Edgar Valtinas",
+      "spriteId": "edgar",
+      "spritePath": "frontend/public/sprites/edgar.png",
+      "spriteSha256": "0f9c2323b62c9d4cb1e717389a60ad5a9126f9e68c7906ff6eca6789b2be9618",
+      "primaryMoveId": "edgar:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Edgar Valtinas",
+      "spriteObservation": "long blue-gray hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Edgar Valtinas",
+      "assetCharacter": "Edgar Valtinas",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "aria",
+        "move": {
+          "name": "Excalibur",
+          "element": "aria",
+          "power": 98,
+          "effect": null
+        },
+        "baseStats": {
+          "hp": 76,
+          "atk": 46,
+          "def": 30,
+          "spd": 38
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "teres",
+      "versionId": "teres:base",
+      "characterId": "teres",
+      "displayName": "Teres Tolue",
+      "spriteId": "teres",
+      "spritePath": "frontend/public/sprites/teres.png",
+      "spriteSha256": "e3c2e3a687c5c4bfe21ad6816d9684d1915608b805f236d47c4d9e2c649873c6",
+      "primaryMoveId": "teres:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Teles Torrue",
+      "spriteObservation": "dark skin and green tied hair",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Teles Torrue",
+      "assetCharacter": "Teles Torrue",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "fuoco",
+        "move": {
+          "name": "Danza del Fuoco",
+          "element": "fuoco",
+          "power": 90,
+          "effect": "burn"
+        },
+        "baseStats": {
+          "hp": 74,
+          "atk": 44,
+          "def": 26,
+          "spd": 40
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "chae",
+      "versionId": "chae:base",
+      "characterId": "chae",
+      "displayName": "Chae Chan-soo",
+      "spriteId": "chae",
+      "spritePath": "frontend/public/sprites/chae.png",
+      "spriteSha256": "e6f12b33f0a6659bb25c0629b1068871490734d71e7c6816a8b06a8997616306",
+      "primaryMoveId": "chae:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Choi Chang Soo",
+      "spriteObservation": "dark curls and goggles",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Choi Chang Soo",
+      "assetCharacter": "Choi Chang Soo",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "terra",
+        "move": {
+          "name": "Torre di Cristallo",
+          "element": "terra",
+          "power": 78,
+          "effect": "multi"
+        },
+        "baseStats": {
+          "hp": 72,
+          "atk": 36,
+          "def": 32,
+          "spd": 36
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "malcolm",
+      "versionId": "malcolm:base",
+      "characterId": "malcolm",
+      "displayName": "Jim Wraith",
+      "spriteId": "malcolm",
+      "spritePath": "frontend/public/sprites/malcolm.png",
+      "spriteSha256": "b08831c39fb8c41bee45510de9c2fdf5aac446a4f0b1008e4711711a834f86ad",
+      "primaryMoveId": "malcolm:primary",
+      "identityStatus": "legacy-weird-but-verified",
+      "canonicalCharacter": "Kageno Jin (Jim Wraith)",
+      "spriteObservation": "long pale hair covering eyes",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Jim Wraith display name, Kageno fetch target and face-covering pale hair agree; retain unrelated legacy key.",
+      "incarnation": "Character verified; version metadata not inferred",
+      "declaredCharacter": "Kageno Jin (Jim Wraith)",
+      "assetCharacter": "Kageno Jin (Jim Wraith)",
+      "runtimeSnapshot": {
+        "role": "D",
+        "element": "terra",
+        "move": {
+          "name": "Tiro Fantasma",
+          "element": "terra",
+          "power": 65,
+          "effect": "weaken"
+        },
+        "baseStats": {
+          "hp": 74,
+          "atk": 30,
+          "def": 34,
+          "spd": 30
+        }
+      },
+      "remediationCategories": [
+        "LEGACY_COMPAT"
+      ]
+    },
+    {
+      "legacyId": "hector",
+      "versionId": "hector:base",
+      "characterId": "hector",
+      "displayName": "Rika Urabe",
+      "spriteId": "hector",
+      "spritePath": "frontend/public/sprites/hector.png",
+      "spriteSha256": "de37014bd75878ae45c44f80800372f787358d007b2b33348c4d6f7fe7ed99c0",
+      "primaryMoveId": "hector:primary",
+      "identityStatus": "legacy-weird-but-verified",
+      "canonicalCharacter": "Urabe Rica (Rika Urabe / Suzette \"Sue\" Hartland)",
+      "spriteObservation": "brown pigtails and orange headband",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait",
+        "urabe"
+      ],
+      "notes": "Display name, portrait (pigtails/headband) and local fetch target agree on Urabe Rica. hector is only a legacy key, not Rococo. Runtime midfielder/Anello Arcobaleno are custom gameplay, not proof of a different person.",
+      "incarnation": "Urabe Rica; precise team/game origin not certified",
+      "declaredCharacter": "Urabe Rica (Rika Urabe / Suzette \"Sue\" Hartland)",
+      "assetCharacter": "Urabe Rica (Rika Urabe / Suzette \"Sue\" Hartland)",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "natura",
+        "move": {
+          "name": "Anello Arcobaleno",
+          "element": "natura",
+          "power": 78,
+          "effect": "charge"
+        },
+        "baseStats": {
+          "hp": 70,
+          "atk": 36,
+          "def": 28,
+          "spd": 38
+        }
+      },
+      "remediationCategories": [
+        "LEGACY_COMPAT"
+      ]
+    },
+    {
+      "legacyId": "silvia",
+      "versionId": "silvia:base",
+      "characterId": "silvia",
+      "displayName": "Silvia Woods",
+      "spriteId": "silvia",
+      "spritePath": "frontend/public/sprites/silvia.png",
+      "spriteSha256": "b9930c43b85320e288fc55daaea7ffc6566c183e067ac84c23de8283429054ae",
+      "primaryMoveId": "silvia:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Kino Aki",
+      "spriteObservation": "brown hair held with green band",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Localized name, existing fetch target and visually inspected portrait agree on the person; custom stats/move/role are not canonical certification.",
+      "incarnation": "Character verified; no new version metadata certified",
+      "declaredCharacter": "Kino Aki",
+      "assetCharacter": "Kino Aki",
+      "runtimeSnapshot": {
+        "role": "C",
+        "element": "natura",
+        "move": {
+          "name": "Incoraggiamento",
+          "element": "natura",
+          "power": 40,
+          "effect": "heal"
+        },
+        "baseStats": {
+          "hp": 60,
+          "atk": 22,
+          "def": 26,
+          "spd": 36
+        }
+      },
+      "remediationCategories": []
+    },
+    {
+      "legacyId": "aiden",
+      "versionId": "aiden:base",
+      "characterId": "aiden",
+      "displayName": "Aiden Frost",
+      "spriteId": "aiden",
+      "spritePath": "frontend/public/sprites/aiden.png",
+      "spriteSha256": "85f87a7540538836aac4c753b53d3737ab7587e0245aa7da3a7f289a66de179a",
+      "primaryMoveId": "aiden:primary",
+      "identityStatus": "verified",
+      "canonicalCharacter": "Fubuki Atsuya",
+      "spriteObservation": "peach spiky hair and pale scarf",
+      "sources": [
+        "repo-roster",
+        "repo-fetch",
+        "local-portrait"
+      ],
+      "notes": "Fubuki Atsuya target and peach-haired portrait agree. Apparent later-style scarf/portrait does not certify an original timeline incarnation; do not derive original-era metadata.",
+      "incarnation": "Character verified; timeline/game unresolved",
+      "declaredCharacter": "Fubuki Atsuya",
+      "assetCharacter": "Fubuki Atsuya",
+      "runtimeSnapshot": {
+        "role": "A",
+        "element": "aria",
+        "move": {
+          "name": "Tiro Rotante",
+          "element": "aria",
+          "power": 80,
+          "effect": "shatter"
+        },
+        "baseStats": {
+          "hp": 72,
+          "atk": 40,
+          "def": 26,
+          "spd": 34
+        }
+      },
+      "remediationCategories": [
+        "METADATA_FIX"
+      ]
+    }
+  ]
+}
