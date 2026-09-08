@@ -2,7 +2,7 @@ import { discoverVersion, recruitVersion } from "@/game/collection";
 import { useCallback, useState } from "react";
 import "@/App.css";
 import { EVENTS, FINAL_WAVE } from "@/game/data";
-import { generateWave, generateRewards, addItem, createPlayer, randomRosterId, enemiesForEffect, fuseRunPlayers, gainXp, recalcStats, chance, newRun, normalizeRun, resolveActiveUid, applyEventDamage, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
+import { generateWave, recruitChallengePlayer, generateRewards, addItem, createPlayer, randomRosterId, enemiesForEffect, fuseRunPlayers, gainXp, recalcStats, chance, newRun, normalizeRun, resolveActiveUid, applyEventDamage, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
 import { loadMeta, saveMeta, loadRun, saveRun, clearRun, recordFinishedRun } from "@/game/storage";
 import { setSoundEnabled } from "@/game/audio";
 import TitleScreen from "@/components/game/TitleScreen";
@@ -122,7 +122,7 @@ function App() {
   };
 
   const challengeRecruit = () => {
-    const r = updateRun({ ...run, pending: { type: "battle", kind: "wild", enemies: [ctx.offer], forceRecruit: true } });
+    const r = updateRun({ ...run, pending: { type: "battle", kind: "wild", enemies: [recruitChallengePlayer(ctx.offer, run)], forceRecruit: true } });
     gotoPending(r);
   };
 
@@ -154,7 +154,7 @@ function App() {
     r.pending = { ...r.pending, progression };
     r.seenEvents = [...(run.seenEvents || []), ev.id];
     if (battle) {
-      const enemies = enemiesForEffect(battle, run.wave);
+      const enemies = enemiesForEffect(battle, run.wave, r);
       const nextRun = updateRun({ ...r, pending: { type: "battle", kind: enemies.length === 1 ? "wild" : "team", teamName: "Sfidanti", enemies, progression, rewardItem: battle.reward } });
       gotoPending(nextRun);
       return;

@@ -459,7 +459,7 @@ test("combat, rewards, post-battle recruitment and unresolved hub never grant tr
 
 test("checkpoint 10 uses level 11 independently of boss roster; later checkpoint unchanged", () => {
   for (const [wave, expected] of [[10, 11], [20, 23]]) {
-    const encounter = engine.generateWave({ ...newRun(starters), wave });
+    const encounter = engine.generateWave({ ...newRun(starters), team: [createPlayer(starters[0], 50)], wave });
     assert.deepEqual(encounter.enemies.map((p) => p.baseId), data.BOSSES[wave].ids);
     assert.ok(encounter.enemies.every((p) => p.level === expected));
   }
@@ -517,7 +517,7 @@ test("ordinary enemy offsets preserve Normal and lower Easy by one with level fl
 
 test("checkpoint levels belong to the profile, not the boss team", () => {
   for (const [difficulty, level] of [["normal", 11], ["easy", 10]]) {
-    const encounter = engine.generateWave({ ...newRun(starters, difficulty), wave: 10 });
+    const encounter = engine.generateWave({ ...newRun(starters, difficulty), team: [createPlayer(starters[0], 50)], wave: 10 });
     assert.ok(encounter.enemies.every((p) => p.level === level));
     assert.deepEqual(encounter.enemies.map((p) => p.baseId), data.BOSSES[10].ids);
   }
@@ -609,8 +609,8 @@ test("Easy v2 segments plateau at boundaries; Normal and old Easy profiles stay 
       }
     }
     for (const [wave, level] of [[10, 10], [20, 20], [30, 29]]) {
-      assert.ok(engine.generateWave({ ...newRun(starters, "easy"), wave }).enemies.every(p => p.level === level));
-      assert.ok(engine.generateWave({ ...newRun(starters), wave }).enemies.every(p => p.level === (wave === 10 ? 11 : wave + 3)));
+      assert.ok(engine.generateWave({ ...newRun(starters, "easy"), team: [createPlayer(starters[0], 50)], wave }).enemies.every(p => p.level === level));
+      assert.ok(engine.generateWave({ ...newRun(starters), team: [createPlayer(starters[0], 50)], wave }).enemies.every(p => p.level === (wave === 10 ? 11 : wave + 3)));
     }
     const old = { ...newRun(starters, "easy"), rulesetId: "easy-v1", rulesetVersion: 1 };
     storage.saveRun(old);
@@ -959,4 +959,46 @@ test("V2i future presentation descriptor is passive and exposes location hierarc
   assert.equal(descriptor.locationType, "generic"); assert.equal(descriptor.areaId, null);
   assert.equal(descriptor.rarityId, null); assert.equal(descriptor.versionId, v.versionId);
   assert.deepEqual(v, original);
+});
+
+
+test("V2k median ceiling ignores KO, floors fractional ceiling and never raises raw levels", () => {
+ const t = levels => levels.map(level=>({...player(),level}));
+ assert.equal(engine.teamReferenceLevel(t([3,20,8])),8);
+ assert.equal(engine.teamReferenceLevel(t([3,8])),5.5);
+ assert.equal(engine.cappedEnemyLevel(20,t([3,8]),"easy-v2"),7);
+ assert.equal(engine.cappedEnemyLevel(4,t([3,8]),"easy-v2"),4);
+ assert.equal(engine.cappedEnemyLevel(20,[...t([8]),{...ko(),level:1}],"normal-v1","boss"),13);
+ assert.equal(engine.cappedEnemyLevel(20,[],"normal-v1"),20);
+ assert.equal(engine.cappedEnemyLevel(20,[ko()],"easy-v2"),20);
+});
+
+test("V2k caps only newly generated enemies, preserving identity, pools and pending saves", () => {
+ const run=newRun(starters);run.wave=20;
+ for(const difficulty of ["normal","easy"]) {
+  const r={...newRun(starters,difficulty),wave:20};
+  const result=engine.generateWave(r);
+  assert.deepEqual(result.enemies.map(p=>p.baseId),data.BOSSES[20].ids);
+  assert.ok(result.enemies.every(p=>p.level===(difficulty==="easy"?6:8)));
+  for(const p of result.enemies) {
+   const expected=createPlayer(p.baseId,p.level);
+   for(const key of ["base","move","tier","atk","def","spd","maxHp"]) assert.deepEqual(p[key],expected[key]);
+  }
+ }
+ const pending={type:"battle",enemies:[createPlayer("dvalin",23)]};
+ storage.saveRun({...run,pending});
+ assert.deepEqual(engine.generateWave(storage.loadRun()),pending);
+});
+
+test("V2k special bonuses respect Easy; offers receive ceiling only and are not mutated", () => {
+ const high={...newRun(starters,"easy"),team:[createPlayer(starters[0],50)]};
+ assert.equal(engine.enemiesForEffect({ids:["dvalin"],levelBonus:3},8,high)[0].level,10);
+ assert.equal(engine.enemiesForEffect({ids:["dvalin"],levelBonus:3},8,{...high,rulesetId:"normal-v1"})[0].level,11);
+ const low=newRun(starters,"easy");
+ assert.equal(engine.enemiesForEffect({ids:["dvalin"],levelBonus:3},8,low)[0].level,5);
+ const offer=createPlayer("dvalin",12),snapshot=structuredClone(offer);
+ const capped=engine.recruitChallengePlayer(offer,low);
+ assert.equal(capped.level,5);assert.equal(capped.uid,offer.uid);
+ assert.deepEqual(offer,snapshot);
+ assert.equal(engine.recruitChallengePlayer(offer,high),offer);
 });

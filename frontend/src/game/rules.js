@@ -41,3 +41,9 @@ export const getRules = (rulesetId = DEFAULT_RULESET) => {
   if (!rules) throw new Error(`Ruleset non supportato: ${rulesetId}`);
   return rules;
 };
+
+// Generation-only policy; published EXP/wave profiles and saved encounters remain unchanged.
+export const ENEMY_GUARDRAILS = {
+  easy: { ordinary: 2, boss: 3, challenge: 2, challengeOffset: -1 },
+  normal: { ordinary: 4, boss: 5, challenge: 4, challengeOffset: 0 },
+};

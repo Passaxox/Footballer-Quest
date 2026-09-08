@@ -1,6 +1,6 @@
 import { selectEncounterVersion, scenarioForWave, normalizeScenarioState } from "./scenarios";
 import { CHARACTERS, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
-import { DEFAULT_RULESET, DIFFICULTIES, getRules } from "./rules";
+import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
 
 export const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -160,6 +160,23 @@ export const fusePlayers = (a, b, moveFrom) => {
 };
 
 // ---------- Enemy / wave generation ----------
+// Median of valid living members; invalid/all-KO states keep the raw level.
+export const teamReferenceLevel = (team = []) => {
+  const levels = (Array.isArray(team) ? team : []).filter(p => p && p.hp > 0 && Number.isInteger(p.level) && p.level >= 1).map(p => p.level).sort((a,b) => a-b);
+  const n = levels.length;
+  return n ? (levels[Math.floor((n-1)/2)] + levels[Math.floor(n/2)]) / 2 : null;
+};
+export const cappedEnemyLevel = (raw, team, rulesetId, kind = "ordinary") => {
+  const reference = teamReferenceLevel(team);
+  if (reference == null) return raw;
+  const cap = ENEMY_GUARDRAILS[getRules(rulesetId).difficultyId][kind];
+  return Math.min(raw, Math.floor(reference + cap));
+};
+// An offer already has a generated level: apply only the ceiling, never an Easy offset twice.
+export const recruitChallengePlayer = (offer, run) => {
+  const level = cappedEnemyLevel(offer.level, run.team, run.rulesetId, "challenge");
+  return level === offer.level ? offer : recalcStats({ ...offer, level });
+};
 export const enemyLevel = (wave, rulesetId) => {
   const rules = getRules(rulesetId);
   const segment = rules.ordinaryEnemyLevelSegments?.filter(s => wave >= s.fromWave).at(-1);
@@ -179,17 +196,18 @@ const generateWaveNode = (run) => {
   const boss = BOSSES[wave];
   if (boss) {
     const rules = getRules(run.rulesetId);
-    const level = wave + (rules.checkpoints[wave]?.levelOffset ?? rules.defaultBossLevelOffset);
+    const rawLevel = wave + (rules.checkpoints[wave]?.levelOffset ?? rules.defaultBossLevelOffset);
+    const level = cappedEnemyLevel(rawLevel, run.team, run.rulesetId, "boss");
     return { type: "battle", kind: "boss", teamName: boss.team, intro: boss.intro, enemies: boss.ids.map((id) => createPlayer(id, level)) };
   }
   const roll = Math.random() * 100;
   if (wave === 1 || roll < 50) {
     const solo = chance(60);
-    if (solo) return { type: "battle", kind: "wild", enemies: [createPlayer(pickOpponent(tierForWave(wave)), enemyLevel(wave, run.rulesetId))] };
+    if (solo) return { type: "battle", kind: "wild", enemies: [createPlayer(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId), run.team, run.rulesetId))] };
     const n = wave < 5 ? 2 : rand(2, 3);
     const ids = [];
     while (ids.length < n) ids.push(pickOpponent(tierForWave(wave), ids));
-    return { type: "battle", kind: "team", teamName: pick(TEAM_NAMES), enemies: ids.map((id) => createPlayer(id, enemyLevel(wave, run.rulesetId))) };
+    return { type: "battle", kind: "team", teamName: pick(TEAM_NAMES), enemies: ids.map((id) => createPlayer(id, cappedEnemyLevel(enemyLevel(wave, run.rulesetId), run.team, run.rulesetId))) };
   }
   if (roll < 62) return { type: "recruit", player: createPlayer(pickOpponent(tierForWave(wave) + (chance(20) ? 1 : 0)), Math.max(1, wave - 1)), price: 60 + wave * 4 };
   if (roll < 74) return { type: "shop", stock: generateShop(wave) };
@@ -224,11 +242,14 @@ export const generateRewards = () => {
   return out;
 };
 
-export const enemiesForEffect = (eff, wave) => {
-  if (eff.ids) return eff.ids.map((id) => createPlayer(id, wave + (eff.levelBonus || 0)));
+export const enemiesForEffect = (eff, wave, run) => {
+  const adjustment = run ? ENEMY_GUARDRAILS[getRules(run.rulesetId).difficultyId].challengeOffset : 0;
+  const raw = Math.max(1, wave + (eff.levelBonus || 0) + adjustment);
+  const level = run ? cappedEnemyLevel(raw, run.team, run.rulesetId, "challenge") : raw;
+  if (eff.ids) return eff.ids.map((id) => createPlayer(id, level));
   const ids = [];
   while (ids.length < (eff.count || 1)) ids.push(randomRosterId(tierForWave(wave), ids));
-  return ids.map((id) => createPlayer(id, wave + (eff.levelBonus || 0)));
+  return ids.map((id) => createPlayer(id, level));
 };
 
 // ---------- Run helpers ----------
