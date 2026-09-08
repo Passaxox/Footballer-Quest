@@ -58,9 +58,10 @@ export function inspectPng(buffer) {
 export function webpDimensions(buffer) {
   if(buffer.toString("ascii",0,4)!=="RIFF" || buffer.toString("ascii",8,12)!=="WEBP") return null;
   if(buffer.length<20 || buffer.readUInt32LE(4)+8!==buffer.length) throw new Error("Invalid WebP RIFF size");
-  for(let offset=12;offset+8<=buffer.length;) {
+  let dimensions=null, imagePayload=false, offset=12;
+  for(;offset+8<=buffer.length;) {
     const type=buffer.toString("ascii",offset,offset+4),size=buffer.readUInt32LE(offset+4),start=offset+8;
-    if(start+size>buffer.length) throw new Error("Truncated WebP chunk");
+    if(start+size+(size%2)>buffer.length) throw new Error("Truncated WebP chunk");
     const data=buffer.subarray(start,start+size);
     let width,height;
     if(type==="VP8L" && size>=5 && data[0]===0x2f) {
@@ -70,10 +71,12 @@ export function webpDimensions(buffer) {
     } else if(type==="VP8 " && size>=10 && data.subarray(3,6).equals(Buffer.from([0x9d,1,0x2a]))) {
       width=data.readUInt16LE(6)&0x3fff;height=data.readUInt16LE(8)&0x3fff;
     }
-    if(width && height) return {width,height,aspectRatio:width/height};
+    if(width && height) dimensions ??= {width,height,aspectRatio:width/height};
+    if((type==="VP8L" && size>5 && width && height) || (type==="VP8 " && size>10 && width && height)) imagePayload=true;
     offset=start+size+(size%2);
   }
-  throw new Error("WebP dimensions unavailable");
+  if(offset!==buffer.length || !dimensions || !imagePayload) throw new Error("Incomplete or invalid WebP image structure");
+  return dimensions;
 }
 
 // Load the actual production catalog, following the existing Node test module adapter.
@@ -94,14 +97,24 @@ export async function auditAssets({directory=path.join(frontend,"public/sprites"
     if(!entry.isFile()) continue;
     const bytes=await readFile(path.join(directory,entry.name));
     const file={filename:entry.name,extension:path.extname(entry.name).toLowerCase(),path:`public/sprites/${entry.name}`,sizeBytes:bytes.length,sha256:createHash("sha256").update(bytes).digest("hex"),validPng:false,sourceFormat:"UNKNOWN",width:null,height:null,aspectRatio:null,versionIds:[],issues:[]};
-    try { Object.assign(file,inspectPng(bytes)); file.validPng=true; file.sourceFormat="PNG"; } catch(error) { file.issues.push({code:"INVALID_PNG",severity:"error",message:error.message}); }
-    if(!file.validPng) {
-      try {
+    try {
+      if(bytes.subarray(0,8).equals(signature)) {
+        file.sourceFormat="PNG";
+        Object.assign(file,inspectPng(bytes)); file.validPng=true;
+      } else {
+        file.sourceFormat=bytes.toString("ascii",0,4)==="RIFF" && bytes.toString("ascii",8,12)==="WEBP" ? "WEBP" : "UNKNOWN";
         const dimensions=webpDimensions(bytes);
-        if(dimensions) { Object.assign(file,dimensions); file.sourceFormat="WEBP"; file.issues.push({code:"FORMAT_EXTENSION_MISMATCH",severity:"warning",message:"WebP payload; header dimensions only, not a valid PNG"}); }
-      } catch(error) { file.issues.push({code:"INVALID_WEBP_HEADER",severity:"error",message:error.message}); }
+        if(!dimensions) throw new Error("Unsupported or unrecognizable image payload");
+        Object.assign(file,dimensions);
+      }
+      file.validAsset=true;
+    } catch(error) {
+      file.validAsset=false;
+      file.issues.push({code:file.sourceFormat==="PNG"?"INVALID_PNG":file.sourceFormat==="WEBP"?"INVALID_WEBP":"UNSUPPORTED_FORMAT",severity:"error",message:error.message});
     }
-    if(file.extension!==".png") file.issues.push({code:"UNSUPPORTED_EXTENSION",severity:"warning"});
+    if(file.validAsset && file.extension!==`.${file.sourceFormat.toLowerCase()}`) {
+      file.issues.push({code:"EXTENSION_FORMAT_MISMATCH",severity:"warning",filename:file.filename,declaredExtension:file.extension,detectedFormat:file.sourceFormat,width:file.width,height:file.height});
+    }
     if(file.width && file.width!==file.height) file.issues.push({code:"NON_SQUARE_SOURCE",severity:"warning"});
     files.push(file);
   }
@@ -115,7 +128,7 @@ export async function auditAssets({directory=path.join(frontend,"public/sprites"
       issues.push(warning);if(file) file.issues.push({...warning,versionId:v.versionId});
     }
     if(file) file.versionIds.push(v.versionId);
-    return {versionId:v.versionId,characterId:v.characterId,displayName:v.displayName,spriteId:v.spriteId,filename,present:!!file,status:!file?"MISSING":!file.validPng || issues.length?"WARNING":"READY",issues};
+    return {versionId:v.versionId,characterId:v.characterId,displayName:v.displayName,spriteId:v.spriteId,filename,present:!!file,status:!file?"MISSING":!file.validAsset || issues.length?"WARNING":"READY",issues};
   });
   for(const file of files) {
     if(!file.versionIds.length) file.issues.push({code:"ORPHAN_ASSET",severity:"warning"});
@@ -125,13 +138,15 @@ export async function auditAssets({directory=path.join(frontend,"public/sprites"
   }
   const dimensionBuckets={};
   for(const f of files.filter(f=>f.width && f.height)) {const key=`${f.width}x${f.height}`;dimensionBuckets[key]=(dimensionBuckets[key]||0)+1;}
-  return {reportVersion:1,summary:{assetCount:files.length,versionCount:references.length,missing:references.filter(r=>!r.present).length,orphans:files.filter(f=>!f.versionIds.length).length,invalidPng:files.filter(f=>!f.validPng).length,warnings:files.filter(f=>f.issues.some(i=>i.severity==="warning")).length,dimensionBuckets},files,versions:references};
+  return {reportVersion:1,summary:{assetCount:files.length,versionCount:references.length,missing:references.filter(r=>!r.present).length,orphans:files.filter(f=>!f.versionIds.length).length,invalidPng:files.filter(f=>f.issues.some(i=>i.code==="INVALID_PNG")).length,invalidAssets:files.filter(f=>!f.validAsset).length,extensionFormatMismatches:files.filter(f=>f.issues.some(i=>i.code==="EXTENSION_FORMAT_MISMATCH")).length,warningCount:files.reduce((n,f)=>n+f.issues.filter(i=>i.severity==="warning").length,0),warnings:files.filter(f=>f.issues.some(i=>i.severity==="warning")).length,dimensionBuckets},files,versions:references};
 }
+
+export const auditExitCode = report => report.summary.missing || report.files.some(f=>f.issues.some(i=>i.severity==="error")) ? 1 : 0;
 
 if(process.argv[1] && import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href) {
   const identities=JSON.parse(await readFile(path.join(frontend,"tests/fixtures/catalog-identity-audit.json"),"utf8")).entries;
   const report=await auditAssets({identities});
   console.log(JSON.stringify(report,null,2));
   console.error(`Asset audit: ${JSON.stringify(report.summary)}`);
-  if(report.summary.missing || report.summary.invalidPng) process.exitCode=1;
+  process.exitCode=auditExitCode(report);
 }
