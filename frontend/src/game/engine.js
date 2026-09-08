@@ -1,3 +1,4 @@
+import { CHARACTERS, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
 
@@ -6,7 +7,7 @@ export const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 export const chance = (pct) => Math.random() * 100 < pct;
 export const uid = () => Math.random().toString(36).slice(2, 10);
 
-export const byId = (id) => ROSTER.find((p) => p.id === id);
+export const byId = (id) => ROSTER.find((p) => p.id === (resolveVersion(id)?.legacyRosterId || id));
 
 export const typeMultiplier = (moveEl, targetEl) => {
   if (ELEMENTS[moveEl].beats === targetEl) return 1.5;
@@ -29,10 +30,13 @@ export const recalcStats = (p) => {
 };
 
 export const createPlayer = (id, level = 1) => {
-  const r = byId(id);
+  const version = resolveVersion(id);
+  if (!version || version.kind !== "player") throw new Error("Versione giocatore non disponibile.");
   const p = {
-    uid: uid(), baseId: id, name: r.name, element: r.element, role: r.role, tier: r.tier, move: { ...r.move },
-    level, xp: 0, base: { hp: r.hp, atk: r.atk, def: r.def, spd: r.spd }, bonus: { hp: 0, atk: 0, def: 0, spd: 0 },
+    uid: uid(), baseId: version.legacyRosterId || version.versionId, characterId: version.characterId, versionId: version.versionId,
+    name: CHARACTERS[version.characterId]?.displayName || "Sconosciuto", element: version.element, role: version.role,
+    tier: version.encounterTier, move: { ...PRIMARY_MOVES[version.primaryMoveId] },
+    level, xp: 0, base: { ...version.baseStats }, bonus: { hp: 0, atk: 0, def: 0, spd: 0 },
     maxHp: 0, hp: 0, fused: false, status: freshStatus(),
   };
   const s = recalcStats(p);
@@ -144,6 +148,7 @@ export const fusePlayers = (a, b, moveFrom) => {
   const lvl = Math.max(a.level, b.level);
   const p = {
     uid: uid(), baseId: `${a.baseId}+${b.baseId}`, name: `${first} ${last}`, element: src.element, role: a.role, tier: Math.max(a.tier, b.tier), move: { ...src.move },
+    parentVersionIds: [resolveVersion(a.versionId || a.baseId)?.versionId ?? null, resolveVersion(b.versionId || b.baseId)?.versionId ?? null],
     level: lvl, xp: 0, fused: true, status: freshStatus(),
     base: { hp: Math.round((a.base.hp + b.base.hp) / 2 * 1.15), atk: Math.round((a.base.atk + b.base.atk) / 2 * 1.15), def: Math.round((a.base.def + b.base.def) / 2 * 1.15), spd: Math.round((a.base.spd + b.base.spd) / 2 * 1.15) },
     bonus: { hp: a.bonus.hp + b.bonus.hp, atk: a.bonus.atk + b.bonus.atk, def: a.bonus.def + b.bonus.def, spd: a.bonus.spd + b.bonus.spd },
@@ -231,7 +236,7 @@ export const normalizeRun = (run) => {
   if (!run) return null;
   const rulesetId = run.rulesetId || DIFFICULTIES[run.difficultyId || "normal"]?.rulesetId || DEFAULT_RULESET;
   const rules = getRules(rulesetId);
-  return { ...run, saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
+  return { ...run, team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
     rulesetVersion: run.rulesetVersion ?? rules.version,
     activeUid: resolveActiveUid(run.team, run.activeUid) };
 };

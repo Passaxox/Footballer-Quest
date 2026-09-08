@@ -67,10 +67,14 @@ test("Game Over retry opens a fresh draft and preserves one history entry across
   expect(next.team.every(p => !run.team.some(old => old.uid === p.uid))).toBe(true);
   expect(next.wave).toBe(1);
   expect(next.difficultyId).toBe("easy");
-  expect(loadMeta()).toEqual(archived);
+  const afterDraft = loadMeta();
+  expect(afterDraft.records).toEqual(archived.records);
+  expect(afterDraft.runs).toBe(archived.runs);
+  expect(afterDraft.unlocked).toEqual(archived.unlocked);
+  for (const id of chosen) expect(afterDraft.collection[`${id}:base`].recruited).toBe(true);
   await act(async () => root.unmount()); root = createRoot(host);
   await act(async () => root.render(<App />));
-  expect(props(TitleScreen).meta).toEqual(archived);
+  expect(props(TitleScreen).meta).toEqual(afterDraft);
   expect(loadRun()).toEqual(next);
 });
 
@@ -299,4 +303,17 @@ test("declining an encountered player never unlocks it", async () => {
   await mountAndContinue();
   await call(RecruitScreen, "onSkip");
   expect(loadMeta().unlocked).not.toContain("darren");
+});
+
+test("discovery persists independently of recruitment, then actual join unlocks the version", async () => {
+  const p = createPlayer("darren", 9);
+  saveRun(runWith({ type: "recruit", player: p, price: 0 }));
+  await mountAndContinue();
+  await call(RecruitScreen, "onDiscover", p);
+  expect(loadMeta().collection[p.versionId]).toEqual({ discovered: true, recruited: false, starterUnlocked: false });
+  expect(loadMeta().unlocked).not.toContain("darren");
+  await reload();
+  await call(RecruitScreen, "onJoin", null, false);
+  expect(loadMeta().collection[p.versionId]).toEqual({ discovered: true, recruited: true, starterUnlocked: true });
+  expect(loadMeta().unlocked.filter(id => id === "darren")).toHaveLength(1);
 });

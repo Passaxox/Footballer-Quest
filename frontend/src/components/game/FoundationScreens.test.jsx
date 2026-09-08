@@ -123,7 +123,7 @@ test("starter difficulty selection only affects the new run and clearly labels t
   expect(loadRun()).toEqual(existing);
   for (const id of STARTER_IDS.slice(0, 3)) await click(`starter-${id}`);
   await click("start-run-btn");
-  expect(onStart).toHaveBeenCalledWith(STARTER_IDS.slice(0, 3), "easy");
+  expect(onStart).toHaveBeenCalledWith(STARTER_IDS.slice(0, 3).map(id => `${id}:base`), "easy");
 });
 
 test("Hub labels the persisted difficulty and EndScreen shows local playtest figures", async () => {

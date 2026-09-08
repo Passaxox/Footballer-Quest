@@ -13,7 +13,7 @@ const settle = async () => {
   for (let i = 0; i < 20; i++) await act(async () => { jest.advanceTimersByTime(1000); });
 };
 const setup = async (run, strict = false, overrides = {}) => {
-  const callbacks = { onWin: jest.fn(), onLose: jest.fn(), onFlee: jest.fn(), onActiveChange: jest.fn() };
+  const callbacks = { onWin: jest.fn(), onLose: jest.fn(), onFlee: jest.fn(), onActiveChange: jest.fn(), onDiscover: jest.fn() };
   const encounter = { kind: "team", teamName: "Test", enemies: [engine.createPlayer(STARTER_IDS[0], 1)], ...overrides };
   const view = <BattleScreen run={run} encounter={encounter} {...callbacks} />;
   await act(async () => root.render(strict ? <StrictMode>{view}</StrictMode> : view));
@@ -51,6 +51,14 @@ test("StrictMode introduction reaches Mantieni/Cambia before the first turn", as
   expect(callbacks.onActiveChange).toHaveBeenCalledWith(run.team[1].uid);
   expect(attack).not.toHaveBeenCalled();
   expect(burn).not.toHaveBeenCalled();
+});
+
+test("discovery reports only the opponent actually displayed, not the hidden bench", async () => {
+  const first = engine.createPlayer("darren", 1), second = engine.createPlayer("byron", 1);
+  const callbacks = await setup(engine.newRun(STARTER_IDS.slice(0, 3)), false, { enemies: [first, second] });
+  expect(callbacks.onDiscover).toHaveBeenCalledWith(first);
+  expect(callbacks.onDiscover).not.toHaveBeenCalledWith(second);
+  expect(callbacks.onWin).not.toHaveBeenCalled();
 });
 
 test("pre-battle switch is free, excludes KO and leaves captain/order unchanged", async () => {

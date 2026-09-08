@@ -7,11 +7,15 @@ const source = (name) => readFile(new URL(`../src/game/${name}.js`, import.meta.
 const moduleUrl = (text) => `data:text/javascript;base64,${Buffer.from(text).toString("base64")}`;
 const dataUrl = moduleUrl(await source("data"));
 const rulesUrl = moduleUrl(await source("rules"));
-const engineUrl = moduleUrl((await source("engine")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)));
+const catalogUrl = moduleUrl((await source("catalog")).replace('"./data"', JSON.stringify(dataUrl)));
+const collectionUrl = moduleUrl((await source("collection")).replace('"./catalog"', JSON.stringify(catalogUrl)));
+const catalog = await import(catalogUrl);
+const collection = await import(collectionUrl);
+const engineUrl = moduleUrl((await source("engine")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const engine = await import(engineUrl);
 const data = await import(dataUrl);
 const storage = await import(moduleUrl((await source("storage"))
-  .replace('"./data"', JSON.stringify(dataUrl)).replace('"./engine"', JSON.stringify(engineUrl))));
+  .replace('"./data"', JSON.stringify(dataUrl)).replace('"./engine"', JSON.stringify(engineUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./collection"', JSON.stringify(collectionUrl))));
 const { createPlayer, recalcStats, gainXp, xpForLevel, applyItemTo, applyEventDamage,
   fusePlayers, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, canReleasePlayer } = engine;
 const starters = data.STARTER_IDS.slice(0, 3);
@@ -23,6 +27,119 @@ globalThis.localStorage = {
   setItem: (key, value) => values.set(key, String(value)),
   removeItem: (key) => values.delete(key),
 };
+
+test("V2a maps legacy IDs to versions without changing playable data", () => {
+  for (const row of data.ROSTER) {
+    const version = catalog.resolveVersion(row.id);
+    assert.equal(catalog.resolveVersion(version.versionId), version);
+    assert.equal(catalog.CHARACTERS[version.characterId].displayName, row.name);
+    assert.equal(version.encounterTier, row.tier);
+    assert.equal(version.rarityId, null);
+    assert.equal(version.gender, null);
+    assert.deepEqual(version.teamTags, []);
+    assert.deepEqual(version.baseStats, { hp: row.hp, atk: row.atk, def: row.def, spd: row.spd });
+    assert.deepEqual(catalog.PRIMARY_MOVES[version.primaryMoveId], row.move);
+    const p = createPlayer(version.versionId, 3);
+    assert.equal(p.baseId, row.id);
+    assert.equal(p.versionId, version.versionId);
+    assert.equal(p.characterId, version.characterId);
+    assert.deepEqual(p.move, row.move);
+  }
+  assert.equal(catalog.resolveVersion("missing"), null);
+  assert.equal(catalog.resolveVersion("toString"), null);
+});
+
+test("V2a identity and progress stay per version even when two versions share a character", () => {
+  const base = catalog.resolveVersion("mark");
+  const versionId = "mark:test-only";
+  catalog.CHARACTER_VERSIONS[versionId] = { ...base, versionId };
+  try {
+    const instance = createPlayer(versionId, 3);
+    assert.equal(instance.versionId, versionId);
+    assert.equal(instance.characterId, base.characterId);
+    assert.deepEqual(instance.base, base.baseStats);
+    const meta = collection.migrateCollection({ unlocked: ["mark"] });
+    assert.equal(collection.getCollectionProgress(meta, versionId).starterUnlocked, false);
+    const recruited = collection.recruitVersion(meta, versionId);
+    assert.equal(collection.getCollectionState(recruited, versionId), "RECRUITED");
+    assert.equal(collection.getCollectionState(recruited, base.versionId), "DISCOVERED");
+    assert.deepEqual(recruited.unlocked, ["mark"]);
+  } finally { delete catalog.CHARACTER_VERSIONS[versionId]; }
+});
+
+test("V2a legacy v2 active run migration preserves every runtime field and fused player", () => {
+  const run = newRun(starters);
+  const fused = fusePlayers(run.team[0], run.team[1], "a");
+  delete fused.parentVersionIds;
+  run.team = [run.team[0], fused, { ...run.team[2], baseId: "missing" }];
+  for (const p of run.team) { delete p.characterId; delete p.versionId; p.hp = 7; p.xp = 13; }
+  run.activeUid = run.team[0].uid;
+  run.pending = { type: "battle", enemies: [player()] };
+  localStorage.setItem("inazuma_rogue_run", JSON.stringify(run));
+  const migrated = storage.loadRun();
+  assert.equal(migrated.saveVersion, 2);
+  assert.equal(migrated.activeUid, run.activeUid);
+  assert.deepEqual(migrated.pending, run.pending);
+  assert.equal(migrated.team[0].versionId, catalog.resolveVersion(run.team[0].baseId).versionId);
+  for (let i = 0; i < run.team.length; i++) {
+    for (const key of Object.keys(run.team[i])) assert.deepEqual(migrated.team[i][key], run.team[i][key]);
+  }
+  assert.deepEqual(migrated.team[1], fused);
+  assert.deepEqual(migrated.team[2], run.team[2]);
+  storage.saveRun(migrated);
+  assert.deepEqual(storage.loadRun(), migrated);
+});
+
+test("V2a meta migration preserves starter eligibility and unknown data without inventing recruits", () => {
+  const legacy = { unlocked: [...data.STARTER_IDS, "darren", "missing"], records: [], future: { currencyId: "future-token" } };
+  const migrated = collection.migrateCollection(legacy);
+  assert.deepEqual(collection.migrateCollection(migrated), migrated);
+  assert.deepEqual(migrated.unlocked, legacy.unlocked);
+  assert.deepEqual(migrated.future, legacy.future);
+  for (const id of legacy.unlocked.filter(id => id !== "missing")) {
+    const progress = collection.getCollectionProgress(migrated, id);
+    assert.equal(progress.starterUnlocked, true);
+    assert.equal(progress.recruited, false);
+  }
+  assert.equal(collection.getCollectionState(migrated, "missing"), "UNKNOWN");
+  storage.saveMeta(migrated);
+  assert.equal(collection.getCollectionProgress(storage.loadMeta(), "darren").starterUnlocked, true);
+});
+
+test("V2a discovery, recruitment and starter unlock are distinct idempotent operations", () => {
+  const meta = collection.migrateCollection({ unlocked: [] });
+  assert.equal(collection.getCollectionState(meta, "darren"), "UNKNOWN");
+  const discovered = collection.discoverVersion(meta, "darren");
+  assert.equal(collection.getCollectionState(discovered, "darren"), "DISCOVERED");
+  assert.equal(collection.getCollectionProgress(discovered, "darren").starterUnlocked, false);
+  assert.equal(collection.discoverVersion(discovered, "darren"), discovered);
+  const recruited = collection.recruitVersion(discovered, "darren");
+  assert.equal(collection.getCollectionState(recruited, "darren"), "RECRUITED");
+  assert.equal(collection.getCollectionProgress(recruited, "darren").starterUnlocked, true);
+  assert.deepEqual(recruited.unlocked, ["darren"]);
+  assert.equal(collection.recruitVersion(recruited, "darren:base"), recruited);
+  const unlockedOnly = collection.unlockStarter(meta, "darren");
+  assert.deepEqual(collection.getCollectionProgress(unlockedOnly, "darren"), { discovered: false, recruited: false, starterUnlocked: true });
+  assert.deepEqual(collection.migrateCollection(unlockedOnly), unlockedOnly);
+  assert.equal(collection.recruitVersion(meta, "missing"), meta);
+});
+
+test("V2a history stores identity and legacy fields while keeping old and unknown snapshots", () => {
+  const oldRecord = { teamSnapshot: [{ baseId: "missing", name: "Old name", level: 7, fused: false }] };
+  const meta = { ...storage.loadMeta(), records: [oldRecord], runs: 1, bestWave: 7 };
+  const run = newRun(starters);
+  const fused = fusePlayers(run.team[0], run.team[1], "a");
+  assert.deepEqual(fused.parentVersionIds, run.team.slice(0, 2).map(p => p.versionId));
+  run.team[1] = fused;
+  const next = storage.recordFinishedRun(meta, run, "lose");
+  assert.deepEqual(next.records[0], oldRecord);
+  const snapshot = next.records[1].teamSnapshot;
+  assert.equal(snapshot[0].versionId, run.team[0].versionId);
+  assert.equal(snapshot[0].characterId, run.team[0].characterId);
+  assert.equal(snapshot[1].versionId, null);
+  assert.equal(snapshot[1].baseId, fused.baseId);
+  assert.equal(snapshot[1].fused, true);
+});
 
 test("KO survives every stat recalculation and multiple level-ups", () => {
   const p = ko();

@@ -1,5 +1,7 @@
+import { getCollectionProgress } from "@/game/collection";
+import { CHARACTER_VERSIONS } from "@/game/catalog";
 import { useState } from "react";
-import { ROSTER, ELEMENTS } from "@/game/data";
+import { ELEMENTS } from "@/game/data";
 import { createPlayer } from "@/game/engine";
 import { DIFFICULTIES } from "@/game/rules";
 import { sfx } from "@/game/audio";
@@ -8,7 +10,7 @@ import { Btn, Header, PlayerCard, StatLine } from "./ui";
 export default function TeamSelect({ meta, onStart, onBack }) {
   const [sel, setSel] = useState([]);
   const [difficultyId, setDifficultyId] = useState("normal");
-  const roster = ROSTER.filter((r) => meta.unlocked.includes(r.id));
+  const roster = Object.values(CHARACTER_VERSIONS).filter(v => v.kind === "player" && getCollectionProgress(meta, v.versionId).starterUnlocked);
   const toggle = (id) => {
     sfx.select();
     setSel((s) => (s.includes(id) ? s.filter((x) => x !== id) : s.length < 3 ? [...s, id] : s));
@@ -30,11 +32,11 @@ export default function TeamSelect({ meta, onStart, onBack }) {
           Ricorda il ciclo elementale: <span className={ELEMENTS.aria.text}>Aria</span> &gt; <span className={ELEMENTS.terra.text}>Terra</span> &gt; <span className={ELEMENTS.fuoco.text}>Fuoco</span> &gt; <span className={ELEMENTS.natura.text}>Natura</span> &gt; <span className={ELEMENTS.aria.text}>Aria</span>
         </div>
         {roster.map((r) => {
-          const p = createPlayer(r.id, 3);
-          const on = sel.includes(r.id);
+          const p = createPlayer(r.versionId, 3);
+          const on = sel.includes(r.versionId);
           return (
-            <div key={r.id}>
-              <PlayerCard p={p} selected={on} testId={`starter-${r.id}`} onClick={() => toggle(r.id)} />
+            <div key={r.versionId}>
+              <PlayerCard p={p} selected={on} testId={`starter-${r.legacyRosterId || r.versionId}`} onClick={() => toggle(r.versionId)} />
               <div className="border-2 border-t-0 border-slate-700 p-2 bg-[#0b101d]"><StatLine p={p} /></div>
             </div>
           );

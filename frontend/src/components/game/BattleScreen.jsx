@@ -34,7 +34,7 @@ const Dots = ({ team, active }) => (
   </div>
 );
 
-export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, onActiveChange }) {
+export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, onActiveChange, onDiscover }) {
   const s = useRef(null);
   if (!s.current) {
     s.current = {
@@ -43,6 +43,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     };
   }
   const st = s.current;
+  const shownEnemy = encounter.enemies[st.eIdx];
+  useEffect(() => { if (st.active >= 0) onDiscover?.(shownEnemy); }, [shownEnemy, onDiscover, st.active]);
   const [, force] = useState(0);
   const rr = () => force((n) => n + 1);
   const mounted = useRef(true);

@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RECRUIT_LINES } from "@/game/data";
 import { pick } from "@/game/engine";
 import { sfx } from "@/game/audio";
 import { Btn, Header, Panel, PlayerCard, StatLine, Avatar, XpReport } from "./ui";
 
 // mode: "offer" (free join) | "encounter" (challenge / pay / skip)
-export default function RecruitScreen({ run, player, price, mode, xpReport, onChallenge, onJoin, onSkip }) {
+export default function RecruitScreen({ run, player, price, mode, xpReport, onChallenge, onJoin, onSkip, onDiscover }) {
+  useEffect(() => { onDiscover?.(player); }, [player, onDiscover]);
   const [replacing, setReplacing] = useState(false);
   const [paid, setPaid] = useState(false);
   const [line] = useState(() => pick(RECRUIT_LINES));

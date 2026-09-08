@@ -1,3 +1,4 @@
+import { resolveVersion } from "@/game/catalog";
 import { useState } from "react";
 import { ELEMENTS, ROLES } from "@/game/data";
 import { xpForLevel, effectiveTypeMultiplier } from "@/game/engine";
@@ -99,7 +100,10 @@ const SpriteImg = ({ id, size, clip, fallback }) => {
 // Real DS/3DS sprite by baseId; fused players show a split of both parents; falls back to a procedural pixel avatar
 export const Avatar = ({ p, size = 64, ko = false, className = "" }) => {
   const e = ELEMENTS[p.element];
-  const ids = String(p.baseId).split("+");
+  const ids = p.fused || String(p.baseId).includes("+")
+    ? (p.parentVersionIds?.every(Boolean) ? p.parentVersionIds : String(p.baseId).split("+")).map(id => resolveVersion(id)?.spriteId)
+    : [resolveVersion(p.versionId || p.baseId)?.spriteId];
+  if (!e || ids.some(id => !id)) return <div aria-label="Ritratto non disponibile" className={`shrink-0 grid place-items-center bg-slate-800 text-slate-400 ${className}`} style={{ width: size, height: size }}>?</div>;
   const fb = <PixelAvatar seed={p.uid + p.name} element={p.element} size={size} ko={ko} />;
   return (
     <div className={`relative shrink-0 ${className}`} style={{ width: size, height: size, background: "#0d1322", border: `2px solid ${ko ? "#334155" : e.color}`, filter: ko ? "grayscale(1) brightness(0.5)" : "none", boxShadow: `0 0 0 1px #000, inset 0 0 ${size / 6}px ${e.color}33` }}>
