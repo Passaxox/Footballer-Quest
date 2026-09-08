@@ -13,7 +13,7 @@ export default function CollectionScreen({ meta, onBack }) {
         {versions.map(v => {
           const state = getCollectionState(meta, v.versionId);
           const progress = getCollectionProgress(meta, v.versionId);
-          const name = CHARACTERS[v.characterId]?.displayName || "Sconosciuto";
+          const name = v.displayName || CHARACTERS[v.characterId]?.displayName || "Sconosciuto";
           return (
             <div key={v.versionId} data-testid={`collection-${v.legacyRosterId}`} className="p-2 border-2 border-slate-700 bg-[#141c2e] space-y-2">
               {state === "UNKNOWN" ? <>

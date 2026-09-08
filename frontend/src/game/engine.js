@@ -34,7 +34,7 @@ export const createPlayer = (id, level = 1) => {
   if (!version || version.kind !== "player") throw new Error("Versione giocatore non disponibile.");
   const p = {
     uid: uid(), baseId: version.legacyRosterId || version.versionId, characterId: version.characterId, versionId: version.versionId,
-    name: CHARACTERS[version.characterId]?.displayName || "Sconosciuto", element: version.element, role: version.role,
+    name: version.displayName || CHARACTERS[version.characterId]?.displayName || "Sconosciuto", element: version.element, role: version.role,
     tier: version.encounterTier, move: { ...PRIMARY_MOVES[version.primaryMoveId] },
     level, xp: 0, base: { ...version.baseStats }, bonus: { hp: 0, atk: 0, def: 0, spd: 0 },
     maxHp: 0, hp: 0, fused: false, status: freshStatus(),

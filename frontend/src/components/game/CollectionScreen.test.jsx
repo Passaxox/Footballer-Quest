@@ -62,3 +62,11 @@ test("unknown identities keep legacy history readable and use a neutral avatar",
   expect(host.textContent).toContain("Saved name Lv8");
   expect(host.querySelector('[aria-label="Ritratto non disponibile"]')).not.toBeNull();
 });
+
+test("fusion portraits prefer V2 parents and retain the legacy fallback", async () => {
+  const base = { name: "Saved fusion", uid: "fusion", element: "terra", fused: true };
+  await act(async () => root.render(<Avatar p={{ ...base, baseId: "unresolvable+legacy", parentVersionIds: ["mark:base", "axel:base"] }} />));
+  expect([...host.querySelectorAll("img")].map(img => img.getAttribute("src"))).toEqual(["/sprites/mark.png", "/sprites/axel.png"]);
+  await act(async () => root.render(<Avatar p={{ ...base, baseId: "mark+axel" }} />));
+  expect([...host.querySelectorAll("img")].map(img => img.getAttribute("src"))).toEqual(["/sprites/mark.png", "/sprites/axel.png"]);
+});

@@ -1,13 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 
 // Load the production ES modules without adding a bundler or changing CRA's module format.
 const source = (name) => readFile(new URL(`../src/game/${name}.js`, import.meta.url), "utf8");
 const moduleUrl = (text) => `data:text/javascript;base64,${Buffer.from(text).toString("base64")}`;
 const dataUrl = moduleUrl(await source("data"));
 const rulesUrl = moduleUrl(await source("rules"));
-const catalogUrl = moduleUrl((await source("catalog")).replace('"./data"', JSON.stringify(dataUrl)));
+const validationUrl = moduleUrl(await source("catalogValidation"));
+const { validateCatalog } = await import(validationUrl);
+const catalogUrl = moduleUrl((await source("catalog")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)));
 const collectionUrl = moduleUrl((await source("collection")).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
@@ -27,6 +29,92 @@ globalThis.localStorage = {
   setItem: (key, value) => values.set(key, String(value)),
   removeItem: (key) => values.delete(key),
 };
+
+test("V2b complete catalog validates against actual sprite files and required legacy roster", async () => {
+  const spriteIds = new Set((await readdir(new URL("../public/sprites/", import.meta.url))).filter(f => f.endsWith(".png")).map(f => f.slice(0, -4)));
+  assert.equal(validateCatalog(catalog.CATALOG_SOURCE, { spriteIds, requiredLegacyIds: data.ROSTER.map(r => r.id) }), true);
+  for (const row of data.ROSTER) {
+    const v = catalog.resolveVersion(row.id);
+    assert.equal(v.displayName, row.name);
+    for (const key of ["gender", "rarityId", "variantId", "arcId", "eraId", "gameOrigin"]) assert.equal(v[key], null);
+    assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], row.move);
+    for (const level of [1, 3, 15]) {
+      const p = createPlayer(v.versionId, level);
+      for (const [base, runtime] of [["hp", "maxHp"], ["atk", "atk"], ["def", "def"], ["spd", "spd"]]) {
+        assert.equal(p[runtime], Math.floor(row[base] * (1 + 0.07 * (level - 1))));
+      }
+      assert.equal(p.hp, p.maxHp);
+      assert.equal(p.xp, 0);
+    }
+  }
+});
+
+test("V2b catalog rejects duplicate, ambiguous and broken references before indexing", () => {
+  const cases = [
+    [c => c.characters.push({ ...c.characters[0] }), /Duplicate characterId/],
+    [c => c.versions.push({ ...c.versions[0] }), /Duplicate versionId/],
+    [c => { c.versions[0].characterId = "missing"; }, /Unknown characterId/],
+    [c => { c.versions[0].legacyRosterId = null; }, /Invalid legacy target/],
+    [c => c.legacyMappings.shift(), /legacy mapping/],
+    [c => { c.versions[0].primaryMoveId = "missing"; }, /Unknown primaryMoveId/],
+    [c => { c.versions[0].primaryMoveId = null; }, /Unknown primaryMoveId/],
+    [c => { c.versions[0].spriteId = "../private"; }, /Invalid spriteId/],
+    [c => { c.versions[0].kind = "wizard"; }, /Invalid kind/],
+    [c => { c.versions[0].gender = "guessed"; }, /Invalid gender/],
+    [c => { c.versions[0].teamTags = "team"; }, /Invalid teamTags/],
+    [c => { c.versions[0].teamTags = ["team", "team"]; }, /Invalid teamTags/],
+    [c => { c.versions[0].rarityId = "unregistered"; }, /Invalid rarityId/],
+    [c => { c.versions[1].legacyRosterId = c.versions[0].legacyRosterId; }, /legacy ID/],
+    [c => c.legacyMappings.push({ ...c.legacyMappings[0], versionId: c.versions[1].versionId }), /Duplicate legacyId/],
+    [c => { c.legacyMappings[0].versionId = "missing"; }, /legacy mapping/],
+    [c => c.versions.push({ ...c.versions[0], versionId: c.legacyMappings[0].legacyId, legacyRosterId: null }), /Ambiguous legacy\/version ID/],
+    [c => c.moves.push({ ...c.moves[0] }), /Duplicate moveId/],
+  ];
+  for (const [mutate, error] of cases) {
+    const source = structuredClone(catalog.CATALOG_SOURCE);
+    mutate(source);
+    assert.throws(() => validateCatalog(source, { requiredLegacyIds: data.ROSTER.map(r => r.id) }), error);
+  }
+  assert.throws(() => validateCatalog(catalog.CATALOG_SOURCE, { spriteIds: new Set() }), /Invalid spriteId/);
+});
+
+test("V2b permits partial metadata, multiple affiliations and distinct incarnations without rarity effects", () => {
+  const source = structuredClone(catalog.CATALOG_SOURCE);
+  source.rarityIds = ["test-rarity"];
+  for (const kind of ["player", "manager", "coach", "dev"]) source.versions.push({
+    ...source.versions[0], versionId: `test:${kind}`, legacyRosterId: null, displayName: `Test ${kind}`, kind,
+    primaryMoveId: kind === "player" ? source.versions[0].primaryMoveId : null,
+    teamTags: ["test-team-a", "test-team-b"], rarityId: "test-rarity",
+  });
+  assert.equal(validateCatalog(source), true);
+  assert.equal(source.versions.at(-1).characterId, source.characters[0].characterId);
+  const original = catalog.CHARACTER_VERSIONS["mark:base"];
+  const before = createPlayer("mark", 7);
+  try {
+    catalog.CHARACTER_VERSIONS["mark:base"] = { ...original, rarityId: "test-rarity" };
+    const after = createPlayer("mark", 7);
+    const { uid: oldUid, ...oldData } = before;
+    const { uid: newUid, ...newData } = after;
+    assert.deepEqual(newData, oldData);
+  } finally { catalog.CHARACTER_VERSIONS["mark:base"] = original; }
+});
+
+test("V2b V2a run and meta round-trip keeps runtime moves, fusion parents, collection and history", () => {
+  values.clear();
+  const run = newRun(starters);
+  run.team[0].hp = 9; run.team[0].xp = 17;
+  run.team[0].move = { ...run.team[0].move, name: "Saved technique snapshot" };
+  run.team[1] = fusePlayers(run.team[1], run.team[2], "b");
+  let meta = collection.recruitVersion(storage.loadMeta(), "darren");
+  meta = storage.recordFinishedRun(meta, run, "lose");
+  storage.saveMeta(meta); storage.saveRun(run);
+  const loadedRun = storage.loadRun(), loadedMeta = storage.loadMeta();
+  storage.saveRun(loadedRun); storage.saveMeta(loadedMeta);
+  assert.deepEqual(storage.loadRun(), run);
+  assert.deepEqual(storage.loadMeta(), meta);
+  assert.equal(storage.loadRun().saveVersion, 2);
+  assert.equal(storage.loadMeta().metaSchemaVersion, 1);
+});
 
 test("V2a maps legacy IDs to versions without changing playable data", () => {
   for (const row of data.ROSTER) {
