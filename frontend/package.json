@@ -66,6 +66,8 @@
     "build": "craco build",
     "test": "craco test",
     "test:foundation": "node --test tests/foundation.test.mjs",
+    "asset:audit": "node scripts/asset-audit.mjs",
+    "test:assets": "node --test tests/asset-audit.test.mjs",
     "android:prepare": "npm run build && npx cap sync android",
     "android:debug": "npm run android:prepare && cd android && ./gradlew assembleDebug"
   },

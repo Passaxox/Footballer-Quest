@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { attackFeedback } from "@/game/battleFeedback";
 import { ITEMS, WILD_INTROS, ELEMENTS } from "@/game/data";
-import { performAttack, applyBurn, turnOrder, resetBattleStatus, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, canApplyItem, removeItem, pick, chance, resolveActiveUid, xpProgress } from "@/game/engine";
+import { performAttack, applyBurn, turnOrder, resetBattleStatus, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, removeItem, pick, chance, resolveActiveUid, xpProgress } from "@/game/engine";
 import { sfx } from "@/game/audio";
-import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
+import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, ItemTargetCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -307,9 +307,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
           <div className="space-y-2">
             <div className="font-body text-slate-300 text-lg">Su chi usare {ITEMS[st.itemSel].name}?</div>
             {st.team.map((q, i) => (
-              <div key={q.uid} className={canApplyItem(st.itemSel, q) ? "" : "opacity-40 pointer-events-none"}>
-                <PlayerCard p={q} compact testId={`item-target-${i}`} onClick={() => consumeItem(st.itemSel, i)} />
-              </div>
+              <ItemTargetCard key={q.uid} p={q} itemId={st.itemSel} testId={`item-target-${i}`} onClick={() => consumeItem(st.itemSel, i)} />
             ))}
             <Btn data-testid="item-target-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.itemSel = null; rr(); }}>Indietro</Btn>
           </div>

@@ -158,3 +158,17 @@ test("V2m inventory redeems sponsor voucher and prevents wasting battle-only buf
  expect(update.mock.calls[0][0].money).toBe(run.money+35);
  expect(update.mock.calls[0][0].items.buono||0).toBe(0);
 });
+
+
+test("V2n Golden Ball highlights KO targets and disables living players in the bag", async()=>{
+ const run={...newRun(STARTER_IDS.slice(0,3)),items:{pallone:1}};run.team[1].hp=0;
+ const update=jest.fn();await act(async()=>root.render(<TeamScreen run={run} onUpdate={update} />));
+ await click("bag-use-pallone");
+ expect(find("team-item-target-0").disabled).toBe(true);
+ expect(find("team-item-target-1").disabled).toBe(false);
+ expect(find("team-item-target-1").textContent).toContain("KO • RIANIMABILE");
+ await click("team-item-target-0");expect(update).not.toHaveBeenCalled();
+ await click("team-item-target-1");
+ expect(update.mock.calls[0][0].team[1].hp).toBe(Math.round(run.team[1].maxHp*.5));
+ expect(update.mock.calls[0][0].team[0]).toEqual(run.team[0]);
+});

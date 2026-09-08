@@ -1,7 +1,7 @@
 import { resolveVersion } from "@/game/catalog";
 import { useState } from "react";
 import { ELEMENTS, ROLES, ITEMS, itemPresentation } from "@/game/data";
-import { xpForLevel, effectiveTypeMultiplier } from "@/game/engine";
+import { xpForLevel, canApplyItem, effectiveTypeMultiplier } from "@/game/engine";
 import { Flame, Wind, Mountain, Leaf } from "lucide-react";
 
 const VARIANTS = {
@@ -169,15 +169,15 @@ export const XpReport = ({ report }) => {
   </Panel>;
 };
 
-export const PlayerCard = ({ p, onClick, selected = false, testId, compact = false, right = null }) => {
+export const PlayerCard = ({ p, onClick, selected = false, testId, compact = false, right = null, highlightTarget = false }) => {
   const ko = p.hp === 0;
   return (
     <div
       data-testid={testId}
       onClick={onClick}
-      className={`flex items-center gap-2 bg-[#141c2e] border-2 ${selected ? "border-amber-400" : "border-slate-700"} ${onClick ? "cursor-pointer active:translate-y-[2px]" : ""} p-2 ${ko ? "opacity-60" : ""}`}
+      className={`flex items-center gap-2 bg-[#141c2e] border-2 ${selected ? "border-amber-400" : "border-slate-700"} ${onClick ? "cursor-pointer active:translate-y-[2px]" : ""} p-2 ${ko && !highlightTarget ? "opacity-60" : ""}`}
     >
-      <Avatar p={p} size={compact ? 40 : 52} ko={ko} />
+      <Avatar p={p} size={compact ? 40 : 52} ko={ko && !highlightTarget} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-1">
           <span className="font-pixel text-[9px] text-white break-words">{p.name}{p.fused && <span className="text-pink-400"> ✦</span>}</span>
@@ -216,4 +216,17 @@ export const ItemInfo = ({ id }) => {
     <div data-testid={`item-rarity-${id}`} className={`font-pixel text-[8px] mt-1 ${presentation.accentClass}`}>{presentation.label}</div>
     <div className="font-body text-slate-200 text-base leading-tight mt-1">{item.description}</div>
   </div>;
+};
+
+
+// Real disabled targets and explicit labels; KO portraits stay legible when revival is valid.
+export const ItemTargetCard = ({ p, itemId, onClick, testId }) => {
+  const valid = canApplyItem(itemId, p);
+  return <button type="button" data-testid={testId} disabled={!valid} onClick={onClick}
+    className={`w-full text-left border-2 p-1 ${valid ? "border-emerald-400 bg-emerald-950/40" : "border-slate-700 opacity-40 cursor-not-allowed"}`}>
+    <div className={`font-pixel text-[8px] px-2 py-1 ${valid ? "text-emerald-300" : "text-slate-300"}`}>
+      {valid ? (p.hp === 0 ? "KO • RIANIMABILE" : "TARGET VALIDO") : "NON SELEZIONABILE"}
+    </div>
+    <PlayerCard p={p} compact highlightTarget={valid} />
+  </button>;
 };

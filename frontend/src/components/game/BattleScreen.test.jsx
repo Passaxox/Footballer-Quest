@@ -209,3 +209,16 @@ test.each(["team", "boss"])("partial enemy KO then %s loss removes provisional g
  expect(team[0]).toMatchObject({uid:before.uid,level:before.level,xp:before.xp,hp:0});
  expect(report.rows.every(r=>r.total===0 && r.after.level===r.before.level)).toBe(true);
 });
+
+
+test("V2n Golden Ball battle selection clearly distinguishes KO from disabled living targets", async()=>{
+ const run=engine.newRun(STARTER_IDS.slice(0,3));run.items.pallone=1;run.team[1].hp=0;
+ await setup(run);await click("pre-battle-keep");await settle();
+ await click("item-button");await click("use-item-pallone");
+ expect(find("item-target-0").disabled).toBe(true);
+ expect(find("item-target-1").disabled).toBe(false);
+ expect(find("item-target-1").textContent).toContain("KO • RIANIMABILE");
+ const attack=jest.spyOn(engine,"performAttack");
+ await click("item-target-0");expect(attack).not.toHaveBeenCalled();
+ expect(find("item-target-1")).not.toBeNull();
+});

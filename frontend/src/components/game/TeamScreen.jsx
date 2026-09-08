@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ITEMS } from "@/game/data";
-import { applyItemTo, consumeRunItem, canApplyItem, removeItem, gainXp, canReleasePlayer, xpProgress } from "@/game/engine";
+import { applyItemTo, consumeRunItem, removeItem, gainXp, canReleasePlayer, xpProgress } from "@/game/engine";
 import { sfx } from "@/game/audio";
-import { Btn, Header, Panel, PlayerCard, StatLine, MoveInfo, XpBar } from "./ui";
+import { Btn, Header, Panel, PlayerCard, ItemTargetCard, StatLine, MoveInfo, XpBar } from "./ui";
 
 export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
   const [sel, setSel] = useState(0);
@@ -40,9 +40,7 @@ export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
           <>
             <div className="font-body text-slate-300 text-lg">Su chi usare {ITEMS[itemSel].name}?</div>
             {run.team.map((q, i) => (
-              <div key={q.uid} className={canApplyItem(itemSel, q) ? "" : "opacity-40 pointer-events-none"}>
-                <PlayerCard p={q} compact testId={`team-item-target-${i}`} onClick={() => applyTo(i)} />
-              </div>
+              <ItemTargetCard key={q.uid} p={q} itemId={itemSel} testId={`team-item-target-${i}`} onClick={() => applyTo(i)} />
             ))}
             <Btn data-testid="team-item-cancel" variant="ghost" className="w-full" onClick={() => setItemSel(null)}>Annulla</Btn>
           </>
