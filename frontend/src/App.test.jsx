@@ -376,3 +376,43 @@ test("final boss loss still ends as Game Over without reward phase", async () =>
  expect(RewardScreen).not.toHaveBeenCalled();expect(loadRun()).toBeNull();
  expect(loadMeta().records).toHaveLength(1);expect(loadMeta().records[0].result).toBe("lose");
 });
+
+
+test.each([null, {type:"reward",context:{rewards:["barretta"],money:42}}])("pause preserves run/history and resumes pending state %j", async pending => {
+ const run=runWith(pending);run.wave=8;run.team[0].hp=7;run.team[1].hp=0;run.team[2].xp=19;
+ saveRun(run);const meta=loadMeta();
+ await act(async()=>root.render(<App />));await call(TitleScreen,"onContinue");
+ expect(props(HubScreen).run).toEqual(run);
+ await call(HubScreen,"onPause");
+ expect(props(TitleScreen).hasRun).toBe(true);expect(loadRun()).toEqual(run);expect(loadMeta()).toEqual(meta);
+ await act(async()=>root.unmount());root=createRoot(host);
+ await act(async()=>root.render(<App />));await call(TitleScreen,"onContinue");
+ expect(props(HubScreen).run).toEqual(run);expect(loadMeta()).toEqual(meta);
+ if(pending) {
+  await call(HubScreen,"onNext");expect(props(RewardScreen).rewards).toEqual(pending.context.rewards);
+  expect(loadRun()).toEqual(run);
+ }
+ expect(EndScreen).not.toHaveBeenCalled();
+});
+
+test("new run asks confirmation before replacing an active run; cancel preserves it", async()=> {
+ const run=runWith(null);saveRun(run);
+ await act(async()=>root.render(<App />));
+ const confirm=jest.spyOn(window,"confirm").mockReturnValue(false);
+ await call(TitleScreen,"onNew");
+ expect(confirm).toHaveBeenCalledTimes(1);expect(TeamSelect).not.toHaveBeenCalled();expect(loadRun()).toEqual(run);
+ confirm.mockReturnValue(true);await call(TitleScreen,"onNew");
+ expect(TeamSelect).toHaveBeenCalled();expect(loadRun()).toEqual(run); // no loss until new draft starts
+ await call(TeamSelect,"onStart",STARTER_IDS.slice(0,3),"easy");
+ expect(loadRun().difficultyId).toBe("easy");expect(loadRun().team[0].uid).not.toBe(run.team[0].uid);
+ expect(loadMeta().records).toHaveLength(0);
+ confirm.mockRestore();
+});
+
+test("abandon remains destructive and records loss separately from pause", async()=> {
+ saveRun(runWith(null));await act(async()=>root.render(<App />));await call(TitleScreen,"onContinue");
+ const confirm=jest.spyOn(window,"confirm").mockReturnValue(true);
+ await call(HubScreen,"onAbandon");
+ expect(loadRun()).toBeNull();expect(props(EndScreen).result).toBe("lose");expect(loadMeta().records).toHaveLength(1);
+ confirm.mockRestore();
+});

@@ -5,11 +5,11 @@ import { DIFFICULTIES, getRules } from "@/game/rules";
 import { Btn, Header, Panel, PlayerCard, XpReport } from "./ui";
 import { Coins, Backpack } from "lucide-react";
 
-export default function HubScreen({ run, onNext, onTeam, onAbandon }) {
+export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon }) {
   const nextBoss = Object.keys(BOSSES).map(Number).find((w) => w >= run.wave);
   const isBoss = !!BOSSES[run.wave];
   const itemCount = Object.values(run.items).reduce((a, b) => a + b, 0);
-  const pendingLabel = run.pending ? ({ battle: "Battaglia in corso", recruit: "Incontro", shop: "Mercante", training: "Allenamento", event: "Evento" })[run.pending.type] : null;
+  const pendingLabel = run.pending ? ({ battle: "Battaglia in corso", recruit: "Incontro", shop: "Mercante", training: "Allenamento", reward: "Ricompensa", event: "Evento" })[run.pending.type] : null;
   return (
     <div data-testid="hub-screen" className="flex flex-col flex-1">
       <Header title={`Ondata ${run.wave} / ${FINAL_WAVE}`} sub={isBoss ? `BOSS: ${BOSSES[run.wave].team}` : nextBoss ? `Prossimo boss all'ondata ${nextBoss}` : "Finale!"}
@@ -37,6 +37,7 @@ export default function HubScreen({ run, onNext, onTeam, onAbandon }) {
       <div className="p-3 bg-[#111827] border-t-4 border-slate-800 grid grid-cols-3 gap-2">
         <Btn data-testid="team-btn" onClick={onTeam} className="flex items-center justify-center gap-1"><Backpack size={14} /> Squadra ({itemCount})</Btn>
         <Btn data-testid="next-wave-btn" variant="primary" className="col-span-2" onClick={onNext}>{run.pending ? "Riprendi" : isBoss ? "Affronta il Boss" : "Avanti"}</Btn>
+        <Btn data-testid="pause-run-btn" className="col-span-3" onClick={onPause}>Salva e torna al menu</Btn>
         <Btn data-testid="abandon-btn" variant="ghost" className="col-span-3 min-h-[36px] py-1 text-[8px]" onClick={onAbandon}>Abbandona la run</Btn>
       </div>
     </div>
