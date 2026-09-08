@@ -1,3 +1,4 @@
+import { TEAMS, ARCS, ERAS, GAME_ORIGINS, VERSION_METADATA } from "./catalogMetadata";
 import { ROSTER } from "./data";
 import { validateCatalog } from "./catalogValidation";
 
@@ -7,16 +8,21 @@ export const CATALOG_SOURCE = {
   characters: ROSTER.map(r => ({ characterId: r.id, displayName: r.name })),
   versions: ROSTER.map(r => ({
     versionId: `${r.id}:base`, characterId: r.id, legacyRosterId: r.id, displayName: r.name, kind: "player",
-    role: r.role, gender: null, spriteId: r.id, teamTags: [], element: r.element, types: [r.element],
+    role: r.role, gender: VERSION_METADATA[`${r.id}:base`]?.gender ?? null, spriteId: r.id,
+    teamTags: [...(VERSION_METADATA[`${r.id}:base`]?.teamTags ?? [])], element: r.element, types: [r.element],
     baseStats: { hp: r.hp, atk: r.atk, def: r.def, spd: r.spd },
     primaryMoveId: `${r.id}:primary`, secondaryMoveId: null,
-    rarityId: null, variantId: null, categoryId: null, arcId: null, eraId: null, gameOrigin: null,
+    rarityId: null, variantId: null, categoryId: null,
+    arcId: VERSION_METADATA[`${r.id}:base`]?.arcId ?? null,
+    eraId: VERSION_METADATA[`${r.id}:base`]?.eraId ?? null,
+    gameOrigin: VERSION_METADATA[`${r.id}:base`]?.gameOrigin ?? null,
     encounterTier: r.tier, // Encounter selection only; never collection rarity.
   })),
   // Stable primary identity, not a secondary/evolution system. Instances keep their saved move copy.
   moves: ROSTER.map(r => ({ moveId: `${r.id}:primary`, ...r.move })),
   legacyMappings: ROSTER.map(r => ({ legacyId: r.id, versionId: `${r.id}:base` })),
   rarityIds: [],
+  teams: TEAMS, arcs: ARCS, eras: ERAS, gameOrigins: GAME_ORIGINS,
 };
 validateCatalog(CATALOG_SOURCE, { requiredLegacyIds: ROSTER.map(r => r.id) });
 export const CHARACTERS = Object.fromEntries(CATALOG_SOURCE.characters.map(c => [c.characterId, c]));

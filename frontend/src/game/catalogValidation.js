@@ -3,9 +3,9 @@ export const GENDERS = ["male", "female", "unknown"];
 
 // Validate source arrays BEFORE indexing: Object.fromEntries would hide duplicate IDs.
 // Runtime instances and saved snapshots are deliberately outside this validator.
-export function validateCatalog({ characters, versions, moves, legacyMappings, rarityIds = [] }, { spriteIds, requiredLegacyIds = [] } = {}) {
+export function validateCatalog({ characters, versions, moves, legacyMappings, rarityIds = [], teams = [], arcs = [], eras = [], gameOrigins = [] }, { spriteIds, requiredLegacyIds = [] } = {}) {
   const errors = [];
-  if (![characters, versions, moves, legacyMappings, rarityIds].every(Array.isArray)) throw new Error("Invalid catalog: source collections must be arrays");
+  if (![characters, versions, moves, legacyMappings, rarityIds, teams, arcs, eras, gameOrigins].every(Array.isArray)) throw new Error("Invalid catalog: source collections must be arrays");
   const validId = value => typeof value === "string" && value.trim().length > 0;
   const index = (rows, key) => {
     const result = new Map();
@@ -21,6 +21,13 @@ export function validateCatalog({ characters, versions, moves, legacyMappings, r
   const versionIndex = index(versions, "versionId");
   const moveIndex = index(moves, "moveId");
   const legacyIndex = index(legacyMappings, "legacyId");
+  const teamIndex = index(teams, "teamId");
+  const arcIndex = index(arcs, "arcId");
+  const eraIndex = index(eras, "eraId");
+  const originIndex = index(gameOrigins, "gameOrigin");
+  for (const row of [...arcs, ...gameOrigins]) {
+    if (row?.eraId != null && !eraIndex.has(row.eraId)) errors.push("Unknown registry eraId");
+  }
   const claimedLegacy = new Set();
   for (const c of characters) if (!validId(c?.displayName)) errors.push(`Missing character displayName: ${c?.characterId}`);
   for (const v of versions) {
@@ -31,6 +38,12 @@ export function validateCatalog({ characters, versions, moves, legacyMappings, r
     if (!Object.values(VERSION_KINDS).includes(v.kind)) errors.push(`Invalid kind: ${label}`);
     if (v.gender != null && !GENDERS.includes(v.gender)) errors.push(`Invalid gender: ${label}`);
     if (!Array.isArray(v.teamTags) || v.teamTags.some(tag => !validId(tag)) || new Set(v.teamTags).size !== v.teamTags.length) errors.push(`Invalid teamTags: ${label}`);
+    if (Array.isArray(v.teamTags) && v.teamTags.some(tag => !teamIndex.has(tag))) errors.push(`Unknown teamTag: ${label}`);
+    for (const [key, registry] of [["arcId", arcIndex], ["eraId", eraIndex], ["gameOrigin", originIndex]]) {
+      if (v[key] != null && !registry.has(v[key])) errors.push(`Unknown ${key}: ${label}`);
+    }
+    const declaredEras = [v.eraId, arcIndex.get(v.arcId)?.eraId, originIndex.get(v.gameOrigin)?.eraId].filter(id => id != null);
+    if (new Set(declaredEras).size > 1) errors.push(`Incompatible metadata eras: ${label}`);
     if (v.rarityId != null && !rarityIds.includes(v.rarityId)) errors.push(`Invalid rarityId: ${label}`);
     for (const key of ["variantId", "categoryId", "arcId", "eraId", "gameOrigin"]) {
       if (v[key] != null && !validId(v[key])) errors.push(`Invalid ${key}: ${label}`);

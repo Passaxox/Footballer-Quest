@@ -9,7 +9,8 @@ const dataUrl = moduleUrl(await source("data"));
 const rulesUrl = moduleUrl(await source("rules"));
 const validationUrl = moduleUrl(await source("catalogValidation"));
 const { validateCatalog } = await import(validationUrl);
-const catalogUrl = moduleUrl((await source("catalog")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)));
+const metadataUrl = moduleUrl(await source("catalogMetadata"));
+const catalogUrl = moduleUrl((await source("catalog")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
 const collectionUrl = moduleUrl((await source("collection")).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
@@ -36,7 +37,7 @@ test("V2b complete catalog validates against actual sprite files and required le
   for (const row of data.ROSTER) {
     const v = catalog.resolveVersion(row.id);
     assert.equal(v.displayName, row.name);
-    for (const key of ["gender", "rarityId", "variantId", "arcId", "eraId", "gameOrigin"]) assert.equal(v[key], null);
+    for (const key of ["gender", "rarityId", "variantId", "gameOrigin"]) assert.equal(v[key], null);
     assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], row.move);
     for (const level of [1, 3, 15]) {
       const p = createPlayer(v.versionId, level);
@@ -81,6 +82,7 @@ test("V2b catalog rejects duplicate, ambiguous and broken references before inde
 test("V2b permits partial metadata, multiple affiliations and distinct incarnations without rarity effects", () => {
   const source = structuredClone(catalog.CATALOG_SOURCE);
   source.rarityIds = ["test-rarity"];
+  source.teams.push({ teamId: "test-team-a" }, { teamId: "test-team-b" });
   for (const kind of ["player", "manager", "coach", "dev"]) source.versions.push({
     ...source.versions[0], versionId: `test:${kind}`, legacyRosterId: null, displayName: `Test ${kind}`, kind,
     primaryMoveId: kind === "player" ? source.versions[0].primaryMoveId : null,
@@ -124,7 +126,7 @@ test("V2a maps legacy IDs to versions without changing playable data", () => {
     assert.equal(version.encounterTier, row.tier);
     assert.equal(version.rarityId, null);
     assert.equal(version.gender, null);
-    assert.deepEqual(version.teamTags, []);
+    assert.ok(Array.isArray(version.teamTags));
     assert.deepEqual(version.baseStats, { hp: row.hp, atk: row.atk, def: row.def, spd: row.spd });
     assert.deepEqual(catalog.PRIMARY_MOVES[version.primaryMoveId], row.move);
     const p = createPlayer(version.versionId, 3);
@@ -611,4 +613,42 @@ test("Easy v2 segments plateau at boundaries; Normal and old Easy profiles stay 
     storage.saveRun(old);
     assert.deepEqual(storage.loadRun(), old);
   } finally { Math.random = random; }
+});
+
+
+test("V2c metadata registries reject broken references and inconsistent eras", () => {
+  for (const [field, key] of [["teams", "teamId"], ["arcs", "arcId"], ["eras", "eraId"], ["gameOrigins", "gameOrigin"]]) {
+    const c = structuredClone(catalog.CATALOG_SOURCE);
+    c[field].push({ ...c[field][0] });
+    assert.throws(() => validateCatalog(c), new RegExp("Duplicate " + key));
+  }
+  for (const key of ["arcId", "eraId", "gameOrigin", "teamTags"]) {
+    const c = structuredClone(catalog.CATALOG_SOURCE);
+    c.versions[0][key] = key === "teamTags" ? ["missing"] : "missing";
+    assert.throws(() => validateCatalog(c), /Unknown/);
+  }
+  const c = structuredClone(catalog.CATALOG_SOURCE);
+  c.versions[0].arcId = "ffi"; c.versions[0].gameOrigin = "galaxy";
+  assert.throws(() => validateCatalog(c), /Incompatible metadata eras/);
+  c.versions[0].arcId = null; c.versions[0].gameOrigin = null;
+  assert.equal(validateCatalog(c), true);
+  c.arcs[0].eraId = "missing";
+  assert.throws(() => validateCatalog(c), /Unknown registry eraId/);
+});
+
+test("V2c passive metadata preserves validated V2b gameplay fixture and runtime serialization", async () => {
+  const baseline = JSON.parse(await readFile(new URL("./fixtures/v2b-gameplay.json", import.meta.url), "utf8"));
+  assert.deepEqual(data.ROSTER, baseline.roster);
+  assert.deepEqual(data.STARTER_IDS, baseline.starters);
+  for (const row of baseline.roster) {
+    const v = catalog.resolveVersion(row.id);
+    assert.equal(v.versionId, row.id + ":base");
+    assert.equal(v.characterId, row.id);
+    assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], row.move);
+    const p = createPlayer(row.id, 3);
+    for (const key of ["gender", "teamTags", "arcId", "eraId", "gameOrigin"]) assert.equal(Object.hasOwn(p, key), false);
+  }
+  assert.deepEqual(catalog.resolveVersion("xavier").teamTags, ["genesis"]);
+  assert.deepEqual(catalog.resolveVersion("jordan").teamTags, []);
+  assert.deepEqual(catalog.resolveVersion("fidio").teamTags, []);
 });

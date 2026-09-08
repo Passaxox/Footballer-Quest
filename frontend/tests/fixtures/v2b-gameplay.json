@@ -1,0 +1,762 @@
+{
+  "roster": [
+    {
+      "id": "mark",
+      "name": "Mark Evans",
+      "element": "terra",
+      "role": "P",
+      "tier": 1,
+      "hp": 95,
+      "atk": 24,
+      "def": 40,
+      "spd": 22,
+      "move": {
+        "name": "Mano Magica",
+        "element": "terra",
+        "power": 55,
+        "effect": "guard"
+      }
+    },
+    {
+      "id": "axel",
+      "name": "Axel Blaze",
+      "element": "fuoco",
+      "role": "A",
+      "tier": 1,
+      "hp": 70,
+      "atk": 42,
+      "def": 24,
+      "spd": 32,
+      "move": {
+        "name": "Tornado di Fuoco",
+        "element": "fuoco",
+        "power": 90,
+        "effect": null
+      }
+    },
+    {
+      "id": "jude",
+      "name": "Jude Sharp",
+      "element": "aria",
+      "role": "C",
+      "tier": 1,
+      "hp": 72,
+      "atk": 34,
+      "def": 30,
+      "spd": 34,
+      "move": {
+        "name": "Pinguino Imperatore N.2",
+        "element": "aria",
+        "power": 75,
+        "effect": "weaken"
+      }
+    },
+    {
+      "id": "nathan",
+      "name": "Nathan Swift",
+      "element": "aria",
+      "role": "D",
+      "tier": 1,
+      "hp": 68,
+      "atk": 30,
+      "def": 28,
+      "spd": 46,
+      "move": {
+        "name": "Scatto Turbine",
+        "element": "aria",
+        "power": 65,
+        "effect": "priority"
+      }
+    },
+    {
+      "id": "shawn",
+      "name": "Shawn Froste",
+      "element": "aria",
+      "role": "A",
+      "tier": 1,
+      "hp": 68,
+      "atk": 40,
+      "def": 24,
+      "spd": 38,
+      "move": {
+        "name": "Tempesta di Neve Eterna",
+        "element": "aria",
+        "power": 85,
+        "effect": "crit"
+      }
+    },
+    {
+      "id": "jack",
+      "name": "Jack Wallside",
+      "element": "terra",
+      "role": "D",
+      "tier": 1,
+      "hp": 100,
+      "atk": 26,
+      "def": 44,
+      "spd": 14,
+      "move": {
+        "name": "La Muraglia",
+        "element": "terra",
+        "power": 50,
+        "effect": "guard"
+      }
+    },
+    {
+      "id": "kevin",
+      "name": "Kevin Dragonfly",
+      "element": "natura",
+      "role": "A",
+      "tier": 1,
+      "hp": 78,
+      "atk": 38,
+      "def": 28,
+      "spd": 26,
+      "move": {
+        "name": "Schianto del Drago",
+        "element": "natura",
+        "power": 80,
+        "effect": "recoil"
+      }
+    },
+    {
+      "id": "darren",
+      "name": "Darren LaChance",
+      "element": "natura",
+      "role": "P",
+      "tier": 2,
+      "hp": 88,
+      "atk": 22,
+      "def": 38,
+      "spd": 24,
+      "move": {
+        "name": "Mano Mugen",
+        "element": "natura",
+        "power": 50,
+        "effect": "heal"
+      }
+    },
+    {
+      "id": "tod",
+      "name": "Tod Ironside",
+      "element": "natura",
+      "role": "D",
+      "tier": 1,
+      "hp": 80,
+      "atk": 28,
+      "def": 34,
+      "spd": 24,
+      "move": {
+        "name": "Placcaggio Killer",
+        "element": "natura",
+        "power": 60,
+        "effect": "shatter"
+      }
+    },
+    {
+      "id": "sam",
+      "name": "Sam Kincaid",
+      "element": "natura",
+      "role": "C",
+      "tier": 1,
+      "hp": 70,
+      "atk": 30,
+      "def": 28,
+      "spd": 34,
+      "move": {
+        "name": "Passaggio Bomba",
+        "element": "natura",
+        "power": 60,
+        "effect": "charge"
+      }
+    },
+    {
+      "id": "steve",
+      "name": "Steve Grim",
+      "element": "fuoco",
+      "role": "C",
+      "tier": 1,
+      "hp": 66,
+      "atk": 32,
+      "def": 26,
+      "spd": 32,
+      "move": {
+        "name": "Sfrecciata Elettrica",
+        "element": "fuoco",
+        "power": 65,
+        "effect": "priority"
+      }
+    },
+    {
+      "id": "bobby",
+      "name": "Bobby Shearer",
+      "element": "aria",
+      "role": "D",
+      "tier": 1,
+      "hp": 74,
+      "atk": 26,
+      "def": 36,
+      "spd": 30,
+      "move": {
+        "name": "Contrattacco Rapido",
+        "element": "aria",
+        "power": 55,
+        "effect": "guard"
+      }
+    },
+    {
+      "id": "maxwell",
+      "name": "Maxwell Carson",
+      "element": "terra",
+      "role": "C",
+      "tier": 1,
+      "hp": 72,
+      "atk": 32,
+      "def": 30,
+      "spd": 30,
+      "move": {
+        "name": "Slalom Misterioso",
+        "element": "terra",
+        "power": 60,
+        "effect": "weaken"
+      }
+    },
+    {
+      "id": "tim",
+      "name": "Tim Saunders",
+      "element": "aria",
+      "role": "C",
+      "tier": 1,
+      "hp": 64,
+      "atk": 28,
+      "def": 26,
+      "spd": 40,
+      "move": {
+        "name": "Tornado Illusorio",
+        "element": "aria",
+        "power": 60,
+        "effect": "multi"
+      }
+    },
+    {
+      "id": "willy",
+      "name": "Willy Glass",
+      "element": "natura",
+      "role": "C",
+      "tier": 1,
+      "hp": 62,
+      "atk": 26,
+      "def": 24,
+      "spd": 36,
+      "move": {
+        "name": "Occhio Analitico",
+        "element": "natura",
+        "power": 55,
+        "effect": "shatter"
+      }
+    },
+    {
+      "id": "erik",
+      "name": "Erik Eagle",
+      "element": "aria",
+      "role": "A",
+      "tier": 2,
+      "hp": 70,
+      "atk": 40,
+      "def": 26,
+      "spd": 36,
+      "move": {
+        "name": "Tiro Aquila",
+        "element": "aria",
+        "power": 85,
+        "effect": null
+      }
+    },
+    {
+      "id": "austin",
+      "name": "Austin Hobbes",
+      "element": "fuoco",
+      "role": "A",
+      "tier": 2,
+      "hp": 72,
+      "atk": 42,
+      "def": 24,
+      "spd": 30,
+      "move": {
+        "name": "Tiro Fulmineo",
+        "element": "fuoco",
+        "power": 88,
+        "effect": null
+      }
+    },
+    {
+      "id": "caleb",
+      "name": "Caleb Stonewall",
+      "element": "terra",
+      "role": "C",
+      "tier": 2,
+      "hp": 74,
+      "atk": 36,
+      "def": 30,
+      "spd": 34,
+      "move": {
+        "name": "Pugno di Roccia",
+        "element": "terra",
+        "power": 75,
+        "effect": "charge"
+      }
+    },
+    {
+      "id": "hurley",
+      "name": "Hurley Kane",
+      "element": "natura",
+      "role": "A",
+      "tier": 2,
+      "hp": 74,
+      "atk": 40,
+      "def": 26,
+      "spd": 30,
+      "move": {
+        "name": "Tsunami Boost",
+        "element": "natura",
+        "power": 85,
+        "effect": "drain"
+      }
+    },
+    {
+      "id": "scotty",
+      "name": "Scotty Banyan",
+      "element": "natura",
+      "role": "C",
+      "tier": 2,
+      "hp": 70,
+      "atk": 34,
+      "def": 28,
+      "spd": 42,
+      "move": {
+        "name": "Corsa della Scimmia",
+        "element": "natura",
+        "power": 65,
+        "effect": "multi"
+      }
+    },
+    {
+      "id": "thor",
+      "name": "Thor Stoutberg",
+      "element": "terra",
+      "role": "A",
+      "tier": 2,
+      "hp": 90,
+      "atk": 44,
+      "def": 32,
+      "spd": 18,
+      "move": {
+        "name": "Schianto del Gigante",
+        "element": "terra",
+        "power": 95,
+        "effect": "recoil"
+      }
+    },
+    {
+      "id": "archer",
+      "name": "Archer Hawkins",
+      "element": "aria",
+      "role": "A",
+      "tier": 2,
+      "hp": 68,
+      "atk": 38,
+      "def": 24,
+      "spd": 40,
+      "move": {
+        "name": "Freccia Volante",
+        "element": "aria",
+        "power": 80,
+        "effect": "crit"
+      }
+    },
+    {
+      "id": "joseph",
+      "name": "Joseph King",
+      "element": "fuoco",
+      "role": "A",
+      "tier": 3,
+      "hp": 76,
+      "atk": 44,
+      "def": 26,
+      "spd": 34,
+      "move": {
+        "name": "Pinguino Imperatore N.1",
+        "element": "fuoco",
+        "power": 95,
+        "effect": "burn"
+      }
+    },
+    {
+      "id": "david",
+      "name": "David Samford",
+      "element": "fuoco",
+      "role": "C",
+      "tier": 3,
+      "hp": 74,
+      "atk": 36,
+      "def": 30,
+      "spd": 36,
+      "move": {
+        "name": "Twin Boost",
+        "element": "fuoco",
+        "power": 80,
+        "effect": "multi"
+      }
+    },
+    {
+      "id": "byron",
+      "name": "Byron Love",
+      "element": "aria",
+      "role": "A",
+      "tier": 4,
+      "hp": 82,
+      "atk": 50,
+      "def": 30,
+      "spd": 44,
+      "move": {
+        "name": "Piuma Celeste",
+        "element": "aria",
+        "power": 105,
+        "effect": "drain"
+      }
+    },
+    {
+      "id": "jonas",
+      "name": "Jonas Demetrius",
+      "element": "aria",
+      "role": "D",
+      "tier": 3,
+      "hp": 84,
+      "atk": 34,
+      "def": 38,
+      "spd": 34,
+      "move": {
+        "name": "Tridente di Poseidone",
+        "element": "aria",
+        "power": 75,
+        "effect": "shatter"
+      }
+    },
+    {
+      "id": "xavier",
+      "name": "Xavier Foster",
+      "element": "fuoco",
+      "role": "A",
+      "tier": 4,
+      "hp": 80,
+      "atk": 50,
+      "def": 30,
+      "spd": 42,
+      "move": {
+        "name": "Meteora Ardente",
+        "element": "fuoco",
+        "power": 105,
+        "effect": "burn"
+      }
+    },
+    {
+      "id": "jordan",
+      "name": "Jordan Greenway",
+      "element": "aria",
+      "role": "C",
+      "tier": 3,
+      "hp": 76,
+      "atk": 40,
+      "def": 30,
+      "spd": 44,
+      "move": {
+        "name": "Cerchio Astrale",
+        "element": "aria",
+        "power": 85,
+        "effect": "weaken"
+      }
+    },
+    {
+      "id": "torch",
+      "name": "Torch",
+      "element": "fuoco",
+      "role": "A",
+      "tier": 4,
+      "hp": 78,
+      "atk": 52,
+      "def": 28,
+      "spd": 40,
+      "move": {
+        "name": "Atomic Flare",
+        "element": "fuoco",
+        "power": 110,
+        "effect": "burn"
+      }
+    },
+    {
+      "id": "gazelle",
+      "name": "Gazelle",
+      "element": "aria",
+      "role": "A",
+      "tier": 4,
+      "hp": 76,
+      "atk": 48,
+      "def": 28,
+      "spd": 50,
+      "move": {
+        "name": "Tempesta di Ghiaccio",
+        "element": "aria",
+        "power": 100,
+        "effect": "priority"
+      }
+    },
+    {
+      "id": "dvalin",
+      "name": "Dvalin",
+      "element": "aria",
+      "role": "P",
+      "tier": 3,
+      "hp": 96,
+      "atk": 34,
+      "def": 44,
+      "spd": 30,
+      "move": {
+        "name": "Guanto Rotante",
+        "element": "aria",
+        "power": 70,
+        "effect": "guard"
+      }
+    },
+    {
+      "id": "rococo",
+      "name": "Rococo Urupa",
+      "element": "natura",
+      "role": "P",
+      "tier": 4,
+      "hp": 110,
+      "atk": 30,
+      "def": 50,
+      "spd": 30,
+      "move": {
+        "name": "Mano Divina X",
+        "element": "natura",
+        "power": 70,
+        "effect": "guard"
+      }
+    },
+    {
+      "id": "canon",
+      "name": "Canon Evans",
+      "element": "terra",
+      "role": "C",
+      "tier": 3,
+      "hp": 78,
+      "atk": 42,
+      "def": 32,
+      "spd": 40,
+      "move": {
+        "name": "Vortice Temporale",
+        "element": "terra",
+        "power": 90,
+        "effect": "priority"
+      }
+    },
+    {
+      "id": "paolo",
+      "name": "Paolo Bianchi",
+      "element": "fuoco",
+      "role": "A",
+      "tier": 3,
+      "hp": 74,
+      "atk": 44,
+      "def": 26,
+      "spd": 38,
+      "move": {
+        "name": "Colpo d'Odino",
+        "element": "fuoco",
+        "power": 95,
+        "effect": "crit"
+      }
+    },
+    {
+      "id": "fidio",
+      "name": "Fidio Aldena",
+      "element": "natura",
+      "role": "A",
+      "tier": 3,
+      "hp": 76,
+      "atk": 44,
+      "def": 28,
+      "spd": 40,
+      "move": {
+        "name": "Fuoco Fatuo Divino",
+        "element": "natura",
+        "power": 92,
+        "effect": "drain"
+      }
+    },
+    {
+      "id": "kruger",
+      "name": "Mark Kruger",
+      "element": "terra",
+      "role": "A",
+      "tier": 3,
+      "hp": 78,
+      "atk": 44,
+      "def": 30,
+      "spd": 36,
+      "move": {
+        "name": "Gungnir",
+        "element": "terra",
+        "power": 95,
+        "effect": null
+      }
+    },
+    {
+      "id": "dylan",
+      "name": "Dylan Keith",
+      "element": "natura",
+      "role": "A",
+      "tier": 2,
+      "hp": 70,
+      "atk": 40,
+      "def": 26,
+      "spd": 36,
+      "move": {
+        "name": "Fantasma Supernova",
+        "element": "natura",
+        "power": 82,
+        "effect": "crit"
+      }
+    },
+    {
+      "id": "edgar",
+      "name": "Edgar Valtinas",
+      "element": "aria",
+      "role": "A",
+      "tier": 3,
+      "hp": 76,
+      "atk": 46,
+      "def": 30,
+      "spd": 38,
+      "move": {
+        "name": "Excalibur",
+        "element": "aria",
+        "power": 98,
+        "effect": null
+      }
+    },
+    {
+      "id": "teres",
+      "name": "Teres Tolue",
+      "element": "fuoco",
+      "role": "A",
+      "tier": 3,
+      "hp": 74,
+      "atk": 44,
+      "def": 26,
+      "spd": 40,
+      "move": {
+        "name": "Danza del Fuoco",
+        "element": "fuoco",
+        "power": 90,
+        "effect": "burn"
+      }
+    },
+    {
+      "id": "chae",
+      "name": "Chae Chan-soo",
+      "element": "terra",
+      "role": "C",
+      "tier": 2,
+      "hp": 72,
+      "atk": 36,
+      "def": 32,
+      "spd": 36,
+      "move": {
+        "name": "Torre di Cristallo",
+        "element": "terra",
+        "power": 78,
+        "effect": "multi"
+      }
+    },
+    {
+      "id": "malcolm",
+      "name": "Jim Wraith",
+      "element": "terra",
+      "role": "D",
+      "tier": 1,
+      "hp": 74,
+      "atk": 30,
+      "def": 34,
+      "spd": 30,
+      "move": {
+        "name": "Tiro Fantasma",
+        "element": "terra",
+        "power": 65,
+        "effect": "weaken"
+      }
+    },
+    {
+      "id": "hector",
+      "name": "Rika Urabe",
+      "element": "natura",
+      "role": "C",
+      "tier": 2,
+      "hp": 70,
+      "atk": 36,
+      "def": 28,
+      "spd": 38,
+      "move": {
+        "name": "Anello Arcobaleno",
+        "element": "natura",
+        "power": 78,
+        "effect": "charge"
+      }
+    },
+    {
+      "id": "silvia",
+      "name": "Silvia Woods",
+      "element": "natura",
+      "role": "C",
+      "tier": 1,
+      "hp": 60,
+      "atk": 22,
+      "def": 26,
+      "spd": 36,
+      "move": {
+        "name": "Incoraggiamento",
+        "element": "natura",
+        "power": 40,
+        "effect": "heal"
+      }
+    },
+    {
+      "id": "aiden",
+      "name": "Aiden Frost",
+      "element": "aria",
+      "role": "A",
+      "tier": 2,
+      "hp": 72,
+      "atk": 40,
+      "def": 26,
+      "spd": 34,
+      "move": {
+        "name": "Tiro Rotante",
+        "element": "aria",
+        "power": 80,
+        "effect": "shatter"
+      }
+    }
+  ],
+  "starters": [
+    "mark",
+    "axel",
+    "jude",
+    "nathan",
+    "shawn",
+    "jack",
+    "kevin",
+    "tod"
+  ]
+}
