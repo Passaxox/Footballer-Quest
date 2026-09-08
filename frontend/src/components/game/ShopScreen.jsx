@@ -1,6 +1,6 @@
-import { ITEMS } from "@/game/data";
+import { itemPresentation } from "@/game/data";
 import { sfx } from "@/game/audio";
-import { Btn, Header, Panel } from "./ui";
+import { Btn, Header, Panel, ItemInfo } from "./ui";
 import { Coins } from "lucide-react";
 
 export default function ShopScreen({ run, stock, onBuy, onLeave }) {
@@ -14,10 +14,9 @@ export default function ShopScreen({ run, stock, onBuy, onLeave }) {
           const done = bought.includes(i);
           const can = run.money >= s.price && !done;
           return (
-            <div key={i} className={`flex items-center gap-2 p-2 border-2 ${done ? "border-slate-800 opacity-50" : "border-slate-600"} bg-[#141c2e]`}>
+            <div key={i} className={`flex items-center gap-2 p-2 border-2 ${itemPresentation(s.id).cardClass} ${done ? "opacity-50" : ""}`}>
               <div className="flex-1">
-                <div className="font-pixel text-[9px] text-white">{ITEMS[s.id].name}</div>
-                <div className="font-body text-slate-300 text-sm leading-tight mt-1">{ITEMS[s.id].desc}</div>
+                <ItemInfo id={s.id} />
               </div>
               <Btn data-testid={`buy-item-${i}`} variant={can ? "primary" : "default"} disabled={!can} className="min-w-[72px]" onClick={() => { sfx.confirm(); onBuy(i); }}>
                 {done ? "OK" : `${s.price} P`}

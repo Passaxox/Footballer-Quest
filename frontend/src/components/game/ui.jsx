@@ -1,6 +1,6 @@
 import { resolveVersion } from "@/game/catalog";
 import { useState } from "react";
-import { ELEMENTS, ROLES } from "@/game/data";
+import { ELEMENTS, ROLES, ITEMS, itemPresentation } from "@/game/data";
 import { xpForLevel, effectiveTypeMultiplier } from "@/game/engine";
 import { Flame, Wind, Mountain, Leaf } from "lucide-react";
 
@@ -207,3 +207,13 @@ export const StatLine = ({ p }) => (
     <div className="bg-slate-900 p-1"><div className="text-slate-500 text-xs">VEL</div>{p.spd}</div>
   </div>
 );
+
+
+export const ItemInfo = ({ id }) => {
+  const item = ITEMS[id], presentation = itemPresentation(id);
+  return <div className="min-w-0">
+    <div className="font-pixel text-[10px] text-white leading-relaxed">{item.name}</div>
+    <div data-testid={`item-rarity-${id}`} className={`font-pixel text-[8px] mt-1 ${presentation.accentClass}`}>{presentation.label}</div>
+    <div className="font-body text-slate-200 text-base leading-tight mt-1">{item.description}</div>
+  </div>;
+};

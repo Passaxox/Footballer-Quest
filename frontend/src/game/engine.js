@@ -387,7 +387,20 @@ export const applyEventDamage = (p, pct) => ({
 export const addItem = (items, id, n = 1) => ({ ...items, [id]: (items[id] || 0) + n });
 export const removeItem = (items, id) => { const c = (items[id] || 0) - 1; const next = { ...items }; if (c <= 0) delete next[id]; else next[id] = c; return next; };
 
+// New effects are data-driven; legacy handlers retain their historical semantics.
+export const consumeRunItem = (run, id) => {
+  const effect = ITEMS[id]?.effect;
+  if (effect?.type !== "money" || !(run.items[id] > 0)) return run;
+  return { ...run, money: run.money + effect.amount, items: removeItem(run.items, id) };
+};
 export const applyItemTo = (item, p) => {
+  const effect = ITEMS[item]?.effect;
+  if (effect && effect.type !== "legacy") {
+    if (!canApplyItem(item, p)) return p;
+    if (effect.type === "recovery") return { ...p, hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * effect.hpShare)), status: { ...p.status, burn: effect.cureBurn ? 0 : p.status.burn } };
+    if (effect.type === "stages") return { ...p, status: { ...p.status, atkMod: Math.max(-3, Math.min(3, p.status.atkMod + effect.atk)), defMod: Math.max(-3, Math.min(3, p.status.defMod + effect.def)) } };
+    return p;
+  }
   switch (item) {
     case "barretta": return { ...p, hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * 0.5)) };
     case "bibita": return { ...p, hp: p.maxHp, status: { ...p.status, burn: 0 } };
@@ -402,6 +415,15 @@ export const applyItemTo = (item, p) => {
 };
 
 export const canApplyItem = (item, p) => {
+  const effect = ITEMS[item]?.effect;
+  if (!effect || !p) return false;
+  if (effect.type !== "legacy") {
+    if (p.hp <= 0) return false;
+    if (effect.type === "recovery") return p.hp < p.maxHp || (effect.cureBurn && p.status.burn > 0);
+    if (effect.type === "stages") return (!effect.atk || (effect.atk > 0 ? p.status.atkMod < 3 : p.status.atkMod > -3))
+      && (!effect.def || (effect.def > 0 ? p.status.defMod < 3 : p.status.defMod > -3));
+    return false; // Run-target effects cannot be consumed on a player.
+  }
   if (item === "pallone") return p.hp === 0;
   if (p.hp === 0) return false;
   if (item === "barretta" || item === "bibita") return p.hp < p.maxHp || (item === "bibita" && p.status.burn > 0);

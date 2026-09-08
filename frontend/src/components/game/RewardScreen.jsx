@@ -1,6 +1,6 @@
-import { ITEMS } from "@/game/data";
+import { ITEMS, itemPresentation } from "@/game/data";
 import { sfx } from "@/game/audio";
-import { Btn, Header, Panel, XpReport } from "./ui";
+import { Btn, Header, Panel, XpReport, ItemInfo } from "./ui";
 import { Gift } from "lucide-react";
 
 export default function RewardScreen({ rewards, bonus, money, xpReport, onPick }) {
@@ -15,12 +15,9 @@ export default function RewardScreen({ rewards, bonus, money, xpReport, onPick }
         <XpReport report={xpReport} />
         {rewards.map((id, i) => (
           <button key={id + i} data-testid={`reward-option-${i}`} onClick={() => { sfx.confirm(); onPick(id); }}
-            className={`w-full text-left p-3 border-4 ${id === "cuneo" ? "border-pink-500 bg-pink-950/40" : "border-slate-600 bg-[#141c2e]"} hover:border-amber-400 active:translate-y-[2px] flex gap-3 items-center`}>
-            <Gift size={22} className={id === "cuneo" ? "text-pink-400" : "text-amber-300"} />
-            <div>
-              <div className="font-pixel text-[10px] text-white">{ITEMS[id].name}</div>
-              <div className="font-body text-slate-300 text-base leading-tight mt-1">{ITEMS[id].desc}</div>
-            </div>
+            className={`w-full text-left p-3 border-4 ${itemPresentation(id).cardClass} hover:border-amber-400 active:translate-y-[2px] flex gap-3 items-center`}>
+            <Gift size={22} className={itemPresentation(id).accentClass} />
+            <ItemInfo id={id} />
           </button>
         ))}
       </div>

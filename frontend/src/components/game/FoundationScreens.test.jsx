@@ -1,5 +1,7 @@
 import { act } from "react";
 import { createRoot } from "react-dom/client";
+import RewardScreen from "./RewardScreen";
+import ShopScreen from "./ShopScreen";
 import TeamSelect from "./TeamSelect";
 import TeamScreen from "./TeamScreen";
 import FusionScreen from "./FusionScreen";
@@ -134,4 +136,25 @@ test("Hub labels the persisted difficulty and EndScreen shows local playtest fig
   await act(async () => root.render(<EndScreen run={run} result="lose" />));
   const summary = find("playtest-summary").textContent;
   for (const text of ["FACILE", "Ondata raggiunta", "Partite vinte", "Calciatori reclutati", "Fusioni DNA", "Livello medio", "3.0", "Livello massimo"]) expect(summary).toContain(text);
+});
+
+
+test("V2m reward and shop share textual rarity labels including Epic DNA", async () => {
+ await act(async()=>root.render(<RewardScreen rewards={["barretta","azzardo","cuneo"]} money={40} onPick={jest.fn()} />));
+ expect(find("item-rarity-barretta").textContent).toBe("Comune");
+ expect(find("item-rarity-azzardo").textContent).toBe("Raro");
+ expect(find("item-rarity-cuneo").textContent).toBe("Epico");
+ const run={...newRun(STARTER_IDS.slice(0,3)),pending:{type:"shop"}};
+ await act(async()=>root.render(<ShopScreen run={run} stock={[{id:"cuneo",price:300}]} onBuy={jest.fn()} />));
+ expect(find("item-rarity-cuneo").textContent).toBe("Epico");
+});
+
+test("V2m inventory redeems sponsor voucher and prevents wasting battle-only buffs", async () => {
+ const run={...newRun(STARTER_IDS.slice(0,3)),items:{buono:1,grinta:1,tenuta:1,azzardo:1}};
+ const update=jest.fn();
+ await act(async()=>root.render(<TeamScreen run={run} onUpdate={update} />));
+ for(const id of ["grinta","tenuta","azzardo"]) expect(find(`bag-use-${id}`).disabled).toBe(true);
+ await click("bag-use-buono");
+ expect(update.mock.calls[0][0].money).toBe(run.money+35);
+ expect(update.mock.calls[0][0].items.buono||0).toBe(0);
 });

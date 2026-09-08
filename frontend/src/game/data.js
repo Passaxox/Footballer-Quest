@@ -71,27 +71,40 @@ export const BOSSES = {
 
 export const FINAL_WAVE = 50;
 
-export const ITEMS = {
-  barretta: { id: "barretta", name: "Barretta Energetica", desc: "Recupera il 50% degli HP di un giocatore.", price: 40, battle: true },
-  bibita: { id: "bibita", name: "Bibita Inazuma", desc: "Recupera tutti gli HP e cura le condizioni.", price: 90, battle: true },
-  pallone: { id: "pallone", name: "Pallone d'Oro", desc: "Rianima un giocatore KO con metà HP.", price: 150, battle: true },
-  cuneo: { id: "cuneo", name: "Cuneo DNA", desc: "Fonde due giocatori in uno solo, più forte.", price: 300, battle: false },
-  fascia: { id: "fascia", name: "Fascia del Capitano", desc: "+5 ATK permanente a un giocatore.", price: 120, battle: false },
-  guanti: { id: "guanti", name: "Guanti Rinforzati", desc: "+5 DIF permanente a un giocatore.", price: 120, battle: false },
-  scarpini: { id: "scarpini", name: "Scarpini Turbo", desc: "+6 VEL permanente a un giocatore.", price: 120, battle: false },
-  proteine: { id: "proteine", name: "Proteine Kudo", desc: "+15 HP max permanente a un giocatore.", price: 120, battle: false },
-  trofeo: { id: "trofeo", name: "Mini Trofeo", desc: "Tutta la squadra guadagna esperienza.", price: 100, battle: false },
-  fischietto: { id: "fischietto", name: "Fischietto d'Argento", desc: "Il prossimo avversario singolo si unirà a te se lo sconfiggi.", price: 200, battle: false },
-  talismano: { id: "talismano", name: "Talismano Elementale", desc: "In battaglia: la tua mossa colpisce sempre come superefficace per 1 turno.", price: 110, battle: true },
+// Item rarity is presentation/frequency, not a power multiplier or player rarity.
+export const ITEM_RARITIES = {
+  COMMON: { label: "Comune", rewardWeight: 20, cardClass: "border-slate-500 bg-slate-900", accentClass: "text-slate-200" },
+  UNCOMMON: { label: "Non comune", rewardWeight: 9, cardClass: "border-emerald-500 bg-emerald-950/40", accentClass: "text-emerald-300" },
+  RARE: { label: "Raro", rewardWeight: 5, cardClass: "border-sky-500 bg-sky-950/40", accentClass: "text-sky-300" },
+  EPIC: { label: "Epico", rewardWeight: 2, cardClass: "border-pink-500 bg-pink-950/40", accentClass: "text-pink-300" },
+};
+const itemDefinitions = {
+  barretta: { id: "barretta", rarity: "COMMON", shopWeight: 2, name: "Barretta Energetica", desc: "Recupera il 50% degli HP di un giocatore.", price: 40, battle: true },
+  bibita: { id: "bibita", rarity: "UNCOMMON", dropFactor: 10/9, name: "Bibita Inazuma", desc: "Recupera tutti gli HP e cura le condizioni.", price: 90, battle: true },
+  pallone: { id: "pallone", rarity: "RARE", name: "Pallone d'Oro", desc: "Rianima un giocatore KO con metà HP.", price: 150, battle: true },
+  cuneo: { id: "cuneo", rarity: "EPIC", name: "Cuneo DNA", desc: "Fonde due giocatori in uno solo, più forte.", price: 300, battle: false },
+  fascia: { id: "fascia", rarity: "UNCOMMON", name: "Fascia del Capitano", desc: "+5 ATK permanente a un giocatore.", price: 120, battle: false },
+  guanti: { id: "guanti", rarity: "UNCOMMON", name: "Guanti Rinforzati", desc: "+5 DIF permanente a un giocatore.", price: 120, battle: false },
+  scarpini: { id: "scarpini", rarity: "UNCOMMON", name: "Scarpini Turbo", desc: "+6 VEL permanente a un giocatore.", price: 120, battle: false },
+  proteine: { id: "proteine", rarity: "UNCOMMON", name: "Proteine Kudo", desc: "+15 HP max permanente a un giocatore.", price: 120, battle: false },
+  trofeo: { id: "trofeo", rarity: "UNCOMMON", dropFactor: 8/9, name: "Mini Trofeo", desc: "Tutta la squadra guadagna esperienza.", price: 100, battle: false },
+  fischietto: { id: "fischietto", rarity: "RARE", dropFactor: 4/5, name: "Fischietto d'Argento", desc: "Il prossimo avversario singolo si unirà a te se lo sconfiggi.", price: 200, battle: false },
+  talismano: { id: "talismano", rarity: "RARE", battleOnly: true, name: "Talismano Elementale", desc: "In battaglia: la tua mossa colpisce sempre come superefficace per 1 turno.", price: 110, battle: true },
+  impacco: { id: "impacco", rarity: "COMMON", name: "Impacco da Bordocampo", desc: "Ripristina il 25% degli HP e cura la bruciatura. Solo giocatori non KO.", price: 35, battle: true, effect: { type: "recovery", hpShare: 0.25, cureBurn: true }, tags: ["recovery"] },
+  grinta: { id: "grinta", rarity: "UNCOMMON", name: "Grinta in Bottiglia", desc: "In lotta: ATK +1 stadio, massimo +3. Dura fino alla fine della battaglia.", price: 55, battle: true, battleOnly: true, effect: { type: "stages", atk: 1, def: 0 }, tags: ["offense"] },
+  tenuta: { id: "tenuta", rarity: "UNCOMMON", name: "Tenuta Difensiva", desc: "In lotta: DIF +1 stadio, massimo +3. Dura fino alla fine della battaglia.", price: 55, battle: true, battleOnly: true, effect: { type: "stages", atk: 0, def: 1 }, tags: ["defense"] },
+  buono: { id: "buono", shopWeight: 0, rarity: "UNCOMMON", name: "Buono Sponsor", desc: "Dallo zaino: converti questo buono in 35 Prestigio. Si consuma una volta.", price: 50, battle: false, effect: { type: "money", amount: 35 }, tags: ["economy"] },
+  azzardo: { id: "azzardo", rarity: "RARE", name: "Slancio Spericolato", desc: "In lotta: ATK +2 stadi e DIF -1, entro ±3. Richiede ATK sotto +3 e DIF sopra -3. Dura fino a fine battaglia.", price: 70, battle: true, battleOnly: true, effect: { type: "stages", atk: 2, def: -1 }, tags: ["risk", "offense"] },
 };
 
-export const SHOP_POOL = ["barretta", "barretta", "bibita", "pallone", "cuneo", "fascia", "guanti", "scarpini", "proteine", "trofeo", "fischietto", "talismano"];
-
-export const REWARD_POOL = [
-  { id: "barretta", w: 20 }, { id: "bibita", w: 10 }, { id: "pallone", w: 6 }, { id: "cuneo", w: 5 },
-  { id: "fascia", w: 9 }, { id: "guanti", w: 9 }, { id: "scarpini", w: 9 }, { id: "proteine", w: 9 },
-  { id: "trofeo", w: 8 }, { id: "fischietto", w: 4 }, { id: "talismano", w: 7 },
-];
+// Legacy desc and pool exports remain adapters; inventories save IDs/counts only.
+export const ITEMS = Object.fromEntries(Object.entries(itemDefinitions).map(([id, item]) => [id, {
+  ...item, description: item.desc, tags: item.tags || [], effect: item.effect || { type: "legacy", handler: id },
+  rewardWeight: ITEM_RARITIES[item.rarity].rewardWeight * (item.dropFactor ?? 1), shopWeight: item.shopWeight ?? 1,
+}]));
+export const itemPresentation = id => ITEM_RARITIES[ITEMS[id]?.rarity] || ITEM_RARITIES.COMMON;
+export const SHOP_POOL = Object.values(ITEMS).flatMap(item => Array(item.shopWeight).fill(item.id));
+export const REWARD_POOL = Object.values(ITEMS).map(item => ({ id: item.id, w: item.rewardWeight }));
 
 // Story events: choices -> outcomes (random pick weighted by chance)
 export const EVENTS = [

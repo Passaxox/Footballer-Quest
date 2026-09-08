@@ -1058,3 +1058,93 @@ test("V2l Camelia explains non-KO healing without changing price or effects", ()
  assert.equal(choice.outcomes[0].chance,100);
  assert.deepEqual(choice.outcomes[0].effects,[{type:"money",amt:-50},{type:"heal",pct:100,target:"all"}]);
 });
+
+
+test("V2m items have unique legacy-compatible metadata, presentation and weighted pools", () => {
+ const legacy=["barretta","bibita","pallone","cuneo","fascia","guanti","scarpini","proteine","trofeo","fischietto","talismano"];
+ const items=Object.values(data.ITEMS);
+ assert.equal(items.length,16); assert.equal(new Set(items.map(i=>i.id)).size,16);
+ for(const id of legacy) assert.ok(data.ITEMS[id]);
+ for(const [key,item] of Object.entries(data.ITEMS)) {
+  assert.equal(item.id,key);assert.ok(item.name && item.description);assert.equal(item.desc,item.description);
+  assert.ok(Array.isArray(item.tags));assert.equal(new Set(item.tags).size,item.tags.length);
+  assert.ok(["legacy","recovery","stages","money"].includes(item.effect.type));
+  const rarity=data.ITEM_RARITIES[item.rarity]; assert.ok(rarity);
+  assert.ok(rarity.label && rarity.cardClass && rarity.accentClass);
+  assert.equal(data.itemPresentation(item.id),rarity);
+  assert.ok(Number.isFinite(item.price) && item.price>0);
+  assert.ok(Number.isFinite(item.rewardWeight) && item.rewardWeight>0);
+  assert.ok(Number.isInteger(item.shopWeight) && item.shopWeight>=0);
+ }
+ assert.equal(data.REWARD_POOL.length,16);
+ assert.equal(new Set(data.REWARD_POOL.map(r=>r.id)).size,16);
+ for(const row of data.REWARD_POOL) assert.equal(row.w,data.ITEMS[row.id].rewardWeight);
+ for(const id of data.SHOP_POOL) assert.ok(data.ITEMS[id]);
+ const weights=r=>items.filter(i=>i.rarity===r).map(i=>i.rewardWeight);
+ for(const [rare,common] of [["EPIC","RARE"],["RARE","UNCOMMON"],["UNCOMMON","COMMON"]])
+  assert.ok(Math.max(...weights(rare))<Math.min(...weights(common)));
+ assert.equal(data.ITEMS.cuneo.rarity,"EPIC");
+});
+
+test("V2m reward selection remains three unique deterministic choices; shop remains four", () => {
+ const original=Math.random;
+ const sample=()=>{
+  let seed=127;
+  Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+  return Array.from({length:30},()=>({rewards:engine.generateRewards(),shop:engine.generateShop(8)}));
+ };
+ try {
+  const first=sample();assert.deepEqual(first,sample());
+  for(const row of first) {
+   assert.equal(row.rewards.length,3);assert.equal(new Set(row.rewards).size,3);
+   assert.ok(row.rewards.every(id=>data.ITEMS[id]));
+   assert.equal(row.shop.length,4);assert.equal(new Set(row.shop.map(i=>i.id)).size,4);
+  }
+ } finally { Math.random=original; }
+});
+
+test("V2m recovery caps HP, cures burn and never revives; new effects reject KO", () => {
+ const p={...player(),hp:1,status:{...player().status,burn:2}};
+ const snapshot=structuredClone(p),result=applyItemTo("impacco",p);
+ assert.equal(result.hp,1+Math.round(p.maxHp*.25));assert.equal(result.status.burn,0);assert.deepEqual(p,snapshot);
+ assert.equal(applyItemTo("impacco",{...p,hp:p.maxHp-1}).hp,p.maxHp);
+ assert.equal(engine.canApplyItem("impacco",player()),false);
+ for(const id of ["impacco","grinta","tenuta","azzardo","buono"]) {
+  const dead=ko();assert.equal(engine.canApplyItem(id,dead),false);assert.equal(applyItemTo(id,dead),dead);
+ }
+});
+
+test("V2m temporary stages respect +/-3 and require the risk item's defensive cost", () => {
+ const p=player();
+ assert.equal(applyItemTo("grinta",p).status.atkMod,1);
+ assert.equal(applyItemTo("tenuta",p).status.defMod,1);
+ const risk=applyItemTo("azzardo",{...p,status:{...p.status,atkMod:2,defMod:-2}});
+ assert.equal(risk.status.atkMod,3);assert.equal(risk.status.defMod,-3);
+ assert.equal(engine.canApplyItem("azzardo",risk),false);
+ assert.equal(engine.canApplyItem("azzardo",{...p,status:{...p.status,defMod:-3}}),false);
+ const full={...p,status:{...p.status,atkMod:3,defMod:3}};
+ assert.equal(engine.canApplyItem("grinta",full),false);assert.equal(engine.canApplyItem("tenuta",full),false);
+ assert.deepEqual(engine.resetBattleStatus([risk])[0].status,engine.freshStatus());
+ assert.equal(risk.atk,p.atk);assert.equal(risk.def,p.def);assert.deepEqual(risk.bonus,p.bonus);
+});
+
+test("V2m sponsor voucher is single-use, cannot yield purchase profit or target players", () => {
+ const run={...newRun(starters),items:{buono:1}};
+ const next=engine.consumeRunItem(run,"buono");
+ assert.equal(next.money,run.money+35);assert.equal(next.items.buono||0,0);
+ assert.equal(engine.consumeRunItem(next,"buono"),next);
+ assert.ok(data.ITEMS.buono.price>data.ITEMS.buono.effect.amount);
+ assert.ok(!data.SHOP_POOL.includes("buono"));
+ assert.equal(engine.canApplyItem("buono",player()),false);
+ assert.deepEqual(run.items,{buono:1});assert.equal(next.team,run.team);
+});
+
+test("V2m legacy inventories and persisted rewards/shop offers are not regenerated", () => {
+ const items={barretta:2,bibita:1,pallone:1,cuneo:1,talismano:1};
+ for(const pending of [{type:"reward",context:{rewards:["cuneo","barretta","trofeo"],money:40}},
+  {type:"shop",stock:[{id:"pallone",price:151},{id:"bibita",price:91}],bought:[0]}]) {
+  const run={...newRun(starters),items,pending};
+  storage.saveRun(run);assert.deepEqual(storage.loadRun(),run);
+  assert.deepEqual(engine.generateWave(storage.loadRun()),pending);
+ }
+});

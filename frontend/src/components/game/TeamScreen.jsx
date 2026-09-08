@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ITEMS } from "@/game/data";
-import { applyItemTo, canApplyItem, removeItem, gainXp, canReleasePlayer, xpProgress } from "@/game/engine";
+import { applyItemTo, consumeRunItem, canApplyItem, removeItem, gainXp, canReleasePlayer, xpProgress } from "@/game/engine";
 import { sfx } from "@/game/audio";
 import { Btn, Header, Panel, PlayerCard, StatLine, MoveInfo, XpBar } from "./ui";
 
@@ -11,10 +11,12 @@ export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
   const items = Object.entries(run.items).filter(([, n]) => n > 0);
 
   const consumeItem = (id) => {
+    if (ITEMS[id].effect.type === "money") { const next = consumeRunItem(run, id); onUpdate({ money: next.money, items: next.items }); return; }
+    if (ITEMS[id].battleOnly) return;
     if (id === "trofeo") { sfx.levelup(); onUpdate({ team: run.team.map((q) => gainXp(q, 40).player), items: removeItem(run.items, id) }); return; }
     if (id === "cuneo") { onFusion(); return; }
     if (id === "fischietto") { sfx.confirm(); onUpdate({ fischietto: true, items: removeItem(run.items, id) }); return; }
-    if (id === "talismano") return;
+
     setItemSel(id);
   };
   const applyTo = (i) => {
@@ -68,8 +70,8 @@ export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
                   <div className="font-pixel text-[9px] text-white">{ITEMS[id].name} <span className="text-amber-300">x{n}</span></div>
                   <div className="font-body text-slate-300 text-sm leading-tight">{ITEMS[id].desc}</div>
                 </div>
-                <Btn data-testid={`bag-use-${id}`} variant={id === "cuneo" ? "fusion" : "default"} disabled={id === "talismano" || (id === "cuneo" && run.team.length < 2)} onClick={() => consumeItem(id)}>
-                  {id === "talismano" ? "In lotta" : id === "cuneo" ? "Fondi" : "Usa"}
+                <Btn data-testid={`bag-use-${id}`} variant={id === "cuneo" ? "fusion" : "default"} disabled={ITEMS[id].battleOnly || (id === "cuneo" && run.team.length < 2)} onClick={() => consumeItem(id)}>
+                  {ITEMS[id].battleOnly ? "In lotta" : id === "cuneo" ? "Fondi" : "Usa"}
                 </Btn>
               </div>
             ))}
