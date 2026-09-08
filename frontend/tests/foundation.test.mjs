@@ -15,7 +15,9 @@ const catalogUrl = moduleUrl((await source("catalog")).replace('"./data"', JSON.
 const collectionUrl = moduleUrl((await source("collection")).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
-const engineUrl = moduleUrl((await source("engine")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
+const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
+const scenarios = await import(scenariosUrl);
+const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const engine = await import(engineUrl);
 const data = await import(dataUrl);
 const storage = await import(moduleUrl((await source("storage"))
@@ -853,4 +855,108 @@ test("V2h feedback preserves real HP loss and pre-hit elemental/Talisman context
   const talisman = { ...attacker, status: { ...attacker.status, talisman: true } };
   assert.equal(attackFeedback(talisman, defender, { ...defender, hp: 8 }).effectiveness, "strong");
   assert.equal(attackFeedback(attacker, defender, { ...defender, hp: 20 }).damage, 0);
+});
+
+
+test("V2i scenario registry validates references, hierarchy, eligibility and weights", () => {
+  assert.equal(scenarios.validateScenarios(), true);
+  const mutations = [
+    s => s.push(s[0]),
+    s => { s[0].macroScenarioId = "missing"; },
+    s => { s[0].locationType = "inventory"; },
+    s => { s[0].allowedTeamTags = ["missing"]; },
+    s => { s[0].allowedTeamTags = ["raimon", "raimon"]; },
+    s => { s[0].allowedVersionIds = ["missing"]; },
+    s => { s[0].arcId = "missing"; },
+    s => { s[0].eraId = "missing"; },
+    s => { s[0].minTier = 0; },
+    s => { s[0].waveRange.from = -1; },
+    s => { s[0].encounterPool.versionWeights = { "mark:base": -1 }; },
+  ];
+  for (const mutate of mutations) {
+    const copy = structuredClone(scenarios.SCENARIOS); mutate(copy);
+    assert.throws(() => scenarios.validateScenarios(copy));
+  }
+  assert.equal(new Set(scenarios.MACRO_SCENARIOS.map(m => m.id)).size, scenarios.MACRO_SCENARIOS.length);
+});
+
+test("V2i pools differ, preserve tier gates, and select without duplicates or rarity", () => {
+  for (const [id, counts] of [["raimon-training", [10,10,10,10]], ["urban", [6,15,19,19]], ["international", [0,0,5,6]]]) {
+    for (let tier = 1; tier <= 4; tier++) {
+      const pool = scenarios.scenarioPool(id, 19, tier);
+      assert.equal(pool.length, counts[tier - 1], `${id} tier ${tier}`);
+      assert.ok(pool.every(r => r.version.encounterTier <= tier && r.version.rarityId === null));
+      assert.equal(new Set(pool.map(r => r.version.versionId)).size, pool.length);
+      const excluded = [];
+      for (let i = 0; i < pool.length; i++) {
+        const v = scenarios.selectEncounterVersion(id, 19, tier, excluded, () => 0);
+        assert.ok(v); excluded.push(i % 2 ? v.versionId : v.legacyRosterId);
+      }
+      assert.equal(scenarios.selectEncounterVersion(id, 19, tier, excluded), null);
+    }
+  }
+  assert.deepEqual(scenarios.scenarioPool("international", 17, 4), []);
+  const ffi = scenarios.scenarioPool("international", 18, 3);
+  assert.ok(ffi.every(r => r.weight === (r.version.teamTags.includes("unicorn") ? 3 : 1)));
+  assert.equal(scenarios.selectEncounterVersion("urban", 1, 1, [], () => 0).versionId, "shawn:base");
+  assert.notEqual(scenarios.selectEncounterVersion("urban", 1, 1, [], () => 0).versionId,
+    scenarios.selectEncounterVersion("urban", 1, 1, [], () => 0.999).versionId);
+});
+
+test("V2i new runs choose context randomly and travel segments can have variable ends", () => {
+  const rng = Math.random;
+  try {
+    Math.random = () => 0; const a = newRun(starters);
+    Math.random = () => 0.999; const b = newRun(starters);
+    assert.equal(a.scenarioState.id, "raimon-training"); assert.equal(b.scenarioState.id, "urban");
+    assert.equal(scenarios.scenarioForWave(a.scenarioState, 6, 1, () => 0.999), a.scenarioState);
+    assert.equal(scenarios.scenarioForWave(a.scenarioState, 7, 1, () => 0.999).id, "urban");
+    assert.equal(scenarios.scenarioForWave(null, 17, 2, () => 0.999).id, "urban");
+    assert.equal(scenarios.scenarioForWave(null, 19, 3, () => 0.999).id, "international");
+    const extended = { ...a.scenarioState, segmentEnd: 12 };
+    assert.equal(scenarios.scenarioForWave(extended, 9, 2), extended);
+  } finally { Math.random = rng; }
+});
+
+test("V2i legacy save preserves team and pending node without RNG, new scenario round-trips", () => {
+  const run = newRun(starters); delete run.scenarioState;
+  run.wave = 8; run.team[0].hp = 7; run.team[0].xp = 19;
+  run.pending = { type: "battle", kind: "wild", enemies: [createPlayer("jordan", 8)] };
+  const original = structuredClone(run);
+  storage.saveRun(run);
+  const rng = Math.random;
+  try {
+    Math.random = () => { throw new Error("Save must not reroll"); };
+    const loaded = storage.loadRun();
+    assert.deepEqual(loaded.team, original.team); assert.deepEqual(loaded.pending, original.pending);
+    assert.equal(loaded.scenarioState.id, "urban");
+    assert.equal(engine.generateWave(loaded), loaded.pending);
+    storage.saveRun(loaded); assert.deepEqual(storage.loadRun(), loaded);
+    assert.equal(scenarios.normalizeScenarioState({ id: "missing", revision: 1 }, 8).id, "urban");
+  } finally { Math.random = rng; }
+});
+
+test("V2i generated ordinary groups use the selected pool and bosses remain scripted", () => {
+  const rng = Math.random;
+  try {
+    Math.random = () => 0.7;
+    const run = newRun(starters);
+    const node = engine.generateWave(run); // wave 1 is a battle, 0.7 selects a group
+    const allowed = scenarios.scenarioPool(node.scenarioState.id, 1, 1).map(r => r.version.legacyRosterId);
+    assert.ok(node.enemies.every(p => allowed.includes(p.baseId)));
+    assert.equal(new Set(node.enemies.map(p => p.baseId)).size, node.enemies.length);
+    for (const scenario of scenarios.SCENARIOS) {
+      const boss = engine.generateWave({ ...run, wave: 10, scenarioState: { id: scenario.id, revision: 1, segmentStart: 7, segmentEnd: 12 } });
+      assert.deepEqual(boss.enemies.map(p => p.baseId), data.BOSSES[10].ids);
+    }
+  } finally { Math.random = rng; }
+});
+
+test("V2i future presentation descriptor is passive and exposes location hierarchy", () => {
+  const v = catalog.resolveVersion("dylan"); const original = structuredClone(v);
+  const descriptor = scenarios.encounterDescriptor(v, "international");
+  assert.equal(descriptor.macroScenarioId, "ffi"); assert.equal(descriptor.locationId, "international");
+  assert.equal(descriptor.locationType, "generic"); assert.equal(descriptor.areaId, null);
+  assert.equal(descriptor.rarityId, null); assert.equal(descriptor.versionId, v.versionId);
+  assert.deepEqual(v, original);
 });

@@ -57,7 +57,10 @@ function App() {
 
   const next = () => {
     let r = run;
-    if (!r.pending) r = updateRun({ ...r, pending: generateWave(r) });
+    if (!r.pending) {
+      const pending = generateWave(r);
+      r = updateRun({ ...r, scenarioState: pending.scenarioState, pending });
+    }
     gotoPending(r);
   };
 

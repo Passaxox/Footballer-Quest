@@ -1,3 +1,4 @@
+import { getScenario } from "@/game/scenarios";
 import { BOSSES, FINAL_WAVE } from "@/game/data";
 import { glory } from "@/game/engine";
 import { DIFFICULTIES, getRules } from "@/game/rules";
@@ -16,6 +17,7 @@ export default function HubScreen({ run, onNext, onTeam, onAbandon }) {
       <div className="p-3 space-y-3 flex-1 overflow-y-auto">
         <div data-testid="run-difficulty" className="font-pixel text-[9px] text-sky-300">{DIFFICULTIES[getRules(run.rulesetId).difficultyId].label}</div>
         <Panel className="font-body text-lg leading-tight text-slate-200">
+          <div data-testid="run-scenario" className="text-amber-200 mb-2">{getScenario(run.scenarioState?.id).displayName}</div>
           {isBoss ? (
             <span className="text-red-400">Una squadra leggendaria vi attende. Preparatevi al meglio: dopo il boss la squadra sarà curata completamente.</span>
           ) : (

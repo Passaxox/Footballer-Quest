@@ -1,3 +1,4 @@
+import { selectEncounterVersion, scenarioForWave, normalizeScenarioState } from "./scenarios";
 import { CHARACTERS, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
@@ -172,8 +173,9 @@ export const randomRosterId = (maxTier, exclude = []) => {
 
 const tierForWave = (wave) => (wave < 8 ? 1 : wave < 18 ? 2 : 3);
 
-export const generateWave = (run) => {
+const generateWaveNode = (run) => {
   const wave = run.wave;
+  const pickOpponent = (tier, exclude = []) => selectEncounterVersion(run.scenarioState.id, wave, tier, exclude)?.legacyRosterId;
   const boss = BOSSES[wave];
   if (boss) {
     const rules = getRules(run.rulesetId);
@@ -183,17 +185,24 @@ export const generateWave = (run) => {
   const roll = Math.random() * 100;
   if (wave === 1 || roll < 50) {
     const solo = chance(60);
-    if (solo) return { type: "battle", kind: "wild", enemies: [createPlayer(randomRosterId(tierForWave(wave)), enemyLevel(wave, run.rulesetId))] };
+    if (solo) return { type: "battle", kind: "wild", enemies: [createPlayer(pickOpponent(tierForWave(wave)), enemyLevel(wave, run.rulesetId))] };
     const n = wave < 5 ? 2 : rand(2, 3);
     const ids = [];
-    while (ids.length < n) ids.push(randomRosterId(tierForWave(wave), ids));
+    while (ids.length < n) ids.push(pickOpponent(tierForWave(wave), ids));
     return { type: "battle", kind: "team", teamName: pick(TEAM_NAMES), enemies: ids.map((id) => createPlayer(id, enemyLevel(wave, run.rulesetId))) };
   }
-  if (roll < 62) return { type: "recruit", player: createPlayer(randomRosterId(tierForWave(wave) + (chance(20) ? 1 : 0)), Math.max(1, wave - 1)), price: 60 + wave * 4 };
+  if (roll < 62) return { type: "recruit", player: createPlayer(pickOpponent(tierForWave(wave) + (chance(20) ? 1 : 0)), Math.max(1, wave - 1)), price: 60 + wave * 4 };
   if (roll < 74) return { type: "shop", stock: generateShop(wave) };
   if (roll < 84) return { type: "training" };
   const ev = pick(EVENTS.filter((e) => !(run.seenEvents || []).includes(e.id)) .length ? EVENTS.filter((e) => !(run.seenEvents || []).includes(e.id)) : EVENTS);
   return { type: "event", eventId: ev.id };
+};
+
+// Scenario is selected once per segment and returned for atomic persistence with the pending node.
+export const generateWave = (run) => {
+  if (run.pending) return run.pending; // Never reroll an already persisted encounter.
+  const scenarioState = scenarioForWave(normalizeScenarioState(run.scenarioState, run.wave), run.wave, tierForWave(run.wave));
+  return { ...generateWaveNode({ ...run, scenarioState }), scenarioState };
 };
 
 export const generateShop = (wave) => {
@@ -224,6 +233,7 @@ export const enemiesForEffect = (eff, wave) => {
 
 // ---------- Run helpers ----------
 export const newRun = (starterIds, difficultyId = "normal") => normalizeRun({
+  scenarioState: scenarioForWave(null, 1, tierForWave(1)),
   difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
   wave: 1, team: starterIds.map((id) => createPlayer(id, 3)), items: { barretta: 2 }, money: 100,
   stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], pending: null, fischietto: false, startedAt: Date.now(),
@@ -236,7 +246,7 @@ export const normalizeRun = (run) => {
   if (!run) return null;
   const rulesetId = run.rulesetId || DIFFICULTIES[run.difficultyId || "normal"]?.rulesetId || DEFAULT_RULESET;
   const rules = getRules(rulesetId);
-  return { ...run, team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
+  return { ...run, scenarioState: normalizeScenarioState(run.scenarioState, run.wave), team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
     rulesetVersion: run.rulesetVersion ?? rules.version,
     activeUid: resolveActiveUid(run.team, run.activeUid) };
 };
