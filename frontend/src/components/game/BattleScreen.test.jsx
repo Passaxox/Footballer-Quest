@@ -186,3 +186,26 @@ test("V2h preview shows both real techniques and updates after a free prebattle 
   expect(attack).not.toHaveBeenCalled();
   expect(find("attack-button")).not.toBeNull();
 });
+
+
+test.each(["team", "boss"])("partial enemy KO then %s loss removes provisional growth", async kind => {
+ const run=engine.newRun(STARTER_IDS.slice(0,1),"easy");
+ run.team[0].xp=engine.xpForLevel(run.team[0].level)-1;
+ const before={...run.team[0]};
+ const first=engine.createPlayer("david",10), second=engine.createPlayer("joseph",10);
+ jest.spyOn(engine,"turnOrder").mockReturnValue("player");
+ jest.spyOn(engine,"performAttack").mockImplementation((a,d)=> ({
+  att: d.uid===first.uid ? a : {...a,hp:0},
+  def:{...d,hp:0}, msgs:["Test KO"]
+ }));
+ const cb=await setup(run,false,{kind,enemies:[first,second]});
+ await click("pre-battle-keep");await settle();
+ await click("attack-button");await settle();
+ expect(cb.onLose).not.toHaveBeenCalled();
+ await click("attack-button");await settle(); // simultaneous last enemy/player KO = loss
+ expect(cb.onWin).not.toHaveBeenCalled();
+ expect(cb.onLose).toHaveBeenCalledTimes(1);
+ const [team,, ,report]=cb.onLose.mock.calls[0];
+ expect(team[0]).toMatchObject({uid:before.uid,level:before.level,xp:before.xp,hp:0});
+ expect(report.rows.every(r=>r.total===0 && r.after.level===r.before.level)).toBe(true);
+});

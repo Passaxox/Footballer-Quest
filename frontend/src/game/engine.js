@@ -335,6 +335,20 @@ export const grantCombatXp = (team, activeUid, defeatedLevel, boss = false, rule
   return { team: updated, report };
 };
 
+// Per-enemy XP is provisional until the battle result. Losing discards only this battle's growth.
+export const settleCombatProgression = (result, initialTeam, finalTeam, report) => {
+  if (result !== "lose") return { team: finalTeam, report: finishCombatReport(finalTeam, report) };
+  const before = new Map(initialTeam.map(p => [p.uid, p]));
+  const team = finalTeam.map(p => {
+    const old = before.get(p.uid);
+    if (!old) throw new Error("Missing battle-start player for progression rollback");
+    const restored = recalcStats({ ...p, level: old.level, xp: old.xp });
+    // Keep real combat damage/KO and item bonuses, not the healed HP from recalculation.
+    return { ...restored, hp: Math.min(p.hp, restored.maxHp) };
+  });
+  return { team, report: finishCombatReport(team, reportXpChanges(team, team, "combat")) };
+};
+
 export const finishCombatReport = (team, report) => {
   const summary = report || reportXpChanges(team, team, "combat");
   return { ...summary, rows: summary.rows.map((row) => {

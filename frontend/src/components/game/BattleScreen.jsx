@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { attackFeedback } from "@/game/battleFeedback";
 import { ITEMS, WILD_INTROS, ELEMENTS } from "@/game/data";
-import { performAttack, applyBurn, turnOrder, resetBattleStatus, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, canApplyItem, removeItem, pick, chance, resolveActiveUid, xpProgress } from "@/game/engine";
+import { performAttack, applyBurn, turnOrder, resetBattleStatus, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, canApplyItem, removeItem, pick, chance, resolveActiveUid, xpProgress } from "@/game/engine";
 import { sfx } from "@/game/audio";
 import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
@@ -43,7 +43,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const s = useRef(null);
   if (!s.current) {
     s.current = {
-      team: resetBattleStatus(run.team), items: { ...run.items }, active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
+      initialTeam: run.team.map(p => ({ ...p })), team: resetBattleStatus(run.team), items: { ...run.items }, active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
       enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", cue: null, hit: null, menu: "main", itemSel: null, xpReport: null,
     };
   }
@@ -129,7 +129,9 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       sfx.lose();
       await say("Tutta la squadra è KO... La run finisce qui.", 1500);
       st.phase = "end"; rr();
-      onLose(st.team, st.items, active()?.uid, finishCombatReport(st.team, st.xpReport));
+      const settled = settleCombatProgression("lose", st.initialTeam, st.team, st.xpReport);
+      st.team = settled.team; st.xpReport = settled.report;
+      onLose(st.team, st.items, active()?.uid, st.xpReport);
       return;
     }
     if (enemy().hp === 0) {

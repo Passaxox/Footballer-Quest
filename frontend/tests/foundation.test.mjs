@@ -1002,3 +1002,49 @@ test("V2k special bonuses respect Easy; offers receive ceiling only and are not 
  assert.deepEqual(offer,snapshot);
  assert.equal(engine.recruitChallengePlayer(offer,high),offer);
 });
+
+
+test("V2k1 losing ordinary/boss battles discards all partial kills and bench XP", () => {
+ for (const boss of [false,true]) {
+  const start = [player(),player(),ko()].map((p,i)=>({...p,uid:`loss-${i}`,xp:xpForLevel(p.level)-1}));
+  const snapshot=structuredClone(start);
+  const award=engine.grantCombatXp(start,start[0].uid,10,boss,"easy-v2");
+  assert.ok(award.team[0].level>start[0].level);
+  const final=award.team.map(p=>({...p,hp:0}));
+  const settled=engine.settleCombatProgression("lose",start,final,award.report);
+  assert.deepEqual(start,snapshot);
+  settled.team.forEach((p,i)=> {
+   assert.equal(p.level,start[i].level);assert.equal(p.xp,start[i].xp);assert.equal(p.hp,0);
+   assert.equal(p.maxHp,start[i].maxHp);
+  });
+  assert.ok(settled.report.rows.every(r=>r.total===0 && r.activeXp===0 && r.benchXp===0 && r.after.level===r.before.level));
+ }
+});
+
+test("V2k1 loss result is independent of Game Over and preserves previous progression/history", () => {
+ const run=newRun(starters,"easy");
+ run.team=run.team.map(p=>gainXp(p,90).player); // legitimate earlier waves
+ const before=structuredClone(run.team);
+ const award=engine.grantCombatXp(run.team,run.team[0].uid,10,true,run.rulesetId);
+ const settled=engine.settleCombatProgression("lose",before,award.team.map(p=>({...p,hp:0})),award.report);
+ const lost={...run,wave:10,activeUid:null,team:settled.team,lastProgression:{wave:10,report:settled.report},pending:{type:"battle",kind:"boss",teamName:"Royal Academy"}};
+ assert.equal(engine.playtestSummary(lost).averageLevel,engine.playtestSummary({...run,team:before}).averageLevel);
+ assert.equal(Math.max(...lost.team.map(p=>p.level)),Math.max(...before.map(p=>p.level)));
+ assert.equal(lost.money,run.money);assert.deepEqual(lost.stats,run.stats);
+ assert.equal(engine.completeNonCombatNode(lost),lost); // no travel for an unresolved/lost battle
+ storage.saveRun(lost);assert.deepEqual(storage.loadRun(),lost);
+ const meta=storage.recordFinishedRun(storage.loadMeta(),lost,"lose");
+ const record=meta.records.at(-1);
+ assert.deepEqual(record.teamSnapshot.map(p=>p.level),before.map(p=>p.level));
+ storage.saveMeta(meta);storage.clearRun();
+ assert.equal(storage.loadRun(),null);
+ assert.deepEqual(storage.loadMeta().records.at(-1),record);
+ assert.equal(storage.recordFinishedRun(meta,lost,"lose"),meta);
+});
+
+test("V2k1 win/flee keep existing growth; simultaneous loss rolls back and preserves real KO", () => {
+ const start=[player()];const award=engine.grantCombatXp(start,start[0].uid,10,true);
+ for(const result of ["win","flee"]) assert.equal(engine.settleCombatProgression(result,start,award.team,award.report).team,award.team);
+ const settled=engine.settleCombatProgression("lose",start,[{...award.team[0],hp:0}],award.report);
+ assert.equal(settled.team[0].hp,0);assert.equal(settled.team[0].xp,start[0].xp);
+});
