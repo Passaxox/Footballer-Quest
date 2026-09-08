@@ -84,6 +84,8 @@ function App() {
     const boss = enc.kind === "boss";
     const gain = (20 + run.wave * 3) * (boss ? 3 : enc.kind === "team" ? 1.6 : 1);
     let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? team.map((p) => ({ ...p, hp: p.maxHp })) : team, items, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : {}) } };
+    // Final victory keeps earned growth/money, but has no next-node item phase.
+    if (r.wave >= FINAL_WAVE) { finishRun(r, "win"); return; }
     const rewards = generateRewards();
     const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport };
     if (enc.kind === "wild" && (r.fischietto || enc.forceRecruit || chance(40))) {

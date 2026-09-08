@@ -3,7 +3,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import { newRun, createPlayer, grantCombatXp, gainXp } from "./game/engine";
 import { saveRun, loadRun, loadMeta, saveMeta } from "./game/storage";
-import { STARTER_IDS, EVENTS } from "./game/data";
+import * as engine from "./game/engine";
+import { STARTER_IDS, EVENTS, FINAL_WAVE } from "./game/data";
 import TitleScreen from "./components/game/TitleScreen";
 import HubScreen from "./components/game/HubScreen";
 import BattleScreen from "./components/game/BattleScreen";
@@ -316,4 +317,50 @@ test("discovery persists independently of recruitment, then actual join unlocks 
   await call(RecruitScreen, "onJoin", null, false);
   expect(loadMeta().collection[p.versionId]).toEqual({ discovered: true, recruited: true, starterUnlocked: true });
   expect(loadMeta().unlocked.filter(id => id === "darren")).toHaveLength(1);
+});
+
+
+test("W49 victory still generates the normal item reward phase", async () => {
+ const run={...runWith(encounter()),wave:FINAL_WAVE-1};
+ saveRun(run);await mountAndContinue();
+ await call(BattleScreen,"onWin",run.team,run.items,run.activeUid);
+ expect(RewardScreen).toHaveBeenCalled();expect(EndScreen).not.toHaveBeenCalled();
+ expect(loadRun().pending.type).toBe("reward");
+});
+
+test("final wave victory bypasses item rewards, preserves final XP and registers once", async () => {
+ const run={...runWith({...encounter("boss"),teamName:"Little Gigant"}),wave:FINAL_WAVE};
+ const award=grantCombatXp(run.team,run.activeUid,53,true,run.rulesetId);
+ expect(award.team.some((p,i)=>p.level>run.team[i].level)).toBe(true);
+ const rewards=jest.spyOn(engine,"generateRewards");
+ saveRun(run);await mountAndContinue();
+ await call(BattleScreen,"onWin",award.team,run.items,run.activeUid,award.report);
+ expect(rewards).not.toHaveBeenCalled();expect(RewardScreen).not.toHaveBeenCalled();
+ expect(RecruitScreen).not.toHaveBeenCalled();
+ const final=props(EndScreen).run;
+ expect(props(EndScreen).result).toBe("win");
+ expect(final.team.map(p=>[p.level,p.xp])).toEqual(award.team.map(p=>[p.level,p.xp]));
+ expect(final.lastProgression.report).toEqual(award.report);
+ expect(final.items).toEqual(run.items);
+ expect(final.money).toBe(run.money+(20+FINAL_WAVE*3)*3);
+ expect(final.stats.wins).toBe(run.stats.wins+1);
+ expect(final.stats.lastBossDefeated).toBe("Little Gigant");
+ expect(loadRun()).toBeNull();expect(loadMeta().records).toHaveLength(1);
+ expect(loadMeta().records[0].glory).toBe(engine.glory(final));
+ expect(loadMeta().records[0].teamSnapshot.map(p=>p.level)).toEqual(award.team.map(p=>p.level));
+ const records=loadMeta().records;
+ await call(EndScreen,"onRetry");
+ expect(TeamSelect).toHaveBeenCalled();expect(loadMeta().records).toEqual(records);
+ await call(TeamSelect,"onStart",STARTER_IDS.slice(0,3),"normal");
+ expect(loadRun().wave).toBe(1);expect(loadMeta().records).toEqual(records);
+ rewards.mockRestore();
+});
+
+test("final boss loss still ends as Game Over without reward phase", async () => {
+ const run={...runWith({...encounter("boss"),teamName:"Little Gigant"}),wave:FINAL_WAVE};
+ saveRun(run);await mountAndContinue();
+ await call(BattleScreen,"onLose",run.team.map(p=>({...p,hp:0})),run.items,null);
+ expect(props(EndScreen).result).toBe("lose");
+ expect(RewardScreen).not.toHaveBeenCalled();expect(loadRun()).toBeNull();
+ expect(loadMeta().records).toHaveLength(1);expect(loadMeta().records[0].result).toBe("lose");
 });
