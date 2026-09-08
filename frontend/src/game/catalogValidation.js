@@ -42,6 +42,7 @@ export function validateCatalog({ characters, versions, moves, legacyMappings, r
     for (const [key, registry] of [["arcId", arcIndex], ["eraId", eraIndex], ["gameOrigin", originIndex]]) {
       if (v[key] != null && !registry.has(v[key])) errors.push(`Unknown ${key}: ${label}`);
     }
+    // Check reference consistency only: gameOrigin is incarnation debut, never derived from arc/team.
     const declaredEras = [v.eraId, arcIndex.get(v.arcId)?.eraId, originIndex.get(v.gameOrigin)?.eraId].filter(id => id != null);
     if (new Set(declaredEras).size > 1) errors.push(`Incompatible metadata eras: ${label}`);
     if (v.rarityId != null && !rarityIds.includes(v.rarityId)) errors.push(`Invalid rarityId: ${label}`);

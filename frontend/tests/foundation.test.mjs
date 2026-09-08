@@ -37,7 +37,7 @@ test("V2b complete catalog validates against actual sprite files and required le
   for (const row of data.ROSTER) {
     const v = catalog.resolveVersion(row.id);
     assert.equal(v.displayName, row.name);
-    for (const key of ["rarityId", "variantId", "gameOrigin"]) assert.equal(v[key], null);
+    for (const key of ["rarityId", "variantId"]) assert.equal(v[key], null);
     assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], row.move);
     for (const level of [1, 3, 15]) {
       const p = createPlayer(v.versionId, level);
@@ -648,7 +648,7 @@ test("V2c passive metadata preserves validated V2b gameplay fixture and runtime 
     const p = createPlayer(row.id, 3);
     for (const key of ["gender", "teamTags", "arcId", "eraId", "gameOrigin"]) assert.equal(Object.hasOwn(p, key), false);
   }
-  assert.deepEqual(catalog.resolveVersion("xavier").teamTags, ["genesis"]);
+  assert.deepEqual(catalog.resolveVersion("xavier").teamTags, ["genesis", "alius-academy"]);
   assert.deepEqual(catalog.resolveVersion("jordan").teamTags, []);
   assert.deepEqual(catalog.resolveVersion("fidio").teamTags, []);
 });
@@ -671,13 +671,41 @@ test("V2d verified batch resolves unique names and changes only supplied metadat
     for (const key of ["arcId", "gameOrigin", "rarityId", "variantId"]) assert.equal(v[key], null);
   }
   const { VERSION_METADATA } = await import(metadataUrl);
-  assert.deepEqual(VERSION_METADATA["byron:base"], { teamTags: ["zeus"] });
-  assert.deepEqual(VERSION_METADATA["xavier:base"], { teamTags: ["genesis"], arcId: "alius", eraId: "original" });
-  assert.deepEqual(VERSION_METADATA["rococo:base"], { teamTags: ["little-gigant"], arcId: "ffi", eraId: "original" });
+  assert.deepEqual(VERSION_METADATA["byron:base"], { teamTags: ["zeus"], arcId: "football-frontier", eraId: "original", gameOrigin: "ie1" });
+  assert.deepEqual(VERSION_METADATA["xavier:base"], { teamTags: ["genesis", "alius-academy"], arcId: "alius", eraId: "original", gameOrigin: "ie2" });
+  assert.deepEqual(VERSION_METADATA["rococo:base"], { teamTags: ["little-gigant"], arcId: "ffi", eraId: "original", gameOrigin: "ie3" });
   const versions = Object.values(catalog.CHARACTER_VERSIONS);
   assert.equal(versions.length, 44);
-  for (const [key, count] of [["gender", 11], ["teamTags", 13], ["arcId", 2], ["eraId", 13], ["gameOrigin", 0], ["primaryMoveId", 44]]) {
+  for (const [key, count] of [["gender", 16], ["teamTags", 20], ["arcId", 10], ["eraId", 21], ["gameOrigin", 10], ["primaryMoveId", 44]]) {
     assert.equal(versions.filter(v => Array.isArray(v[key]) ? v[key].length > 0 : v[key] != null).length, count, key);
   }
-  for (const v of versions.filter(v => !entries.some(([, id]) => v.legacyRosterId === id))) assert.equal(v.gender, null);
+  for (const v of versions.filter(v => !entries.some(([, id]) => v.legacyRosterId === id) && !["torch", "kruger", "dylan", "edgar", "teres"].includes(v.legacyRosterId))) assert.equal(v.gender, null);
+});
+
+
+test("V2e batch protects all localized legacy mappings and specific incarnation metadata", async () => {
+  const fixture = JSON.parse(await readFile(new URL("./fixtures/catalog-batch3.json", import.meta.url), "utf8"));
+  for (const a of fixture.aliases) {
+    const v = catalog.resolveVersion(a.legacyId);
+    assert.equal(v.versionId, a.versionId);
+    assert.equal(v.displayName, a.displayName);
+  }
+  for (const [id, fields] of Object.entries(fixture.metadata)) {
+    const v = catalog.resolveVersion(id);
+    for (const [key, value] of Object.entries(fields)) assert.deepEqual(v[key], value, id + ":" + key);
+  }
+  for (const id of ["jordan", "dvalin", "paolo", "fidio", "david", "joseph", "jonas"]) {
+    const v = catalog.resolveVersion(id);
+    assert.deepEqual(v.teamTags, []);
+    assert.equal(v.gameOrigin, null);
+  }
+  assert.deepEqual(catalog.resolveVersion("jude").teamTags, ["raimon"]);
+  assert.equal(catalog.resolveVersion("jude").gameOrigin, null); // Never infer from character debut.
+  const teams = new Set(catalog.CATALOG_SOURCE.teams.map(t => t.teamId));
+  for (const id of ["royal-academy","alius-academy","gemini-storm","epsilon","epsilon-plus","diamond-dust","prominence","chaos","dark-emperors","absolute-royal-academy","inazuma-japan","big-waves","desert-lion","fire-dragon","knights-of-queen","unicorn","orpheus","the-empire","neo-japan"]) assert.ok(teams.has(id), id);
+  for (const id of ["xavier", "torch", "gazelle"]) {
+    const v = catalog.resolveVersion(id);
+    assert.ok(v.teamTags.includes("alius-academy") && v.teamTags.length === 2);
+    assert.equal(v.gameOrigin, "ie2");
+  }
 });

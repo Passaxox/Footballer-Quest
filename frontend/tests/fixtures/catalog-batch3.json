@@ -1,0 +1,314 @@
+{
+  "metadata": {
+    "byron": {
+      "teamTags": [
+        "zeus"
+      ],
+      "arcId": "football-frontier",
+      "eraId": "original",
+      "gameOrigin": "ie1"
+    },
+    "xavier": {
+      "teamTags": [
+        "genesis",
+        "alius-academy"
+      ],
+      "arcId": "alius",
+      "eraId": "original",
+      "gameOrigin": "ie2"
+    },
+    "rococo": {
+      "teamTags": [
+        "little-gigant"
+      ],
+      "arcId": "ffi",
+      "eraId": "original",
+      "gameOrigin": "ie3"
+    },
+    "torch": {
+      "gender": "male",
+      "teamTags": [
+        "chaos",
+        "alius-academy"
+      ],
+      "arcId": "alius",
+      "eraId": "original",
+      "gameOrigin": "ie2"
+    },
+    "gazelle": {
+      "teamTags": [
+        "chaos",
+        "alius-academy"
+      ],
+      "arcId": "alius",
+      "eraId": "original",
+      "gameOrigin": "ie2"
+    },
+    "kruger": {
+      "gender": "male",
+      "teamTags": [
+        "unicorn"
+      ],
+      "arcId": "ffi",
+      "eraId": "original",
+      "gameOrigin": "ie3"
+    },
+    "dylan": {
+      "gender": "male",
+      "teamTags": [
+        "unicorn"
+      ],
+      "arcId": "ffi",
+      "eraId": "original",
+      "gameOrigin": "ie3"
+    },
+    "edgar": {
+      "gender": "male",
+      "teamTags": [
+        "knights-of-queen"
+      ],
+      "arcId": "ffi",
+      "eraId": "original",
+      "gameOrigin": "ie3"
+    },
+    "teres": {
+      "gender": "male",
+      "teamTags": [
+        "the-empire"
+      ],
+      "arcId": "ffi",
+      "eraId": "original",
+      "gameOrigin": "ie3"
+    },
+    "chae": {
+      "teamTags": [
+        "fire-dragon"
+      ],
+      "arcId": "ffi",
+      "eraId": "original",
+      "gameOrigin": "ie3"
+    }
+  },
+  "aliases": [
+    {
+      "legacyId": "mark",
+      "versionId": "mark:base",
+      "displayName": "Mark Evans"
+    },
+    {
+      "legacyId": "axel",
+      "versionId": "axel:base",
+      "displayName": "Axel Blaze"
+    },
+    {
+      "legacyId": "jude",
+      "versionId": "jude:base",
+      "displayName": "Jude Sharp"
+    },
+    {
+      "legacyId": "nathan",
+      "versionId": "nathan:base",
+      "displayName": "Nathan Swift"
+    },
+    {
+      "legacyId": "shawn",
+      "versionId": "shawn:base",
+      "displayName": "Shawn Froste"
+    },
+    {
+      "legacyId": "jack",
+      "versionId": "jack:base",
+      "displayName": "Jack Wallside"
+    },
+    {
+      "legacyId": "kevin",
+      "versionId": "kevin:base",
+      "displayName": "Kevin Dragonfly"
+    },
+    {
+      "legacyId": "darren",
+      "versionId": "darren:base",
+      "displayName": "Darren LaChance"
+    },
+    {
+      "legacyId": "tod",
+      "versionId": "tod:base",
+      "displayName": "Tod Ironside"
+    },
+    {
+      "legacyId": "sam",
+      "versionId": "sam:base",
+      "displayName": "Sam Kincaid"
+    },
+    {
+      "legacyId": "steve",
+      "versionId": "steve:base",
+      "displayName": "Steve Grim"
+    },
+    {
+      "legacyId": "bobby",
+      "versionId": "bobby:base",
+      "displayName": "Bobby Shearer"
+    },
+    {
+      "legacyId": "maxwell",
+      "versionId": "maxwell:base",
+      "displayName": "Maxwell Carson"
+    },
+    {
+      "legacyId": "tim",
+      "versionId": "tim:base",
+      "displayName": "Tim Saunders"
+    },
+    {
+      "legacyId": "willy",
+      "versionId": "willy:base",
+      "displayName": "Willy Glass"
+    },
+    {
+      "legacyId": "erik",
+      "versionId": "erik:base",
+      "displayName": "Erik Eagle"
+    },
+    {
+      "legacyId": "austin",
+      "versionId": "austin:base",
+      "displayName": "Austin Hobbes"
+    },
+    {
+      "legacyId": "caleb",
+      "versionId": "caleb:base",
+      "displayName": "Caleb Stonewall"
+    },
+    {
+      "legacyId": "hurley",
+      "versionId": "hurley:base",
+      "displayName": "Hurley Kane"
+    },
+    {
+      "legacyId": "scotty",
+      "versionId": "scotty:base",
+      "displayName": "Scotty Banyan"
+    },
+    {
+      "legacyId": "thor",
+      "versionId": "thor:base",
+      "displayName": "Thor Stoutberg"
+    },
+    {
+      "legacyId": "archer",
+      "versionId": "archer:base",
+      "displayName": "Archer Hawkins"
+    },
+    {
+      "legacyId": "joseph",
+      "versionId": "joseph:base",
+      "displayName": "Joseph King"
+    },
+    {
+      "legacyId": "david",
+      "versionId": "david:base",
+      "displayName": "David Samford"
+    },
+    {
+      "legacyId": "byron",
+      "versionId": "byron:base",
+      "displayName": "Byron Love"
+    },
+    {
+      "legacyId": "jonas",
+      "versionId": "jonas:base",
+      "displayName": "Jonas Demetrius"
+    },
+    {
+      "legacyId": "xavier",
+      "versionId": "xavier:base",
+      "displayName": "Xavier Foster"
+    },
+    {
+      "legacyId": "jordan",
+      "versionId": "jordan:base",
+      "displayName": "Jordan Greenway"
+    },
+    {
+      "legacyId": "torch",
+      "versionId": "torch:base",
+      "displayName": "Torch"
+    },
+    {
+      "legacyId": "gazelle",
+      "versionId": "gazelle:base",
+      "displayName": "Gazelle"
+    },
+    {
+      "legacyId": "dvalin",
+      "versionId": "dvalin:base",
+      "displayName": "Dvalin"
+    },
+    {
+      "legacyId": "rococo",
+      "versionId": "rococo:base",
+      "displayName": "Rococo Urupa"
+    },
+    {
+      "legacyId": "canon",
+      "versionId": "canon:base",
+      "displayName": "Canon Evans"
+    },
+    {
+      "legacyId": "paolo",
+      "versionId": "paolo:base",
+      "displayName": "Paolo Bianchi"
+    },
+    {
+      "legacyId": "fidio",
+      "versionId": "fidio:base",
+      "displayName": "Fidio Aldena"
+    },
+    {
+      "legacyId": "kruger",
+      "versionId": "kruger:base",
+      "displayName": "Mark Kruger"
+    },
+    {
+      "legacyId": "dylan",
+      "versionId": "dylan:base",
+      "displayName": "Dylan Keith"
+    },
+    {
+      "legacyId": "edgar",
+      "versionId": "edgar:base",
+      "displayName": "Edgar Valtinas"
+    },
+    {
+      "legacyId": "teres",
+      "versionId": "teres:base",
+      "displayName": "Teres Tolue"
+    },
+    {
+      "legacyId": "chae",
+      "versionId": "chae:base",
+      "displayName": "Chae Chan-soo"
+    },
+    {
+      "legacyId": "malcolm",
+      "versionId": "malcolm:base",
+      "displayName": "Jim Wraith"
+    },
+    {
+      "legacyId": "hector",
+      "versionId": "hector:base",
+      "displayName": "Rika Urabe"
+    },
+    {
+      "legacyId": "silvia",
+      "versionId": "silvia:base",
+      "displayName": "Silvia Woods"
+    },
+    {
+      "legacyId": "aiden",
+      "versionId": "aiden:base",
+      "displayName": "Aiden Frost"
+    }
+  ]
+}
