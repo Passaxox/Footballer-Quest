@@ -192,7 +192,7 @@ const tierForWave = (wave) => (wave < 8 ? 1 : wave < 18 ? 2 : 3);
 
 const generateWaveNode = (run) => {
   const wave = run.wave;
-  const pickOpponent = (tier, exclude = []) => selectEncounterVersion(run.scenarioState.id, wave, tier, exclude)?.legacyRosterId;
+  const pickOpponent = (tier, exclude = []) => selectEncounterVersion(run.scenarioState.id, wave, tier, exclude)?.versionId;
   const boss = BOSSES[wave];
   if (boss) {
     const rules = getRules(run.rulesetId);

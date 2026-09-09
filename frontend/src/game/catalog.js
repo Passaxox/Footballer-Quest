@@ -1,13 +1,14 @@
 import { TEAMS, ARCS, ERAS, GAME_ORIGINS, VERSION_METADATA } from "./catalogMetadata";
 import { ROSTER } from "./data";
 import { validateCatalog } from "./catalogValidation";
+import { EXPANSION_CHARACTERS, EXPANSION_VERSIONS, EXPANSION_MOVES } from "./catalogExpansion";
 
 // Character = person; CharacterVersion = authored incarnation; PlayerInstance = mutable run state.
 // Legacy roster is the technical 1:1 source, not proof of canonical identity.
 // See the opt-in identity audit for verified and disputed mappings.
 export const CATALOG_SOURCE = {
-  characters: ROSTER.map(r => ({ characterId: r.id, displayName: r.name })),
-  versions: ROSTER.map(r => ({
+  characters: [...ROSTER.map(r => ({ characterId: r.id, displayName: r.name })), ...EXPANSION_CHARACTERS],
+  versions: [...ROSTER.map(r => ({
     versionId: `${r.id}:base`, characterId: r.id, legacyRosterId: r.id, displayName: r.name, kind: "player",
     role: r.role, gender: VERSION_METADATA[`${r.id}:base`]?.gender ?? null, spriteId: r.id,
     teamTags: [...(VERSION_METADATA[`${r.id}:base`]?.teamTags ?? [])], element: r.element, types: [r.element],
@@ -18,9 +19,9 @@ export const CATALOG_SOURCE = {
     eraId: VERSION_METADATA[`${r.id}:base`]?.eraId ?? null,
     gameOrigin: VERSION_METADATA[`${r.id}:base`]?.gameOrigin ?? null,
     encounterTier: r.tier, // Encounter selection only; never collection rarity.
-  })),
+  })), ...EXPANSION_VERSIONS],
   // Stable primary identity, not a secondary/evolution system. Instances keep their saved move copy.
-  moves: ROSTER.map(r => ({ moveId: `${r.id}:primary`, ...r.move })),
+  moves: [...ROSTER.map(r => ({ moveId: `${r.id}:primary`, ...r.move })), ...EXPANSION_MOVES],
   legacyMappings: ROSTER.map(r => ({ legacyId: r.id, versionId: `${r.id}:base` })),
   rarityIds: [],
   teams: TEAMS, arcs: ARCS, eras: ERAS, gameOrigins: GAME_ORIGINS,

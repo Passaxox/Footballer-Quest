@@ -23,6 +23,20 @@ test("UNKNOWN conceals name, portrait and all strategic data", async () => {
   expect(card.querySelector("img")).toBeNull();
   for (const text of ["Darren", "Portiere", "Natura", "Mano Mugen", "POT", "HP", "★"]) expect(card.textContent).not.toContain(text);
 });
+
+test("Royal Jude and Zeus Demeter reveal their own portraits without unlocking legacy versions", async () => {
+  const meta = recruitVersion(recruitVersion(blank, "jude:royal"), "jonas:zeus");
+  await act(async () => root.render(<CollectionScreen meta={meta} />));
+  expect(host.querySelector('[data-testid="collection-jude:royal"] img').getAttribute("src")).toBe("/sprites/jude-royal.png");
+  expect(host.querySelector('[data-testid="collection-jonas:zeus"] img').getAttribute("src")).toBe("/sprites/jonas-zeus.png");
+  expect(host.querySelector('[data-testid="collection-jude"] img')).toBeNull();
+  expect(host.querySelector('[data-testid="collection-jonas"] img')).toBeNull();
+  expect(host.querySelectorAll('[data-testid="collection-byron"]')).toHaveLength(1);
+  await act(async () => root.render(<TeamSelect meta={meta} />));
+  expect(host.querySelector('[data-testid="starter-jude:royal"]')).not.toBeNull();
+  expect(host.querySelector('[data-testid="starter-jonas:zeus"]')).not.toBeNull();
+  expect(host.querySelector('[data-testid="starter-jude"]')).toBeNull();
+});
 test.each(["DISCOVERED", "RECRUITED"])("%s has the appropriate portrait and ownership information", async state => {
   const meta = state === "DISCOVERED" ? discoverVersion(blank, "darren") : recruitVersion(blank, "darren");
   await act(async () => root.render(<CollectionScreen meta={meta} />));

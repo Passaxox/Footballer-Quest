@@ -15,7 +15,7 @@ export default function CollectionScreen({ meta, onBack }) {
           const progress = getCollectionProgress(meta, v.versionId);
           const name = v.displayName || CHARACTERS[v.characterId]?.displayName || "Sconosciuto";
           return (
-            <div key={v.versionId} data-testid={`collection-${v.legacyRosterId}`} className="p-2 border-2 border-slate-700 bg-[#141c2e] space-y-2">
+            <div key={v.versionId} data-testid={`collection-${v.legacyRosterId || v.versionId}`} className="p-2 border-2 border-slate-700 bg-[#141c2e] space-y-2">
               {state === "UNKNOWN" ? <>
                 <div aria-label="Personaggio sconosciuto" className="h-24 grid place-items-center bg-slate-800 text-slate-500 text-4xl">?</div>
                 <div className="font-pixel text-[9px] text-slate-400">???</div>

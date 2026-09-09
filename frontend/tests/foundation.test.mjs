@@ -11,7 +11,8 @@ const rulesUrl = moduleUrl(await source("rules"));
 const validationUrl = moduleUrl(await source("catalogValidation"));
 const { validateCatalog, validateIdentityAudit } = await import(validationUrl);
 const metadataUrl = moduleUrl(await source("catalogMetadata"));
-const catalogUrl = moduleUrl((await source("catalog")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
+const expansionUrl = moduleUrl(await source("catalogExpansion"));
+const catalogUrl = moduleUrl((await source("catalog")).replace("\"./catalogExpansion\"", JSON.stringify(expansionUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
 const collectionUrl = moduleUrl((await source("collection")).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
@@ -27,6 +28,117 @@ const { createPlayer, recalcStats, gainXp, xpForLevel, applyItemTo, applyEventDa
 const starters = data.STARTER_IDS.slice(0, 3);
 const player = () => createPlayer(starters[0], 3);
 const ko = () => ({ ...player(), hp: 0 });
+
+test("Royal/Zeus expansion keeps identities, legacy aliases and collection progress distinct", async () => {
+  const manifest = JSON.parse(await readFile(new URL("../../docs/royal-zeus-assets.json", import.meta.url), "utf8"));
+  assert.equal(catalog.CATALOG_SOURCE.versions.length, 63);
+  assert.equal(catalog.CATALOG_SOURCE.characters.length, 61);
+  assert.equal(catalog.CATALOG_SOURCE.legacyMappings.length, 44);
+  for (const row of manifest.entries) {
+    const v = catalog.resolveVersion(row.versionId);
+    assert.equal(v.characterId, row.characterId);
+    assert.equal(v.spriteId, row.spriteId);
+    assert.equal(v.legacyRosterId, null);
+    assert.deepEqual(v.teamTags, [row.team]);
+    assert.equal(v.arcId, "football-frontier");
+    assert.equal(v.gameOrigin, "ie1");
+    assert.equal(v.eraId, "original");
+    const p = createPlayer(v.versionId, 7);
+    assert.equal(p.baseId, v.versionId);
+    assert.ok(p.move.power > 0 && p.hp > 0);
+    const saved = { ...p, hp: 0, xp: 17 };
+    assert.deepEqual(normalizeRun({ ...newRun(starters), team: [saved] }).team[0], saved);
+  }
+  for (const id of ["jude", "jonas"]) {
+    assert.equal(catalog.resolveVersion(id).versionId, id + ":base");
+    assert.equal(catalog.resolveVersion(id).spriteId, id);
+  }
+  assert.deepEqual(catalog.CATALOG_SOURCE.versions.filter(v => v.characterId === "byron").map(v => v.versionId), ["byron:base"]);
+  const meta = collection.recruitVersion({ unlocked: [], collection: {} }, "jude:royal");
+  assert.equal(collection.getCollectionProgress(meta, "jude:royal").starterUnlocked, true);
+  assert.equal(collection.getCollectionProgress(meta, "jude:base").starterUnlocked, false);
+  assert.deepEqual(meta.unlocked, []);
+  const fusion = fusePlayers(createPlayer("jude:royal"), createPlayer("poseidon:zeus"), "a");
+  assert.deepEqual(fusion.parentVersionIds, ["jude:royal", "poseidon:zeus"]);
+});
+
+test("Royal/Zeus pools respect tier gates and exclude every selected new version", () => {
+  assert.deepEqual(scenarios.scenarioPool("royal-academy", 7, 2), []);
+  assert.deepEqual(scenarios.scenarioPool("royal-academy", 8, 1), []);
+  assert.deepEqual(scenarios.scenarioPool("zeus", 17, 3), []);
+  assert.deepEqual(scenarios.scenarioPool("zeus", 18, 2), []);
+  for (const [id, wave, tier, count] of [["royal-academy", 8, 2, 9], ["zeus", 18, 3, 10], ["zeus", 18, 4, 11]]) {
+    const pool = scenarios.scenarioPool(id, wave, tier);
+    assert.equal(pool.length, count);
+    assert.ok(pool.every(r => !["jude:base", "jonas:base"].includes(r.version.versionId)));
+    const excluded = [];
+    for (let i = 0; i < count; i++) {
+      const selected = scenarios.selectEncounterVersion(id, wave, tier, excluded, () => 0);
+      assert.ok(selected && !excluded.includes(selected.versionId));
+      excluded.push(selected.versionId);
+    }
+    assert.equal(scenarios.selectEncounterVersion(id, wave, tier, excluded), null);
+  }
+  assert.deepEqual(new Set(scenarios.scenarioPool("zeus", 18, 3).map(r => r.version.role)), new Set(["P", "D", "C", "A"]));
+});
+
+test("Royal/Zeus generated battles, recruitment and pending saves use authored versions", () => {
+  const random = Math.random;
+  try {
+    for (const [id, wave] of [["royal-academy", 8], ["zeus", 18]]) {
+      const run = { ...newRun(starters), wave, scenarioState: { id, revision: 1, segmentStart: wave, segmentEnd: wave + 5 } };
+      // Team battle, three different enemies; later draws need no legacy IDs.
+      const rolls = [0.1, 0.9, 0.9];
+      Math.random = () => rolls.length ? rolls.shift() : 0.5;
+      const node = engine.generateWave(run);
+      assert.equal(node.kind, "team");
+      assert.equal(node.enemies.length, 3);
+      assert.equal(new Set(node.enemies.map(p => p.versionId)).size, 3);
+      assert.ok(node.enemies.every(p => catalog.resolveVersion(p.versionId).teamTags.includes(id)));
+      Math.random = () => 0.55;
+      const recruit = engine.generateWave(run);
+      assert.equal(recruit.type, "recruit");
+      assert.ok(catalog.resolveVersion(recruit.player.versionId).teamTags.includes(id));
+      const saved = normalizeRun({ ...run, pending: node });
+      assert.deepEqual(engine.generateWave(saved), node);
+    }
+  } finally { Math.random = random; }
+});
+
+test("encounters and recruitment support versions without legacy IDs and preserve saved instances", () => {
+  const originalRandom = Math.random;
+  const ids = ["test-royal-1", "test-royal-2", "test-royal-3"];
+  const template = catalog.resolveVersion("jude:base");
+  const scenario = { ...scenarios.SCENARIOS[0], id: "test-royal", allowedTeamTags: [], allowedVersionIds: ids };
+  try {
+    for (const versionId of ids) catalog.CHARACTER_VERSIONS[versionId] = {
+      ...template, versionId, legacyRosterId: null, encounterTier: 1,
+    };
+    scenarios.SCENARIOS.push(scenario);
+    Math.random = () => 0.7;
+    const run = { ...newRun(starters), scenarioState: { id: scenario.id, revision: 1, segmentStart: 1, segmentEnd: 6 } };
+    const battle = engine.generateWave(run);
+    assert.equal(battle.kind, "team");
+    assert.equal(new Set(battle.enemies.map(p => p.versionId)).size, 2);
+    for (const p of battle.enemies) {
+      assert.ok(ids.includes(p.versionId));
+      assert.equal(p.characterId, "jude");
+      assert.equal(p.baseId, p.versionId);
+    }
+    Math.random = () => 0.55;
+    const recruit = engine.generateWave({ ...run, wave: 2 });
+    assert.equal(recruit.type, "recruit");
+    assert.ok(ids.includes(recruit.player.versionId));
+    const saved = { ...recruit.player, hp: 1, xp: 7 };
+    assert.deepEqual(normalizeRun({ ...run, team: [saved] }).team[0], saved);
+    assert.equal(engine.generateWave({ ...run, pending: battle }), battle);
+    assert.equal(catalog.resolveVersion("jude").versionId, "jude:base");
+  } finally {
+    Math.random = originalRandom;
+    scenarios.SCENARIOS.splice(scenarios.SCENARIOS.indexOf(scenario), 1);
+    for (const id of ids) delete catalog.CHARACTER_VERSIONS[id];
+  }
+});
 const values = new Map();
 globalThis.localStorage = {
   getItem: (key) => values.get(key) ?? null,
@@ -679,7 +791,7 @@ test("V2d verified batch resolves unique names and changes only supplied metadat
   assert.deepEqual(VERSION_METADATA["byron:base"], { teamTags: ["zeus"], arcId: "football-frontier", eraId: "original", gameOrigin: "ie1" });
   assert.deepEqual(VERSION_METADATA["xavier:base"], { teamTags: ["genesis", "alius-academy"], arcId: "alius", eraId: "original", gameOrigin: "ie2" });
   assert.deepEqual(VERSION_METADATA["rococo:base"], { teamTags: ["little-gigant"], arcId: "ffi", eraId: "original", gameOrigin: "ie3" });
-  const versions = Object.values(catalog.CHARACTER_VERSIONS);
+  const versions = Object.values(catalog.CHARACTER_VERSIONS).filter(v => v.legacyRosterId != null);
   assert.equal(versions.length, 44);
   for (const [key, count] of [["gender", 16], ["teamTags", 20], ["arcId", 10], ["eraId", 21], ["gameOrigin", 10], ["primaryMoveId", 44]]) {
     assert.equal(versions.filter(v => Array.isArray(v[key]) ? v[key].length > 0 : v[key] != null).length, count, key);
@@ -911,7 +1023,7 @@ test("V2i new runs choose context randomly and travel segments can have variable
     assert.equal(a.scenarioState.id, "raimon-training"); assert.equal(b.scenarioState.id, "urban");
     assert.equal(scenarios.scenarioForWave(a.scenarioState, 6, 1, () => 0.999), a.scenarioState);
     assert.equal(scenarios.scenarioForWave(a.scenarioState, 7, 1, () => 0.999).id, "urban");
-    assert.equal(scenarios.scenarioForWave(null, 17, 2, () => 0.999).id, "urban");
+    assert.equal(scenarios.scenarioForWave(null, 17, 2, () => 0.999).id, "royal-academy");
     assert.equal(scenarios.scenarioForWave(null, 19, 3, () => 0.999).id, "international");
     const extended = { ...a.scenarioState, segmentEnd: 12 };
     assert.equal(scenarios.scenarioForWave(extended, 9, 2), extended);

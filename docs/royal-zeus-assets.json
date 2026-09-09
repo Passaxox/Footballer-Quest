@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "sourceFile": "DS _ DSi - Inazuma Eleven - Characters (Customizable) - Headshots 0000 - 0199.png",
+  "sourceSha256": "fdae76e3f4b7fd30857055155685fea40764d1508adfb7095192226a0736560b",
+  "sheet": {
+    "id": "s01",
+    "filename": "sheet.png",
+    "startId": 0,
+    "endId": 199,
+    "columns": 10,
+    "rows": 20,
+    "cellWidth": 64,
+    "cellHeight": 64,
+    "originX": 2,
+    "originY": 2,
+    "gapX": 2,
+    "gapY": 2
+  },
+  "verification": "User-provided VERIFIED identity/cell mapping",
+  "entries": [
+    {
+      "characterId": "peter-drent",
+      "displayName": "Peter Drent",
+      "team": "royal-academy",
+      "versionId": "peter-drent:royal",
+      "spriteId": "peter-drent-royal",
+      "cell": "s01-r04-c02",
+      "row": 4,
+      "column": 2,
+      "sha256": "13032922ea15eab9ebdc1256e855a8c0a5bd9d44d496ae8314e864da5a2fb48d"
+    },
+    {
+      "characterId": "ben-simmons",
+      "displayName": "Ben Simmons",
+      "team": "royal-academy",
+      "versionId": "ben-simmons:royal",
+      "spriteId": "ben-simmons-royal",
+      "cell": "s01-r04-c03",
+      "row": 4,
+      "column": 3,
+      "sha256": "d34bbfbdf31b0465e3b6a2c56284b50d881aa89bc604ff87bb7129422228a3b8"
+    },
+    {
+      "characterId": "alan-master",
+      "displayName": "Alan Master",
+      "team": "royal-academy",
+      "versionId": "alan-master:royal",
+      "spriteId": "alan-master-royal",
+      "cell": "s01-r04-c04",
+      "row": 4,
+      "column": 4,
+      "sha256": "910889651c5b3dc45d5d0921872b9aa1e204d6656c3bd076e1d432d4b3495a86"
+    },
+    {
+      "characterId": "gus-martin",
+      "displayName": "Gus Martin",
+      "team": "royal-academy",
+      "versionId": "gus-martin:royal",
+      "spriteId": "gus-martin-royal",
+      "cell": "s01-r04-c05",
+      "row": 4,
+      "column": 5,
+      "sha256": "8141b4ccec7e1c7ce703ae8cb73d5db4976cdbe73deb0e51ce05ccbb8147f8e0"
+    },
+    {
+      "characterId": "herman-waldon",
+      "displayName": "Herman Waldon",
+      "team": "royal-academy",
+      "versionId": "herman-waldon:royal",
+      "spriteId": "herman-waldon-royal",
+      "cell": "s01-r04-c06",
+      "row": 4,
+      "column": 6,
+      "sha256": "2b2dadd251b4508d5e2d4af84891234358e52c89133e9733a4dde98fed463d2c"
+    },
+    {
+      "characterId": "john-bloom",
+      "displayName": "John Bloom",
+      "team": "royal-academy",
+      "versionId": "john-bloom:royal",
+      "spriteId": "john-bloom-royal",
+      "cell": "s01-r04-c07",
+      "row": 4,
+      "column": 7,
+      "sha256": "c2e13d997897a6322e0e8b082e16aa2127c38f9502258b643348cc74b781ae3f"
+    },
+    {
+      "characterId": "derek-swing",
+      "displayName": "Derek Swing",
+      "team": "royal-academy",
+      "versionId": "derek-swing:royal",
+      "spriteId": "derek-swing-royal",
+      "cell": "s01-r04-c08",
+      "row": 4,
+      "column": 8,
+      "sha256": "3344ad9dc177617253560af45068d062a33dcfb082198a1696c12ff3bf4e8107"
+    },
+    {
+      "characterId": "daniel-hatch",
+      "displayName": "Daniel Hatch",
+      "team": "royal-academy",
+      "versionId": "daniel-hatch:royal",
+      "spriteId": "daniel-hatch-royal",
+      "cell": "s01-r04-c09",
+      "row": 4,
+      "column": 9,
+      "sha256": "259ff4dae6bfcb95e7401d4eb354c79c2eeb1e078b89a8f9c529f5af5bbe60aa"
+    },
+    {
+      "characterId": "jude",
+      "displayName": "Jude Sharp (Royal)",
+      "team": "royal-academy",
+      "versionId": "jude:royal",
+      "spriteId": "jude-royal",
+      "cell": "s01-r04-c10",
+      "row": 4,
+      "column": 10,
+      "sha256": "373197dcd97d1ef76049edccf440362677e41d285a3f877311386c6f386135ef"
+    },
+    {
+      "characterId": "poseidon",
+      "displayName": "Poseidon",
+      "team": "zeus",
+      "versionId": "poseidon:zeus",
+      "spriteId": "poseidon-zeus",
+      "cell": "s01-r16-c09",
+      "row": 16,
+      "column": 9,
+      "sha256": "9d281eeef9f1096f39e3fdf3a5a49efa546ca31c777d25737a8446e019786e62"
+    },
+    {
+      "characterId": "apollon",
+      "displayName": "Apollon",
+      "team": "zeus",
+      "versionId": "apollon:zeus",
+      "spriteId": "apollon-zeus",
+      "cell": "s01-r16-c10",
+      "row": 16,
+      "column": 10,
+      "sha256": "5c8c4ca34d5675b0761f434638d33e828b96abef7d7ea76eb392e79ed7118d6f"
+    },
+    {
+      "characterId": "hephais",
+      "displayName": "Hephais",
+      "team": "zeus",
+      "versionId": "hephais:zeus",
+      "spriteId": "hephais-zeus",
+      "cell": "s01-r17-c01",
+      "row": 17,
+      "column": 1,
+      "sha256": "76be501cdf340ed2439fb37a8095535bbd1d5f9b3a11fdccf06e522861b7ad3d"
+    },
+    {
+      "characterId": "ares",
+      "displayName": "Ares",
+      "team": "zeus",
+      "versionId": "ares:zeus",
+      "spriteId": "ares-zeus",
+      "cell": "s01-r17-c02",
+      "row": 17,
+      "column": 2,
+      "sha256": "30c382f1b7554c2556d7d6ee9833f446a88844c9f0ee02cd35f9ebed5863e7cc"
+    },
+    {
+      "characterId": "dio",
+      "displayName": "Dio",
+      "team": "zeus",
+      "versionId": "dio:zeus",
+      "spriteId": "dio-zeus",
+      "cell": "s01-r17-c03",
+      "row": 17,
+      "column": 3,
+      "sha256": "232814d63b000ab918b42f4dd31b488e6d45472745dc192c92504b299d2860cc"
+    },
+    {
+      "characterId": "artemis",
+      "displayName": "Artemis",
+      "team": "zeus",
+      "versionId": "artemis:zeus",
+      "spriteId": "artemis-zeus",
+      "cell": "s01-r17-c04",
+      "row": 17,
+      "column": 4,
+      "sha256": "9fc7159d9f0f57b60a19b5503ac9ec995ba6fef62841ca5e678d3a749a5c5aea"
+    },
+    {
+      "characterId": "hermes",
+      "displayName": "Hermes",
+      "team": "zeus",
+      "versionId": "hermes:zeus",
+      "spriteId": "hermes-zeus",
+      "cell": "s01-r17-c05",
+      "row": 17,
+      "column": 5,
+      "sha256": "564d31f9d82ac002c55a3f1dffd6006a6795599b534a843b51732eefc9ede4b6"
+    },
+    {
+      "characterId": "athena",
+      "displayName": "Athena",
+      "team": "zeus",
+      "versionId": "athena:zeus",
+      "spriteId": "athena-zeus",
+      "cell": "s01-r17-c06",
+      "row": 17,
+      "column": 6,
+      "sha256": "401b621b38717a3b9293e05df8391cb68cb455565f09d922082fb58f0b93369c"
+    },
+    {
+      "characterId": "jonas",
+      "displayName": "Jonas Demetrius (Demeter)",
+      "team": "zeus",
+      "versionId": "jonas:zeus",
+      "spriteId": "jonas-zeus",
+      "cell": "s01-r17-c07",
+      "row": 17,
+      "column": 7,
+      "sha256": "a6ea9ed1d7b0d15bc105e2763eca8e0b489d6f8b99184f7289d23c2287f19151"
+    },
+    {
+      "characterId": "hera",
+      "displayName": "Hera",
+      "team": "zeus",
+      "versionId": "hera:zeus",
+      "spriteId": "hera-zeus",
+      "cell": "s01-r17-c09",
+      "row": 17,
+      "column": 9,
+      "sha256": "fa4dcb3ef7e2ddaf2c09910922cfe9c419fb4d4f48385910899e0d76338a0d4b"
+    }
+  ],
+  "reused": [
+    {
+      "characterId": "byron",
+      "versionId": "byron:base",
+      "spriteId": "byron",
+      "cell": "s01-r17-c08",
+      "action": "Preserve existing runtime portrait and version; no duplicate import"
+    }
+  ],
+  "sourceDimensions": [
+    662,
+    1350
+  ],
+  "extraction": "Native 64x64 crop; exact border-connected background color made transparent; RGB values unchanged; no resizing"
+}

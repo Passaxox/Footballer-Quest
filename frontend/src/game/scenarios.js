@@ -12,6 +12,8 @@ const common = { macroScenarioId: null, areaId: null, locationType: "generic", m
 export const SCENARIOS = [
   { ...common, id: "raimon-training", displayName: "Campo Raimon", locationType: "field", allowedTeamTags: ["raimon"], preferredTeamTags: ["raimon"], waveRange: { from: 1, to: null } },
   { ...common, id: "urban", displayName: "Sfide in città", locationType: "city", allowedVersionIds: ["shawn", "darren", "sam", "steve", "bobby", "maxwell", "erik", "caleb", "hurley", "scotty", "thor", "archer", "canon", "hector", "silvia", "aiden", "david", "paolo", "fidio"].map(id => id + ":base"), waveRange: { from: 1, to: null } },
+  { ...common, id: "royal-academy", displayName: "Royal Academy", locationType: "field", minTier: 2, arcId: "football-frontier", allowedTeamTags: ["royal-academy"], preferredTeamTags: ["royal-academy"], waveRange: { from: 8, to: null } },
+  { ...common, id: "zeus", displayName: "Stadio Zeus", locationType: "stadium", minTier: 3, arcId: "football-frontier", allowedTeamTags: ["zeus"], preferredTeamTags: ["zeus"], waveRange: { from: 18, to: null } },
   { ...common, id: "international", displayName: "Incontri internazionali", macroScenarioId: "ffi", minTier: 3, arcId: "ffi", allowedTeamTags: ["unicorn", "knights-of-queen", "the-empire", "fire-dragon", "little-gigant"], preferredTeamTags: ["unicorn"], waveRange: { from: 18, to: null } },
 ];
 export function validateScenarios(scenarios = SCENARIOS) {

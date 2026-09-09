@@ -1,4 +1,6 @@
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { cropCoordinates } from "../../tools/assets/extract-headshot.mjs";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -27,6 +29,23 @@ test("valid PNG sources accept 64, 256 and non-square dimensions without convers
  assert.throws(()=>inspectPng(Buffer.from("not an image")),/signature/);
 });
 
+test("Royal/Zeus manifest pins all native crops and agrees with the preserved planner", async () => {
+ const manifest=JSON.parse(await readFile(new URL("../../docs/royal-zeus-assets.json",import.meta.url),"utf8"));
+ assert.equal(manifest.entries.length,19);
+ assert.equal(new Set(manifest.entries.map(r=>r.cell)).size,19);
+ assert.equal(new Set(manifest.entries.map(r=>r.spriteId)).size,19);
+ assert.equal(manifest.sourceSha256,"fdae76e3f4b7fd30857055155685fea40764d1508adfb7095192226a0736560b");
+ for(const row of manifest.entries) {
+  assert.equal(row.cell,`s01-r${String(row.row).padStart(2,"0")}-c${String(row.column).padStart(2,"0")}`);
+  const crop=cropCoordinates(manifest.sheet,(row.row-1)*10+row.column-1);
+  assert.equal(crop.x,2+(row.column-1)*66);assert.equal(crop.y,2+(row.row-1)*66);
+  const bytes=await readFile(new URL(`../public/sprites/${row.spriteId}.png`,import.meta.url));
+  assert.deepEqual(inspectPng(bytes),{width:64,height:64,aspectRatio:1});
+  assert.equal(createHash("sha256").update(bytes).digest("hex"),row.sha256);
+ }
+ assert.deepEqual(manifest.reused.map(r=>r.versionId),["byron:base"]);
+});
+
 test("cross-check detects missing, orphan, invalid, shared and non-square assets deterministically without writes",async()=>{
  const directory=await mkdtemp(path.join(tmpdir(),"footballer-assets-"));
  try {
@@ -52,7 +71,7 @@ test("current catalog audit preserves all 44 legacy files and surfaces existing 
  const versions=await loadVersions();
  const fixture=JSON.parse(await readFile(new URL("fixtures/catalog-identity-audit.json",import.meta.url),"utf8"));
  const report=await auditAssets({versions,identities:fixture.entries});
- assert.equal(report.summary.assetCount,44);assert.equal(report.summary.missing,0);assert.equal(report.summary.orphans,0);
+ assert.equal(report.summary.assetCount,63);assert.equal(report.summary.missing,0);assert.equal(report.summary.orphans,0);
  assert.deepEqual(report,await auditAssets({versions,identities:fixture.entries}));
  assert.equal(report.versions.length,versions.length);
  for(const entry of fixture.entries) assert.equal(report.files.find(f=>f.filename===entry.spriteId+".png").sha256,entry.spriteSha256);
@@ -70,8 +89,8 @@ test("legacy WebP payloads are warnings and the actual audit CLI exits zero",asy
  assert.equal(report.summary.invalidPng,0);
  assert.equal(report.summary.invalidAssets,0);
  assert.equal(report.summary.extensionFormatMismatches,44);
- assert.deepEqual(report.summary.dimensionBuckets,{"256x256":2,"64x64":42});
- for(const file of report.files) {
+ assert.deepEqual(report.summary.dimensionBuckets,{"256x256":2,"64x64":61});
+ for(const file of report.files.filter(f=>f.sourceFormat==="WEBP")) {
   assert.equal(file.validAsset,true);
   assert.deepEqual(file.issues.find(i=>i.code==="EXTENSION_FORMAT_MISMATCH"),{
    code:"EXTENSION_FORMAT_MISMATCH",severity:"warning",filename:file.filename,
