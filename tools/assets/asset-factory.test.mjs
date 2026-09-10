@@ -360,6 +360,87 @@ test('fandom-file sources fall back across deterministic exact-file URLs after a
   }
 });
 
+test('Dvalin fallback keeps the other exact Epsilon sprite targets unchanged', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const manifestData = JSON.parse(await readFile(path.join(repoRoot, 'tools/assets/manifests/epsilon-ie2-poc.json'), 'utf8'));
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const staticUrls = new Map([
+      ['File:(E) Desarm sprite.png', 'https://static.example.invalid/desarm-primary.png'],
+      ['File:(E) Tanba Taiji sprite.png', 'https://static.example.invalid/tanba-primary.png'],
+      ['File:(E) Kuri Fuuko sprite.png', 'https://static.example.invalid/kuri-primary.png'],
+      ['File:(E) Segata Ryuuichirou sprite.png', 'https://static.example.invalid/segata-primary.png']
+    ]);
+    const fetchImpl = async url => {
+      if (url.includes('/api.php?action=query') && url.includes('&prop=imageinfo&iiprop=url&titles=File%3A')) {
+        const encodedTitle = url.split('&titles=')[1];
+        const fileTitle = decodeURIComponent(encodedTitle);
+        return {
+          ok: true,
+          json: async () => ({
+            query: {
+              pages: {
+                1: {
+                  title: fileTitle,
+                  imageinfo: [{ url: staticUrls.get(fileTitle) }]
+                }
+              }
+            }
+          }),
+          status: 200,
+          url
+        };
+      }
+      if (url === 'https://static.example.invalid/desarm-primary.png') {
+        return { ok: false, status: 403, statusText: 'Forbidden', url };
+      }
+      if (url.includes('/wiki/Special:Redirect/file/File%3A(E)%20Desarm%20sprite.png')) {
+        return { ok: true, arrayBuffer: async () => samplePng, status: 200, url };
+      }
+      if (url.startsWith('https://static.example.invalid/')) {
+        return { ok: true, arrayBuffer: async () => samplePng, status: 200, url };
+      }
+      if (url.includes('Saginuma_Osamu') || url.includes('Tanba_Taiji') || url.includes('Kuri_Fuuko') || url.includes('Segata_Ryuuichirou')) {
+        const name = url.split('/').pop();
+        return {
+          ok: true,
+          json: async () => ({ query: { pages: { 1: { pageimage: `${name}.png`, original: { source: `https://static.example.invalid/${name}.png` } } } } }),
+          status: 200,
+          url
+        };
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    };
+    const report = await runAssetFactory({ manifestPath, stagingRoot, reportsRoot, fetchImpl });
+    assert.equal(report.status, 'PASS');
+    const byId = new Map(report.targets.map(target => [target.versionId, target]));
+    assert.equal(byId.get('dvalin:epsilon-ie2').sourceFilename, '(E) Desarm sprite.png');
+    assert.equal(byId.get('dvalin:epsilon-ie2').assetStatus, 'CANDIDATE');
+    assert.equal(byId.get('tytan:epsilon-ie2').sourceFilename, '(E) Tanba Taiji sprite.png');
+    assert.equal(byId.get('tytan:epsilon-ie2').assetStatus, 'CANDIDATE');
+    assert.equal(byId.get('krypto:epsilon-ie2').sourceFilename, '(E) Kuri Fuuko sprite.png');
+    assert.equal(byId.get('krypto:epsilon-ie2').assetStatus, 'CANDIDATE');
+    assert.equal(byId.get('zell:epsilon-ie2').sourceFilename, '(E) Segata Ryuuichirou sprite.png');
+    assert.equal(byId.get('zell:epsilon-ie2').assetStatus, 'CANDIDATE');
+    for (const target of byId.values()) {
+      assert.equal(target.sources[0].assetStatus, 'CANDIDATE');
+      assert.equal(target.sources[1].assetStatus, 'REVIEW');
+    }
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test('existing staged originals can regenerate a contact sheet without refetching', async () => {
     const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
     let stagingRoot;
