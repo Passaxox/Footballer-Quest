@@ -10,6 +10,7 @@ const toolsRoot = path.resolve(root, 'tools/assets');
 const runtimeSpritesDir = path.resolve(root, 'frontend/public/sprites');
 const defaultManifestPath = path.resolve(toolsRoot, 'manifests/epsilon-ie2-poc.json');
 const defaultOutputRoot = path.resolve(toolsRoot, 'staging/epsilon-ie2-poc');
+const defaultVerifiedRoot = path.resolve(toolsRoot, 'verified');
 const defaultReportsRoot = path.resolve(toolsRoot, 'reports');
 const defaultApprovalsPath = path.resolve(toolsRoot, 'approvals/epsilon-ie2-poc.approvals.json');
 const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
@@ -175,6 +176,12 @@ export function validateApprovals(document, manifestId = null) {
     if (typeof approval.versionId !== 'string' || !approval.versionId) throw new Error('Approval versionId is required');
     if (versionIds.has(approval.versionId)) throw new Error(`Duplicate approval versionId: ${approval.versionId}`);
     if (approval.decision !== 'ASSET-VERIFIED') throw new Error(`Unsupported approval decision for ${approval.versionId}`);
+    if (approval.candidatePath !== null && approval.candidatePath !== undefined && (typeof approval.candidatePath !== 'string' || !approval.candidatePath)) {
+      throw new Error(`Approval candidatePath must be a non-empty string for ${approval.versionId}`);
+    }
+    if (approval.sourceFilename !== null && approval.sourceFilename !== undefined && (typeof approval.sourceFilename !== 'string' || !approval.sourceFilename)) {
+      throw new Error(`Approval sourceFilename must be a non-empty string for ${approval.versionId}`);
+    }
     if (approval.sha256 !== null && approval.sha256 !== undefined && !/^[a-f0-9]{64}$/i.test(approval.sha256)) {
       throw new Error(`Approval sha256 must be 64 hex chars for ${approval.versionId}`);
     }
@@ -226,6 +233,15 @@ export async function ensureSafeStaging({ stagingRoot, runtimeDir }) {
   if (isSubpath(resolvedRuntime, resolvedStaging)) throw new Error('Staging root must not overlap runtime assets');
   await mkdir(resolvedStaging, { recursive: true });
   return resolvedStaging;
+}
+
+export async function ensureSafeVerified({ verifiedRoot, runtimeDir }) {
+  const resolvedVerified = path.resolve(verifiedRoot);
+  const resolvedRuntime = path.resolve(runtimeDir);
+  if (!isSubpath(path.resolve(root, 'tools/assets'), resolvedVerified)) throw new Error('Verified root must stay under tools/assets');
+  if (isSubpath(resolvedRuntime, resolvedVerified)) throw new Error('Verified root must not overlap runtime assets');
+  await mkdir(resolvedVerified, { recursive: true });
+  return resolvedVerified;
 }
 
 async function loadPreviousReport(reportPath) {
@@ -336,6 +352,8 @@ function sourceRecordFromSpec(source) {
     sourceStatus: 'UNASSESSED',
     assetStatus: 'UNASSESSED',
     outputFile: null,
+    verifiedFile: null,
+    verifiedProvenanceFile: null,
     contactSheetImageUrl: null,
     width: null,
     height: null,
@@ -408,6 +426,7 @@ function applyCandidateMetadata({ target, reportPath, stagedPath, fileName, buff
 }
 
 function targetStatusFromSources(target) {
+  if (target.sources.some(source => source.assetStatus === 'ASSET-VERIFIED')) return 'ASSET-VERIFIED';
   if (target.sources.some(source => source.assetStatus === 'CANDIDATE')) return 'CANDIDATE';
   if (target.sources.some(source => source.assetStatus === 'REVIEW')) return 'REVIEW';
   if (target.sources.length && target.sources.every(source => source.sourceStatus === 'SOURCE-MISSING')) return 'ASSET-GAP';
@@ -416,7 +435,8 @@ function targetStatusFromSources(target) {
 }
 
 function preferredSourceForTarget(target) {
-  return target.sources.find(source => source.assetStatus === 'CANDIDATE')
+  return target.sources.find(source => source.assetStatus === 'ASSET-VERIFIED')
+    ?? target.sources.find(source => source.assetStatus === 'CANDIDATE')
     ?? target.sources.find(source => source.assetStatus === 'REVIEW')
     ?? target.sources[0]
     ?? null;
@@ -432,6 +452,8 @@ function applyPreferredSource(target, preferred) {
   target.sourceStatus = preferred.sourceStatus;
   target.assetStatus = targetStatusFromSources(target);
   target.outputFile = preferred.outputFile;
+  target.verifiedFile = preferred.verifiedFile ?? null;
+  target.verifiedProvenanceFile = preferred.verifiedProvenanceFile ?? null;
   target.contactSheetImageUrl = preferred.contactSheetImageUrl;
   target.width = preferred.width;
   target.height = preferred.height;
@@ -559,33 +581,100 @@ async function verifiedBinaryHash(target) {
   }
 }
 
-export async function finalizeApprovalHashes({ approvals, targets, approvalsPath }) {
+function suitableApprovalSources(target) {
+  return (target.sources ?? []).filter(source =>
+    source.outputFile
+    && acceptableSourceSuitability.has(source.sourceSuitability)
+    && approvableAssetStatus.has(source.assetStatus)
+  );
+}
+
+function resolveApprovedSource(target, approval) {
+  if (!approval.candidatePath) {
+    const suitable = suitableApprovalSources(target);
+    if (suitable.length > 1) throw new Error(`Ambiguous approval candidate for ${approval.versionId}; candidatePath is required`);
+    throw new Error(`Approval candidatePath is required for ${approval.versionId}`);
+  }
+  const source = (target.sources ?? []).find(candidate => candidate.outputFile === approval.candidatePath);
+  if (!source) throw new Error(`Approval candidatePath not found for ${approval.versionId}`);
+  if (!source.outputFile || !acceptableSourceSuitability.has(source.sourceSuitability) || !approvableAssetStatus.has(source.assetStatus)) {
+    throw new Error(`Approval target ${approval.versionId} is not a game portrait/sprite candidate`);
+  }
+  if (approval.sourceFilename && source.sourceFilename !== approval.sourceFilename) {
+    throw new Error(`Approval source filename mismatch for ${approval.versionId}`);
+  }
+  return source;
+}
+
+function verifiedDirectory(verifiedRoot, manifestId, target, source) {
+  return path.join(
+    verifiedRoot,
+    safeName(manifestId),
+    safeName(target.versionId),
+    safeName(source.sourceSuitability || 'approved'),
+    safeName(source.sourceKey || 'source')
+  );
+}
+
+async function promoteApprovedSource({ manifestId, approvalsPath, verifiedRoot, target, source, actualHash }) {
+  const stagingFile = path.resolve(root, source.outputFile);
+  const buffer = await readFile(stagingFile);
+  const fileName = source.sourceFilename ?? path.basename(source.outputFile);
+  const destinationDir = verifiedDirectory(verifiedRoot, manifestId, target, source);
+  const verifiedBinaryPath = path.join(destinationDir, fileName);
+  const provenancePath = path.join(destinationDir, `${fileName}.provenance.json`);
+  await mkdir(destinationDir, { recursive: true });
+  await writeImmutableFile(verifiedBinaryPath, buffer);
+  const provenance = {
+    schemaVersion: 1,
+    manifestId,
+    versionId: target.versionId,
+    displayName: target.displayName,
+    decision: 'ASSET-VERIFIED',
+    sourceGame: target.sourceGame,
+    sourceType: source.sourceType,
+    sourceSuitability: source.sourceSuitability,
+    sourceKey: source.sourceKey,
+    sourceAssetId: source.sourceAssetId ?? null,
+    sourceFilename: fileName,
+    sourceRef: source.sourceRef ?? null,
+    resolvedBinaryUrl: source.resolvedBinaryUrl ?? null,
+    approvalsPath: relativeFromRoot(approvalsPath),
+    stagingPath: source.outputFile,
+    verifiedPath: relativeFromRoot(verifiedBinaryPath),
+    sha256: actualHash
+  };
+  await writeImmutableFile(provenancePath, Buffer.from(`${JSON.stringify(provenance, null, 2)}\n`));
+  source.verifiedFile = relativeFromRoot(verifiedBinaryPath);
+  source.verifiedProvenanceFile = relativeFromRoot(provenancePath);
+  target.verifiedFile = source.verifiedFile;
+  target.verifiedProvenanceFile = source.verifiedProvenanceFile;
+}
+
+export async function captureApprovalHashes({ approvals, targets, approvalsPath }) {
   const byVersionId = new Map(targets.map(target => [target.versionId, target]));
   for (const approval of approvals.approvals) {
-    if (approval.decision !== 'ASSET-VERIFIED' || approval.sha256) continue;
+    if (approval.decision !== 'ASSET-VERIFIED') continue;
     const target = byVersionId.get(approval.versionId);
     if (!target) throw new Error(`Approval target not found: ${approval.versionId}`);
-    if (target.assetStatus !== 'CANDIDATE') throw new Error(`Approval target ${approval.versionId} requires a candidate staged binary`);
-    if (!acceptableSourceSuitability.has(target.sourceSuitability)) throw new Error(`Approval target ${approval.versionId} is not a game portrait/sprite candidate`);
-    approval.sha256 = await verifiedBinaryHash(target);
+    const source = resolveApprovedSource(target, approval);
+    approval.sourceFilename = source.sourceFilename ?? approval.sourceFilename ?? null;
+    approval.sha256 = await verifiedBinaryHash({ versionId: target.versionId, outputFile: source.outputFile });
   }
   await writeApprovals(approvalsPath, approvals);
 }
 
-export async function applyHumanApprovals({ approvals, targets, approvalsPath }) {
+export async function applyHumanApprovals({ approvals, targets, approvalsPath, verifiedRoot, manifestId }) {
   const byVersionId = new Map(targets.map(target => [target.versionId, target]));
   for (const approval of approvals.approvals) {
-    if (approval.decision !== 'ASSET-VERIFIED' || !approval.sha256) continue;
+    if (approval.decision !== 'ASSET-VERIFIED') continue;
     const target = byVersionId.get(approval.versionId);
     if (!target) throw new Error(`Approval target not found: ${approval.versionId}`);
-    if (target.assetStatus !== 'CANDIDATE') throw new Error(`Approval target ${approval.versionId} requires a candidate staged binary`);
-    if (!acceptableSourceSuitability.has(target.sourceSuitability)) throw new Error(`Approval target ${approval.versionId} is not a game portrait/sprite candidate`);
-    const preferred = preferredSourceForTarget(target);
-    if (!preferred || preferred.assetStatus !== 'CANDIDATE' || !acceptableSourceSuitability.has(preferred.sourceSuitability)) {
-      throw new Error(`Approval target ${approval.versionId} is not a game portrait/sprite candidate`);
-    }
-    const actualHash = await verifiedBinaryHash(target);
+    const preferred = resolveApprovedSource(target, approval);
+    if (!approval.sha256) throw new Error(`Approval sha256 is required for ${approval.versionId}; run capture-approval-hashes first`);
+    const actualHash = await verifiedBinaryHash({ versionId: target.versionId, outputFile: preferred.outputFile });
     if (actualHash !== approval.sha256) throw new Error(`Approval hash mismatch for ${approval.versionId}`);
+    await promoteApprovedSource({ manifestId, approvalsPath, verifiedRoot, target, source: preferred, actualHash });
     target.assetStatus = 'ASSET-VERIFIED';
     target.sha256 = actualHash;
     target.verificationEvidence = unique([...(target.verificationEvidence ?? []), 'human-approval']);
@@ -593,9 +682,14 @@ export async function applyHumanApprovals({ approvals, targets, approvalsPath })
       target.provenanceNote,
       `Explicit human approval recorded in ${relativeFromRoot(approvalsPath)}.`
     ]).join(' ');
-    target.approval = { decision: approval.decision, sha256: actualHash };
+    target.approval = {
+      decision: approval.decision,
+      candidatePath: approval.candidatePath,
+      sourceFilename: approval.sourceFilename ?? preferred.sourceFilename ?? null,
+      sha256: actualHash
+    };
     for (const source of target.sources ?? []) {
-      if (source.outputFile === target.outputFile && source.assetStatus === 'CANDIDATE' && acceptableSourceSuitability.has(source.sourceSuitability)) {
+      if (source.outputFile === preferred.outputFile && approvableAssetStatus.has(source.assetStatus) && acceptableSourceSuitability.has(source.sourceSuitability)) {
         source.assetStatus = 'ASSET-VERIFIED';
         source.sha256 = actualHash;
         source.verificationEvidence = unique([...(source.verificationEvidence ?? []), 'human-approval']);
@@ -605,6 +699,7 @@ export async function applyHumanApprovals({ approvals, targets, approvalsPath })
         ]).join(' ');
       }
     }
+    applyPreferredSource(target, preferredSourceForTarget(target));
   }
 }
 
@@ -692,12 +787,12 @@ function renderMarkdown(report) {
     `- Runtime integration performed: **no**`,
     `- ASSET-VERIFIED requires explicit matching approval: **yes**`,
     '',
-    '| Target | Source status | Suitability | Asset status | Source file | Candidate path | Warnings |',
-    '| --- | --- | --- | --- | --- | --- |'
+    '| Target | Source status | Suitability | Asset status | Source file | Candidate path | Verified path | Warnings |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- |'
   ];
   for (const target of report.targets) {
     for (const [index, source] of (target.sources?.length ? target.sources : [target]).entries()) {
-      lines.push(`| ${index === 0 ? target.displayName : '↳ source'} | ${source.sourceStatus} | ${source.sourceSuitability ?? 'n/a'} | ${source.assetStatus} | ${source.sourceFilename ?? source.sourceAssetId ?? 'n/a'} | ${source.outputFile ?? 'n/a'} | ${(source.validationWarnings ?? []).join('<br>') || '—'} |`);
+      lines.push(`| ${index === 0 ? target.displayName : '↳ source'} | ${source.sourceStatus} | ${source.sourceSuitability ?? 'n/a'} | ${source.assetStatus} | ${source.sourceFilename ?? source.sourceAssetId ?? 'n/a'} | ${source.outputFile ?? 'n/a'} | ${source.verifiedFile ?? 'n/a'} | ${(source.validationWarnings ?? []).join('<br>') || '—'} |`);
     }
   }
   return `${lines.join('\n')}\n`;
@@ -706,14 +801,18 @@ function renderMarkdown(report) {
 export async function runAssetFactory({
   manifestPath = defaultManifestPath,
   stagingRoot = defaultOutputRoot,
+  verifiedRoot = defaultVerifiedRoot,
   reportsRoot = defaultReportsRoot,
   approvalsPath = null,
+  captureApprovalHashes: shouldCaptureApprovalHashes = false,
   finalizeApprovals = false,
   fetchImpl = globalThis.fetch
 } = {}) {
+  if (shouldCaptureApprovalHashes && finalizeApprovals) throw new Error('capture-approval-hashes and finalize-approvals are mutually exclusive');
   const manifest = validateManifest(JSON.parse(await readFile(manifestPath, 'utf8')));
   const adapter = new FandomMediaWikiAdapter({ baseUrl: manifest.wikiBaseUrl ?? 'https://inazuma-eleven.fandom.com', fetchImpl });
   const stagingDir = await ensureSafeStaging({ stagingRoot, runtimeDir: runtimeSpritesDir });
+  const verifiedDir = await ensureSafeVerified({ verifiedRoot, runtimeDir: runtimeSpritesDir });
   const originalsDir = path.join(stagingDir, 'originals');
   await mkdir(originalsDir, { recursive: true });
   await mkdir(reportsRoot, { recursive: true });
@@ -725,7 +824,7 @@ export async function runAssetFactory({
     const target = structuredClone({ ...source, ...defaultStatus, ...source, verificationEvidence: [...(source.verificationEvidence ?? [])], validationWarnings: [...(source.validationWarnings ?? [])] });
     const previous = previousTargets.get(target.versionId);
     if (previous) {
-      for (const key of ['sourceAssetId', 'resolvedBinaryUrl', 'sourceFilename', 'provenanceNote', 'sha256']) {
+      for (const key of ['sourceAssetId', 'resolvedBinaryUrl', 'sourceFilename', 'provenanceNote', 'sha256', 'verifiedFile', 'verifiedProvenanceFile']) {
         if (previous[key] && !target[key]) target[key] = previous[key];
       }
       if (Array.isArray(previous.verificationEvidence)) target.verificationEvidence = unique([...target.verificationEvidence, ...previous.verificationEvidence]);
@@ -791,8 +890,8 @@ export async function runAssetFactory({
     targets.push(target);
   }
   applyDuplicateAnnotations(targets);
-  if (approvals && finalizeApprovals) await finalizeApprovalHashes({ approvals, targets, approvalsPath });
-  if (approvals) await applyHumanApprovals({ approvals, targets, approvalsPath });
+  if (approvals && shouldCaptureApprovalHashes) await captureApprovalHashes({ approvals, targets, approvalsPath });
+  if (approvals && finalizeApprovals) await applyHumanApprovals({ approvals, targets, approvalsPath, verifiedRoot: verifiedDir, manifestId: manifest.manifestId });
   const report = {
     schemaVersion: 1,
     manifestId: manifest.manifestId,
@@ -801,6 +900,7 @@ export async function runAssetFactory({
     manifestPath: relativeFromRoot(manifestPath),
     approvalsPath: approvalsPath ? relativeFromRoot(approvalsPath) : null,
     stagingRoot: relativeFromRoot(stagingDir),
+    verifiedRoot: relativeFromRoot(verifiedDir),
     contactSheetPath: relativeFromRoot(path.join(reportsRoot, `${manifest.manifestId}.contact-sheet.html`)),
     markdownReportPath: relativeFromRoot(path.join(reportsRoot, `${manifest.manifestId}.report.md`)),
     runtimeSpritesPath: relativeFromRoot(runtimeSpritesDir),
@@ -820,16 +920,20 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
       options: {
         manifest: { type: 'string' },
         staging: { type: 'string' },
+        verified: { type: 'string' },
         reports: { type: 'string' },
         approvals: { type: 'string' },
+        'capture-approval-hashes': { type: 'boolean' },
         'finalize-approvals': { type: 'boolean' }
       }
     });
     const report = await runAssetFactory({
       manifestPath: values.manifest ? path.resolve(values.manifest) : defaultManifestPath,
       stagingRoot: values.staging ? path.resolve(values.staging) : defaultOutputRoot,
+      verifiedRoot: values.verified ? path.resolve(values.verified) : defaultVerifiedRoot,
       reportsRoot: values.reports ? path.resolve(values.reports) : defaultReportsRoot,
       approvalsPath: values.approvals ? path.resolve(values.approvals) : defaultApprovalsPath,
+      captureApprovalHashes: Boolean(values['capture-approval-hashes']),
       finalizeApprovals: Boolean(values['finalize-approvals'])
     });
     console.log(JSON.stringify({ status: report.status, manifestId: report.manifestId, summary: report.summary, report: `${report.manifestId}.report.json` }, null, 2));
