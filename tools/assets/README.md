@@ -23,3 +23,19 @@ node --test tools/assets/extract-headshot.test.mjs
 ```
 
 The deterministic JSON includes coordinates, dimensions and a source SHA-256. A later image tool can crop exactly `(x, y, width, height)` with no resizing/interpolation. A source mismatch must be rejected against that hash. No crop renderer is installed or invoked here. `--config` and `--sources` accept alternate local paths. Invalid IDs, bad PNGs, oversized grids, missing files and existing output fail explicitly.
+
+## Asset Factory proof-of-concept
+
+The isolated resolver/staging proof-of-concept lives in `tools/assets/asset-factory.mjs` with its input manifest at `tools/assets/manifests/epsilon-ie2-poc.json`.
+
+- Scope: resolver/staging/reporting only. It never writes into `frontend/public/sprites/`.
+- Source adapter: MediaWiki/Fandom character page → exact file title → original binary URL fallback.
+- Output: immutable staged originals under `tools/assets/staging/`, plus JSON/Markdown/HTML reports under `tools/assets/reports/`.
+- Status rule: resolved binaries are always `CANDIDATE`; the tool never auto-assigns `ASSET-VERIFIED`.
+
+From repository root:
+
+```text
+node tools/assets/asset-factory.mjs
+node --test tools/assets/asset-factory.test.mjs
+```
