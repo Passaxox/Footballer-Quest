@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "epsilon-ie2-poc",
+  "title": "Footballer Quest Asset Factory proof-of-concept — IE2 Epsilon",
+  "generatedAt": "2026-09-10T12:49:23.178Z",
+  "manifestPath": "tools/assets/manifests/epsilon-ie2-poc.json",
+  "stagingRoot": "tools/assets/staging/epsilon-ie2-poc",
+  "contactSheetPath": "tools/assets/reports/epsilon-ie2-poc.contact-sheet.html",
+  "markdownReportPath": "tools/assets/reports/epsilon-ie2-poc.report.md",
+  "runtimeSpritesPath": "frontend/public/sprites",
+  "status": "BLOCKED",
+  "summary": {
+    "targetCount": 4,
+    "candidateCount": 0,
+    "reviewCount": 0,
+    "assetGapCount": 0,
+    "unassessedCount": 4,
+    "sourceBlockedCount": 4,
+    "sourceMissingCount": 0
+  },
+  "targets": [
+    {
+      "canonicalCharacterId": "dvalin",
+      "versionId": "dvalin:epsilon-ie2",
+      "displayName": "Dvalin / Desarm",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-character-page",
+      "sourceRef": "Saginuma_Osamu",
+      "sourceSheet": null,
+      "sourceAssetId": null,
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": null,
+      "width": null,
+      "height": null,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-ACCESS-BLOCKED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "visualReuseFrom": null,
+      "verificationEvidence": [
+        "canonical-record",
+        "named-reference"
+      ],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork.",
+      "validationWarnings": [
+        "SOURCE_ACCESS_BLOCKED:fetch failed"
+      ],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "tytan",
+      "versionId": "tytan:epsilon-ie2",
+      "displayName": "Tytan / Titan",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-character-page",
+      "sourceRef": "Tanba_Taiji",
+      "sourceSheet": null,
+      "sourceAssetId": null,
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": null,
+      "width": null,
+      "height": null,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-ACCESS-BLOCKED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "visualReuseFrom": null,
+      "verificationEvidence": [
+        "canonical-record",
+        "named-reference"
+      ],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork.",
+      "validationWarnings": [
+        "SOURCE_ACCESS_BLOCKED:fetch failed"
+      ],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "krypto",
+      "versionId": "krypto:epsilon-ie2",
+      "displayName": "Krypto",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-character-page",
+      "sourceRef": "Kuri_Fuuko",
+      "sourceSheet": null,
+      "sourceAssetId": null,
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": null,
+      "width": null,
+      "height": null,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-ACCESS-BLOCKED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "visualReuseFrom": null,
+      "verificationEvidence": [
+        "canonical-record",
+        "named-reference"
+      ],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork.",
+      "validationWarnings": [
+        "SOURCE_ACCESS_BLOCKED:fetch failed"
+      ],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "zell",
+      "versionId": "zell:epsilon-ie2",
+      "displayName": "Zell / Zel",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-character-page",
+      "sourceRef": "Segata_Ryuuichirou",
+      "sourceSheet": null,
+      "sourceAssetId": null,
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": null,
+      "width": null,
+      "height": null,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-ACCESS-BLOCKED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "visualReuseFrom": null,
+      "verificationEvidence": [
+        "canonical-record",
+        "named-reference"
+      ],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork.",
+      "validationWarnings": [
+        "SOURCE_ACCESS_BLOCKED:fetch failed"
+      ],
+      "sha256": null
+    }
+  ]
+}

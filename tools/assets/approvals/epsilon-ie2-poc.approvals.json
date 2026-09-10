@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "epsilon-ie2-poc",
+  "approvals": [
+    {
+      "versionId": "dvalin:epsilon-ie2",
+      "candidatePath": null,
+      "sourceFilename": null,
+      "sha256": null,
+      "decision": "ASSET-VERIFIED"
+    },
+    {
+      "versionId": "tytan:epsilon-ie2",
+      "candidatePath": null,
+      "sourceFilename": null,
+      "sha256": null,
+      "decision": "ASSET-VERIFIED"
+    },
+    {
+      "versionId": "krypto:epsilon-ie2",
+      "candidatePath": null,
+      "sourceFilename": null,
+      "sha256": null,
+      "decision": "ASSET-VERIFIED"
+    },
+    {
+      "versionId": "zell:epsilon-ie2",
+      "candidatePath": null,
+      "sourceFilename": null,
+      "sha256": null,
+      "decision": "ASSET-VERIFIED"
+    }
+  ]
+}

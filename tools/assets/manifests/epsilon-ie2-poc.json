@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "epsilon-ie2-poc",
+  "title": "Footballer Quest Asset Factory proof-of-concept — IE2 Epsilon",
+  "wikiBaseUrl": "https://inazuma-eleven.fandom.com",
+  "targets": [
+    {
+      "canonicalCharacterId": "dvalin",
+      "versionId": "dvalin:epsilon-ie2",
+      "displayName": "Dvalin / Desarm",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-character-page",
+      "sourceRef": "Saginuma_Osamu",
+      "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Desarm sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Saginuma_Osamu",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
+      "sourceSheet": null,
+      "sourceAssetId": null,
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": null,
+      "width": null,
+      "height": null,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "visualReuseFrom": null,
+      "verificationEvidence": ["canonical-record", "named-reference"],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "tytan",
+      "versionId": "tytan:epsilon-ie2",
+      "displayName": "Tytan / Titan",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-character-page",
+      "sourceRef": "Tanba_Taiji",
+      "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Tanba Taiji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Tanba_Taiji",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
+      "sourceSheet": null,
+      "sourceAssetId": null,
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": null,
+      "width": null,
+      "height": null,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "visualReuseFrom": null,
+      "verificationEvidence": ["canonical-record", "named-reference"],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "krypto",
+      "versionId": "krypto:epsilon-ie2",
+      "displayName": "Krypto",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-character-page",
+      "sourceRef": "Kuri_Fuuko",
+      "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Kuri Fuuko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Kuri_Fuuko",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
+      "sourceSheet": null,
+      "sourceAssetId": null,
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": null,
+      "width": null,
+      "height": null,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "visualReuseFrom": null,
+      "verificationEvidence": ["canonical-record", "named-reference"],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "zell",
+      "versionId": "zell:epsilon-ie2",
+      "displayName": "Zell / Zel",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-character-page",
+      "sourceRef": "Segata_Ryuuichirou",
+      "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Segata Ryuuichirou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Segata_Ryuuichirou",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
+      "sourceSheet": null,
+      "sourceAssetId": null,
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": null,
+      "width": null,
+      "height": null,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "visualReuseFrom": null,
+      "verificationEvidence": ["canonical-record", "named-reference"],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork.",
+      "validationWarnings": [],
+      "sha256": null
+    }
+  ]
+}
