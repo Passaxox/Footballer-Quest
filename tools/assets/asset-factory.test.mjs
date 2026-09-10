@@ -6,12 +6,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
 import {
+  applyHumanApprovals,
   detectDuplicateCandidates,
   detectImageSignature,
   ensureSafeStaging,
   reportStatus,
   runAssetFactory,
   sha256Hex,
+  validateApprovals,
   validateManifest
 } from './asset-factory.mjs';
 
@@ -109,6 +111,20 @@ function manifest() {
   };
 }
 
+function approvals({ sha256 = null } = {}) {
+  return {
+    schemaVersion: 1,
+    manifestId: 'epsilon-ie2-poc',
+    approvals: [
+      {
+        versionId: 'dvalin:epsilon-ie2',
+        sha256,
+        decision: 'ASSET-VERIFIED'
+      }
+    ]
+  };
+}
+
 test('manifest validation rejects duplicate version IDs and auto-verified assets', () => {
   const duplicated = manifest();
   duplicated.targets.push({ ...duplicated.targets[0] });
@@ -116,6 +132,7 @@ test('manifest validation rejects duplicate version IDs and auto-verified assets
   const forbidden = manifest();
   forbidden.targets[0].assetStatus = 'ASSET-VERIFIED';
   assert.throws(() => validateManifest(forbidden), /must not start as ASSET-VERIFIED/);
+  assert.throws(() => validateApprovals({ ...approvals(), approvals: [{ versionId: 'dvalin:epsilon-ie2', sha256: 'bad', decision: 'ASSET-VERIFIED' }] }), /64 hex chars/);
 });
 
 test('sha256 and real file signature detection work for PNG and JPEG', () => {
@@ -438,6 +455,172 @@ test('Dvalin fallback keeps the other exact Epsilon sprite targets unchanged', a
     if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
     if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
     await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('explicit approval is required before a candidate becomes ASSET-VERIFIED', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const approvalsPath = path.join(directory, 'approvals.json');
+    const manifestData = manifest();
+    manifestData.targets[0].sourceCandidates = [{
+      sourceType: 'fandom-file',
+      sourceAssetId: 'File:(E) Desarm sprite.png',
+      sourceSuitability: 'GAME-SPRITE'
+    }];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    await writeFile(approvalsPath, `${JSON.stringify(approvals(), null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const report = await runAssetFactory({
+      manifestPath,
+      stagingRoot,
+      reportsRoot,
+      approvalsPath,
+      fetchImpl: async () => ({
+        ok: true,
+        json: async () => ({ query: { pages: { 1: { title: 'File:(E) Desarm sprite.png', imageinfo: [{ url: 'https://static.example.invalid/desarm.png' }] } } } }),
+        arrayBuffer: async () => samplePng,
+        status: 200
+      })
+    });
+    assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
+    assert.equal(report.targets[0].sources[0].assetStatus, 'CANDIDATE');
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('matching GAME-SPRITE approval becomes ASSET-VERIFIED and writes the real hash', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const approvalsPath = path.join(directory, 'approvals.json');
+    const manifestData = manifest();
+    manifestData.targets[0].sourceCandidates = [{
+      sourceType: 'fandom-file',
+      sourceAssetId: 'File:(E) Desarm sprite.png',
+      sourceSuitability: 'GAME-SPRITE'
+    }];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    await writeFile(approvalsPath, `${JSON.stringify(approvals(), null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const report = await runAssetFactory({
+      manifestPath,
+      stagingRoot,
+      reportsRoot,
+      approvalsPath,
+      finalizeApprovals: true,
+      fetchImpl: async () => ({
+        ok: true,
+        json: async () => ({ query: { pages: { 1: { title: 'File:(E) Desarm sprite.png', imageinfo: [{ url: 'https://static.example.invalid/desarm.png' }] } } } }),
+        arrayBuffer: async () => samplePng,
+        status: 200
+      })
+    });
+    const approvalFile = JSON.parse(await readFile(approvalsPath, 'utf8'));
+    assert.equal(report.targets[0].assetStatus, 'ASSET-VERIFIED');
+    assert.equal(report.targets[0].sources[0].assetStatus, 'ASSET-VERIFIED');
+    assert.equal(approvalFile.approvals[0].sha256, sha256Hex(samplePng));
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('approval hash mismatches are rejected', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const approvalsPath = path.join(directory, 'approvals.json');
+    const manifestData = manifest();
+    manifestData.targets[0].sourceCandidates = [{
+      sourceType: 'fandom-file',
+      sourceAssetId: 'File:(E) Desarm sprite.png',
+      sourceSuitability: 'GAME-SPRITE'
+    }];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    await writeFile(approvalsPath, `${JSON.stringify(approvals({ sha256: 'a'.repeat(64) }), null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    await assert.rejects(() => runAssetFactory({
+      manifestPath,
+      stagingRoot,
+      reportsRoot,
+      approvalsPath,
+      fetchImpl: async () => ({
+        ok: true,
+        json: async () => ({ query: { pages: { 1: { title: 'File:(E) Desarm sprite.png', imageinfo: [{ url: 'https://static.example.invalid/desarm.png' }] } } } }),
+        arrayBuffer: async () => samplePng,
+        status: 200
+      })
+    }), /Approval hash mismatch/);
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('missing binary approvals are rejected', async () => {
+  await assert.rejects(() => applyHumanApprovals({
+    approvals: approvals({ sha256: 'a'.repeat(64) }),
+    approvalsPath: path.join(repoRoot, 'tools/assets/approvals/epsilon-ie2-poc.approvals.json'),
+    targets: [{
+      versionId: 'dvalin:epsilon-ie2',
+      assetStatus: 'CANDIDATE',
+      sourceSuitability: 'GAME-SPRITE',
+      outputFile: 'tools/assets/staging/missing.png',
+      sources: [{
+        assetStatus: 'CANDIDATE',
+        sourceSuitability: 'GAME-SPRITE',
+        outputFile: 'tools/assets/staging/missing.png'
+      }]
+    }]
+  }), /Missing staged binary/);
+});
+
+test('generic sources cannot be approved as runtime assets', async () => {
+  const file = path.join(repoRoot, 'tools/assets/reports/test-generic-approval.png');
+  try {
+    await writeFile(file, png(1, 1));
+    await assert.rejects(() => applyHumanApprovals({
+      approvals: approvals({ sha256: sha256Hex(png(1, 1)) }),
+      approvalsPath: path.join(repoRoot, 'tools/assets/approvals/epsilon-ie2-poc.approvals.json'),
+      targets: [{
+        versionId: 'dvalin:epsilon-ie2',
+        assetStatus: 'CANDIDATE',
+        sourceSuitability: 'GENERIC-CHARACTER-IMAGE',
+        outputFile: 'tools/assets/reports/test-generic-approval.png',
+        sources: [{
+          assetStatus: 'CANDIDATE',
+          sourceSuitability: 'GENERIC-CHARACTER-IMAGE',
+          outputFile: 'tools/assets/reports/test-generic-approval.png'
+        }]
+      }]
+    }), /not a game portrait\/sprite candidate/);
+  } finally {
+    await rm(file, { force: true });
   }
 });
 

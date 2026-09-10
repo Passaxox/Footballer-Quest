@@ -39,3 +39,15 @@ From repository root:
 node tools/assets/asset-factory.mjs
 node --test tools/assets/asset-factory.test.mjs
 ```
+
+Explicit human approval finalization is supported through `tools/assets/approvals/epsilon-ie2-poc.approvals.json`.
+
+- `ASSET-VERIFIED` is never inferred from resolver output alone.
+- Each approval entry must explicitly bind `versionId`, `sha256`, and `decision: ASSET-VERIFIED`.
+- Finalization recomputes the staged binary hash locally and rejects missing files, hash mismatches, or non-game/generic sources.
+
+To fill the approval hashes from already staged candidate binaries and regenerate frozen reports on a machine that has the approved staged files:
+
+```text
+node tools/assets/asset-factory.mjs --approvals tools/assets/approvals/epsilon-ie2-poc.approvals.json --finalize-approvals
+```
