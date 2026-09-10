@@ -29,9 +29,9 @@ The deterministic JSON includes coordinates, dimensions and a source SHA-256. A 
 The isolated resolver/staging proof-of-concept lives in `tools/assets/asset-factory.mjs` with its input manifest at `tools/assets/manifests/epsilon-ie2-poc.json`.
 
 - Scope: resolver/staging/reporting only. It never writes into `frontend/public/sprites/`.
-- Source adapter: MediaWiki/Fandom character page → exact file title → original binary URL fallback.
+- Source adapter: MediaWiki/Fandom exact file title and character-page resolution.
 - Output: immutable staged originals under `tools/assets/staging/`, plus JSON/Markdown/HTML reports under `tools/assets/reports/`.
-- Status rule: resolved binaries are always `CANDIDATE`; the tool never auto-assigns `ASSET-VERIFIED`.
+- Status rule: only suitable game/headshot sources become `CANDIDATE`; generic character-page images are preserved as `REVIEW` evidence, and the tool never auto-assigns `ASSET-VERIFIED`.
 
 From repository root:
 

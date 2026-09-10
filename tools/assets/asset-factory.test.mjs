@@ -74,8 +74,17 @@ function manifest() {
         teamId: 'epsilon',
         gameOrigin: 'footballer-quest',
         sourceGame: 'ie2',
+        requiredSourceSuitability: ['GAME-PORTRAIT', 'GAME-SPRITE'],
         sourceType: 'fandom-character-page',
         sourceRef: 'Saginuma_Osamu',
+        sourceCandidates: [
+          {
+            sourceType: 'fandom-character-page',
+            sourceRef: 'Saginuma_Osamu',
+            sourceSuitability: 'GENERIC-CHARACTER-IMAGE',
+            preserveAsEvidence: true
+          }
+        ],
         sourceSheet: null,
         sourceAssetId: null,
         row: null,
@@ -159,7 +168,7 @@ test('failed source requests are classified without creating candidates', async 
   }
 });
 
-test('resolved candidates stay CANDIDATE and staging is immutable', async () => {
+test('generic character-page images stay REVIEW when game sprite is required', async () => {
   const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
   let stagingRoot;
   let reportsRoot;
@@ -177,12 +186,58 @@ test('resolved candidates stay CANDIDATE and staging is immutable', async () => 
         query: {
           pages: {
             1: {
-              pageimage: 'Desarm.png',
-              original: { source: 'https://static.example.invalid/Desarm.png' }
+              pageimage: 'Saginuma_Osamu.png',
+              original: { source: 'https://static.example.invalid/Saginuma_Osamu.png' }
             }
           }
         }
       }),
+      arrayBuffer: async () => samplePng,
+      status: 200,
+      url
+    });
+    const report = await runAssetFactory({ manifestPath, stagingRoot, reportsRoot, fetchImpl });
+    assert.equal(report.status, 'BLOCKED');
+    assert.equal(report.targets[0].assetStatus, 'REVIEW');
+    assert.equal(report.targets[0].sourceSuitability, 'GENERIC-CHARACTER-IMAGE');
+    assert.equal(report.targets[0].sources[0].assetStatus, 'REVIEW');
+    assert.match(report.targets[0].sources[0].validationWarnings.join('\n'), /SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE/);
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('resolved game sprite candidates stay CANDIDATE and beat generic fallbacks', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const manifestData = manifest();
+    manifestData.targets[0].sourceCandidates = [
+      {
+        sourceType: 'fandom-file',
+        sourceAssetId: 'File:(E) Desarm sprite.png',
+        sourceSuitability: 'GAME-SPRITE'
+      },
+      {
+        sourceType: 'fandom-character-page',
+        sourceRef: 'Saginuma_Osamu',
+        sourceSuitability: 'GENERIC-CHARACTER-IMAGE',
+        preserveAsEvidence: true
+      }
+    ];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const fetchImpl = async url => ({
+      ok: true,
+      json: async () => ({ query: { pages: { 1: { pageimage: 'Saginuma_Osamu.png', original: { source: 'https://static.example.invalid/Saginuma_Osamu.png' } } } } }),
       arrayBuffer: async () => samplePng,
       status: 200,
       url
@@ -196,11 +251,16 @@ test('resolved candidates stay CANDIDATE and staging is immutable', async () => 
     assert.equal(reportStatus(report.targets), 'PASS');
     assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
     assert.equal(report.targets[0].sourceStatus, 'SOURCE-VERIFIED');
-    const saved = await readFile(path.resolve(repoRoot, report.targets[0].outputFile));
+    assert.equal(report.targets[0].sourceSuitability, 'GAME-SPRITE');
+    assert.equal(report.targets[0].sources.length, 2);
+    assert.equal(report.targets[0].sources[0].assetStatus, 'CANDIDATE');
+    assert.equal(report.targets[0].sources[1].assetStatus, 'REVIEW');
+    const saved = await readFile(path.resolve(repoRoot, report.targets[0].sources[0].outputFile));
     assert.equal(saved.length, samplePng.length);
     const html = await readFile(path.join(reportsRoot, 'epsilon-ie2-poc.contact-sheet.html'), 'utf8');
-    assert.match(html, /<img src="\.\.\/\.\.\/staging\/[^"]+\/Desarm\.png"/);
-    assert.match(html, /<div><dt>Source filename<\/dt><dd>Desarm\.png<\/dd><\/div>/);
+    assert.match(html, /<div><dt>Source filename<\/dt><dd>\(E\) Desarm sprite\.png<\/dd><\/div>/);
+    assert.match(html, /<div><dt>Suitability<\/dt><dd>GAME-SPRITE<\/dd><\/div>/);
+    assert.match(html, /<div><dt>Suitability<\/dt><dd>GENERIC-CHARACTER-IMAGE<\/dd><\/div>/);
     } finally {
       if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
       if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
@@ -215,13 +275,17 @@ test('existing staged originals can regenerate a contact sheet without refetchin
     try {
       const manifestPath = path.join(directory, 'manifest.json');
       const manifestData = manifest();
-      manifestData.targets[0].sourceAssetId = 'File:Desarm Portrait.png';
+      manifestData.targets[0].sourceCandidates = [{
+        sourceType: 'fandom-file',
+        sourceAssetId: 'File:Desarm Portrait.png',
+        sourceSuitability: 'GAME-SPRITE'
+      }];
       await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
       await mkdir(repoStagingRoot, { recursive: true });
       await mkdir(repoReportsRoot, { recursive: true });
       stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
       reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
-      const candidateDir = path.join(stagingRoot, 'originals', 'dvalin-epsilon-ie2');
+      const candidateDir = path.join(stagingRoot, 'originals', 'dvalin-epsilon-ie2', 'game-sprite');
       await mkdir(candidateDir, { recursive: true });
       await writeFile(path.join(candidateDir, 'Desarm Portrait.png'), png(4, 4));
       const report = await runAssetFactory({
@@ -234,6 +298,7 @@ test('existing staged originals can regenerate a contact sheet without refetchin
       assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
       assert.equal(report.targets[0].sourceStatus, 'SOURCE-VERIFIED');
       assert.equal(report.targets[0].sourceFilename, 'Desarm Portrait.png');
+      assert.equal(report.targets[0].sourceSuitability, 'GAME-SPRITE');
       assert.match(report.targets[0].contactSheetImageUrl, /^\.\.\/\.\.\/staging\/.*Desarm%20Portrait\.png$/);
     } finally {
       if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });

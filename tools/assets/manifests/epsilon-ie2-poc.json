@@ -13,6 +13,16 @@
       "sourceGame": "ie2",
       "sourceType": "fandom-character-page",
       "sourceRef": "Saginuma_Osamu",
+      "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Saginuma_Osamu",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
       "sourceSheet": null,
       "sourceAssetId": null,
       "row": null,
@@ -42,6 +52,16 @@
       "sourceGame": "ie2",
       "sourceType": "fandom-character-page",
       "sourceRef": "Tanba_Taiji",
+      "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Tanba_Taiji",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
       "sourceSheet": null,
       "sourceAssetId": null,
       "row": null,
@@ -71,6 +91,16 @@
       "sourceGame": "ie2",
       "sourceType": "fandom-character-page",
       "sourceRef": "Kuri_Fuuko",
+      "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Kuri_Fuuko",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
       "sourceSheet": null,
       "sourceAssetId": null,
       "row": null,
@@ -100,6 +130,16 @@
       "sourceGame": "ie2",
       "sourceType": "fandom-character-page",
       "sourceRef": "Segata_Ryuuichirou",
+      "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Segata_Ryuuichirou",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
       "sourceSheet": null,
       "sourceAssetId": null,
       "row": null,

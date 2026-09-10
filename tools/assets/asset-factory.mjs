@@ -14,6 +14,7 @@ const defaultReportsRoot = path.resolve(toolsRoot, 'reports');
 const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 const jpegSof = new Set([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf]);
 const defaultStatus = { identityStatus: 'VERSION-VERIFIED', sourceStatus: 'UNASSESSED', versionStatus: 'VERSION-VERIFIED', assetStatus: 'UNASSESSED' };
+const acceptableSourceSuitability = new Set(['GAME-PORTRAIT', 'GAME-SPRITE']);
 
 const mimeExtension = mime => ({ 'image/png': '.png', 'image/webp': '.webp', 'image/jpeg': '.jpg', 'image/gif': '.gif' }[mime] ?? '');
 const toPosix = value => value.split(path.sep).join('/');
@@ -39,6 +40,13 @@ function normalizeFileTitle(title) {
 
 function filenameFromFileTitle(title) {
   return normalizeFileTitle(title)?.replace(/^File:/, '') ?? null;
+}
+
+function defaultSourceSuitability({ sourceType, sourceAssetId }) {
+  if (sourceType === 'fandom-character-page') return 'GENERIC-CHARACTER-IMAGE';
+  if (typeof sourceAssetId === 'string' && /\b(sprite|avatar|overworld|character view)\b/i.test(sourceAssetId)) return 'GAME-SPRITE';
+  if (typeof sourceAssetId === 'string' && /\b(portrait|headshot)\b/i.test(sourceAssetId)) return 'GAME-PORTRAIT';
+  return 'REVIEW';
 }
 
 function encodePathForUrl(file) {
@@ -226,6 +234,111 @@ async function existingOriginalForTarget({ target, originalsDir }) {
   }
 }
 
+function sourceSpecsForTarget(target) {
+  const candidates = Array.isArray(target.sourceCandidates) && target.sourceCandidates.length
+    ? target.sourceCandidates
+    : [{
+        sourceType: target.sourceType,
+        sourceRef: target.sourceRef,
+        sourceAssetId: target.sourceAssetId,
+        sourceSuitability: target.sourceSuitability
+      }];
+  return candidates.map((candidate, index) => ({
+    sourceKey: candidate.sourceKey ?? `source-${index + 1}`,
+    sourceType: candidate.sourceType,
+    sourceRef: candidate.sourceRef,
+    sourceAssetId: normalizeFileTitle(candidate.sourceAssetId) ?? candidate.sourceAssetId ?? null,
+    sourceSuitability: candidate.sourceSuitability ?? defaultSourceSuitability(candidate),
+    preserveAsEvidence: candidate.preserveAsEvidence !== false,
+    provenanceNote: candidate.provenanceNote ?? null,
+    validationWarnings: [...(candidate.validationWarnings ?? [])]
+  }));
+}
+
+function sourceDirectory(originalsDir, target, source) {
+  return path.join(originalsDir, safeName(target.versionId), safeName(source.sourceSuitability || source.sourceKey));
+}
+
+async function existingOriginalForSource({ target, source, originalsDir }) {
+  const preferred = filenameFromFileTitle(source.sourceAssetId);
+  const nested = sourceDirectory(originalsDir, target, source);
+  try {
+    const files = (await readdir(nested, { withFileTypes: true }))
+      .filter(entry => entry.isFile())
+      .map(entry => entry.name)
+      .sort((a, b) => a.localeCompare(b));
+    if (preferred && files.includes(preferred)) {
+      const absolutePath = path.join(nested, preferred);
+      return { absolutePath, filename: preferred, buffer: await readFile(absolutePath), reused: true };
+    }
+    if (!preferred && files.length === 1) {
+      const absolutePath = path.join(nested, files[0]);
+      return { absolutePath, filename: files[0], buffer: await readFile(absolutePath), reused: true };
+    }
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+  }
+  const legacy = await existingOriginalForTarget({ target, originalsDir });
+  if (!legacy) return null;
+  if (source.sourceSuitability === 'GENERIC-CHARACTER-IMAGE') return legacy;
+  if (preferred && legacy.filename === preferred) return legacy;
+  return null;
+}
+
+function sourceRecordFromSpec(source) {
+  return {
+    sourceKey: source.sourceKey,
+    sourceType: source.sourceType,
+    sourceRef: source.sourceRef ?? null,
+    sourceAssetId: source.sourceAssetId ?? null,
+    sourceFilename: filenameFromFileTitle(source.sourceAssetId) ?? null,
+    sourceSuitability: source.sourceSuitability ?? 'REVIEW',
+    sourceStatus: 'UNASSESSED',
+    assetStatus: 'UNASSESSED',
+    outputFile: null,
+    contactSheetImageUrl: null,
+    width: null,
+    height: null,
+    mimeType: null,
+    detectedFormat: null,
+    hasAlpha: null,
+    sha256: null,
+    provenanceNote: source.provenanceNote ?? null,
+    validationWarnings: [...(source.validationWarnings ?? [])],
+    verificationEvidence: []
+  };
+}
+
+function applyResolvedSourceRecord({ record, reportPath, stagedPath, fileName, buffer, signature, reused }) {
+  record.outputFile = relativeFromRoot(stagedPath);
+  record.width = signature.width;
+  record.height = signature.height;
+  record.mimeType = signature.mime;
+  record.detectedFormat = signature.format;
+  record.hasAlpha = signature.hasAlpha;
+  record.sha256 = sha256Hex(buffer);
+  record.sourceFilename = fileName;
+  record.contactSheetImageUrl = relativeAssetUrl(reportPath, stagedPath);
+  record.sourceStatus = 'SOURCE-VERIFIED';
+  record.assetStatus = acceptableSourceSuitability.has(record.sourceSuitability) ? 'CANDIDATE' : 'REVIEW';
+  record.validationWarnings = unique([
+    ...record.validationWarnings,
+    reused ? 'IMMUTABLE_REUSE' : null,
+    signature.hasAlpha === null ? 'ALPHA_UNCONFIRMED' : null,
+    record.assetStatus === 'REVIEW' ? `SOURCE_UNSUITABLE:${record.sourceSuitability}` : null
+  ]);
+  record.verificationEvidence = unique([
+    ...record.verificationEvidence,
+    reused ? 'existing-staged-original' : 'binary-signature-validated'
+  ]);
+  record.provenanceNote = unique([
+    record.provenanceNote,
+    `Original downloaded filename preserved as ${fileName}.`,
+    reused ? 'Regenerated report/contact sheet from existing staged original without redownload.' : null,
+    `Detected ${signature.mime} ${signature.width}x${signature.height}; alpha=${signature.hasAlpha === null ? 'unknown' : signature.hasAlpha}.`
+  ]).join(' ');
+}
+
 function applyCandidateMetadata({ target, reportPath, stagedPath, fileName, buffer, signature, reused }) {
   target.outputFile = relativeFromRoot(stagedPath);
   target.width = signature.width;
@@ -252,6 +365,48 @@ function applyCandidateMetadata({ target, reportPath, stagedPath, fileName, buff
     reused ? 'Regenerated report/contact sheet from existing staged original without redownload.' : null,
     `Detected ${signature.mime} ${signature.width}x${signature.height}; alpha=${signature.hasAlpha === null ? 'unknown' : signature.hasAlpha}.`
   ]).join(' ');
+}
+
+function targetStatusFromSources(target) {
+  if (target.sources.some(source => source.assetStatus === 'CANDIDATE')) return 'CANDIDATE';
+  if (target.sources.some(source => source.assetStatus === 'REVIEW')) return 'REVIEW';
+  if (target.sources.length && target.sources.every(source => source.sourceStatus === 'SOURCE-MISSING')) return 'ASSET-GAP';
+  if (target.sources.some(source => source.sourceStatus === 'SOURCE-ACCESS-BLOCKED')) return 'UNASSESSED';
+  return 'UNASSESSED';
+}
+
+function preferredSourceForTarget(target) {
+  return target.sources.find(source => source.assetStatus === 'CANDIDATE')
+    ?? target.sources.find(source => source.assetStatus === 'REVIEW')
+    ?? target.sources[0]
+    ?? null;
+}
+
+function applyPreferredSource(target, preferred) {
+  if (!preferred) return;
+  target.sourceType = preferred.sourceType;
+  target.sourceRef = preferred.sourceRef;
+  target.sourceAssetId = preferred.sourceAssetId;
+  target.sourceFilename = preferred.sourceFilename;
+  target.sourceSuitability = preferred.sourceSuitability;
+  target.sourceStatus = preferred.sourceStatus;
+  target.assetStatus = targetStatusFromSources(target);
+  target.outputFile = preferred.outputFile;
+  target.contactSheetImageUrl = preferred.contactSheetImageUrl;
+  target.width = preferred.width;
+  target.height = preferred.height;
+  target.mimeType = preferred.mimeType;
+  target.detectedFormat = preferred.detectedFormat;
+  target.hasAlpha = preferred.hasAlpha;
+  target.sha256 = preferred.sha256;
+  target.validationWarnings = unique([
+    ...(target.validationWarnings ?? []),
+    ...target.sources.flatMap(source => source.validationWarnings ?? [])
+  ]);
+  target.verificationEvidence = unique([
+    ...(target.verificationEvidence ?? []),
+    ...target.sources.flatMap(source => source.verificationEvidence ?? [])
+  ]);
 }
 
 export class FandomMediaWikiAdapter {
@@ -289,6 +444,20 @@ export class FandomMediaWikiAdapter {
     const originalUrl = page?.original?.source ?? (fileTitle ? `${this.baseUrl}/wiki/Special:FilePath/${encodeURIComponent(filenameFromFileTitle(fileTitle))}` : null);
     if (!fileTitle || !originalUrl) return { sourceStatus: 'SOURCE-MISSING', note: `No exact file title resolved for ${target.sourceRef}` };
     return { sourceStatus: 'SOURCE-CANDIDATE', fileTitle, binaryUrl: originalUrl, note: `Resolved from exact character page ${target.sourceRef}` };
+  }
+
+  async resolveSource(source) {
+    if (source.sourceType === 'fandom-file') {
+      const fileTitle = normalizeFileTitle(source.sourceAssetId ?? source.sourceRef);
+      if (!fileTitle) return { sourceStatus: 'SOURCE-MISSING', note: 'Missing exact file title' };
+      return {
+        sourceStatus: 'SOURCE-CANDIDATE',
+        fileTitle,
+        binaryUrl: `${this.baseUrl}/wiki/Special:FilePath/${encodeURIComponent(filenameFromFileTitle(fileTitle))}`,
+        note: `Resolved from exact file title ${fileTitle}`
+      };
+    }
+    return this.resolveTarget(source);
   }
 
   async downloadBinary(url) {
@@ -330,17 +499,26 @@ export function reportStatus(results) {
 
 function renderContactSheet(report) {
   const cards = report.targets.map(target => {
-    const image = target.contactSheetImageUrl ? `<img src="${target.contactSheetImageUrl}" alt="${target.displayName}" />` : `<div class="placeholder">NO CANDIDATE</div>`;
-    return `<article class="card">
+    const sourceCards = (target.sources?.length ? target.sources : [target]).map(source => {
+      const image = source.contactSheetImageUrl ? `<img src="${source.contactSheetImageUrl}" alt="${target.displayName}" />` : `<div class="placeholder">NO CANDIDATE</div>`;
+      return `<section class="source">
   <div class="thumb">${image}</div>
+  <dl>
+    <div><dt>Source filename</dt><dd>${source.sourceFilename ?? filenameFromFileTitle(source.sourceAssetId) ?? 'n/a'}</dd></div>
+    <div><dt>Suitability</dt><dd>${source.sourceSuitability ?? 'n/a'}</dd></div>
+    <div><dt>Resolution</dt><dd>${source.width && source.height ? `${source.width}×${source.height}` : 'n/a'}</dd></div>
+    <div><dt>Status</dt><dd>${source.assetStatus}</dd></div>
+  </dl>
+</section>`;
+    }).join('\n');
+    return `<article class="card">
   <h2>${target.displayName}</h2>
   <dl>
     <div><dt>Version</dt><dd>${target.versionId}</dd></div>
     <div><dt>Team/Game</dt><dd>${target.teamId} / ${target.sourceGame}</dd></div>
-    <div><dt>Source filename</dt><dd>${target.sourceFilename ?? filenameFromFileTitle(target.sourceAssetId) ?? 'n/a'}</dd></div>
-    <div><dt>Resolution</dt><dd>${target.width && target.height ? `${target.width}×${target.height}` : 'n/a'}</dd></div>
-    <div><dt>Status</dt><dd>${target.assetStatus}</dd></div>
+    <div><dt>Target status</dt><dd>${target.assetStatus}</dd></div>
   </dl>
+  <div class="sources">${sourceCards}</div>
 </article>`;
   }).join('\n');
   return `<!doctype html>
@@ -353,6 +531,8 @@ body{font-family:system-ui,sans-serif;background:#111;color:#eee;margin:24px}
 h1{margin-bottom:8px} p{margin-top:0;color:#bbb}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:16px}
 .card{border:1px solid #444;border-radius:8px;padding:12px;background:#1b1b1b}
+.sources{display:grid;gap:12px}
+.source{border:1px solid #333;border-radius:6px;padding:10px;background:#161616}
 .thumb{height:220px;display:flex;align-items:center;justify-content:center;background:#222;border:1px solid #333;margin-bottom:12px}
 .thumb img{max-width:100%;max-height:100%;image-rendering:pixelated}
 .placeholder{font-weight:700;color:#ffb4b4}
@@ -379,11 +559,13 @@ function renderMarkdown(report) {
     `- Runtime integration performed: **no**`,
     `- Human review required for every candidate: **yes**`,
     '',
-    '| Target | Source status | Asset status | Source file | Candidate path | Warnings |',
+    '| Target | Source status | Suitability | Asset status | Source file | Candidate path | Warnings |',
     '| --- | --- | --- | --- | --- | --- |'
   ];
   for (const target of report.targets) {
-    lines.push(`| ${target.displayName} | ${target.sourceStatus} | ${target.assetStatus} | ${target.sourceAssetId ?? 'n/a'} | ${target.outputFile ?? 'n/a'} | ${(target.validationWarnings ?? []).join('<br>') || '—'} |`);
+    for (const [index, source] of (target.sources?.length ? target.sources : [target]).entries()) {
+      lines.push(`| ${index === 0 ? target.displayName : '↳ source'} | ${source.sourceStatus} | ${source.sourceSuitability ?? 'n/a'} | ${source.assetStatus} | ${source.sourceFilename ?? source.sourceAssetId ?? 'n/a'} | ${source.outputFile ?? 'n/a'} | ${(source.validationWarnings ?? []).join('<br>') || '—'} |`);
+    }
   }
   return `${lines.join('\n')}\n`;
 }
@@ -407,55 +589,64 @@ export async function runAssetFactory({ manifestPath = defaultManifestPath, stag
       }
       if (Array.isArray(previous.verificationEvidence)) target.verificationEvidence = unique([...target.verificationEvidence, ...previous.verificationEvidence]);
     }
-    try {
-      const existing = await existingOriginalForTarget({ target, originalsDir });
-      if (existing) {
-        const signature = detectImageSignature(existing.buffer);
-        applyCandidateMetadata({
-          target,
+    target.sources = [];
+    for (const sourceSpec of sourceSpecsForTarget(target)) {
+      const sourceRecord = sourceRecordFromSpec(sourceSpec);
+      try {
+        const existing = await existingOriginalForSource({ target, source: sourceSpec, originalsDir });
+        if (existing) {
+          const signature = detectImageSignature(existing.buffer);
+          applyResolvedSourceRecord({
+            record: sourceRecord,
+            reportPath,
+            stagedPath: existing.absolutePath,
+            fileName: existing.filename,
+            buffer: existing.buffer,
+            signature,
+            reused: true
+          });
+          target.sources.push(sourceRecord);
+          continue;
+        }
+        const resolved = await adapter.resolveSource(sourceSpec);
+        sourceRecord.sourceStatus = resolved.sourceStatus;
+        if (resolved.fileTitle) sourceRecord.sourceAssetId = resolved.fileTitle;
+        if (resolved.binaryUrl) sourceRecord.resolvedBinaryUrl = resolved.binaryUrl;
+        if (resolved.note) sourceRecord.provenanceNote = unique([sourceRecord.provenanceNote, resolved.note]).join(' ');
+        if (resolved.sourceStatus !== 'SOURCE-CANDIDATE') {
+          sourceRecord.assetStatus = resolved.sourceStatus === 'SOURCE-MISSING' ? 'ASSET-GAP' : 'UNASSESSED';
+          target.sources.push(sourceRecord);
+          continue;
+        }
+        const buffer = await adapter.downloadBinary(resolved.binaryUrl);
+        const signature = detectImageSignature(buffer);
+        const fileName = filenameFromFileTitle(resolved.fileTitle) ?? `${safeName(target.versionId)}${mimeExtension(signature.mime)}`;
+        const destination = path.join(sourceDirectory(originalsDir, target, sourceRecord), fileName);
+        if (!isSubpath(stagingDir, destination) || isSubpath(runtimeSpritesDir, destination)) throw new Error('Unsafe staging destination');
+        await mkdir(path.dirname(destination), { recursive: true });
+        const staged = await writeImmutableFile(destination, buffer);
+        sourceRecord.verificationEvidence = unique([...sourceRecord.verificationEvidence, 'resolved-file-title']);
+        if (sourceRecord.sourceType === 'fandom-character-page') sourceRecord.verificationEvidence = unique([...sourceRecord.verificationEvidence, 'exact-character-page']);
+        applyResolvedSourceRecord({
+          record: sourceRecord,
           reportPath,
-          stagedPath: existing.absolutePath,
-          fileName: existing.filename,
-          buffer: existing.buffer,
+          stagedPath: destination,
+          fileName,
+          buffer,
           signature,
-          reused: true
+          reused: staged.reused
         });
-        targets.push(target);
-        continue;
+      } catch (error) {
+        const issue = classificationFromError(error);
+        sourceRecord.sourceStatus = issue.sourceStatus;
+        sourceRecord.assetStatus = issue.sourceStatus === 'SOURCE-ACCESS-BLOCKED' ? 'UNASSESSED' : 'REVIEW';
+        sourceRecord.validationWarnings = unique([...sourceRecord.validationWarnings, `${issue.code}:${issue.message}`]);
       }
-      const resolved = await adapter.resolveTarget(target);
-      target.sourceStatus = resolved.sourceStatus;
-      if (resolved.fileTitle) target.sourceAssetId = resolved.fileTitle;
-      if (resolved.binaryUrl) target.resolvedBinaryUrl = resolved.binaryUrl;
-      if (resolved.note) target.provenanceNote = unique([target.provenanceNote, resolved.note]).join(' ');
-      if (resolved.sourceStatus !== 'SOURCE-CANDIDATE') {
-        target.assetStatus = resolved.sourceStatus === 'SOURCE-MISSING' ? 'ASSET-GAP' : 'UNASSESSED';
-        targets.push(target);
-        continue;
-      }
-      const buffer = await adapter.downloadBinary(resolved.binaryUrl);
-      const signature = detectImageSignature(buffer);
-      const fileName = filenameFromFileTitle(resolved.fileTitle) ?? `${safeName(target.versionId)}${mimeExtension(signature.mime)}`;
-      const destination = path.join(originalsDir, safeName(target.versionId), fileName);
-      if (!isSubpath(stagingDir, destination) || isSubpath(runtimeSpritesDir, destination)) throw new Error('Unsafe staging destination');
-      await mkdir(path.dirname(destination), { recursive: true });
-      const staged = await writeImmutableFile(destination, buffer);
-      target.verificationEvidence = unique([...target.verificationEvidence, 'exact-character-page', 'resolved-file-title']);
-      applyCandidateMetadata({
-        target,
-        reportPath,
-        stagedPath: destination,
-        fileName,
-        buffer,
-        signature,
-        reused: staged.reused
-      });
-    } catch (error) {
-      const issue = classificationFromError(error);
-      target.sourceStatus = issue.sourceStatus;
-      target.assetStatus = issue.sourceStatus === 'SOURCE-ACCESS-BLOCKED' ? 'UNASSESSED' : 'REVIEW';
-      target.validationWarnings = unique([...target.validationWarnings, `${issue.code}:${issue.message}`]);
+      target.sources.push(sourceRecord);
     }
+    const preferred = preferredSourceForTarget(target);
+    target.assetStatus = targetStatusFromSources(target);
+    applyPreferredSource(target, preferred);
     targets.push(target);
   }
   applyDuplicateAnnotations(targets);
