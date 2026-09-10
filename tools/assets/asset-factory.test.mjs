@@ -349,9 +349,9 @@ test('fandom-file sources fall back across deterministic exact-file URLs after a
     assert.equal(report.targets[0].sources[0].assetStatus, 'CANDIDATE');
     assert.equal(report.targets[0].sources[1].assetStatus, 'REVIEW');
     assert.deepEqual(attemptedUrls.slice(0, 3), [
-      'https://inazuma-eleven.fandom.com/api.php?action=query&format=json&redirects=1&prop=imageinfo&iiprop=url&titles=File%3A(E)%20Desarm%20sprite.png',
+      'https://example.invalid/api.php?action=query&format=json&redirects=1&prop=imageinfo&iiprop=url&titles=File%3A(E)%20Desarm%20sprite.png',
       'https://static.example.invalid/desarm-primary.png',
-      'https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(E)%20Desarm%20sprite.png'
+      'https://example.invalid/wiki/Special:Redirect/file/File%3A(E)%20Desarm%20sprite.png'
     ]);
   } finally {
     if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
