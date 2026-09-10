@@ -16,6 +16,13 @@
       "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
       "sourceCandidates": [
         {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Desarm sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
+        {
           "sourceType": "fandom-character-page",
           "sourceRef": "Saginuma_Osamu",
           "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
@@ -54,6 +61,13 @@
       "sourceRef": "Tanba_Taiji",
       "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
       "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Tanba Taiji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
         {
           "sourceType": "fandom-character-page",
           "sourceRef": "Tanba_Taiji",
@@ -94,6 +108,13 @@
       "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
       "sourceCandidates": [
         {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Kuri Fuuko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
+        {
           "sourceType": "fandom-character-page",
           "sourceRef": "Kuri_Fuuko",
           "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
@@ -132,6 +153,13 @@
       "sourceRef": "Segata_Ryuuichirou",
       "requiredSourceSuitability": ["GAME-PORTRAIT", "GAME-SPRITE"],
       "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Segata Ryuuichirou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
         {
           "sourceType": "fandom-character-page",
           "sourceRef": "Segata_Ryuuichirou",
