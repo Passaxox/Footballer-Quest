@@ -1,0 +1,677 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { deflateSync } from 'node:zlib';
+import {
+  applyHumanApprovals,
+  detectDuplicateCandidates,
+  detectImageSignature,
+  ensureSafeStaging,
+  reportStatus,
+  runAssetFactory,
+  sha256Hex,
+  validateApprovals,
+  validateManifest
+} from './asset-factory.mjs';
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const repoStagingRoot = path.join(repoRoot, 'tools/assets/staging');
+const repoReportsRoot = path.join(repoRoot, 'tools/assets/reports');
+
+function png(width, height, { alpha = true } = {}) {
+  const chunk = (type, data) => {
+    const payload = Buffer.concat([Buffer.from(type), data]);
+    let crc = 0xffffffff;
+    for (const byte of payload) {
+      crc ^= byte;
+      for (let bit = 0; bit < 8; bit += 1) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
+    }
+    const length = Buffer.alloc(4);
+    const sum = Buffer.alloc(4);
+    length.writeUInt32BE(data.length);
+    sum.writeUInt32BE((crc ^ 0xffffffff) >>> 0);
+    return Buffer.concat([length, payload, sum]);
+  };
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width);
+  header.writeUInt32BE(height, 4);
+  header[8] = 8;
+  header[9] = alpha ? 6 : 2;
+  return Buffer.concat([
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+    chunk('IHDR', header),
+    chunk('IDAT', deflateSync(Buffer.alloc((width * (alpha ? 4 : 3) + 1) * height))),
+    chunk('IEND', Buffer.alloc(0))
+  ]);
+}
+
+function jpeg(width, height) {
+  return Buffer.from([
+    0xff, 0xd8,
+    0xff, 0xc0,
+    0x00, 0x0b,
+    0x08,
+    (height >> 8) & 0xff, height & 0xff,
+    (width >> 8) & 0xff, width & 0xff,
+    0x01,
+    0x01, 0x11, 0x00,
+    0xff, 0xd9
+  ]);
+}
+
+function manifest() {
+  return {
+    schemaVersion: 1,
+    manifestId: 'epsilon-ie2-poc',
+    title: 'Test manifest',
+    wikiBaseUrl: 'https://example.invalid',
+    targets: [
+      {
+        canonicalCharacterId: 'dvalin',
+        versionId: 'dvalin:epsilon-ie2',
+        displayName: 'Dvalin / Desarm',
+        teamId: 'epsilon',
+        gameOrigin: 'footballer-quest',
+        sourceGame: 'ie2',
+        requiredSourceSuitability: ['GAME-PORTRAIT', 'GAME-SPRITE'],
+        sourceType: 'fandom-character-page',
+        sourceRef: 'Saginuma_Osamu',
+        sourceCandidates: [
+          {
+            sourceType: 'fandom-character-page',
+            sourceRef: 'Saginuma_Osamu',
+            sourceSuitability: 'GENERIC-CHARACTER-IMAGE',
+            preserveAsEvidence: true
+          }
+        ],
+        sourceSheet: null,
+        sourceAssetId: null,
+        row: null,
+        column: null,
+        cropRect: null,
+        outputFile: null,
+        width: null,
+        height: null,
+        contentBounds: null,
+        backgroundRemoved: false,
+        identityStatus: 'VERSION-VERIFIED',
+        sourceStatus: 'UNASSESSED',
+        versionStatus: 'VERSION-VERIFIED',
+        assetStatus: 'UNASSESSED',
+        visualReuseFrom: null,
+        verificationEvidence: ['canonical-record'],
+        provenanceNote: 'Proof of concept',
+        validationWarnings: [],
+        sha256: null
+      }
+    ]
+  };
+}
+
+function approvals({ sha256 = null } = {}) {
+  return {
+    schemaVersion: 1,
+    manifestId: 'epsilon-ie2-poc',
+    approvals: [
+      {
+        versionId: 'dvalin:epsilon-ie2',
+        sha256,
+        decision: 'ASSET-VERIFIED'
+      }
+    ]
+  };
+}
+
+test('manifest validation rejects duplicate version IDs and auto-verified assets', () => {
+  const duplicated = manifest();
+  duplicated.targets.push({ ...duplicated.targets[0] });
+  assert.throws(() => validateManifest(duplicated), /Duplicate versionId/);
+  const forbidden = manifest();
+  forbidden.targets[0].assetStatus = 'ASSET-VERIFIED';
+  assert.throws(() => validateManifest(forbidden), /must not start as ASSET-VERIFIED/);
+  assert.throws(() => validateApprovals({ ...approvals(), approvals: [{ versionId: 'dvalin:epsilon-ie2', sha256: 'bad', decision: 'ASSET-VERIFIED' }] }), /64 hex chars/);
+});
+
+test('sha256 and real file signature detection work for PNG and JPEG', () => {
+  const samplePng = png(3, 2);
+  assert.equal(sha256Hex(samplePng).length, 64);
+  assert.deepEqual(detectImageSignature(samplePng), { width: 3, height: 2, aspectRatio: 1.5, mime: 'image/png', format: 'PNG', hasAlpha: true });
+  const sampleJpeg = detectImageSignature(jpeg(1, 1));
+  assert.equal(sampleJpeg.mime, 'image/jpeg');
+  assert.equal(sampleJpeg.width, 1);
+  assert.equal(sampleJpeg.height, 1);
+  assert.equal(sampleJpeg.hasAlpha, false);
+});
+
+test('exact duplicate detection groups matching hashes', () => {
+  assert.deepEqual(detectDuplicateCandidates([
+    { versionId: 'a', sha256: 'same' },
+    { versionId: 'b', sha256: 'same' },
+    { versionId: 'c', sha256: 'other' }
+  ]), [{ sha256: 'same', versionIds: ['a', 'b'] }]);
+});
+
+test('failed source requests are classified without creating candidates', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    await writeFile(manifestPath, `${JSON.stringify(manifest(), null, 2)}\n`);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const report = await runAssetFactory({
+      manifestPath,
+      stagingRoot,
+      reportsRoot,
+      fetchImpl: async () => {
+        const error = new Error('fetch failed');
+        error.cause = { code: 'ENOTFOUND' };
+        throw error;
+      }
+    });
+    assert.equal(report.status, 'BLOCKED');
+    assert.equal(report.targets[0].sourceStatus, 'SOURCE-ACCESS-BLOCKED');
+    assert.equal(report.targets[0].assetStatus, 'UNASSESSED');
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('generic character-page images stay REVIEW when game sprite is required', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    await writeFile(manifestPath, `${JSON.stringify(manifest(), null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const fetchImpl = async url => ({
+      ok: true,
+      json: async () => ({
+        query: {
+          pages: {
+            1: {
+              pageimage: 'Saginuma_Osamu.png',
+              original: { source: 'https://static.example.invalid/Saginuma_Osamu.png' }
+            }
+          }
+        }
+      }),
+      arrayBuffer: async () => samplePng,
+      status: 200,
+      url
+    });
+    const report = await runAssetFactory({ manifestPath, stagingRoot, reportsRoot, fetchImpl });
+    assert.equal(report.status, 'BLOCKED');
+    assert.equal(report.targets[0].assetStatus, 'REVIEW');
+    assert.equal(report.targets[0].sourceSuitability, 'GENERIC-CHARACTER-IMAGE');
+    assert.equal(report.targets[0].sources[0].assetStatus, 'REVIEW');
+    assert.match(report.targets[0].sources[0].validationWarnings.join('\n'), /SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE/);
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('resolved game sprite candidates stay CANDIDATE and beat generic fallbacks', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const manifestData = manifest();
+    manifestData.targets[0].sourceCandidates = [
+      {
+        sourceType: 'fandom-file',
+        sourceAssetId: 'File:(E) Desarm sprite.png',
+        sourceSuitability: 'GAME-SPRITE'
+      },
+      {
+        sourceType: 'fandom-character-page',
+        sourceRef: 'Saginuma_Osamu',
+        sourceSuitability: 'GENERIC-CHARACTER-IMAGE',
+        preserveAsEvidence: true
+      }
+    ];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const fetchImpl = async url => ({
+      ok: true,
+      json: async () => ({ query: { pages: { 1: { pageimage: 'Saginuma_Osamu.png', original: { source: 'https://static.example.invalid/Saginuma_Osamu.png' } } } } }),
+      arrayBuffer: async () => samplePng,
+      status: 200,
+      url
+    });
+    const report = await runAssetFactory({
+      manifestPath,
+      stagingRoot,
+      reportsRoot,
+      fetchImpl
+    });
+    assert.equal(reportStatus(report.targets), 'PASS');
+    assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
+    assert.equal(report.targets[0].sourceStatus, 'SOURCE-VERIFIED');
+    assert.equal(report.targets[0].sourceSuitability, 'GAME-SPRITE');
+    assert.equal(report.targets[0].sources.length, 2);
+    assert.equal(report.targets[0].sources[0].assetStatus, 'CANDIDATE');
+    assert.equal(report.targets[0].sources[1].assetStatus, 'REVIEW');
+    const saved = await readFile(path.resolve(repoRoot, report.targets[0].sources[0].outputFile));
+    assert.equal(saved.length, samplePng.length);
+    const html = await readFile(path.join(reportsRoot, 'epsilon-ie2-poc.contact-sheet.html'), 'utf8');
+    assert.match(html, /<div><dt>Source filename<\/dt><dd>\(E\) Desarm sprite\.png<\/dd><\/div>/);
+    assert.match(html, /<div><dt>Suitability<\/dt><dd>GAME-SPRITE<\/dd><\/div>/);
+    assert.match(html, /<div><dt>Suitability<\/dt><dd>GENERIC-CHARACTER-IMAGE<\/dd><\/div>/);
+    } finally {
+      if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+      if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+      await rm(directory, { recursive: true, force: true });
+    }
+});
+
+test('fandom-file sources fall back across deterministic exact-file URLs after a 403', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const manifestData = manifest();
+    manifestData.targets[0].sourceCandidates = [
+      {
+        sourceType: 'fandom-file',
+        sourceAssetId: 'File:(E) Desarm sprite.png',
+        sourceSuitability: 'GAME-SPRITE'
+      },
+      {
+        sourceType: 'fandom-character-page',
+        sourceRef: 'Saginuma_Osamu',
+        sourceSuitability: 'GENERIC-CHARACTER-IMAGE',
+        preserveAsEvidence: true
+      }
+    ];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const attemptedUrls = [];
+    const fetchImpl = async url => {
+      attemptedUrls.push(url);
+      if (url.includes('api.php?action=query') && url.includes('File%3A(E)%20Desarm%20sprite.png')) {
+        return {
+          ok: true,
+          json: async () => ({
+            query: {
+              pages: {
+                1: {
+                  title: 'File:(E) Desarm sprite.png',
+                  imageinfo: [{ url: 'https://static.example.invalid/desarm-primary.png' }]
+                }
+              }
+            }
+          }),
+          status: 200,
+          url
+        };
+      }
+      if (url === 'https://static.example.invalid/desarm-primary.png') {
+        return { ok: false, status: 403, statusText: 'Forbidden', url };
+      }
+      if (url.includes('/wiki/Special:Redirect/file/File%3A(E)%20Desarm%20sprite.png')) {
+        return {
+          ok: true,
+          arrayBuffer: async () => samplePng,
+          status: 200,
+          url
+        };
+      }
+      if (url.includes('Saginuma_Osamu')) {
+        return {
+          ok: true,
+          json: async () => ({ query: { pages: { 1: { pageimage: 'Saginuma_Osamu.png', original: { source: 'https://static.example.invalid/Saginuma_Osamu.png' } } } } }),
+          status: 200,
+          url
+        };
+      }
+      if (url === 'https://static.example.invalid/Saginuma_Osamu.png') {
+        return {
+          ok: true,
+          arrayBuffer: async () => samplePng,
+          status: 200,
+          url
+        };
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    };
+    const report = await runAssetFactory({ manifestPath, stagingRoot, reportsRoot, fetchImpl });
+    assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
+    assert.equal(report.targets[0].sourceSuitability, 'GAME-SPRITE');
+    assert.equal(report.targets[0].sources[0].assetStatus, 'CANDIDATE');
+    assert.equal(report.targets[0].sources[1].assetStatus, 'REVIEW');
+    assert.deepEqual(attemptedUrls.slice(0, 3), [
+      'https://example.invalid/api.php?action=query&format=json&redirects=1&prop=imageinfo&iiprop=url&titles=File%3A(E)%20Desarm%20sprite.png',
+      'https://static.example.invalid/desarm-primary.png',
+      'https://example.invalid/wiki/Special:Redirect/file/File%3A(E)%20Desarm%20sprite.png'
+    ]);
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('Dvalin fallback keeps the other exact Epsilon sprite targets unchanged', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const manifestData = JSON.parse(await readFile(path.join(repoRoot, 'tools/assets/manifests/epsilon-ie2-poc.json'), 'utf8'));
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const staticUrls = new Map([
+      ['File:(E) Desarm sprite.png', 'https://static.example.invalid/desarm-primary.png'],
+      ['File:(E) Tanba Taiji sprite.png', 'https://static.example.invalid/tanba-primary.png'],
+      ['File:(E) Kuri Fuuko sprite.png', 'https://static.example.invalid/kuri-primary.png'],
+      ['File:(E) Segata Ryuuichirou sprite.png', 'https://static.example.invalid/segata-primary.png']
+    ]);
+    const fetchImpl = async url => {
+      if (url.includes('/api.php?action=query') && url.includes('&prop=imageinfo&iiprop=url&titles=File%3A')) {
+        const encodedTitle = url.split('&titles=')[1];
+        const fileTitle = decodeURIComponent(encodedTitle);
+        return {
+          ok: true,
+          json: async () => ({
+            query: {
+              pages: {
+                1: {
+                  title: fileTitle,
+                  imageinfo: [{ url: staticUrls.get(fileTitle) }]
+                }
+              }
+            }
+          }),
+          status: 200,
+          url
+        };
+      }
+      if (url === 'https://static.example.invalid/desarm-primary.png') {
+        return { ok: false, status: 403, statusText: 'Forbidden', url };
+      }
+      if (url.includes('/wiki/Special:Redirect/file/File%3A(E)%20Desarm%20sprite.png')) {
+        return { ok: true, arrayBuffer: async () => samplePng, status: 200, url };
+      }
+      if (url.startsWith('https://static.example.invalid/')) {
+        return { ok: true, arrayBuffer: async () => samplePng, status: 200, url };
+      }
+      if (url.includes('Saginuma_Osamu') || url.includes('Tanba_Taiji') || url.includes('Kuri_Fuuko') || url.includes('Segata_Ryuuichirou')) {
+        const name = url.split('/').pop();
+        return {
+          ok: true,
+          json: async () => ({ query: { pages: { 1: { pageimage: `${name}.png`, original: { source: `https://static.example.invalid/${name}.png` } } } } }),
+          status: 200,
+          url
+        };
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    };
+    const report = await runAssetFactory({ manifestPath, stagingRoot, reportsRoot, fetchImpl });
+    assert.equal(report.status, 'PASS');
+    const byId = new Map(report.targets.map(target => [target.versionId, target]));
+    assert.equal(byId.get('dvalin:epsilon-ie2').sourceFilename, '(E) Desarm sprite.png');
+    assert.equal(byId.get('dvalin:epsilon-ie2').assetStatus, 'CANDIDATE');
+    assert.equal(byId.get('tytan:epsilon-ie2').sourceFilename, '(E) Tanba Taiji sprite.png');
+    assert.equal(byId.get('tytan:epsilon-ie2').assetStatus, 'CANDIDATE');
+    assert.equal(byId.get('krypto:epsilon-ie2').sourceFilename, '(E) Kuri Fuuko sprite.png');
+    assert.equal(byId.get('krypto:epsilon-ie2').assetStatus, 'CANDIDATE');
+    assert.equal(byId.get('zell:epsilon-ie2').sourceFilename, '(E) Segata Ryuuichirou sprite.png');
+    assert.equal(byId.get('zell:epsilon-ie2').assetStatus, 'CANDIDATE');
+    for (const target of byId.values()) {
+      assert.equal(target.sources[0].assetStatus, 'CANDIDATE');
+      assert.equal(target.sources[1].assetStatus, 'REVIEW');
+    }
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('explicit approval is required before a candidate becomes ASSET-VERIFIED', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const approvalsPath = path.join(directory, 'approvals.json');
+    const manifestData = manifest();
+    manifestData.targets[0].sourceCandidates = [{
+      sourceType: 'fandom-file',
+      sourceAssetId: 'File:(E) Desarm sprite.png',
+      sourceSuitability: 'GAME-SPRITE'
+    }];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    await writeFile(approvalsPath, `${JSON.stringify(approvals(), null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const report = await runAssetFactory({
+      manifestPath,
+      stagingRoot,
+      reportsRoot,
+      approvalsPath,
+      fetchImpl: async () => ({
+        ok: true,
+        json: async () => ({ query: { pages: { 1: { title: 'File:(E) Desarm sprite.png', imageinfo: [{ url: 'https://static.example.invalid/desarm.png' }] } } } }),
+        arrayBuffer: async () => samplePng,
+        status: 200
+      })
+    });
+    assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
+    assert.equal(report.targets[0].sources[0].assetStatus, 'CANDIDATE');
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('matching GAME-SPRITE approval becomes ASSET-VERIFIED and writes the real hash', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const approvalsPath = path.join(directory, 'approvals.json');
+    const manifestData = manifest();
+    manifestData.targets[0].sourceCandidates = [{
+      sourceType: 'fandom-file',
+      sourceAssetId: 'File:(E) Desarm sprite.png',
+      sourceSuitability: 'GAME-SPRITE'
+    }];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    await writeFile(approvalsPath, `${JSON.stringify(approvals(), null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const report = await runAssetFactory({
+      manifestPath,
+      stagingRoot,
+      reportsRoot,
+      approvalsPath,
+      finalizeApprovals: true,
+      fetchImpl: async () => ({
+        ok: true,
+        json: async () => ({ query: { pages: { 1: { title: 'File:(E) Desarm sprite.png', imageinfo: [{ url: 'https://static.example.invalid/desarm.png' }] } } } }),
+        arrayBuffer: async () => samplePng,
+        status: 200
+      })
+    });
+    const approvalFile = JSON.parse(await readFile(approvalsPath, 'utf8'));
+    assert.equal(report.targets[0].assetStatus, 'ASSET-VERIFIED');
+    assert.equal(report.targets[0].sources[0].assetStatus, 'ASSET-VERIFIED');
+    assert.equal(approvalFile.approvals[0].sha256, sha256Hex(samplePng));
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('approval hash mismatches are rejected', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const approvalsPath = path.join(directory, 'approvals.json');
+    const manifestData = manifest();
+    manifestData.targets[0].sourceCandidates = [{
+      sourceType: 'fandom-file',
+      sourceAssetId: 'File:(E) Desarm sprite.png',
+      sourceSuitability: 'GAME-SPRITE'
+    }];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    await writeFile(approvalsPath, `${JSON.stringify(approvals({ sha256: 'a'.repeat(64) }), null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    await assert.rejects(() => runAssetFactory({
+      manifestPath,
+      stagingRoot,
+      reportsRoot,
+      approvalsPath,
+      fetchImpl: async () => ({
+        ok: true,
+        json: async () => ({ query: { pages: { 1: { title: 'File:(E) Desarm sprite.png', imageinfo: [{ url: 'https://static.example.invalid/desarm.png' }] } } } }),
+        arrayBuffer: async () => samplePng,
+        status: 200
+      })
+    }), /Approval hash mismatch/);
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('missing binary approvals are rejected', async () => {
+  await assert.rejects(() => applyHumanApprovals({
+    approvals: approvals({ sha256: 'a'.repeat(64) }),
+    approvalsPath: path.join(repoRoot, 'tools/assets/approvals/epsilon-ie2-poc.approvals.json'),
+    targets: [{
+      versionId: 'dvalin:epsilon-ie2',
+      assetStatus: 'CANDIDATE',
+      sourceSuitability: 'GAME-SPRITE',
+      outputFile: 'tools/assets/staging/missing.png',
+      sources: [{
+        assetStatus: 'CANDIDATE',
+        sourceSuitability: 'GAME-SPRITE',
+        outputFile: 'tools/assets/staging/missing.png'
+      }]
+    }]
+  }), /Missing staged binary/);
+});
+
+test('generic sources cannot be approved as runtime assets', async () => {
+  const file = path.join(repoRoot, 'tools/assets/reports/test-generic-approval.png');
+  try {
+    await writeFile(file, png(1, 1));
+    await assert.rejects(() => applyHumanApprovals({
+      approvals: approvals({ sha256: sha256Hex(png(1, 1)) }),
+      approvalsPath: path.join(repoRoot, 'tools/assets/approvals/epsilon-ie2-poc.approvals.json'),
+      targets: [{
+        versionId: 'dvalin:epsilon-ie2',
+        assetStatus: 'CANDIDATE',
+        sourceSuitability: 'GENERIC-CHARACTER-IMAGE',
+        outputFile: 'tools/assets/reports/test-generic-approval.png',
+        sources: [{
+          assetStatus: 'CANDIDATE',
+          sourceSuitability: 'GENERIC-CHARACTER-IMAGE',
+          outputFile: 'tools/assets/reports/test-generic-approval.png'
+        }]
+      }]
+    }), /not a game portrait\/sprite candidate/);
+  } finally {
+    await rm(file, { force: true });
+  }
+});
+
+test('existing staged originals can regenerate a contact sheet without refetching', async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+    let stagingRoot;
+    let reportsRoot;
+    try {
+      const manifestPath = path.join(directory, 'manifest.json');
+      const manifestData = manifest();
+      manifestData.targets[0].sourceCandidates = [{
+        sourceType: 'fandom-file',
+        sourceAssetId: 'File:Desarm Portrait.png',
+        sourceSuitability: 'GAME-SPRITE'
+      }];
+      await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+      await mkdir(repoStagingRoot, { recursive: true });
+      await mkdir(repoReportsRoot, { recursive: true });
+      stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+      reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+      const candidateDir = path.join(stagingRoot, 'originals', 'dvalin-epsilon-ie2', 'game-sprite');
+      await mkdir(candidateDir, { recursive: true });
+      await writeFile(path.join(candidateDir, 'Desarm Portrait.png'), png(4, 4));
+      const report = await runAssetFactory({
+        manifestPath,
+        stagingRoot,
+        reportsRoot,
+        fetchImpl: async () => { throw new Error('should not fetch'); }
+      });
+      assert.equal(report.status, 'PASS');
+      assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
+      assert.equal(report.targets[0].sourceStatus, 'SOURCE-VERIFIED');
+      assert.equal(report.targets[0].sourceFilename, 'Desarm Portrait.png');
+      assert.equal(report.targets[0].sourceSuitability, 'GAME-SPRITE');
+      assert.match(report.targets[0].contactSheetImageUrl, /^\.\.\/\.\.\/staging\/.*Desarm%20Portrait\.png$/);
+    } finally {
+      if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+      if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+      await rm(directory, { recursive: true, force: true });
+    }
+});
+
+test('staging root must not overlap runtime assets', async () => {
+  await mkdir(repoStagingRoot, { recursive: true });
+  const stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+  try {
+    await assert.rejects(() => ensureSafeStaging({
+      stagingRoot,
+      runtimeDir: path.join(repoRoot, 'tools/assets')
+    }), /must not overlap runtime assets/);
+  } finally {
+    await rm(stagingRoot, { recursive: true, force: true });
+  }
+});
