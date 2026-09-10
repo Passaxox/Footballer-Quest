@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "epsilon-ie2-poc",
+  "versionId": "tytan:epsilon-ie2",
+  "displayName": "Tytan / Titan",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(E) Tanba Taiji sprite.png",
+  "sourceFilename": "(E) Tanba Taiji sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/epsilon-ie2-poc.approvals.json",
+  "stagingPath": "tools/assets/staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E) Tanba Taiji sprite.png",
+  "verifiedPath": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png",
+  "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745"
+}

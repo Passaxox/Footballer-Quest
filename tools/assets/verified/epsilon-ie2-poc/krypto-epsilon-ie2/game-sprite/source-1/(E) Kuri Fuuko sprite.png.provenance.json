@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "epsilon-ie2-poc",
+  "versionId": "krypto:epsilon-ie2",
+  "displayName": "Krypto",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(E) Kuri Fuuko sprite.png",
+  "sourceFilename": "(E) Kuri Fuuko sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/epsilon-ie2-poc.approvals.json",
+  "stagingPath": "tools/assets/staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E) Kuri Fuuko sprite.png",
+  "verifiedPath": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png",
+  "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88"
+}

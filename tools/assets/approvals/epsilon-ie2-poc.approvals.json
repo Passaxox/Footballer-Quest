@@ -4,30 +4,30 @@
   "approvals": [
     {
       "versionId": "dvalin:epsilon-ie2",
-      "candidatePath": null,
-      "sourceFilename": null,
-      "sha256": null,
+      "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E) Desarm sprite.png",
+      "sourceFilename": "(E) Desarm sprite.png",
+      "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca",
       "decision": "ASSET-VERIFIED"
     },
     {
       "versionId": "tytan:epsilon-ie2",
-      "candidatePath": null,
-      "sourceFilename": null,
-      "sha256": null,
+      "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E) Tanba Taiji sprite.png",
+      "sourceFilename": "(E) Tanba Taiji sprite.png",
+      "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745",
       "decision": "ASSET-VERIFIED"
     },
     {
       "versionId": "krypto:epsilon-ie2",
-      "candidatePath": null,
-      "sourceFilename": null,
-      "sha256": null,
+      "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E) Kuri Fuuko sprite.png",
+      "sourceFilename": "(E) Kuri Fuuko sprite.png",
+      "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88",
       "decision": "ASSET-VERIFIED"
     },
     {
       "versionId": "zell:epsilon-ie2",
-      "candidatePath": null,
-      "sourceFilename": null,
-      "sha256": null,
+      "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E) Segata Ryuuichirou sprite.png",
+      "sourceFilename": "(E) Segata Ryuuichirou sprite.png",
+      "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead",
       "decision": "ASSET-VERIFIED"
     }
   ]

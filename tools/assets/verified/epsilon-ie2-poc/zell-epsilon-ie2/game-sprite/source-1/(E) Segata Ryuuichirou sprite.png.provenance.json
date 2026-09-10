@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "epsilon-ie2-poc",
+  "versionId": "zell:epsilon-ie2",
+  "displayName": "Zell / Zel",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(E) Segata Ryuuichirou sprite.png",
+  "sourceFilename": "(E) Segata Ryuuichirou sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/epsilon-ie2-poc.approvals.json",
+  "stagingPath": "tools/assets/staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E) Segata Ryuuichirou sprite.png",
+  "verifiedPath": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png",
+  "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead"
+}

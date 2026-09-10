@@ -1,0 +1,542 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "epsilon-ie2-poc",
+  "title": "Footballer Quest Asset Factory proof-of-concept — IE2 Epsilon",
+  "generatedAt": "2026-09-10T17:02:00.268Z",
+  "manifestPath": "tools/assets/manifests/epsilon-ie2-poc.json",
+  "approvalsPath": "tools/assets/approvals/epsilon-ie2-poc.approvals.json",
+  "stagingRoot": "tools/assets/staging/epsilon-ie2-poc",
+  "verifiedRoot": "tools/assets/verified",
+  "contactSheetPath": "tools/assets/reports/epsilon-ie2-poc.contact-sheet.html",
+  "markdownReportPath": "tools/assets/reports/epsilon-ie2-poc.report.md",
+  "runtimeSpritesPath": "frontend/public/sprites",
+  "status": "PASS",
+  "summary": {
+    "targetCount": 4,
+    "verifiedCount": 4,
+    "candidateCount": 0,
+    "reviewCount": 0,
+    "assetGapCount": 0,
+    "unassessedCount": 0,
+    "sourceBlockedCount": 0,
+    "sourceMissingCount": 0
+  },
+  "targets": [
+    {
+      "canonicalCharacterId": "dvalin",
+      "versionId": "dvalin:epsilon-ie2",
+      "displayName": "Dvalin / Desarm",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-PORTRAIT",
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Desarm sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Saginuma_Osamu",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
+      "sourceSheet": null,
+      "sourceAssetId": "File:(E) Desarm sprite.png",
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E) Desarm sprite.png",
+      "width": 64,
+      "height": 64,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "visualReuseFrom": null,
+      "verificationEvidence": [
+        "canonical-record",
+        "named-reference",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
+      ],
+      "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca",
+      "sourceFilename": "(E) Desarm sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(E) Desarm sprite.png",
+          "sourceFilename": "(E) Desarm sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E) Desarm sprite.png",
+          "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png.provenance.json",
+          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E)%20Desarm%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca",
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Desarm sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ]
+        },
+        {
+          "sourceKey": "source-2",
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Saginuma_Osamu",
+          "sourceAssetId": null,
+          "sourceFilename": "Saginuma_Osamu.png",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "REVIEW",
+          "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/Saginuma_Osamu.png",
+          "verifiedFile": null,
+          "verifiedProvenanceFile": null,
+          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/Saginuma_Osamu.png",
+          "width": 612,
+          "height": 612,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": false,
+          "sha256": "7da352a64eb450df96dd66248556cf31b5ff17a3758d71b2b52aaa71ac03c1b3",
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Saginuma_Osamu.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 612x612; alpha=false.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png.provenance.json",
+      "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E)%20Desarm%20sprite.png",
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E) Desarm sprite.png",
+        "sourceFilename": "(E) Desarm sprite.png",
+        "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca"
+      }
+    },
+    {
+      "canonicalCharacterId": "tytan",
+      "versionId": "tytan:epsilon-ie2",
+      "displayName": "Tytan / Titan",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-PORTRAIT",
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Tanba Taiji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Tanba_Taiji",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
+      "sourceSheet": null,
+      "sourceAssetId": "File:(E) Tanba Taiji sprite.png",
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E) Tanba Taiji sprite.png",
+      "width": 64,
+      "height": 64,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "visualReuseFrom": null,
+      "verificationEvidence": [
+        "canonical-record",
+        "named-reference",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
+      ],
+      "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745",
+      "sourceFilename": "(E) Tanba Taiji sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(E) Tanba Taiji sprite.png",
+          "sourceFilename": "(E) Tanba Taiji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E) Tanba Taiji sprite.png",
+          "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png.provenance.json",
+          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E)%20Tanba%20Taiji%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745",
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Tanba Taiji sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ]
+        },
+        {
+          "sourceKey": "source-2",
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Tanba_Taiji",
+          "sourceAssetId": null,
+          "sourceFilename": "Tanba_Taiji.png",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "REVIEW",
+          "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/Tanba_Taiji.png",
+          "verifiedFile": null,
+          "verifiedProvenanceFile": null,
+          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/Tanba_Taiji.png",
+          "width": 666,
+          "height": 830,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": false,
+          "sha256": "6b407aacfb350713294601616c2a6eab8edc54829235637aba7bf3f51964f960",
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Tanba_Taiji.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 666x830; alpha=false.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png.provenance.json",
+      "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E)%20Tanba%20Taiji%20sprite.png",
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E) Tanba Taiji sprite.png",
+        "sourceFilename": "(E) Tanba Taiji sprite.png",
+        "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745"
+      }
+    },
+    {
+      "canonicalCharacterId": "krypto",
+      "versionId": "krypto:epsilon-ie2",
+      "displayName": "Krypto",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-PORTRAIT",
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Kuri Fuuko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Kuri_Fuuko",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
+      "sourceSheet": null,
+      "sourceAssetId": "File:(E) Kuri Fuuko sprite.png",
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E) Kuri Fuuko sprite.png",
+      "width": 64,
+      "height": 64,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "visualReuseFrom": null,
+      "verificationEvidence": [
+        "canonical-record",
+        "named-reference",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
+      ],
+      "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88",
+      "sourceFilename": "(E) Kuri Fuuko sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(E) Kuri Fuuko sprite.png",
+          "sourceFilename": "(E) Kuri Fuuko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E) Kuri Fuuko sprite.png",
+          "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png.provenance.json",
+          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E)%20Kuri%20Fuuko%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88",
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Kuri Fuuko sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ]
+        },
+        {
+          "sourceKey": "source-2",
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Kuri_Fuuko",
+          "sourceAssetId": null,
+          "sourceFilename": "Kuri_Fuuko.png",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "REVIEW",
+          "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/Kuri_Fuuko.png",
+          "verifiedFile": null,
+          "verifiedProvenanceFile": null,
+          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/Kuri_Fuuko.png",
+          "width": 508,
+          "height": 642,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": false,
+          "sha256": "97be41b833dddc9f7504d30351c08f68fad7773af11ab6d0049b00424a44249d",
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Kuri_Fuuko.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 508x642; alpha=false.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png.provenance.json",
+      "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E)%20Kuri%20Fuuko%20sprite.png",
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E) Kuri Fuuko sprite.png",
+        "sourceFilename": "(E) Kuri Fuuko sprite.png",
+        "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88"
+      }
+    },
+    {
+      "canonicalCharacterId": "zell",
+      "versionId": "zell:epsilon-ie2",
+      "displayName": "Zell / Zel",
+      "teamId": "epsilon",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-PORTRAIT",
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(E) Segata Ryuuichirou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source."
+        },
+        {
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Segata_Ryuuichirou",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "preserveAsEvidence": true,
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available."
+        }
+      ],
+      "sourceSheet": null,
+      "sourceAssetId": "File:(E) Segata Ryuuichirou sprite.png",
+      "row": null,
+      "column": null,
+      "cropRect": null,
+      "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E) Segata Ryuuichirou sprite.png",
+      "width": 64,
+      "height": 64,
+      "contentBounds": null,
+      "backgroundRemoved": false,
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "visualReuseFrom": null,
+      "verificationEvidence": [
+        "canonical-record",
+        "named-reference",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Frozen Epsilon proof-of-concept target. Resolve via exact character page to an exact MediaWiki file title; no visual guesswork. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
+      ],
+      "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead",
+      "sourceFilename": "(E) Segata Ryuuichirou sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(E) Segata Ryuuichirou sprite.png",
+          "sourceFilename": "(E) Segata Ryuuichirou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E) Segata Ryuuichirou sprite.png",
+          "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png.provenance.json",
+          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E)%20Segata%20Ryuuichirou%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead",
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Segata Ryuuichirou sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ]
+        },
+        {
+          "sourceKey": "source-2",
+          "sourceType": "fandom-character-page",
+          "sourceRef": "Segata_Ryuuichirou",
+          "sourceAssetId": null,
+          "sourceFilename": "Segata_Ryuuichirou.png",
+          "sourceSuitability": "GENERIC-CHARACTER-IMAGE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "REVIEW",
+          "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/Segata_Ryuuichirou.png",
+          "verifiedFile": null,
+          "verifiedProvenanceFile": null,
+          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/Segata_Ryuuichirou.png",
+          "width": 720,
+          "height": 720,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": false,
+          "sha256": "b3a7d54ec5523043d385cfb30b6713c79abb56e913827438e8364a9551ae9cd0",
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Segata_Ryuuichirou.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 720x720; alpha=false.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png.provenance.json",
+      "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E)%20Segata%20Ryuuichirou%20sprite.png",
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E) Segata Ryuuichirou sprite.png",
+        "sourceFilename": "(E) Segata Ryuuichirou sprite.png",
+        "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead"
+      }
+    }
+  ]
+}

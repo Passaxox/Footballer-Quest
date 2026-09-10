@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "epsilon-ie2-poc",
+  "versionId": "dvalin:epsilon-ie2",
+  "displayName": "Dvalin / Desarm",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(E) Desarm sprite.png",
+  "sourceFilename": "(E) Desarm sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/epsilon-ie2-poc.approvals.json",
+  "stagingPath": "tools/assets/staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E) Desarm sprite.png",
+  "verifiedPath": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png",
+  "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca"
+}
