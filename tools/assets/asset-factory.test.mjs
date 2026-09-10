@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -194,11 +194,46 @@ test('resolved candidates stay CANDIDATE and staging is immutable', async () => 
     assert.equal(report.targets[0].sourceStatus, 'SOURCE-VERIFIED');
     const saved = await readFile(path.resolve(repoRoot, report.targets[0].outputFile));
     assert.equal(saved.length, samplePng.length);
-  } finally {
-    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
-    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
-    await rm(directory, { recursive: true, force: true });
-  }
+    const html = await readFile(path.join(reportsRoot, 'epsilon-ie2-poc.contact-sheet.html'), 'utf8');
+    assert.match(html, /<img src="\.\.\/staging\/[^"]+\/Desarm\.png"/);
+    assert.match(html, /<div><dt>Source filename<\/dt><dd>Desarm\.png<\/dd><\/div>/);
+    } finally {
+      if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+      if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+      await rm(directory, { recursive: true, force: true });
+    }
+});
+
+test('existing staged originals can regenerate a contact sheet without refetching', async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+    let stagingRoot;
+    let reportsRoot;
+    try {
+      const manifestPath = path.join(directory, 'manifest.json');
+      const manifestData = manifest();
+      manifestData.targets[0].sourceAssetId = 'File:Desarm Portrait.png';
+      await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+      stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+      reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+      const candidateDir = path.join(stagingRoot, 'originals', 'dvalin-epsilon-ie2');
+      await mkdir(candidateDir, { recursive: true });
+      await writeFile(path.join(candidateDir, 'Desarm Portrait.png'), png(4, 4));
+      const report = await runAssetFactory({
+        manifestPath,
+        stagingRoot,
+        reportsRoot,
+        fetchImpl: async () => { throw new Error('should not fetch'); }
+      });
+      assert.equal(report.status, 'PASS');
+      assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
+      assert.equal(report.targets[0].sourceStatus, 'SOURCE-VERIFIED');
+      assert.equal(report.targets[0].sourceFilename, 'Desarm Portrait.png');
+      assert.match(report.targets[0].contactSheetImageUrl, /^\.\.\/staging\/.*Desarm%20Portrait\.png$/);
+    } finally {
+      if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+      if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+      await rm(directory, { recursive: true, force: true });
+    }
 });
 
 test('staging root must not overlap runtime assets', async () => {
