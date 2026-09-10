@@ -49,6 +49,15 @@ function defaultSourceSuitability({ sourceType, sourceAssetId }) {
   return 'REVIEW';
 }
 
+function candidateFileUrls(baseUrl, fileTitle) {
+  const encodedTitle = encodeURIComponent(fileTitle);
+  const filename = encodeURIComponent(filenameFromFileTitle(fileTitle));
+  return unique([
+    `${baseUrl}/wiki/Special:Redirect/file/${encodedTitle}`,
+    `${baseUrl}/wiki/Special:FilePath/${filename}`
+  ]);
+}
+
 function encodePathForUrl(file) {
   return file.split(path.sep).map(segment => encodeURIComponent(segment)).join('/');
 }
@@ -450,18 +459,50 @@ export class FandomMediaWikiAdapter {
     if (source.sourceType === 'fandom-file') {
       const fileTitle = normalizeFileTitle(source.sourceAssetId ?? source.sourceRef);
       if (!fileTitle) return { sourceStatus: 'SOURCE-MISSING', note: 'Missing exact file title' };
-      return {
-        sourceStatus: 'SOURCE-CANDIDATE',
-        fileTitle,
-        binaryUrl: `${this.baseUrl}/wiki/Special:FilePath/${encodeURIComponent(filenameFromFileTitle(fileTitle))}`,
-        note: `Resolved from exact file title ${fileTitle}`
-      };
+      const fallbackUrls = candidateFileUrls(this.baseUrl, fileTitle);
+      try {
+        const query = `${this.apiUrl}?action=query&format=json&redirects=1&prop=imageinfo&iiprop=url&titles=${encodeURIComponent(fileTitle)}`;
+        const data = await this.request(query);
+        const page = Object.values(data?.query?.pages ?? {})[0];
+        if (!page || page.missing !== undefined) return { sourceStatus: 'SOURCE-MISSING', note: `Missing exact file title ${fileTitle}` };
+        const resolvedTitle = normalizeFileTitle(page.title ?? fileTitle);
+        const imageInfoUrl = page.imageinfo?.[0]?.url ?? null;
+        const urls = unique([imageInfoUrl, ...candidateFileUrls(this.baseUrl, resolvedTitle)]);
+        return {
+          sourceStatus: 'SOURCE-CANDIDATE',
+          fileTitle: resolvedTitle,
+          binaryUrl: urls[0],
+          alternateBinaryUrls: urls.slice(1),
+          note: `Resolved exact file title ${resolvedTitle} via MediaWiki imageinfo`
+        };
+      } catch (error) {
+        return {
+          sourceStatus: 'SOURCE-CANDIDATE',
+          fileTitle,
+          binaryUrl: fallbackUrls[0],
+          alternateBinaryUrls: fallbackUrls.slice(1),
+          note: `MediaWiki imageinfo lookup failed for ${fileTitle}; using deterministic file URL fallback`
+        };
+      }
     }
     return this.resolveTarget(source);
   }
 
-  async downloadBinary(url) {
-    return this.request(url, { responseType: 'buffer' });
+  async downloadBinary(url, alternateUrls = []) {
+    const attempts = unique([url, ...alternateUrls]);
+    let lastError = null;
+    const failures = [];
+    for (const candidate of attempts) {
+      try {
+        return await this.request(candidate, { responseType: 'buffer' });
+      } catch (error) {
+        lastError = error;
+        failures.push(`${candidate}: ${error.message}`);
+      }
+    }
+    const failure = new Error(failures.join(' | ') || 'All source downloads failed');
+    failure.cause = lastError?.cause ?? lastError;
+    throw failure;
   }
 }
 
@@ -618,7 +659,7 @@ export async function runAssetFactory({ manifestPath = defaultManifestPath, stag
           target.sources.push(sourceRecord);
           continue;
         }
-        const buffer = await adapter.downloadBinary(resolved.binaryUrl);
+        const buffer = await adapter.downloadBinary(resolved.binaryUrl, resolved.alternateBinaryUrls);
         const signature = detectImageSignature(buffer);
         const fileName = filenameFromFileTitle(resolved.fileTitle) ?? `${safeName(target.versionId)}${mimeExtension(signature.mime)}`;
         const destination = path.join(sourceDirectory(originalsDir, target, sourceRecord), fileName);

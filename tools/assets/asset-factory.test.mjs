@@ -268,6 +268,98 @@ test('resolved game sprite candidates stay CANDIDATE and beat generic fallbacks'
     }
 });
 
+test('fandom-file sources fall back across deterministic exact-file URLs after a 403', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const manifestData = manifest();
+    manifestData.targets[0].sourceCandidates = [
+      {
+        sourceType: 'fandom-file',
+        sourceAssetId: 'File:(E) Desarm sprite.png',
+        sourceSuitability: 'GAME-SPRITE'
+      },
+      {
+        sourceType: 'fandom-character-page',
+        sourceRef: 'Saginuma_Osamu',
+        sourceSuitability: 'GENERIC-CHARACTER-IMAGE',
+        preserveAsEvidence: true
+      }
+    ];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const attemptedUrls = [];
+    const fetchImpl = async url => {
+      attemptedUrls.push(url);
+      if (url.includes('api.php?action=query') && url.includes('File%3A(E)%20Desarm%20sprite.png')) {
+        return {
+          ok: true,
+          json: async () => ({
+            query: {
+              pages: {
+                1: {
+                  title: 'File:(E) Desarm sprite.png',
+                  imageinfo: [{ url: 'https://static.example.invalid/desarm-primary.png' }]
+                }
+              }
+            }
+          }),
+          status: 200,
+          url
+        };
+      }
+      if (url === 'https://static.example.invalid/desarm-primary.png') {
+        return { ok: false, status: 403, statusText: 'Forbidden', url };
+      }
+      if (url.includes('/wiki/Special:Redirect/file/File%3A(E)%20Desarm%20sprite.png')) {
+        return {
+          ok: true,
+          arrayBuffer: async () => samplePng,
+          status: 200,
+          url
+        };
+      }
+      if (url.includes('Saginuma_Osamu')) {
+        return {
+          ok: true,
+          json: async () => ({ query: { pages: { 1: { pageimage: 'Saginuma_Osamu.png', original: { source: 'https://static.example.invalid/Saginuma_Osamu.png' } } } } }),
+          status: 200,
+          url
+        };
+      }
+      if (url === 'https://static.example.invalid/Saginuma_Osamu.png') {
+        return {
+          ok: true,
+          arrayBuffer: async () => samplePng,
+          status: 200,
+          url
+        };
+      }
+      throw new Error(`Unexpected URL: ${url}`);
+    };
+    const report = await runAssetFactory({ manifestPath, stagingRoot, reportsRoot, fetchImpl });
+    assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
+    assert.equal(report.targets[0].sourceSuitability, 'GAME-SPRITE');
+    assert.equal(report.targets[0].sources[0].assetStatus, 'CANDIDATE');
+    assert.equal(report.targets[0].sources[1].assetStatus, 'REVIEW');
+    assert.deepEqual(attemptedUrls.slice(0, 3), [
+      'https://inazuma-eleven.fandom.com/api.php?action=query&format=json&redirects=1&prop=imageinfo&iiprop=url&titles=File%3A(E)%20Desarm%20sprite.png',
+      'https://static.example.invalid/desarm-primary.png',
+      'https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(E)%20Desarm%20sprite.png'
+    ]);
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test('existing staged originals can regenerate a contact sheet without refetching', async () => {
     const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
     let stagingRoot;
