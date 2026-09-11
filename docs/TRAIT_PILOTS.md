@@ -4,6 +4,27 @@ This file records the first authored Team Trait pilots approved at Director leve
 
 It complements `docs/TRAITS_SYNERGIES_V1.md`. Trait architecture, contribution rules and balance thresholds live there; this file records the identity and tier behaviour of specific teams.
 
+## Version-scoped affiliation rule
+
+Team Traits attach to the **active CharacterVersion / PlayerInstance identity**, not globally to the canonical Character.
+
+The same canonical Character may legitimately contribute to different Team Traits through different verified CharacterVersions.
+
+Examples of the intended model:
+
+- a Raimon Jude CharacterVersion may contribute to `team:raimon`;
+- a distinct verified Inazuma Japan Jude CharacterVersion may contribute to `team:inazuma-japan` instead;
+- a Royal Academy incarnation of a Character may contribute to `team:royal-academy` when that incarnation is explicitly represented and verified;
+- Alius-related Characters may have separate team-specific CharacterVersions (for example Diamond Dust, Prominence, Chaos, Genesis, Epsilon or Gemini Storm) where canon/visual/gameplay identity justifies those versions.
+
+Do not solve broad Trait coverage by attaching every historical team to one generic Character record. Coverage must come from correct CharacterVersions and explicit evidence.
+
+A CharacterVersion may hold more than one explicit team/faction tag only when those tags are semantically compatible and verified. Team/faction hierarchy must not be inferred merely to increase synergy counts.
+
+Rarity may affect how often a CharacterVersion is encountered/unlocked, but does not change whether that version contributes to a Team Trait and does not automatically increase its contribution value.
+
+This rule is especially important for future Inazuma Japan, Royal Academy and Alius coverage: the same familiar Character can support different builds through different meaningful versions rather than one overloaded universal version.
+
 ---
 
 ## PILOT-001 — Raimon / “Spirito Raimon”
