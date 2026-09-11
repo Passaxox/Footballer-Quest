@@ -9,10 +9,11 @@ Before substantial planning or implementation, read:
 3. `docs/TRAITS_SYNERGIES_V1.md` — current M2 Trait/Synergy architecture draft when working on team composition systems.
 4. `docs/AFFILIATION_TRAIT_MODEL.md` — approved separation of Team, Faction, Legacy/history and Manager relationships; this supersedes older flat-affiliation wording where they conflict.
 5. `docs/TRAIT_PILOTS.md` — approved authored Team Trait pilots (Raimon, Diamond Dust, Gemini Storm) and their coverage/activation notes.
-6. `docs/TRAIT_COVERAGE_GATE.md` — minimum practical coverage/accessibility/simulation checks before a standard Team Trait is considered Production-ready.
-7. `docs/TRAIT_DNA_RULES.md` — approved DNA contribution rules for Element Traits, including same-element deduplication and `1.0 / 0.5` hybrid weighting.
-8. `docs/DEV_SECRETS.md` — separation between QA DEV Mode, player-facing Secrets and DEV-character Easter eggs.
-9. `docs/ROADMAP_QUEUE.md` — approved/promising work that is not automatically active Production scope.
+6. `docs/ELEMENT_TRAITS_V1.md` — approved Element Trait identities/tier directions (currently Fuoco and Aria) and next element design work.
+7. `docs/TRAIT_COVERAGE_GATE.md` — minimum practical coverage/accessibility/simulation checks before a standard Team Trait is considered Production-ready.
+8. `docs/TRAIT_DNA_RULES.md` — approved DNA contribution rules for Element Traits, including same-element deduplication and `1.0 / 0.5` hybrid weighting.
+9. `docs/DEV_SECRETS.md` — separation between QA DEV Mode, player-facing Secrets and DEV-character Easter eggs.
+10. `docs/ROADMAP_QUEUE.md` — approved/promising work that is not automatically active Production scope.
 
 Repository state is the technical source of truth. These documents are the durable product-direction source of truth. If code and documentation disagree, report the mismatch instead of silently guessing which one is intended.
 
