@@ -6,6 +6,9 @@ Before substantial planning or implementation, read:
 
 1. `docs/PROJECT_DIRECTION.md` — product vision, roadmap M1-M5, priority language, workflow and current direction.
 2. `docs/DESIGN_DECISIONS.md` — frozen/approved/research/later decisions and unresolved design questions.
+3. `docs/TRAITS_SYNERGIES_V1.md` — current M2 Trait/Synergy architecture draft when working on team composition systems.
+4. `docs/TRAIT_PILOTS.md` — approved authored Team Trait pilots (starting with Raimon) and next pilot candidates.
+5. `docs/ROADMAP_QUEUE.md` — approved/promising work that is not automatically active Production scope.
 
 Repository state is the technical source of truth. These documents are the durable product-direction source of truth. If code and documentation disagree, report the mismatch instead of silently guessing which one is intended.
 
@@ -44,4 +47,4 @@ Follow this order:
 
 ## Documentation handoff
 
-When an explicit product decision changes roadmap, scope, architecture intent, acquisition/economy rules, technique rules, Traits/Synergies, DNA behaviour or milestone boundaries, update `docs/PROJECT_DIRECTION.md` and/or `docs/DESIGN_DECISIONS.md` so the next human/agent does not need chat archaeology.
+When an explicit product decision changes roadmap, scope, architecture intent, acquisition/economy rules, technique rules, Traits/Synergies, DNA behaviour or milestone boundaries, update `docs/PROJECT_DIRECTION.md` and/or the relevant design file so the next human/agent does not need chat archaeology.
