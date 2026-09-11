@@ -114,3 +114,36 @@ These are design examples, not final canon implementations.
 - Manager logic should consume reusable declarative Trait/Condition snapshots where possible instead of hardcoding one AI branch per team.
 - Boss-specific cheats, immunities or exceptions must be visible/testable authored rules, not hidden arbitrary advantages.
 - M2 Traits should therefore expose enough structured information for later AI to reason about active tiers, status hooks, run/combat modifiers and tactical opportunities.
+
+---
+
+## Q-004 — Content Automation v2 / Research Factory
+
+**Milestone:** M1 tooling -> all later milestones  
+**Priority:** NEXT tooling design; implement incrementally when it reduces real content-production cost  
+**Impact:** Scalable CharacterVersion/team/scenario growth, lower agent cost, fewer manual registry/asset/provenance edits  
+**Dependencies:** current Content Factory, Asset Factory, identity/version gates, provenance rules
+
+### Direction
+
+Extend the existing deterministic Team Content Factory instead of replacing it.
+
+Target flow:
+
+`team/arc request -> Research Pack -> identity/version resolver -> evidence bundle -> player/team/scenario asset candidates -> draft manifests -> human review -> existing prepare/finalize pipeline -> validation/report`
+
+The main goal is to make future large content additions — including Raimon/Inazuma Japan/Royal/Alius/national-team CharacterVersions — mostly a review problem rather than a hand-editing problem.
+
+### Key rules
+
+- CharacterVersion, not Character, carries version-specific team/arc identity.
+- Reused Characters should be detected automatically before proposing a new Character.
+- A Version Gate should recommend `NEW_VERSION`, `REUSE_VERSION` or `REVIEW` from evidence, visual/game/team differences and existing catalog state.
+- Search/preparation should include player portraits/sprites, team emblems and scenario/location imagery.
+- Source/evidence completeness should be machine-validated.
+- Runtime asset promotion still requires explicit human visual/provenance approval.
+- Ambiguous identity/version resolution still blocks automatic promotion.
+- Batch tooling should isolate failures per player/team instead of failing or approving the whole batch blindly.
+- Trait coverage should derive automatically from approved CharacterVersion `teamTags`; never falsify metadata to satisfy a Trait.
+
+Detailed architecture and target workflow live in `docs/CONTENT_AUTOMATION_V2.md`.
