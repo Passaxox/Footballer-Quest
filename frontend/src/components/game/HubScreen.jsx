@@ -16,6 +16,7 @@ export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon }) {
         right={<div className="flex items-center gap-1 font-pixel text-[9px] text-amber-300" data-testid="money-display"><Coins size={12} /> {run.money}</div>} />
       <div className="p-3 space-y-3 flex-1 overflow-y-auto">
         <div data-testid="run-difficulty" className="font-pixel text-[9px] text-sky-300">{DIFFICULTIES[getRules(run.rulesetId).difficultyId].label}</div>
+        <div data-testid="run-seed" className="font-pixel text-[8px] text-slate-400 break-all">Seed: {run.seed}</div>
         <Panel className="font-body text-lg leading-tight text-slate-200">
           <div data-testid="run-scenario" className="text-amber-200 mb-2">{getScenario(run.scenarioState?.id).displayName}</div>
           {isBoss ? (

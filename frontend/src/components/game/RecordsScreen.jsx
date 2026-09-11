@@ -37,6 +37,7 @@ export default function RecordsScreen({ meta, onBack }) {
             <div>{r.difficulty || "Difficoltà non registrata"} · Ondata {r.wave} · Gloria {r.glory}</div>
             {r.teamSnapshot ? <>
               <div>Vittorie {r.wins} · Reclutamenti {r.recruits} · Fusioni {r.fusions}</div>
+              {r.seed && <div className="text-slate-500 text-sm break-all">Seed {r.seed}</div>}
               <div>Livello medio {r.averageLevel.toFixed(1)} · Massimo {r.maxLevel}</div>
               {r.bossDefeated && <div>Ultimo boss sconfitto: {r.bossDefeated}</div>}
               <div className="text-slate-400">{r.teamSnapshot.map(p => `${p.name} Lv${p.level}${p.fused ? " (DNA)" : ""}`).join(", ")}</div>

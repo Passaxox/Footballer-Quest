@@ -1,6 +1,8 @@
 import { CHARACTER_VERSIONS } from "./catalog";
 import { TEAMS, ARCS, ERAS } from "./catalogMetadata";
 import { GENERATED_SCENARIOS } from "./teamContent.generated";
+import { rarityForVersion } from "./rarity";
+import { RUN_EVENTS, SCENARIO_EVENT_POOLS } from "./events";
 
 // Foundation travel policy; future checkpoints/events may supply a different segmentEnd.
 export const SCENARIO_SEGMENT_LENGTH = 6;
@@ -10,6 +12,7 @@ const common = { macroScenarioId: null, areaId: null, locationType: "generic", m
   encounterPool: { baseWeight: 1, preferredWeight: 3, versionWeights: {} },
   eventPool: null, bossPool: null, managerPool: null, presentationProfile: null, weight: 1, availability: true };
 // Location/context is not canonical membership. Explicit urban versions need no invented teamTags.
+const withEventPool = scenario => ({ ...scenario, eventPool: SCENARIO_EVENT_POOLS[scenario.id] || scenario.eventPool });
 export const SCENARIOS = [
   { ...common, id: "raimon-training", displayName: "Campo Raimon", locationType: "field", allowedTeamTags: ["raimon"], preferredTeamTags: ["raimon"], waveRange: { from: 1, to: null } },
   { ...common, id: "urban", displayName: "Sfide in città", locationType: "city", allowedVersionIds: ["shawn", "darren", "sam", "steve", "bobby", "maxwell", "erik", "caleb", "hurley", "scotty", "thor", "archer", "canon", "hector", "silvia", "aiden", "david", "paolo", "fidio"].map(id => id + ":base"), waveRange: { from: 1, to: null } },
@@ -17,10 +20,11 @@ export const SCENARIOS = [
   { ...common, id: "zeus", displayName: "Stadio Zeus", locationType: "stadium", minTier: 3, arcId: "football-frontier", allowedTeamTags: ["zeus"], preferredTeamTags: ["zeus"], waveRange: { from: 18, to: null } },
   ...GENERATED_SCENARIOS,
   { ...common, id: "international", displayName: "Incontri internazionali", macroScenarioId: "ffi", minTier: 3, arcId: "ffi", allowedTeamTags: ["unicorn", "knights-of-queen", "the-empire", "fire-dragon", "little-gigant"], preferredTeamTags: ["unicorn"], waveRange: { from: 18, to: null } },
-];
+].map(withEventPool);
 export function validateScenarios(scenarios = SCENARIOS) {
   if (!Array.isArray(scenarios)) throw new Error("Invalid scenario registry");
   const ids = new Set(), teams = new Set(TEAMS.map(t => t.teamId));
+  const eventIds = new Set(RUN_EVENTS.map(event => event.eventId));
   const errors = [];
   for (const s of scenarios) {
     if (!s || typeof s !== "object") { errors.push("Invalid scenario record"); continue; }
@@ -40,6 +44,9 @@ export function validateScenarios(scenarios = SCENARIOS) {
     const pool = s.encounterPool;
     if (!pool || ![pool.baseWeight, pool.preferredWeight].every(w => Number.isFinite(w) && w > 0) || !pool.versionWeights || typeof pool.versionWeights !== "object" || Array.isArray(pool.versionWeights)) errors.push("Invalid encounter weights");
     else for (const [id, w] of Object.entries(pool.versionWeights)) if (!CHARACTER_VERSIONS[id] || !Number.isFinite(w) || w <= 0) errors.push("Invalid version weight");
+    if (s.eventPool != null && (!Array.isArray(s.eventPool.include) || !s.eventPool.include.length || new Set(s.eventPool.include).size !== s.eventPool.include.length
+      || s.eventPool.include.some(eventId => !eventIds.has(eventId))
+      || (s.eventPool.weights != null && (typeof s.eventPool.weights !== "object" || Array.isArray(s.eventPool.weights))))) errors.push("Invalid event pool");
   }
   if (errors.length) throw new Error(errors.join("; "));
   return true;
@@ -47,7 +54,7 @@ export function validateScenarios(scenarios = SCENARIOS) {
 validateScenarios();
 export const getScenario = id => SCENARIOS.find(s => s.id === id) || SCENARIOS.find(s => s.id === "urban");
 const eligible = (s, wave) => s.availability && wave >= s.waveRange.from && (s.waveRange.to == null || wave <= s.waveRange.to);
-export function scenarioPool(scenarioId, wave, maxTier, exclude = []) {
+export function scenarioPool(scenarioId, wave, maxTier, exclude = [], modifiers = []) {
   const s = getScenario(scenarioId);
   if (!eligible(s, wave) || maxTier < s.minTier) return [];
   return Object.values(CHARACTER_VERSIONS).filter(v => v.kind === "player" && v.encounterTier <= maxTier
@@ -55,14 +62,20 @@ export function scenarioPool(scenarioId, wave, maxTier, exclude = []) {
     && (!s.allowedVersionIds || s.allowedVersionIds.includes(v.versionId))
     && (!s.allowedTeamTags.length || v.teamTags.some(t => s.allowedTeamTags.includes(t)))
     && !v.teamTags.some(t => s.excludedTeamTags.includes(t)))
-    .map(v => ({ version: v, weight: s.encounterPool.versionWeights[v.versionId] ?? (v.teamTags.some(t => s.preferredTeamTags.includes(t)) ? s.encounterPool.preferredWeight : s.encounterPool.baseWeight) }));
+    .map(v => {
+      const rarity = rarityForVersion(v);
+      const contextualWeight = s.encounterPool.versionWeights[v.versionId] ?? (v.teamTags.some(t => s.preferredTeamTags.includes(t)) ? s.encounterPool.preferredWeight : s.encounterPool.baseWeight);
+      const modifierWeight = modifiers.reduce((weight, modifier) => weight * (modifier.rarityWeights?.[rarity.id] || 1)
+        * (v.teamTags.some(tag => modifier.teamWeights?.[tag]) ? Math.max(...v.teamTags.map(tag => modifier.teamWeights?.[tag] || 1)) : 1), 1);
+      return { version: v, rarityId: rarity.id, weight: contextualWeight * rarity.selectionWeight * modifierWeight };
+    });
 }
 function weighted(rows, rng) {
   if (!rows.length) return null;
   let n = rng() * rows.reduce((sum, row) => sum + row.weight, 0);
   return rows.find(row => (n -= row.weight) < 0) || rows.at(-1);
 }
-export const selectEncounterVersion = (scenarioId, wave, maxTier, exclude = [], rng = Math.random) => weighted(scenarioPool(scenarioId, wave, maxTier, exclude), rng)?.version ?? null;
+export const selectEncounterVersion = (scenarioId, wave, maxTier, exclude = [], rng = Math.random, modifiers = []) => weighted(scenarioPool(scenarioId, wave, maxTier, exclude, modifiers), rng)?.version ?? null;
 const segmentStart = wave => Math.floor((wave - 1) / SCENARIO_SEGMENT_LENGTH) * SCENARIO_SEGMENT_LENGTH + 1;
 export function normalizeScenarioState(state, wave) {
   if (state?.revision === 1 && SCENARIOS.some(s => s.id === state.id) && Number.isInteger(state.segmentStart) && state.segmentStart >= 1 && state.segmentStart <= wave) return { ...state, segmentEnd: Number.isInteger(state.segmentEnd) && state.segmentEnd >= state.segmentStart ? state.segmentEnd : state.segmentStart + SCENARIO_SEGMENT_LENGTH - 1 };

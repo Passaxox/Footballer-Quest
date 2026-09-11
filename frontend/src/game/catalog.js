@@ -3,6 +3,7 @@ import { ROSTER } from "./data";
 import { validateCatalog } from "./catalogValidation";
 import { EXPANSION_CHARACTERS, EXPANSION_VERSIONS, EXPANSION_MOVES } from "./catalogExpansion";
 import { GENERATED_CHARACTERS, GENERATED_VERSIONS, GENERATED_MOVES } from "./teamContent.generated";
+import { RARITY_IDS } from "./rarity";
 
 // Character = person; CharacterVersion = authored incarnation; PlayerInstance = mutable run state.
 // Legacy roster is the technical 1:1 source, not proof of canonical identity.
@@ -15,7 +16,7 @@ export const CATALOG_SOURCE = {
     teamTags: [...(VERSION_METADATA[`${r.id}:base`]?.teamTags ?? [])], element: r.element, types: [r.element],
     baseStats: { hp: r.hp, atk: r.atk, def: r.def, spd: r.spd },
     primaryMoveId: `${r.id}:primary`, secondaryMoveId: null,
-    rarityId: null, variantId: null, categoryId: null,
+    rarityId: VERSION_METADATA[`${r.id}:base`]?.rarityId ?? null, variantId: null, categoryId: null,
     arcId: VERSION_METADATA[`${r.id}:base`]?.arcId ?? null,
     eraId: VERSION_METADATA[`${r.id}:base`]?.eraId ?? null,
     gameOrigin: VERSION_METADATA[`${r.id}:base`]?.gameOrigin ?? null,
@@ -24,7 +25,7 @@ export const CATALOG_SOURCE = {
   // Stable primary identity, not a secondary/evolution system. Instances keep their saved move copy.
   moves: [...ROSTER.map(r => ({ moveId: `${r.id}:primary`, ...r.move })), ...EXPANSION_MOVES, ...GENERATED_MOVES],
   legacyMappings: ROSTER.map(r => ({ legacyId: r.id, versionId: `${r.id}:base` })),
-  rarityIds: [],
+  rarityIds: RARITY_IDS,
   teams: TEAMS, arcs: ARCS, eras: ERAS, gameOrigins: GAME_ORIGINS,
 };
 validateCatalog(CATALOG_SOURCE, { requiredLegacyIds: ROSTER.map(r => r.id) });

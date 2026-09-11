@@ -106,8 +106,8 @@ export const itemPresentation = id => ITEM_RARITIES[ITEMS[id]?.rarity] || ITEM_R
 export const SHOP_POOL = Object.values(ITEMS).flatMap(item => Array(item.shopWeight).fill(item.id));
 export const REWARD_POOL = Object.values(ITEMS).map(item => ({ id: item.id, w: item.rewardWeight }));
 
-// Story events: choices -> outcomes (random pick weighted by chance)
-export const EVENTS = [
+// Kept only as a persisted-data fixture for old tests/saves; runtime events live in events.js.
+export const LEGACY_EVENTS = [
   {
     id: "allenatore", title: "L'Allenatore Misterioso",
     text: "Un uomo con un cappello calato sugli occhi vi ferma: «Vedo del potenziale... ma anche paura. Volete allenarvi con me?»",

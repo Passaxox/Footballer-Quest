@@ -26,6 +26,7 @@ export default function EndScreen({ run, result, onHome, onRetry }) {
       <div className="p-3 space-y-3 flex-1 overflow-y-auto">
         <Panel data-testid="playtest-summary" className="grid grid-cols-2 gap-2 font-body text-lg text-slate-200">
           <div>Difficoltà</div><div className="text-right text-sky-300">{summary.difficulty}</div>
+          <div>Seed run</div><div className="text-right text-slate-300 break-all" data-testid="end-seed">{summary.seed}</div>
           <div>Ondata raggiunta</div><div className="text-right text-amber-300" data-testid="end-wave">{run.wave}</div>
           <div>Partite vinte</div><div className="text-right">{run.stats.wins}</div>
           <div>Calciatori reclutati</div><div className="text-right">{run.stats.recruits}</div>

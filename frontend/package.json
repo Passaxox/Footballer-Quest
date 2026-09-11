@@ -69,6 +69,7 @@
     "test:foundation": "node --test tests/foundation.test.mjs",
     "asset:audit": "node scripts/asset-audit.mjs",
     "test:assets": "node --test tests/asset-audit.test.mjs",
+    "variety:report": "node scripts/run-variety-report.cjs",
     "content:apply": "node ../tools/content/content-factory.mjs --apply",
     "content:check": "node ../tools/content/content-check.mjs",
     "content:team": "node ../tools/content/team-pipeline.mjs",

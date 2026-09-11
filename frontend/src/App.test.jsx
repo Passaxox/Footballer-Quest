@@ -4,7 +4,8 @@ import App from "./App";
 import { newRun, createPlayer, grantCombatXp, gainXp } from "./game/engine";
 import { saveRun, loadRun, loadMeta, saveMeta } from "./game/storage";
 import * as engine from "./game/engine";
-import { STARTER_IDS, EVENTS, FINAL_WAVE } from "./game/data";
+import { STARTER_IDS, FINAL_WAVE } from "./game/data";
+import { RUN_EVENTS } from "./game/events";
 import TitleScreen from "./components/game/TitleScreen";
 import HubScreen from "./components/game/HubScreen";
 import BattleScreen from "./components/game/BattleScreen";
@@ -138,20 +139,21 @@ test("purchased shop entries remain unavailable after reload and cannot charge t
 });
 
 test("event outcome and generated offer persist without repeating its effects", async () => {
-  const result = { text: "Reclutamento", effects: [{ type: "money", amt: 10 }, { type: "recruit", tier: 1 }] };
-  saveRun(runWith({ type: "event", eventId: EVENTS[0].id }));
+  const event = RUN_EVENTS.find(candidate => candidate.eventId === "trusted-coach-recruit");
+  saveRun({ ...runWith({ type: "event", eventId: event.eventId }), storyFlags: { "trusted-coach": true } });
   await mountAndContinue();
-  await call(EventScreen, "onChoose", result);
+  await call(EventScreen, "onChoose", 0);
+  const result = loadRun().pending.result;
   await reload();
   expect(props(EventScreen).run.pending.result).toEqual(result);
-  await call(EventScreen, "onResolve", result);
+  await call(EventScreen, "onResolve");
   const saved = loadRun();
-  expect(saved.money).toBe(110);
+  expect(saved.money).toBe(100);
   expect(saved.pending.type).toBe("recruit");
   await reload();
   expect(props(RecruitScreen).player).toEqual(saved.pending.context.offer);
   expect(EventScreen).not.toHaveBeenCalled();
-  expect(loadRun().money).toBe(110);
+  expect(loadRun().money).toBe(100);
 });
 
 test("App Game Over uses Battle's final team, and all-KO saves never enter battle", async () => {
@@ -238,17 +240,23 @@ test("shop completion awards travel once; entering, purchases and reload do not"
 });
 
 test("event with own EXP carries its receipt through recruitment and never adds travel", async () => {
-  const run = runWith({ type: "event", eventId: EVENTS[0].id });
-  const result = { effects: [{ type: "xp", amt: 25, target: "all" }, { type: "recruit", tier: 1 }] };
+  const chosenEvent = {
+    ...RUN_EVENTS.find(candidate => candidate.eventId === "trusted-coach-recruit"),
+    eventId: "test-xp-recruit",
+    choices: [{ label: "Test", outcomes: [{ text: "Test", weight: 1, effects: [{ type: "grantXp", amount: 25 }, { type: "offerRecruit", maxRarity: "common" }] }] }],
+  };
+  RUN_EVENTS.push(chosenEvent);
+  const run = runWith({ type: "event", eventId: chosenEvent.eventId });
   saveRun(run);
   await mountAndContinue();
-  await call(EventScreen, "onChoose", result);
+  await call(EventScreen, "onChoose", 0);
   await reload();
-  await call(EventScreen, "onResolve", result);
+  await call(EventScreen, "onResolve");
   await reload();
   await call(RecruitScreen, "onSkip");
   expect(loadRun().team.map((p) => p.xp)).toEqual([25, 25, 25]);
   expect(loadRun().lastProgression.report.rows.map((r) => r.travelXp)).toEqual([0, 0, 0]);
+  RUN_EVENTS.pop();
 });
 
 test("training with its own EXP excludes travel, while a stat drill receives it", async () => {
@@ -264,10 +272,12 @@ test("training with its own EXP excludes travel, while a stat drill receives it"
 });
 
 test("fleeing an event battle never awards travel", async () => {
-  const run = runWith({ type: "event", eventId: EVENTS[0].id });
+  const chosenEvent = RUN_EVENTS.find(candidate => candidate.eventId === "street-tournament");
+  const run = runWith({ type: "event", eventId: chosenEvent.eventId });
   saveRun(run);
   await mountAndContinue();
-  await call(EventScreen, "onResolve", { effects: [{ type: "battle", ids: [STARTER_IDS[0]] }] });
+  await call(EventScreen, "onChoose", 0);
+  await call(EventScreen, "onResolve");
   await call(BattleScreen, "onFlee", run.team, run.items, run.activeUid, null);
   expect(loadRun().team).toEqual(run.team);
   expect(loadRun().lastProgression.report.rows.every((r) => r.travelXp === 0)).toBe(true);

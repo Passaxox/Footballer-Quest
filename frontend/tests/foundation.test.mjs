@@ -8,18 +8,23 @@ const source = (name) => readFile(new URL(`../src/game/${name}.js`, import.meta.
 const moduleUrl = (text) => `data:text/javascript;base64,${Buffer.from(text).toString("base64")}`;
 const dataUrl = moduleUrl(await source("data"));
 const rulesUrl = moduleUrl(await source("rules"));
+const rarityUrl = moduleUrl(await source("rarity"));
+const rarity = await import(rarityUrl);
+const runRandomUrl = moduleUrl(await source("runRandom"));
+const eventsUrl = moduleUrl((await source("events")).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./data"', JSON.stringify(dataUrl)));
+const events = await import(eventsUrl);
 const validationUrl = moduleUrl(await source("catalogValidation"));
 const { validateCatalog, validateIdentityAudit } = await import(validationUrl);
 const expansionUrl = moduleUrl(await source("catalogExpansion"));
 const teamContentUrl = moduleUrl(await source("teamContent.generated"));
 const metadataUrl = moduleUrl((await source("catalogMetadata")).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)));
-const catalogUrl = moduleUrl((await source("catalog")).replace("\"./catalogExpansion\"", JSON.stringify(expansionUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
+const catalogUrl = moduleUrl((await source("catalog")).replace("\"./catalogExpansion\"", JSON.stringify(expansionUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)));
 const collectionUrl = moduleUrl((await source("collection")).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
-const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)));
+const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./events"', JSON.stringify(eventsUrl)));
 const scenarios = await import(scenariosUrl);
-const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
+const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./events"', JSON.stringify(eventsUrl)).replace('"./runRandom"', JSON.stringify(runRandomUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)));
 const engine = await import(engineUrl);
 const data = await import(dataUrl);
 const storage = await import(moduleUrl((await source("storage"))
@@ -112,22 +117,17 @@ test("Epsilon versions reuse Dvalin canon and stay inside the gated laboratory p
 });
 
 test("Epsilon laboratory generates only Epsilon battles and recruitment", () => {
-  const random = Math.random;
   const epsilonIds = new Set(["dvalin:epsilon-ie2", "tytan:epsilon-ie2", "krypto:epsilon-ie2", "zell:epsilon-ie2"]);
-  const run = { ...newRun(starters), wave: 18, scenarioState: { id: "epsilon-lab", revision: 1, segmentStart: 18, segmentEnd: 23 } };
-  try {
+  const run = { ...newRun(starters), wave: 18, lastEventWave: 17, scenarioState: { id: "epsilon-lab", revision: 1, segmentStart: 18, segmentEnd: 23 } };
     const rolls = [0.1, 0.9, 0.9];
-    Math.random = () => rolls.length ? rolls.shift() : 0.5;
-    const battle = engine.generateWave(run);
+    const battle = engine.generateWave(run, () => rolls.length ? rolls.shift() : 0.5);
     assert.equal(battle.kind, "team");
     assert.ok(battle.enemies.length >= 2 && battle.enemies.length <= 3);
     assert.equal(new Set(battle.enemies.map(p => p.versionId)).size, battle.enemies.length);
     assert.ok(battle.enemies.every(p => epsilonIds.has(p.versionId)));
-    Math.random = () => 0.55;
-    const recruit = engine.generateWave(run);
+    const recruit = engine.generateWave(run, () => 0.55);
     assert.equal(recruit.type, "recruit");
     assert.ok(epsilonIds.has(recruit.player.versionId));
-  } finally { Math.random = random; }
 });
 
 test("Epsilon runtime sprites retain verified source hashes and provenance", async () => {
@@ -173,22 +173,15 @@ test("Gemini manifest reuses Jordan and derives the complete isolated IE2 lineup
 
 test("Gemini scenario generates team battles and recruitment with version identity", () => {
   const geminiIds = new Set(scenarios.scenarioPool("gemini-crash-site", 18, 3).map(row => row.version.versionId));
-  const run = { ...newRun(starters), wave: 18, scenarioState: { id: "gemini-crash-site", revision: 1, segmentStart: 18, segmentEnd: 23 } };
-  const random = Math.random;
-  try {
+  const run = { ...newRun(starters), wave: 18, lastEventWave: 17, scenarioState: { id: "gemini-crash-site", revision: 1, segmentStart: 18, segmentEnd: 23 } };
     const rolls = [0.1, 0.9, 0.9];
-    Math.random = () => rolls.length ? rolls.shift() : 0.5;
-    const battle = engine.generateWave(run);
+    const battle = engine.generateWave(run, () => rolls.length ? rolls.shift() : 0.5);
     assert.equal(battle.kind, "team");
     assert.ok(battle.enemies.every(player => geminiIds.has(player.versionId)));
-    Math.random = () => 0.55;
-    const recruit = engine.generateWave(run);
+    const recruit = engine.generateWave(run, () => 0.55);
     assert.equal(recruit.type, "recruit");
     assert.ok(geminiIds.has(recruit.player.versionId));
     assert.equal(catalog.resolveVersion(recruit.player.versionId).characterId, recruit.player.characterId);
-  } finally {
-    Math.random = random;
-  }
 });
 
 test("Gemini runtime sprites match immutable verified provenance", async () => {
@@ -224,17 +217,13 @@ test("Diamond Dust manifest reuses Gazelle and stays isolated behind its gate", 
 
 test("Diamond Dust encounters and recruitment preserve version content", () => {
   const ids = new Set(scenarios.scenarioPool("diamond-dust-glacier", 24, 3).map(row => row.version.versionId));
-  const run = { ...newRun(starters), wave: 24, scenarioState: { id: "diamond-dust-glacier", revision: 1, segmentStart: 24, segmentEnd: 29 } };
-  const random = Math.random;
-  try {
+  const run = { ...newRun(starters), wave: 24, lastEventWave: 23, scenarioState: { id: "diamond-dust-glacier", revision: 1, segmentStart: 24, segmentEnd: 29 } };
     const rolls = [0.1, 0.9, 0.9];
-    Math.random = () => rolls.length ? rolls.shift() : 0.5;
-    const battle = engine.generateWave(run);
+    const battle = engine.generateWave(run, () => rolls.length ? rolls.shift() : 0.5);
     assert.equal(battle.kind, "team");
     assert.ok(battle.enemies.length >= 2 && battle.enemies.length <= 3);
     assert.ok(battle.enemies.every(player => ids.has(player.versionId)));
-    Math.random = () => 0.55;
-    const recruit = engine.generateWave(run);
+    const recruit = engine.generateWave(run, () => 0.55);
     assert.equal(recruit.type, "recruit");
     assert.ok(ids.has(recruit.player.versionId));
     const version = catalog.resolveVersion(recruit.player.versionId);
@@ -243,9 +232,6 @@ test("Diamond Dust encounters and recruitment preserve version content", () => {
     assert.ok(version.spriteId.endsWith("-diamond-dust-ie2"));
     assert.deepEqual(recruit.player.move, catalog.PRIMARY_MOVES[version.primaryMoveId]);
     assert.deepEqual(recruit.player.base, version.baseStats);
-  } finally {
-    Math.random = random;
-  }
 });
 
 test("Diamond Dust runtime sprites match immutable verified provenance", async () => {
@@ -262,30 +248,24 @@ test("Diamond Dust runtime sprites match immutable verified provenance", async (
 });
 
 test("Royal/Zeus generated battles, recruitment and pending saves use authored versions", () => {
-  const random = Math.random;
-  try {
     for (const [id, wave] of [["royal-academy", 8], ["zeus", 18]]) {
-      const run = { ...newRun(starters), wave, scenarioState: { id, revision: 1, segmentStart: wave, segmentEnd: wave + 5 } };
+      const run = { ...newRun(starters), wave, lastEventWave: wave - 1, scenarioState: { id, revision: 1, segmentStart: wave, segmentEnd: wave + 5 } };
       // Team battle, three different enemies; later draws need no legacy IDs.
       const rolls = [0.1, 0.9, 0.9];
-      Math.random = () => rolls.length ? rolls.shift() : 0.5;
-      const node = engine.generateWave(run);
+      const node = engine.generateWave(run, () => rolls.length ? rolls.shift() : 0.5);
       assert.equal(node.kind, "team");
       assert.equal(node.enemies.length, 3);
       assert.equal(new Set(node.enemies.map(p => p.versionId)).size, 3);
       assert.ok(node.enemies.every(p => catalog.resolveVersion(p.versionId).teamTags.includes(id)));
-      Math.random = () => 0.55;
-      const recruit = engine.generateWave(run);
+      const recruit = engine.generateWave(run, () => 0.55);
       assert.equal(recruit.type, "recruit");
       assert.ok(catalog.resolveVersion(recruit.player.versionId).teamTags.includes(id));
       const saved = normalizeRun({ ...run, pending: node });
       assert.deepEqual(engine.generateWave(saved), node);
     }
-  } finally { Math.random = random; }
 });
 
 test("encounters and recruitment support versions without legacy IDs and preserve saved instances", () => {
-  const originalRandom = Math.random;
   const ids = ["test-royal-1", "test-royal-2", "test-royal-3"];
   const template = catalog.resolveVersion("jude:base");
   const scenario = { ...scenarios.SCENARIOS[0], id: "test-royal", allowedTeamTags: [], allowedVersionIds: ids };
@@ -294,9 +274,8 @@ test("encounters and recruitment support versions without legacy IDs and preserv
       ...template, versionId, legacyRosterId: null, encounterTier: 1,
     };
     scenarios.SCENARIOS.push(scenario);
-    Math.random = () => 0.7;
     const run = { ...newRun(starters), scenarioState: { id: scenario.id, revision: 1, segmentStart: 1, segmentEnd: 6 } };
-    const battle = engine.generateWave(run);
+    const battle = engine.generateWave(run, () => 0.7);
     assert.equal(battle.kind, "team");
     assert.equal(new Set(battle.enemies.map(p => p.versionId)).size, 2);
     for (const p of battle.enemies) {
@@ -304,8 +283,7 @@ test("encounters and recruitment support versions without legacy IDs and preserv
       assert.equal(p.characterId, "jude");
       assert.equal(p.baseId, p.versionId);
     }
-    Math.random = () => 0.55;
-    const recruit = engine.generateWave({ ...run, wave: 2 });
+    const recruit = engine.generateWave({ ...run, wave: 2, lastEventWave: 1 }, () => 0.55);
     assert.equal(recruit.type, "recruit");
     assert.ok(ids.includes(recruit.player.versionId));
     const saved = { ...recruit.player, hp: 1, xp: 7 };
@@ -313,7 +291,6 @@ test("encounters and recruitment support versions without legacy IDs and preserv
     assert.equal(engine.generateWave({ ...run, pending: battle }), battle);
     assert.equal(catalog.resolveVersion("jude").versionId, "jude:base");
   } finally {
-    Math.random = originalRandom;
     scenarios.SCENARIOS.splice(scenarios.SCENARIOS.indexOf(scenario), 1);
     for (const id of ids) delete catalog.CHARACTER_VERSIONS[id];
   }
@@ -1188,25 +1165,23 @@ test("V2i pools differ, preserve tier gates, and select without duplicates or ra
   }
   assert.deepEqual(scenarios.scenarioPool("international", 17, 4), []);
   const ffi = scenarios.scenarioPool("international", 18, 3);
-  assert.ok(ffi.every(r => r.weight === (r.version.teamTags.includes("unicorn") ? 3 : 1)));
+  assert.ok(ffi.every(r => r.weight === (r.version.teamTags.includes("unicorn") ? 3 : 1) * rarity.RARITIES[r.rarityId].selectionWeight));
   assert.equal(scenarios.selectEncounterVersion("urban", 1, 1, [], () => 0).versionId, "shawn:base");
   assert.notEqual(scenarios.selectEncounterVersion("urban", 1, 1, [], () => 0).versionId,
     scenarios.selectEncounterVersion("urban", 1, 1, [], () => 0.999).versionId);
 });
 
 test("V2i new runs choose context randomly and travel segments can have variable ends", () => {
-  const rng = Math.random;
-  try {
-    Math.random = () => 0; const a = newRun(starters);
-    Math.random = () => 0.999; const b = newRun(starters);
-    assert.equal(a.scenarioState.id, "raimon-training"); assert.equal(b.scenarioState.id, "urban");
+    const seeded = Array.from({ length: 20 }, (_, index) => newRun(starters, "normal", `scenario-${index}`));
+    const a = seeded.find(run => run.scenarioState.id === "raimon-training");
+    const b = seeded.find(run => run.scenarioState.id === "urban");
+    assert.ok(a); assert.ok(b);
     assert.equal(scenarios.scenarioForWave(a.scenarioState, 6, 1, () => 0.999), a.scenarioState);
     assert.equal(scenarios.scenarioForWave(a.scenarioState, 7, 1, () => 0.999).id, "urban");
     assert.equal(scenarios.scenarioForWave(null, 17, 2, () => 0.999).id, "royal-academy");
     assert.equal(scenarios.scenarioForWave(null, 19, 3, () => 0.999).id, "international");
     const extended = { ...a.scenarioState, segmentEnd: 12 };
     assert.equal(scenarios.scenarioForWave(extended, 9, 2), extended);
-  } finally { Math.random = rng; }
 });
 
 test("V2i legacy save preserves team and pending node without RNG, new scenario round-trips", () => {
@@ -1342,12 +1317,12 @@ test("V2k1 win/flee keep existing growth; simultaneous loss rolls back and prese
 
 
 test("V2l Camelia explains non-KO healing without changing price or effects", () => {
- const choice=data.EVENTS.find(e=>e.id==="camelia").choices[0];
+ const choice=events.RUN_EVENTS.find(e=>e.eventId==="camelia-checkup").choices[0];
  assert.match(choice.label,/50 Prestigio.*non KO/);
  assert.match(choice.outcomes[0].text,/KO restano KO/);
  assert.equal(choice.cost,50);
- assert.equal(choice.outcomes[0].chance,100);
- assert.deepEqual(choice.outcomes[0].effects,[{type:"money",amt:-50},{type:"heal",pct:100,target:"all"}]);
+ assert.equal(choice.outcomes[0].weight,1);
+ assert.deepEqual(choice.outcomes[0].effects,[{type:"grantCurrency",amount:-50},{type:"healTeam",percent:100}]);
 });
 
 
