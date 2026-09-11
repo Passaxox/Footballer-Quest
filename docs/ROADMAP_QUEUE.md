@@ -77,3 +77,40 @@ Platform guardrails now:
 When promoted to Production, expected work includes the Capacitor iOS target, Xcode/macOS build/signing setup, iOS-safe storage/update testing, safe-area/device QA and TestFlight distribution.
 
 This is a future platform task, not a reason to delay current gameplay milestones.
+
+---
+
+## Q-003 — Manager AI profiles linked to Team Traits
+
+**Milestone:** M3 — enemy-team parity / Manager AI  
+**Priority:** LATER, but architecture should stay compatible from M2  
+**Impact:** Boss identity, tactical variety, stronger team fantasy, reuse of Trait/Synergy systems  
+**Dependencies:** Trait/Synergy v1, Enemy Team system, CPU switching, finite enemy inventory/loadouts, Condition Engine v1
+
+### Direction
+
+Manager/Coach AI should not be a disconnected stat-bonus layer. A Manager profile should be able to **read, exploit and shape** the Team Traits of the team it controls.
+
+Two complementary patterns are approved conceptually:
+
+1. **Trait-aware Manager** — the manager recognises the team's active Traits and chooses tactics that exploit them. Example: a control-oriented team preserves status chains, a comeback-oriented team protects resources until a low-HP trigger, an aggressive team prioritises tempo and matchup pressure.
+2. **Trait-shaping Manager** — the manager can define or modify how its team expresses a Trait under explicit authored rules. This may mean changing a threshold, unlocking an extra tactical payoff, modifying one Trait effect, or adding a Manager-specific condition — without rewriting CharacterVersion identity or fake teamTags.
+
+Boss Managers should therefore feel like tactical expressions of their team identity, not only stronger generic CPU.
+
+### Future examples
+
+- a Royal-style Manager could favour debuffs, pressure and matchup exploitation;
+- an Alius Manager could aggressively pursue risk/reward or unusual condition chains;
+- a Raimon-oriented Guide/Manager could preserve comeback resources and activate resilience opportunities;
+- a Diamond Dust Manager could prioritise Freeze/control payoffs if those states are active in the future ruleset.
+
+These are design examples, not final canon implementations.
+
+### Guardrails
+
+- CPU and player obey the same turn-economy fundamentals unless a boss rule is explicitly authored and surfaced.
+- Managers may modify Trait behaviour, but must not silently fabricate Character/team affiliation data.
+- Manager logic should consume reusable declarative Trait/Condition snapshots where possible instead of hardcoding one AI branch per team.
+- Boss-specific cheats, immunities or exceptions must be visible/testable authored rules, not hidden arbitrary advantages.
+- M2 Traits should therefore expose enough structured information for later AI to reason about active tiers, status hooks, run/combat modifiers and tactical opportunities.
