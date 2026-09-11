@@ -18,7 +18,8 @@ import {
   runAssetFactory,
   sha256Hex,
   validateApprovals,
-  validateManifest
+  validateManifest,
+  writeImmutableFile
 } from './asset-factory.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -26,6 +27,22 @@ const repoImportsRoot = path.join(repoRoot, 'tools/assets/imports');
 const repoStagingRoot = path.join(repoRoot, 'tools/assets/staging');
 const repoVerifiedRoot = path.join(repoRoot, 'tools/assets/verified');
 const repoReportsRoot = path.join(repoRoot, 'tools/assets/reports');
+
+test('immutable provenance tolerates platform line endings but rejects content changes', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-immutable-'));
+  const provenancePath = path.join(directory, 'sprite.png.provenance.json');
+  try {
+    await writeFile(provenancePath, '{\r\n  "sha256": "same"\r\n}\r\n');
+    const reused = await writeImmutableFile(provenancePath, Buffer.from('{\n  "sha256": "same"\n}\n'));
+    assert.equal(reused.reused, true);
+    await assert.rejects(
+      () => writeImmutableFile(provenancePath, Buffer.from('{\n  "sha256": "different"\n}\n')),
+      /Immutable staging collision/
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
 
 function png(width, height, { alpha = true } = {}) {
   const chunk = (type, data) => {

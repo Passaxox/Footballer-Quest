@@ -229,7 +229,11 @@ export async function writeImmutableFile(file, buffer) {
   } catch (error) {
     if (error?.code !== 'EEXIST') throw error;
     const existing = await readFile(file);
-    if (!existing.equals(buffer)) throw new Error(`Immutable staging collision: ${relativeFromRoot(file)}`);
+    const isEquivalentProvenance = file.endsWith('.provenance.json')
+      && existing.toString('utf8').replace(/\r\n/g, '\n') === buffer.toString('utf8').replace(/\r\n/g, '\n');
+    if (!existing.equals(buffer) && !isEquivalentProvenance) {
+      throw new Error(`Immutable staging collision: ${relativeFromRoot(file)}`);
+    }
     return { reused: true, file };
   }
 }
