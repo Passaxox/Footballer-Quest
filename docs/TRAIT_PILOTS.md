@@ -27,6 +27,14 @@ This rule is especially important for future Inazuma Japan, Royal Academy and Al
 
 ---
 
+## Coverage rule for pilots
+
+A pilot's tier identity may be approved before its practical acquisition coverage is ready, but a standard Team Trait must pass `docs/TRAIT_COVERAGE_GATE.md` before it is considered Production-ready for normal player-facing activation.
+
+This keeps good design work from being blocked by current content volume while preventing a nominal Trait from shipping when players cannot realistically build around it.
+
+---
+
 ## PILOT-001 — Raimon / “Spirito Raimon”
 
 **Status:** APPROVED_CONCEPT — tier identity frozen; exact numbers remain balance work  
@@ -110,11 +118,82 @@ Managers must consume the same declarative Trait state rather than silently rewr
 
 ---
 
-## Next pilot candidates
+## PILOT-002 — Diamond Dust / “Dominio Glaciale”
 
-The next two intended pilots are:
+**Status:** APPROVED_CONCEPT — tier identity frozen; activation remains subject to Trait Coverage Gate and status implementation  
+**Milestone:** M2 Team Synergies / Traits v1  
+**Identity:** Control / Freeze / Shatter
 
-1. **Diamond Dust** — control / Freeze-oriented identity, useful for proving Status ↔ Trait interactions.
-2. **Gemini Storm** — tempo / speed / risk-reward identity, useful for proving combat ↔ run-variety interactions.
+### Design intent
+
+Diamond Dust should not be equivalent to “all Air players”. Its current verified roster contains multiple elements, so the Trait identity comes from the **Diamond Dust CharacterVersion affiliation**, while individual techniques decide whether they participate in Freeze/Shatter interactions.
+
+The build should create a tactical choice between preserving control and consuming that control for burst.
+
+### Tier I — Brina
+
+Diamond Dust composition improves the reliability of **eligible cold/ice-control techniques** applying the future `Freeze/Frozen` status.
+
+This does **not** mean every Diamond Dust move can Freeze.
+
+A technique must explicitly declare the compatible status/effect hook. Team membership alone must not fabricate an ice effect for a move that does not support it.
+
+Exact application bonus and base status probability remain balance/status-system data.
+
+### Tier II — Permafrost
+
+When an opponent becomes `Frozen`, Diamond Dust gains a short tactical advantage against that target.
+
+**Frozen behaviour direction:** favour tempo/control effects such as SPD/priority/next-action advantage rather than simply extending Freeze repeatedly.
+
+Purpose:
+
+- reward successfully creating the status;
+- make the team feel controlling rather than only high-damage;
+- avoid permanent turn-denial loops.
+
+Exact modifier and duration remain balance data.
+
+### Tier III — Frattura Glaciale
+
+An eligible attack may intentionally **consume `Frozen`** to trigger a stronger payoff against that target.
+
+**Frozen behaviour direction:** Shatter consumes the status in exchange for a significant burst/control payoff such as bonus damage plus a short vulnerability/DEF reduction window.
+
+The key strategic decision is:
+
+`keep Frozen for control` **or** `consume Frozen for Shatter burst`.
+
+The exact damage multiplier, vulnerability strength and eligible move tags remain balance data.
+
+### Explicit exclusions
+
+The Diamond Dust Trait does **not** currently include:
+
+- automatic Freeze on every Diamond Dust technique;
+- infinite/repeatable hard-lock chains;
+- passive permanent damage inflation with no status interaction;
+- automatic conversion of all Air techniques into ice techniques;
+- hidden boss immunity that is not an authored/testable rule.
+
+### Future Manager / AI bridge
+
+A Diamond Dust Manager/Coach profile should later be able to reason about whether to preserve Freeze control or consume it through Shatter based on HP, speed, matchup, remaining roster and available techniques.
+
+This is a strong proof case for Trait-aware Manager AI: the CPU should **play the Diamond Dust plan**, not merely receive higher stats.
+
+### Current coverage note
+
+The current Diamond Dust authored manifest contains 11 verified CharacterVersions with `P1 / D5 / C3 / A2`, so raw count and role shape are already near the intended standard-Trait target.
+
+Practical activation still requires the accessibility side of `TRAIT_COVERAGE_GATE.md` to pass. Current manifest entries use `encounterTier: 3` without explicit collection rarity, so rarity/acquisition distribution needs deliberate review before the Trait is Production-ready.
+
+---
+
+## Next pilot candidate
+
+The next intended pilot is:
+
+1. **Gemini Storm** — tempo / speed / risk-reward identity, useful for proving combat ↔ run-variety interactions.
 
 Epsilon remains the next expansion candidate after the pilot trio.
