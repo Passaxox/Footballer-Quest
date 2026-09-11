@@ -190,10 +190,111 @@ Practical activation still requires the accessibility side of `TRAIT_COVERAGE_GA
 
 ---
 
-## Next pilot candidate
+## PILOT-003 — Gemini Storm / “Impulso Orbitale”
 
-The next intended pilot is:
+**Status:** APPROVED_CONCEPT — tier identity frozen; activation remains subject to Trait Coverage Gate and switching/momentum implementation  
+**Milestone:** M2 Team Synergies / Traits v1  
+**Identity:** Tempo / Speed / Momentum / Risk-Reward
 
-1. **Gemini Storm** — tempo / speed / risk-reward identity, useful for proving combat ↔ run-variety interactions.
+### Design intent
 
-Epsilon remains the next expansion candidate after the pilot trio.
+Gemini Storm should reward keeping initiative and making deliberate tactical switches without making switching free.
+
+Its gameplay loop should feel like:
+
+`gain tempo -> preserve momentum -> decide when to cash it out`.
+
+The Trait should interact naturally with future Manager AI because both player and CPU can use the same switching economy and momentum state.
+
+### Tier I — Slancio Orbitale
+
+After a **voluntary mid-battle switch**, the incoming eligible Gemini Storm player receives a short first-action tempo advantage.
+
+**Frozen behaviour direction:** a brief SPD/priority advantage on the incoming player's first action.
+
+The voluntary switch still consumes the normal turn. The Trait must not convert tactical switching into a free action.
+
+Purpose:
+
+- make switching an intentional part of Gemini Storm build identity;
+- reward choosing the correct replacement instead of simply staying on one high-stat player;
+- prepare future CPU/Manager switching parity.
+
+Exact SPD/priority value and whether the benefit is consumed by the first attempted or first successful action remain balance details.
+
+### Tier II — Accelerazione
+
+A Gemini Storm team that repeatedly maintains initiative builds temporary **Momentum**.
+
+Working qualifying behaviour may include acting first, preserving tempo through compatible switches, or completing eligible actions without allowing the opponent to break the sequence.
+
+**Frozen structure:** Momentum is a temporary, bounded build resource — not an infinitely stacking ATK buff.
+
+Momentum may improve tempo-oriented outputs such as:
+
+- priority;
+- pressure;
+- selected compatible technique behaviour;
+- access to the Tier III cash-out.
+
+The exact trigger definition, stack cap and decay/reset rule remain balance work.
+
+### Tier III — Impatto Meteorico
+
+The team may deliberately **consume accumulated Momentum** for a high-impact play.
+
+**Frozen behaviour direction:** cash out Momentum to strongly empower an eligible technique/action or create another explicit high-risk/high-reward payoff, then reset/reduce Momentum.
+
+Purpose:
+
+- create a visible decision between maintaining tempo and spending it;
+- prevent permanent snowball from simply holding maximum Momentum forever;
+- give future Manager AI a meaningful tactical question: continue the sequence or cash out now.
+
+Exact eligible techniques, scaling and cost remain balance data.
+
+### Run-facing consequence
+
+A sufficiently committed Gemini Storm composition may also increase the weight/eligibility of future **Alius-flavoured risk/reward events** with harder choices and better potential rewards.
+
+This is not a separate fourth Tier. It is a run-facing expression of the Trait, likely attached to an appropriate active tier after simulation.
+
+As with other run-weight effects, it applies only to future generated nodes and must not reroll a persisted pending node.
+
+### Explicit exclusions
+
+The Gemini Storm Trait does **not** currently include:
+
+- free voluntary switching;
+- infinite Momentum stacks;
+- permanent generic SPD/ATK inflation;
+- automatic first action forever;
+- hidden CPU-only benefits;
+- Momentum that survives every battle indefinitely unless a later explicit system defines that behaviour.
+
+### Future Manager / AI bridge
+
+A Gemini Storm Manager should later be able to:
+
+- switch tactically to preserve or recover initiative;
+- recognise when Momentum is close to a useful threshold;
+- decide whether to continue building Momentum or consume it through Tier III;
+- respect the same turn cost and authored Trait rules as the player.
+
+This makes Gemini Storm a useful proof case for intelligent switching rather than a stat-scripted boss.
+
+### Current coverage note
+
+The current Gemini Storm authored manifest contains 11 verified CharacterVersions with `P1 / D4 / C4 / A2`, closely matching Diamond Dust's overall build breadth.
+
+As with Diamond Dust, current manifest entries use `encounterTier: 3` without explicit collection rarity. Practical player-facing activation therefore needs a deliberate acquisition/rarity distribution and Coverage Gate simulation rather than relying only on raw roster count.
+
+---
+
+## Next expansion candidate
+
+After the initial pilot trio:
+
+1. **Epsilon** remains the next expansion candidate.
+2. **Royal Academy** is a strong later candidate once version coverage and roster/accessibility are sufficient for a fair build path.
+3. **Inazuma Japan / broader Alius-family Traits** should be assessed with the same version-scoped coverage rules rather than added as universal Character tags.
