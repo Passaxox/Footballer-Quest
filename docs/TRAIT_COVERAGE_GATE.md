@@ -92,6 +92,21 @@ For the current working `2 / 4 / 6` model, report at minimum:
 
 The purpose is not to make every Trait equally easy. The purpose is to make differences intentional and visible rather than accidental artifacts of content coverage.
 
+### DNA hybrid cases
+
+Because DNA can create secondary Element Trait contribution, simulation must explicitly test hybrid teams rather than assuming only mono-element rosters.
+
+At minimum test:
+
+- six fused players with the same primary element and the same different secondary element;
+- a 3/3 mirrored split such as `3 Fuoco/Aria + 3 Aria/Fuoco`;
+- mixed fused + non-fused teams;
+- same-element DNA, which must count only `+1.0` for that element rather than `+1.5`;
+- interaction between Element Trait thresholds and simultaneous Team/Affiliation Traits;
+- whether any hybrid pattern becomes the dominant answer regardless of team identity.
+
+Use `docs/TRAIT_DNA_RULES.md` as the contribution rule source.
+
 ---
 
 ## 7. Comparative fairness
@@ -129,6 +144,7 @@ Target report per Trait:
 - multi-Trait overlaps;
 - earliest availability;
 - candidate `2/4/6` reachability simulation;
+- DNA-hybrid reachability/overlap checks;
 - `PASS / REVIEW / FAIL` coverage result;
 - concrete missing coverage, e.g. `needs goalkeeper`, `too late-run`, `Tier III improbable`, `rarity concentration too high`.
 
@@ -161,6 +177,25 @@ Current authored manifest also contains **11 verified CharacterVersions** with r
 - `A: 2`
 
 It therefore provides a useful coverage comparator for Diamond Dust. Like Diamond Dust, its current manifest rows use `encounterTier: 3`, so practical accessibility still requires the same rarity/acquisition audit.
+
+### Epsilon
+
+Current authored Epsilon manifest contains only **4 verified CharacterVersions** with role split:
+
+- `P: 1`
+- `D: 1`
+- `C: 1`
+- `A: 1`
+
+This is useful as a technical/content proof and gives complete role-category representation, but it is **well below the standard 10–12-version build target**.
+
+Epsilon therefore should not yet activate as a normal `2/4/6` Team Trait without one of the following:
+
+- expanding the verified Epsilon CharacterVersion pool;
+- intentionally designing Epsilon as a smaller/rarer exception with different thresholds;
+- using a broader, canon-supported Alius-family Trait that Epsilon versions can contribute to without fabricating affiliation.
+
+Do not solve the gap by attaching unverified Epsilon tags to unrelated versions.
 
 ---
 
