@@ -1,6 +1,6 @@
 # Footballer Quest — Element Traits v1
 
-**Status:** DESIGN — Fuoco and Aria approved; Terra/Natura under Director review  
+**Status:** DESIGN — Fuoco, Aria and Terra approved; Natura under Director review  
 **Milestone:** M2 Traits/Synergies foundation  
 **Purpose:** define broad element identities that influence build decisions without replacing Team/Faction identity.
 
@@ -138,8 +138,86 @@ Freeze remains available only to explicitly compatible techniques/Team Traits su
 
 ---
 
+## TERRA — Structure / Stability / Counterpressure
+
+**Status:** APPROVED_CONCEPT — tier identity frozen; exact trigger thresholds/numbers remain balance work  
+**Identity:** absorb pressure without becoming purely defensive, convert disruption into counterpressure and deliberately anchor against a critical impact.
+
+### Tier I — Contrappeso
+
+When an active Terra player suffers an eligible **direct hit** or a meaningful negative alteration applied by the opponent, that player gains `Contrappeso`.
+
+The next eligible **offensive Terra technique** used by that same player receives a small temporary damage/POT benefit.
+
+**Approved starting point:** approximately `+15%` effective damage/POT for balance testing.
+
+Guardrails:
+
+- `Contrappeso` does not stack;
+- it is consumed by the next eligible Terra offensive technique;
+- it is lost on a voluntary switch by that player;
+- incidental passive micro-damage such as a routine Burn tick does not by itself grant Contrappeso;
+- one trigger must not grant multiple queued copies.
+
+Purpose:
+
+- make Terra respond to pressure rather than only reduce incoming damage;
+- reward staying in and answering after being hit/disrupted;
+- create a readable decision between preserving the counterattack and switching for matchup reasons.
+
+Exact definition of “meaningful negative alteration” and final modifier size remain balance/status work.
+
+### Tier II — Stratificazione
+
+When an eligible Terra player survives a sufficiently significant direct hit, that player gains a small temporary `Brace`-style protection against the **next** qualifying hit.
+
+**Approved direction:** the protection is weaker than a full Guard, non-stackable and consumed on use.
+
+Purpose:
+
+- express structural resilience without permanent DEF inflation;
+- reward absorbing one major impact by becoming harder to break immediately afterward;
+- avoid infinite defensive loops through non-stacking and explicit trigger thresholds.
+
+Exact damage threshold, mitigation value, frequency/cooldown and boss interaction remain balance data.
+
+### Tier III — Punto Fermo
+
+Once per battle, an eligible active Terra player may deliberately spend its action to enter **Punto Fermo** until its next action window.
+
+While anchored:
+
+- the next qualifying major incoming hit is strongly mitigated;
+- compatible disruption attached to that hit is strongly reduced or prevented according to authored status rules;
+- the player cannot voluntarily switch while Punto Fermo is active.
+
+The action cost is intentional: the player predicts an important incoming threat and gives up tempo to hold position.
+
+Purpose:
+
+- create an active defensive decision instead of passive permanent bulk;
+- support boss/elite prediction and future Manager-AI mind games;
+- make Terra capable of protecting a critical moment without automatic survival mechanics.
+
+Exact mitigation, status coverage, expiry and whether unused Punto Fermo ends at the player's next action remain balance/implementation details.
+
+### Explicit exclusions
+
+Terra v1 does not imply:
+
+- permanent generic DEF inflation;
+- automatic survival at `1 HP`;
+- immunity to all statuses/debuffs;
+- Contrappeso stacking into an unlimited damage bonus;
+- Burn/passive chip repeatedly farming Contrappeso;
+- infinite Brace chaining;
+- free use of Punto Fermo without spending an action;
+- voluntary switching while Punto Fermo is active.
+
+---
+
 ## Next element under review
 
-**TERRA — Structure / Stability / Guard**
+**NATURA — Sustain / Adaptation / Recovery**
 
 Exact Tier I/II/III effects remain under Director review.
