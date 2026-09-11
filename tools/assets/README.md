@@ -30,7 +30,7 @@ The isolated resolver/staging proof-of-concept lives in `tools/assets/asset-fact
 
 - Scope: resolver/staging/reporting only. It never writes into `frontend/public/sprites/`.
 - Source adapter: MediaWiki/Fandom exact file title and character-page resolution.
-- Output: immutable staged originals under `tools/assets/staging/`, verified approved provenance under `tools/assets/verified/`, plus JSON/Markdown/HTML reports under `tools/assets/reports/`.
+- Output: immutable staged originals under `tools/assets/staging/`, externally fetched inputs under the safe `tools/assets/imports/` root, verified approved provenance under `tools/assets/verified/`, plus JSON/Markdown/HTML reports under `tools/assets/reports/`.
 - Status rule: only suitable game/headshot sources become `CANDIDATE`; generic character-page images are preserved as `REVIEW` evidence, and the tool never auto-assigns `ASSET-VERIFIED`.
 - Lifecycle split: `tools/assets/staging/` is the ephemeral acquisition/review workspace; `tools/assets/verified/` is the canonical long-term store for explicitly approved source artifacts only.
 
@@ -38,8 +38,24 @@ From repository root:
 
 ```text
 node tools/assets/asset-factory.mjs
+node tools/assets/asset-factory.mjs --fetch-plan
+node tools/assets/asset-factory.mjs --import-candidates
 node --test tools/assets/asset-factory.test.mjs
 ```
+
+### Cloud-access recovery
+
+When the source host is inaccessible:
+
+1. Run `node tools/assets/asset-factory.mjs --fetch-plan` and save its machine-readable JSON.
+2. Externally fetch the exact binaries from each `sourceUrl`.
+3. Place each file at its `plannedImportDestination` under `tools/assets/imports/`.
+4. Run `node tools/assets/asset-factory.mjs --import-candidates`.
+5. Review the staged candidates and record explicit human approval.
+6. Run `--capture-approval-hashes` to bind each approved candidate to its SHA-256.
+7. Run `--finalize-approvals` to verify the hashes and promote immutable files into `tools/assets/verified/`.
+
+Import matching is exact and deterministic across the import tree. One exact filename is `MATCHED`; no match is `MISSING`; more than one match is `AMBIGUOUS`. Missing and ambiguous imports are `BLOCKED` and never selected silently. Imported files remain `CANDIDATE` until the existing approval and hash-verification flow completes. Generic character images cannot be approved as game assets. Staging, imports, verified storage, and runtime sprites remain separate.
 
 Explicit human approval finalization is supported through `tools/assets/approvals/epsilon-ie2-poc.approvals.json`.
 

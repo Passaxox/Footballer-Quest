@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "sourceManifestId": "epsilon-ie2-poc",
+  "assets": [
+    {
+      "versionId": "dvalin:epsilon-ie2",
+      "runtimeSpritePath": "frontend/public/sprites/dvalin-epsilon-ie2.png",
+      "verifiedSourcePath": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png",
+      "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca"
+    },
+    {
+      "versionId": "tytan:epsilon-ie2",
+      "runtimeSpritePath": "frontend/public/sprites/tytan-epsilon-ie2.png",
+      "verifiedSourcePath": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png",
+      "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745"
+    },
+    {
+      "versionId": "krypto:epsilon-ie2",
+      "runtimeSpritePath": "frontend/public/sprites/krypto-epsilon-ie2.png",
+      "verifiedSourcePath": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png",
+      "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88"
+    },
+    {
+      "versionId": "zell:epsilon-ie2",
+      "runtimeSpritePath": "frontend/public/sprites/zell-epsilon-ie2.png",
+      "verifiedSourcePath": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png",
+      "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead"
+    }
+  ]
+}

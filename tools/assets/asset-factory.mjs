@@ -10,6 +10,7 @@ const toolsRoot = path.resolve(root, 'tools/assets');
 const runtimeSpritesDir = path.resolve(root, 'frontend/public/sprites');
 const defaultManifestPath = path.resolve(toolsRoot, 'manifests/epsilon-ie2-poc.json');
 const defaultOutputRoot = path.resolve(toolsRoot, 'staging/epsilon-ie2-poc');
+const defaultImportsRoot = path.resolve(toolsRoot, 'imports');
 const defaultVerifiedRoot = path.resolve(toolsRoot, 'verified');
 const defaultReportsRoot = path.resolve(toolsRoot, 'reports');
 const defaultApprovalsPath = path.resolve(toolsRoot, 'approvals/epsilon-ie2-poc.approvals.json');
@@ -235,6 +236,14 @@ export async function ensureSafeStaging({ stagingRoot, runtimeDir }) {
   return resolvedStaging;
 }
 
+export function ensureSafeImports({ importsRoot, runtimeDir }) {
+  const resolvedImports = path.resolve(importsRoot);
+  const resolvedRuntime = path.resolve(runtimeDir);
+  if (!isSubpath(defaultImportsRoot, resolvedImports)) throw new Error('Imports root must stay under tools/assets/imports');
+  if (isSubpath(resolvedRuntime, resolvedImports)) throw new Error('Imports root must not overlap runtime assets');
+  return resolvedImports;
+}
+
 export async function ensureSafeVerified({ verifiedRoot, runtimeDir }) {
   const resolvedVerified = path.resolve(verifiedRoot);
   const resolvedRuntime = path.resolve(runtimeDir);
@@ -315,6 +324,59 @@ function sourceDirectory(originalsDir, target, source) {
   return path.join(originalsDir, safeName(target.versionId), safeName(source.sourceSuitability || source.sourceKey));
 }
 
+function expectedSourceFilename(source) {
+  const filename = filenameFromFileTitle(source.sourceAssetId);
+  if (filename && path.basename(filename) !== filename) throw new Error(`Unsafe source filename: ${filename}`);
+  return filename;
+}
+
+function importDestination(importsRoot, manifestId, target, source) {
+  const filename = expectedSourceFilename(source);
+  if (!filename) return null;
+  const destination = path.resolve(importsRoot, safeName(manifestId), safeName(target.versionId), safeName(source.sourceKey), filename);
+  if (!isSubpath(importsRoot, destination)) throw new Error(`Unsafe import destination for ${target.versionId}`);
+  return destination;
+}
+
+async function filesUnder(directory) {
+  const files = [];
+  async function walk(current) {
+    let entries;
+    try {
+      entries = await readdir(current, { withFileTypes: true });
+    } catch (error) {
+      if (error?.code === 'ENOENT') return;
+      throw error;
+    }
+    for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+      const file = path.join(current, entry.name);
+      if (entry.isDirectory()) await walk(file);
+      else if (entry.isFile()) files.push(file);
+    }
+  }
+  await walk(directory);
+  return files;
+}
+
+async function importedCandidate({ importsRoot, manifestId, target, source }) {
+  const plannedDestination = importDestination(importsRoot, manifestId, target, source);
+  const filename = expectedSourceFilename(source);
+  const matches = filename
+    ? (await filesUnder(importsRoot)).filter(file => path.basename(file) === filename)
+    : [];
+  const details = {
+    status: matches.length === 1 ? 'MATCHED' : matches.length > 1 ? 'AMBIGUOUS' : 'MISSING',
+    expectedSourceFilename: filename,
+    plannedImportDestination: plannedDestination ? relativeFromRoot(plannedDestination) : null,
+    matches: matches.map(relativeFromRoot)
+  };
+  if (matches.length !== 1) return { ...details, file: null };
+  return {
+    ...details,
+    file: { absolutePath: matches[0], filename, buffer: await readFile(matches[0]) }
+  };
+}
+
 async function existingOriginalForSource({ target, source, originalsDir }) {
   const preferred = filenameFromFileTitle(source.sourceAssetId);
   const nested = sourceDirectory(originalsDir, target, source);
@@ -363,7 +425,10 @@ function sourceRecordFromSpec(source) {
     sha256: null,
     provenanceNote: source.provenanceNote ?? null,
     validationWarnings: [...(source.validationWarnings ?? [])],
-    verificationEvidence: []
+    verificationEvidence: [],
+    importStatus: null,
+    plannedImportDestination: null,
+    importMatches: []
   };
 }
 
@@ -557,6 +622,44 @@ export class FandomMediaWikiAdapter {
     failure.cause = lastError?.cause ?? lastError;
     throw failure;
   }
+}
+
+function plannedSourceUrl(baseUrl, source) {
+  if (source.sourceType === 'fandom-file') {
+    const fileTitle = normalizeFileTitle(source.sourceAssetId ?? source.sourceRef);
+    return fileTitle ? candidateFileUrls(baseUrl, fileTitle)[0] : null;
+  }
+  if (source.sourceType === 'fandom-character-page' && source.sourceRef) {
+    return `${baseUrl}/wiki/${encodeURIComponent(source.sourceRef)}`;
+  }
+  return null;
+}
+
+export async function createFetchPlan({
+  manifestPath = defaultManifestPath,
+  importsRoot = defaultImportsRoot
+} = {}) {
+  const manifest = validateManifest(JSON.parse(await readFile(manifestPath, 'utf8')));
+  const importsDir = ensureSafeImports({ importsRoot, runtimeDir: runtimeSpritesDir });
+  const baseUrl = (manifest.wikiBaseUrl ?? 'https://inazuma-eleven.fandom.com').replace(/\/+$/, '');
+  return {
+    schemaVersion: 1,
+    manifestId: manifest.manifestId,
+    importsRoot: relativeFromRoot(importsDir),
+    targets: manifest.targets.map(target => ({
+      targetId: target.versionId,
+      canonicalCharacterId: target.canonicalCharacterId,
+      sources: sourceSpecsForTarget(target).map(source => {
+        const destination = importDestination(importsDir, manifest.manifestId, target, source);
+        return {
+          sourceKey: source.sourceKey,
+          expectedSourceFilename: expectedSourceFilename(source),
+          sourceUrl: plannedSourceUrl(baseUrl, source),
+          plannedImportDestination: destination ? relativeFromRoot(destination) : null
+        };
+      })
+    }))
+  };
 }
 
 function applyDuplicateAnnotations(targets) {
@@ -801,17 +904,20 @@ function renderMarkdown(report) {
 export async function runAssetFactory({
   manifestPath = defaultManifestPath,
   stagingRoot = defaultOutputRoot,
+  importsRoot = defaultImportsRoot,
   verifiedRoot = defaultVerifiedRoot,
   reportsRoot = defaultReportsRoot,
   approvalsPath = null,
   captureApprovalHashes: shouldCaptureApprovalHashes = false,
   finalizeApprovals = false,
+  importCandidates = false,
   fetchImpl = globalThis.fetch
 } = {}) {
   if (shouldCaptureApprovalHashes && finalizeApprovals) throw new Error('capture-approval-hashes and finalize-approvals are mutually exclusive');
   const manifest = validateManifest(JSON.parse(await readFile(manifestPath, 'utf8')));
   const adapter = new FandomMediaWikiAdapter({ baseUrl: manifest.wikiBaseUrl ?? 'https://inazuma-eleven.fandom.com', fetchImpl });
   const stagingDir = await ensureSafeStaging({ stagingRoot, runtimeDir: runtimeSpritesDir });
+  const importsDir = ensureSafeImports({ importsRoot, runtimeDir: runtimeSpritesDir });
   const verifiedDir = await ensureSafeVerified({ verifiedRoot, runtimeDir: runtimeSpritesDir });
   const originalsDir = path.join(stagingDir, 'originals');
   await mkdir(originalsDir, { recursive: true });
@@ -833,6 +939,41 @@ export async function runAssetFactory({
     for (const sourceSpec of sourceSpecsForTarget(target)) {
       const sourceRecord = sourceRecordFromSpec(sourceSpec);
       try {
+        if (importCandidates) {
+          const imported = await importedCandidate({ importsRoot: importsDir, manifestId: manifest.manifestId, target, source: sourceSpec });
+          sourceRecord.importStatus = imported.status;
+          sourceRecord.plannedImportDestination = imported.plannedImportDestination;
+          sourceRecord.importMatches = imported.matches;
+          if (imported.status !== 'MATCHED') {
+            sourceRecord.sourceStatus = imported.status;
+            sourceRecord.assetStatus = 'REVIEW';
+            sourceRecord.validationWarnings = unique([...sourceRecord.validationWarnings, `IMPORT_${imported.status}`]);
+            target.sources.push(sourceRecord);
+            continue;
+          }
+          const signature = detectImageSignature(imported.file.buffer);
+          const destination = path.join(sourceDirectory(originalsDir, target, sourceRecord), imported.file.filename);
+          if (!isSubpath(stagingDir, destination) || isSubpath(runtimeSpritesDir, destination)) throw new Error('Unsafe staging destination');
+          await mkdir(path.dirname(destination), { recursive: true });
+          const staged = await writeImmutableFile(destination, imported.file.buffer);
+          applyResolvedSourceRecord({
+            record: sourceRecord,
+            reportPath,
+            stagedPath: destination,
+            fileName: imported.file.filename,
+            buffer: imported.file.buffer,
+            signature,
+            reused: staged.reused
+          });
+          sourceRecord.validationWarnings = unique([...sourceRecord.validationWarnings, 'IMPORTED_CANDIDATE']);
+          sourceRecord.verificationEvidence = unique([...sourceRecord.verificationEvidence, 'pre-materialized-import']);
+          sourceRecord.provenanceNote = unique([
+            sourceRecord.provenanceNote,
+            `Imported from ${imported.matches[0]} and retained as CANDIDATE pending explicit approval.`
+          ]).join(' ');
+          target.sources.push(sourceRecord);
+          continue;
+        }
         const existing = await existingOriginalForSource({ target, source: sourceSpec, originalsDir });
         if (existing) {
           const signature = detectImageSignature(existing.buffer);
@@ -900,6 +1041,7 @@ export async function runAssetFactory({
     manifestPath: relativeFromRoot(manifestPath),
     approvalsPath: approvalsPath ? relativeFromRoot(approvalsPath) : null,
     stagingRoot: relativeFromRoot(stagingDir),
+    importsRoot: relativeFromRoot(importsDir),
     verifiedRoot: relativeFromRoot(verifiedDir),
     contactSheetPath: relativeFromRoot(path.join(reportsRoot, `${manifest.manifestId}.contact-sheet.html`)),
     markdownReportPath: relativeFromRoot(path.join(reportsRoot, `${manifest.manifestId}.report.md`)),
@@ -923,20 +1065,37 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
         verified: { type: 'string' },
         reports: { type: 'string' },
         approvals: { type: 'string' },
+        imports: { type: 'string' },
+        'fetch-plan': { type: 'boolean' },
+        'import-candidates': { type: 'boolean' },
         'capture-approval-hashes': { type: 'boolean' },
         'finalize-approvals': { type: 'boolean' }
       }
     });
-    const report = await runAssetFactory({
-      manifestPath: values.manifest ? path.resolve(values.manifest) : defaultManifestPath,
-      stagingRoot: values.staging ? path.resolve(values.staging) : defaultOutputRoot,
-      verifiedRoot: values.verified ? path.resolve(values.verified) : defaultVerifiedRoot,
-      reportsRoot: values.reports ? path.resolve(values.reports) : defaultReportsRoot,
-      approvalsPath: values.approvals ? path.resolve(values.approvals) : defaultApprovalsPath,
-      captureApprovalHashes: Boolean(values['capture-approval-hashes']),
-      finalizeApprovals: Boolean(values['finalize-approvals'])
-    });
-    console.log(JSON.stringify({ status: report.status, manifestId: report.manifestId, summary: report.summary, report: `${report.manifestId}.report.json` }, null, 2));
+    if (values['fetch-plan']) {
+      if (values['import-candidates'] || values['capture-approval-hashes'] || values['finalize-approvals']) {
+        throw new Error('fetch-plan cannot be combined with import or approval actions');
+      }
+      const plan = await createFetchPlan({
+        manifestPath: values.manifest ? path.resolve(values.manifest) : defaultManifestPath,
+        importsRoot: values.imports ? path.resolve(values.imports) : defaultImportsRoot
+      });
+      console.log(JSON.stringify(plan, null, 2));
+      process.exitCode = 0;
+    } else {
+      const report = await runAssetFactory({
+        manifestPath: values.manifest ? path.resolve(values.manifest) : defaultManifestPath,
+        stagingRoot: values.staging ? path.resolve(values.staging) : defaultOutputRoot,
+        importsRoot: values.imports ? path.resolve(values.imports) : defaultImportsRoot,
+        verifiedRoot: values.verified ? path.resolve(values.verified) : defaultVerifiedRoot,
+        reportsRoot: values.reports ? path.resolve(values.reports) : defaultReportsRoot,
+        approvalsPath: values.approvals ? path.resolve(values.approvals) : defaultApprovalsPath,
+        importCandidates: Boolean(values['import-candidates']),
+        captureApprovalHashes: Boolean(values['capture-approval-hashes']),
+        finalizeApprovals: Boolean(values['finalize-approvals'])
+      });
+      console.log(JSON.stringify({ status: report.status, manifestId: report.manifestId, summary: report.summary, report: `${report.manifestId}.report.json` }, null, 2));
+    }
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

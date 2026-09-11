@@ -71,7 +71,7 @@ test("current catalog audit preserves all 44 legacy files and surfaces existing 
  const versions=await loadVersions();
  const fixture=JSON.parse(await readFile(new URL("fixtures/catalog-identity-audit.json",import.meta.url),"utf8"));
  const report=await auditAssets({versions,identities:fixture.entries});
- assert.equal(report.summary.assetCount,63);assert.equal(report.summary.missing,0);assert.equal(report.summary.orphans,0);
+ assert.equal(report.summary.assetCount,67);assert.equal(report.summary.missing,0);assert.equal(report.summary.orphans,0);
  assert.deepEqual(report,await auditAssets({versions,identities:fixture.entries}));
  assert.equal(report.versions.length,versions.length);
  for(const entry of fixture.entries) assert.equal(report.files.find(f=>f.filename===entry.spriteId+".png").sha256,entry.spriteSha256);
@@ -88,8 +88,8 @@ test("legacy WebP payloads are warnings and the actual audit CLI exits zero",asy
  assert.equal(auditExitCode(report),0);
  assert.equal(report.summary.invalidPng,0);
  assert.equal(report.summary.invalidAssets,0);
- assert.equal(report.summary.extensionFormatMismatches,44);
- assert.deepEqual(report.summary.dimensionBuckets,{"256x256":2,"64x64":61});
+ assert.equal(report.summary.extensionFormatMismatches,48);
+ assert.deepEqual(report.summary.dimensionBuckets,{"256x256":2,"64x64":65});
  for(const file of report.files.filter(f=>f.sourceFormat==="WEBP")) {
   assert.equal(file.validAsset,true);
   assert.deepEqual(file.issues.find(i=>i.code==="EXTENSION_FORMAT_MISMATCH"),{
@@ -100,7 +100,7 @@ test("legacy WebP payloads are warnings and the actual audit CLI exits zero",asy
  }
  const cli=spawnSync(process.execPath,[fileURLToPath(new URL("../scripts/asset-audit.mjs",import.meta.url))],{encoding:"utf8"});
  assert.equal(cli.status,0,cli.stderr);
- assert.equal(JSON.parse(cli.stdout).summary.extensionFormatMismatches,44);
+ assert.equal(JSON.parse(cli.stdout).summary.extensionFormatMismatches,48);
 });
 
 test("corrupt image alone produces a nonzero audit exit code",async()=>{

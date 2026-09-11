@@ -31,8 +31,8 @@ const ko = () => ({ ...player(), hp: 0 });
 
 test("Royal/Zeus expansion keeps identities, legacy aliases and collection progress distinct", async () => {
   const manifest = JSON.parse(await readFile(new URL("../../docs/royal-zeus-assets.json", import.meta.url), "utf8"));
-  assert.equal(catalog.CATALOG_SOURCE.versions.length, 63);
-  assert.equal(catalog.CATALOG_SOURCE.characters.length, 61);
+  assert.equal(catalog.CATALOG_SOURCE.versions.length, 67);
+  assert.equal(catalog.CATALOG_SOURCE.characters.length, 64);
   assert.equal(catalog.CATALOG_SOURCE.legacyMappings.length, 44);
   for (const row of manifest.entries) {
     const v = catalog.resolveVersion(row.versionId);
@@ -80,6 +80,66 @@ test("Royal/Zeus pools respect tier gates and exclude every selected new version
     assert.equal(scenarios.selectEncounterVersion(id, wave, tier, excluded), null);
   }
   assert.deepEqual(new Set(scenarios.scenarioPool("zeus", 18, 3).map(r => r.version.role)), new Set(["P", "D", "C", "A"]));
+});
+
+test("Epsilon versions reuse Dvalin canon and stay inside the gated laboratory pool", () => {
+  const base = catalog.resolveVersion("dvalin");
+  const legacy = data.ROSTER.find(r => r.id === "dvalin");
+  const epsilonIds = ["dvalin:epsilon-ie2", "tytan:epsilon-ie2", "krypto:epsilon-ie2", "zell:epsilon-ie2"];
+  assert.equal(base.versionId, "dvalin:base");
+  assert.equal(base.spriteId, "dvalin");
+  assert.deepEqual(base.baseStats, { hp: legacy.hp, atk: legacy.atk, def: legacy.def, spd: legacy.spd });
+  assert.deepEqual(catalog.PRIMARY_MOVES[base.primaryMoveId], legacy.move);
+  assert.equal(catalog.resolveVersion("dvalin:epsilon-ie2").characterId, base.characterId);
+  assert.equal(catalog.CATALOG_SOURCE.characters.filter(c => c.characterId === "dvalin").length, 1);
+  for (const id of epsilonIds) {
+    const version = catalog.resolveVersion(id);
+    assert.ok(version);
+    assert.deepEqual(version.teamTags, ["epsilon"]);
+    assert.equal(version.arcId, "alius");
+    assert.equal(version.gameOrigin, "ie2");
+    assert.equal(version.encounterTier, 3);
+    assert.equal(createPlayer(id, 18).versionId, id);
+  }
+  assert.deepEqual(scenarios.scenarioPool("epsilon-lab", 17, 3), []);
+  assert.deepEqual(scenarios.scenarioPool("epsilon-lab", 18, 2), []);
+  assert.deepEqual(scenarios.scenarioPool("epsilon-lab", 18, 3).map(r => r.version.versionId).sort(), epsilonIds.sort());
+  for (const id of ["urban", "royal-academy", "zeus", "international"]) {
+    assert.ok(scenarios.scenarioPool(id, 18, 3).every(r => !epsilonIds.includes(r.version.versionId)));
+  }
+});
+
+test("Epsilon laboratory generates only Epsilon battles and recruitment", () => {
+  const random = Math.random;
+  const epsilonIds = new Set(["dvalin:epsilon-ie2", "tytan:epsilon-ie2", "krypto:epsilon-ie2", "zell:epsilon-ie2"]);
+  const run = { ...newRun(starters), wave: 18, scenarioState: { id: "epsilon-lab", revision: 1, segmentStart: 18, segmentEnd: 23 } };
+  try {
+    const rolls = [0.1, 0.9, 0.9];
+    Math.random = () => rolls.length ? rolls.shift() : 0.5;
+    const battle = engine.generateWave(run);
+    assert.equal(battle.kind, "team");
+    assert.ok(battle.enemies.length >= 2 && battle.enemies.length <= 3);
+    assert.equal(new Set(battle.enemies.map(p => p.versionId)).size, battle.enemies.length);
+    assert.ok(battle.enemies.every(p => epsilonIds.has(p.versionId)));
+    Math.random = () => 0.55;
+    const recruit = engine.generateWave(run);
+    assert.equal(recruit.type, "recruit");
+    assert.ok(epsilonIds.has(recruit.player.versionId));
+  } finally { Math.random = random; }
+});
+
+test("Epsilon runtime sprites retain verified source hashes and provenance", async () => {
+  const provenance = JSON.parse(await readFile(new URL("../../tools/assets/runtime-provenance/epsilon-ie2-poc.json", import.meta.url), "utf8"));
+  assert.equal(provenance.schemaVersion, 1);
+  assert.equal(provenance.sourceManifestId, "epsilon-ie2-poc");
+  assert.equal(provenance.assets.length, 4);
+  for (const row of provenance.assets) {
+    const sourceBytes = await readFile(new URL("../../" + row.verifiedSourcePath, import.meta.url));
+    const runtimeBytes = await readFile(new URL("../../" + row.runtimeSpritePath, import.meta.url));
+    assert.equal(createHash("sha256").update(sourceBytes).digest("hex"), row.sha256);
+    assert.equal(createHash("sha256").update(runtimeBytes).digest("hex"), row.sha256);
+    assert.equal(catalog.resolveVersion(row.versionId).spriteId + ".png", row.runtimeSpritePath.split("/").at(-1));
+  }
 });
 
 test("Royal/Zeus generated battles, recruitment and pending saves use authored versions", () => {

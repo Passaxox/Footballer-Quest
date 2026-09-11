@@ -7,8 +7,10 @@ import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
 import {
   applyHumanApprovals,
+  createFetchPlan,
   detectDuplicateCandidates,
   detectImageSignature,
+  ensureSafeImports,
   ensureSafeStaging,
   ensureSafeVerified,
   reportStatus,
@@ -19,6 +21,7 @@ import {
 } from './asset-factory.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const repoImportsRoot = path.join(repoRoot, 'tools/assets/imports');
 const repoStagingRoot = path.join(repoRoot, 'tools/assets/staging');
 const repoVerifiedRoot = path.join(repoRoot, 'tools/assets/verified');
 const repoReportsRoot = path.join(repoRoot, 'tools/assets/reports');
@@ -160,6 +163,124 @@ test('exact duplicate detection groups matching hashes', () => {
     { versionId: 'b', sha256: 'same' },
     { versionId: 'c', sha256: 'other' }
   ]), [{ sha256: 'same', versionIds: ['a', 'b'] }]);
+});
+
+test('fetch plans are machine-readable, side-effect free and constrained to the imports root', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  const manifestPath = path.join(directory, 'manifest.json');
+  const importsRoot = path.join(repoImportsRoot, `missing-${path.basename(directory)}`);
+  try {
+    const input = manifest();
+    input.targets[0].sourceCandidates = [{
+      sourceType: 'fandom-file',
+      sourceAssetId: 'File:(E) Desarm sprite.png',
+      sourceSuitability: 'GAME-SPRITE'
+    }];
+    await writeFile(manifestPath, `${JSON.stringify(input, null, 2)}\n`);
+    const plan = await createFetchPlan({ manifestPath, importsRoot });
+    assert.equal(plan.targets[0].targetId, 'dvalin:epsilon-ie2');
+    assert.deepEqual(plan.targets[0].sources[0], {
+      sourceKey: 'source-1',
+      expectedSourceFilename: '(E) Desarm sprite.png',
+      sourceUrl: 'https://example.invalid/wiki/Special:Redirect/file/File%3A(E)%20Desarm%20sprite.png',
+      plannedImportDestination: `tools/assets/imports/missing-${path.basename(directory)}/epsilon-ie2-poc/dvalin-epsilon-ie2/source-1/(E) Desarm sprite.png`
+    });
+    await assert.rejects(() => readFile(importsRoot), error => error.code === 'ENOENT');
+    assert.throws(() => ensureSafeImports({
+      importsRoot: path.join(repoRoot, 'tools/assets/staging'),
+      runtimeDir: path.join(repoRoot, 'frontend/public/sprites')
+    }), /must stay under tools\/assets\/imports/);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('import workflow stages one exact binary as CANDIDATE without fetching', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let importsRoot;
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const input = manifest();
+    input.targets[0].sourceCandidates = [{
+      sourceType: 'fandom-file',
+      sourceAssetId: 'File:(E) Desarm sprite.png',
+      sourceSuitability: 'GAME-SPRITE'
+    }];
+    await writeFile(manifestPath, `${JSON.stringify(input, null, 2)}\n`);
+    await mkdir(repoImportsRoot, { recursive: true });
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    importsRoot = await mkdtemp(path.join(repoImportsRoot, 'test-imports-'));
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const planned = path.join(importsRoot, 'epsilon-ie2-poc', 'dvalin-epsilon-ie2', 'source-1');
+    await mkdir(planned, { recursive: true });
+    await writeFile(path.join(planned, '(E) Desarm sprite.png'), png(2, 2));
+    const report = await runAssetFactory({
+      manifestPath, importsRoot, stagingRoot, reportsRoot, importCandidates: true,
+      fetchImpl: async () => { throw new Error('must not fetch imported candidates'); }
+    });
+    assert.equal(report.status, 'PASS');
+    assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
+    assert.equal(report.targets[0].sources[0].importStatus, 'MATCHED');
+    assert.match(report.targets[0].sources[0].outputFile, /^tools\/assets\/staging\//);
+    assert.ok(report.targets[0].sources[0].verificationEvidence.includes('pre-materialized-import'));
+  } finally {
+    if (importsRoot) await rm(importsRoot, { recursive: true, force: true });
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('import workflow blocks ambiguous and missing exact candidates without choosing', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-factory-'));
+  let importsRoot;
+  let stagingRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const input = manifest();
+    input.targets[0].sourceCandidates = [{
+      sourceType: 'fandom-file',
+      sourceAssetId: 'File:(E) Desarm sprite.png',
+      sourceSuitability: 'GAME-SPRITE'
+    }];
+    await writeFile(manifestPath, `${JSON.stringify(input, null, 2)}\n`);
+    await mkdir(repoImportsRoot, { recursive: true });
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    importsRoot = await mkdtemp(path.join(repoImportsRoot, 'test-imports-'));
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    for (const folder of ['one', 'two']) {
+      await mkdir(path.join(importsRoot, folder), { recursive: true });
+      await writeFile(path.join(importsRoot, folder, '(E) Desarm sprite.png'), png(2, 2));
+    }
+    const ambiguous = await runAssetFactory({
+      manifestPath, importsRoot, stagingRoot, reportsRoot, importCandidates: true,
+      fetchImpl: async () => { throw new Error('must not fetch imported candidates'); }
+    });
+    assert.equal(ambiguous.status, 'BLOCKED');
+    assert.equal(ambiguous.targets[0].sources[0].importStatus, 'AMBIGUOUS');
+    assert.equal(ambiguous.targets[0].sources[0].outputFile, null);
+    await rm(path.join(importsRoot, 'one'), { recursive: true, force: true });
+    await rm(path.join(importsRoot, 'two'), { recursive: true, force: true });
+    const missing = await runAssetFactory({
+      manifestPath, importsRoot, stagingRoot, reportsRoot, importCandidates: true,
+      fetchImpl: async () => { throw new Error('must not fetch imported candidates'); }
+    });
+    assert.equal(missing.status, 'BLOCKED');
+    assert.equal(missing.targets[0].sources[0].importStatus, 'MISSING');
+    assert.equal(missing.targets[0].sources[0].outputFile, null);
+  } finally {
+    if (importsRoot) await rm(importsRoot, { recursive: true, force: true });
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test('failed source requests are classified without creating candidates', async () => {
