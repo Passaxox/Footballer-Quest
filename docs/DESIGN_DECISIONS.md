@@ -282,20 +282,40 @@ The fusion remains a run/build outcome unless a future explicit system says othe
 
 ---
 
-## DD-018 — DNA dual type
+## DD-018 — DNA dual type and matchup combination
 
-**Status:** RESEARCH  
+**Status:** APPROVED_CONCEPT  
 **Historical milestone:** M4  
-**Current direction:** M2 may prepare compatible foundations; full implementation remains later unless explicitly promoted.
+**Current direction:** M2 should keep compatible data foundations; mature full implementation may remain later unless deliberately promoted after simulation/playtest.
 
-Rules already agreed conceptually:
+Core rules:
 
 - normal dual typing is created by DNA fusion, barring an explicit future canon exception;
+- the recipient remains the primary identity;
+- a fused player has two real defensive elements; the donor element is not treated as a “half type” in combat;
 - technique element remains its own property;
-- defensive matchup considers both player types;
-- avoid extreme 4x / 0.25x Pokémon-style multiplication;
-- previously proposed test scale: `0.75x`, `0.85x`, `1x`, `1.25x`, `1.5x`;
-- exact combination/math must be simulated and playtested before freezing.
+- if a technique matches either fused element, it may receive the normal STAB bonus; do not create a weaker donor-only STAB tier;
+- Traits/Synergies use their own contribution weights and remain separate from matchup math.
+
+For a move checked against a dual-type defender, score each defender element independently:
+
+- move is effective against that element = `+1`;
+- neutral = `0`;
+- resisted by that element = `-1`.
+
+Add the two scores and map the result to the working multiplier ladder:
+
+- `+2` -> `1.50x`
+- `+1` -> `1.25x`
+- `0` -> `1.00x`
+- `-1` -> `0.85x`
+- `-2` -> `0.75x`
+
+Therefore an advantage and a resistance cancel to neutral instead of multiplying into an extreme result.
+
+Do not use Pokémon-style `4x` / `0.25x` extremes.
+
+The **structure and combination rule are approved**. Exact multiplier tuning (`1.25/0.85`, etc.) remains balance data and may move after simulation/playtest without changing the underlying rule.
 
 ---
 
@@ -567,7 +587,7 @@ Keep human/director judgment for:
 
 The following remain intentionally unresolved:
 
-- exact dual-type matchup combination math;
+- final dual-type multiplier tuning after simulation/playtest;
 - exact Trait tier thresholds/effects;
 - exact meta scouting rates/pity/fragment costs;
 - exact Guide taxonomy and whether Manager/Coach remain subtypes or separate pool labels;
