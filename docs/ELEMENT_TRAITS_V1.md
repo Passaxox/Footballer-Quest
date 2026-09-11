@@ -1,6 +1,6 @@
 # Footballer Quest — Element Traits v1
 
-**Status:** DESIGN — Fire approved; remaining elements under Director review  
+**Status:** DESIGN — Fuoco and Aria approved; Terra/Natura under Director review  
 **Milestone:** M2 Traits/Synergies foundation  
 **Purpose:** define broad element identities that influence build decisions without replacing Team/Faction identity.
 
@@ -74,8 +74,72 @@ Fuoco v1 does not imply:
 
 ---
 
+## ARIA — Tempo / Control / Disruption
+
+**Status:** APPROVED_CONCEPT — tier identity frozen; exact numbers/status tuning remain balance work  
+**Identity:** recover tempo, disrupt the opponent's action order and convert successful control into a short team-wide timing window.
+
+### Tier I — Corrente Favorevole
+
+When the team has recently lost tempo, eligible Aria techniques receive a controlled priority/tempo benefit to help recover initiative.
+
+**Approved direction:** Aria should not simply be permanently faster. The benefit is conditional on having lost or yielded the previous timing advantage.
+
+Purpose:
+
+- let Aria recover rhythm rather than own first action unconditionally;
+- avoid overlapping with Gemini Storm's switch/Momentum identity;
+- create a readable tactical comeback in turn order without granting extra turns.
+
+The exact trigger definition and priority value remain balance data.
+
+### Tier II — Turbolenza
+
+Eligible Aria techniques explicitly compatible with `Confusion` improve their reliability at applying it.
+
+If the target is already `Confused`, an eligible control hit should **not** endlessly extend the status. Instead it creates a short tempo disruption such as a penalty to the target's next-action priority/timing.
+
+Purpose:
+
+- distinguish Confusion from Freeze;
+- reward preparing and exploiting disruption without hard-lock chains;
+- make Aria manipulate timing rather than simply increase damage.
+
+Current v1 direction for Confusion remains a controlled chance to fail/lose effectiveness on an attempted action rather than Pokémon-style self-damage.
+
+Exact application chance, duration and timing penalty remain Q-001/status balance work.
+
+### Tier III — Campo di Correnti
+
+Once per battle, after the team successfully creates an eligible Aria control opening, it may create a short **Campo di Correnti** for a small fixed number of turns.
+
+**Approved behaviour direction:** while the field is active, the team receives a temporary advantage in timing/control interactions — for example improved priority handling and/or stronger effectiveness of authored tempo penalties on compatible Aria techniques.
+
+The field must be visible/readable in battle UI and have explicit remaining duration.
+
+Purpose:
+
+- turn successful control into a memorable team-wide window rather than another one-action priority buff;
+- make the Tier III payoff feel materially different from Tier I and II;
+- create a battlefield-state identity inspired by short field/tempo systems without copying another game's exact rules.
+
+### Explicit exclusions
+
+Aria v1 does not imply:
+
+- permanent first action;
+- free extra turns;
+- repeated hard-lock/action denial;
+- every Aria technique applying Confusion;
+- automatic Freeze support for all Aria techniques;
+- Campo di Correnti stacking or refreshing indefinitely.
+
+Freeze remains available only to explicitly compatible techniques/Team Traits such as Diamond Dust; Aria as an element is not synonymous with ice.
+
+---
+
 ## Next element under review
 
-**ARIA — Tempo / Control / Disruption**
+**TERRA — Structure / Stability / Guard**
 
 Exact Tier I/II/III effects remain under Director review.
