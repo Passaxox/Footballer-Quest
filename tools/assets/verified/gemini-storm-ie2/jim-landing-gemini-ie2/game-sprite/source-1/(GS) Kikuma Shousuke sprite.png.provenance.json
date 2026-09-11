@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "gemini-storm-ie2",
+  "versionId": "jim-landing:gemini-ie2",
+  "displayName": "Jim Landing / Gigs",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(GS) Kikuma Shousuke sprite.png",
+  "sourceFilename": "(GS) Kikuma Shousuke sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/gemini-storm-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/gemini-storm-ie2/originals/jim-landing-gemini-ie2/game-sprite/(GS) Kikuma Shousuke sprite.png",
+  "verifiedPath": "tools/assets/verified/gemini-storm-ie2/jim-landing-gemini-ie2/game-sprite/source-1/(GS) Kikuma Shousuke sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/jim-landing-gemini-ie2.png",
+  "sha256": "ff9545895b30511c55a91789a484f19deec4aa67e23f2575f319aca6e300d577"
+}

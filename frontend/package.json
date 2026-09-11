@@ -65,9 +65,12 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
+    "test:path-safe": "node scripts/test-path-safe.cjs",
     "test:foundation": "node --test tests/foundation.test.mjs",
     "asset:audit": "node scripts/asset-audit.mjs",
     "test:assets": "node --test tests/asset-audit.test.mjs",
+    "content:apply": "node ../tools/content/content-factory.mjs --apply",
+    "content:check": "node ../tools/content/content-check.mjs",
     "android:prepare": "npm run build && npx cap sync android",
     "android:debug": "npm run android:prepare && cd android && ./gradlew assembleDebug"
   },

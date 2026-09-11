@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "gemini-storm-ie2",
+  "versionId": "connor-shuttle:gemini-ie2",
+  "displayName": "Connor Shuttle / Coral",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(GS) Sango Yoshirou sprite.png",
+  "sourceFilename": "(GS) Sango Yoshirou sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/gemini-storm-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/gemini-storm-ie2/originals/connor-shuttle-gemini-ie2/game-sprite/(GS) Sango Yoshirou sprite.png",
+  "verifiedPath": "tools/assets/verified/gemini-storm-ie2/connor-shuttle-gemini-ie2/game-sprite/source-1/(GS) Sango Yoshirou sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/connor-shuttle-gemini-ie2.png",
+  "sha256": "a615610b18cf3258617037f98c9f1585c3e3d745833bc11477eabbe8de2a3214"
+}

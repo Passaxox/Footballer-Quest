@@ -1,0 +1,22 @@
+# Gemini Storm IE2 verified game sprites
+
+- Status: **PASS**
+- Manifest: `tools/assets/manifests/gemini-storm-ie2.json`
+- Approvals: `tools/assets/approvals/gemini-storm-ie2.approvals.json`
+- Contact sheet: `tools/assets/reports/gemini-storm-ie2.contact-sheet.html`
+- Runtime integration performed: **no**
+- ASSET-VERIFIED requires explicit matching approval: **yes**
+
+| Target | Source status | Suitability | Asset status | Source file | Candidate path | Verified path | Warnings |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Gordon Star / Galileo | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Goryuu Reo sprite.png | tools/assets/staging/gemini-storm-ie2/originals/gordon-star-gemini-ie2/game-sprite/(GS) Goryuu Reo sprite.png | tools/assets/verified/gemini-storm-ie2/gordon-star-gemini-ie2/game-sprite/source-1/(GS) Goryuu Reo sprite.png | IMMUTABLE_REUSE |
+| Connor Shuttle / Coral | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Sango Yoshirou sprite.png | tools/assets/staging/gemini-storm-ie2/originals/connor-shuttle-gemini-ie2/game-sprite/(GS) Sango Yoshirou sprite.png | tools/assets/verified/gemini-storm-ie2/connor-shuttle-gemini-ie2/game-sprite/source-1/(GS) Sango Yoshirou sprite.png | IMMUTABLE_REUSE |
+| Jim Landing / Gigs | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Kikuma Shousuke sprite.png | tools/assets/staging/gemini-storm-ie2/originals/jim-landing-gemini-ie2/game-sprite/(GS) Kikuma Shousuke sprite.png | tools/assets/verified/gemini-storm-ie2/jim-landing-gemini-ie2/game-sprite/source-1/(GS) Kikuma Shousuke sprite.png | IMMUTABLE_REUSE |
+| Grant Icewater / Ganymede | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Kanime Iderou sprite.png | tools/assets/staging/gemini-storm-ie2/originals/grant-icewater-gemini-ie2/game-sprite/(GS) Kanime Iderou sprite.png | tools/assets/verified/gemini-storm-ie2/grant-icewater-gemini-ie2/game-sprite/source-1/(GS) Kanime Iderou sprite.png | IMMUTABLE_REUSE |
+| Charles Riverboat / Charon | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Karoku Satori sprite.png | tools/assets/staging/gemini-storm-ie2/originals/charles-riverboat-gemini-ie2/game-sprite/(GS) Karoku Satori sprite.png | tools/assets/verified/gemini-storm-ie2/charles-riverboat-gemini-ie2/game-sprite/source-1/(GS) Karoku Satori sprite.png | IMMUTABLE_REUSE |
+| Pat Box / Pandora | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Kinki Nozomi sprite.png | tools/assets/staging/gemini-storm-ie2/originals/pat-box-gemini-ie2/game-sprite/(GS) Kinki Nozomi sprite.png | tools/assets/verified/gemini-storm-ie2/pat-box-gemini-ie2/game-sprite/source-1/(GS) Kinki Nozomi sprite.png | IMMUTABLE_REUSE |
+| Gregory Saturn / Grengo | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Omotsuki Sora sprite.png | tools/assets/staging/gemini-storm-ie2/originals/gregory-saturn-gemini-ie2/game-sprite/(GS) Omotsuki Sora sprite.png | tools/assets/verified/gemini-storm-ie2/gregory-saturn-gemini-ie2/game-sprite/source-1/(GS) Omotsuki Sora sprite.png | IMMUTABLE_REUSE |
+| Izzy Jupiter / Io | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Io Shuntarou sprite.png | tools/assets/staging/gemini-storm-ie2/originals/izzy-jupiter-gemini-ie2/game-sprite/(GS) Io Shuntarou sprite.png | tools/assets/verified/gemini-storm-ie2/izzy-jupiter-gemini-ie2/game-sprite/source-1/(GS) Io Shuntarou sprite.png | IMMUTABLE_REUSE |
+| Rhona Countdown / Rihm | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Nanakaze Rimu sprite.png | tools/assets/staging/gemini-storm-ie2/originals/rhona-countdown-gemini-ie2/game-sprite/(GS) Nanakaze Rimu sprite.png | tools/assets/verified/gemini-storm-ie2/rhona-countdown-gemini-ie2/game-sprite/source-1/(GS) Nanakaze Rimu sprite.png | IMMUTABLE_REUSE |
+| Jordan Greenway / Janus | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Reize sprite.png | tools/assets/staging/gemini-storm-ie2/originals/jordan-gemini-ie2/game-sprite/(GS) Reize sprite.png | tools/assets/verified/gemini-storm-ie2/jordan-gemini-ie2/game-sprite/source-1/(GS) Reize sprite.png | IMMUTABLE_REUSE |
+| Dylan Bluemoon / Diam | SOURCE-VERIFIED | GAME-SPRITE | ASSET-VERIFIED | (GS) Miura Hiromu sprite.png | tools/assets/staging/gemini-storm-ie2/originals/dylan-bluemoon-gemini-ie2/game-sprite/(GS) Miura Hiromu sprite.png | tools/assets/verified/gemini-storm-ie2/dylan-bluemoon-gemini-ie2/game-sprite/source-1/(GS) Miura Hiromu sprite.png | IMMUTABLE_REUSE |

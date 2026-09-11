@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "gemini-storm-ie2",
+  "versionId": "gordon-star:gemini-ie2",
+  "displayName": "Gordon Star / Galileo",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(GS) Goryuu Reo sprite.png",
+  "sourceFilename": "(GS) Goryuu Reo sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/gemini-storm-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/gemini-storm-ie2/originals/gordon-star-gemini-ie2/game-sprite/(GS) Goryuu Reo sprite.png",
+  "verifiedPath": "tools/assets/verified/gemini-storm-ie2/gordon-star-gemini-ie2/game-sprite/source-1/(GS) Goryuu Reo sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/gordon-star-gemini-ie2.png",
+  "sha256": "747b0140079ad541de4a2e82c6c55070f3e2d4867fbeb2065f4245cf664d48fd"
+}

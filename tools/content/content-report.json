@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "changed": false,
+  "manifestCount": 2,
+  "teamCount": 2,
+  "characterCount": 13,
+  "versionCount": 15,
+  "moveCount": 15,
+  "scenarioCount": 2,
+  "reviewCount": 0,
+  "reviewItems": [],
+  "identityDecisions": [
+    {
+      "manifestId": "epsilon-ie2",
+      "versionId": "dvalin:epsilon-ie2",
+      "requestedCharacterId": "dvalin",
+      "characterId": "dvalin",
+      "status": "REUSED",
+      "matches": [
+        "dvalin"
+      ]
+    },
+    {
+      "manifestId": "epsilon-ie2",
+      "versionId": "tytan:epsilon-ie2",
+      "requestedCharacterId": "tytan",
+      "characterId": "tytan",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "epsilon-ie2",
+      "versionId": "krypto:epsilon-ie2",
+      "requestedCharacterId": "krypto",
+      "characterId": "krypto",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "epsilon-ie2",
+      "versionId": "zell:epsilon-ie2",
+      "requestedCharacterId": "zell",
+      "characterId": "zell",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "gordon-star:gemini-ie2",
+      "requestedCharacterId": "gordon-star",
+      "characterId": "gordon-star",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "connor-shuttle:gemini-ie2",
+      "requestedCharacterId": "connor-shuttle",
+      "characterId": "connor-shuttle",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "jim-landing:gemini-ie2",
+      "requestedCharacterId": "jim-landing",
+      "characterId": "jim-landing",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "grant-icewater:gemini-ie2",
+      "requestedCharacterId": "grant-icewater",
+      "characterId": "grant-icewater",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "charles-riverboat:gemini-ie2",
+      "requestedCharacterId": "charles-riverboat",
+      "characterId": "charles-riverboat",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "pat-box:gemini-ie2",
+      "requestedCharacterId": "pat-box",
+      "characterId": "pat-box",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "gregory-saturn:gemini-ie2",
+      "requestedCharacterId": "gregory-saturn",
+      "characterId": "gregory-saturn",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "izzy-jupiter:gemini-ie2",
+      "requestedCharacterId": "izzy-jupiter",
+      "characterId": "izzy-jupiter",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "rhona-countdown:gemini-ie2",
+      "requestedCharacterId": "rhona-countdown",
+      "characterId": "rhona-countdown",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "jordan:gemini-ie2",
+      "requestedCharacterId": "jordan",
+      "characterId": "jordan",
+      "status": "REUSED",
+      "matches": [
+        "jordan"
+      ]
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "versionId": "dylan-bluemoon:gemini-ie2",
+      "requestedCharacterId": "dylan-bluemoon",
+      "characterId": "dylan-bluemoon",
+      "status": "NEW",
+      "matches": []
+    }
+  ],
+  "manifests": [
+    "tools/content/manifests/epsilon-ie2.json",
+    "tools/content/manifests/gemini-storm-ie2.json"
+  ]
+}

@@ -40,6 +40,7 @@ From repository root:
 node tools/assets/asset-factory.mjs
 node tools/assets/asset-factory.mjs --fetch-plan
 node tools/assets/asset-factory.mjs --import-candidates
+node tools/assets/asset-factory.mjs --import-candidates --prepare-approvals
 node --test tools/assets/asset-factory.test.mjs
 ```
 
@@ -51,9 +52,10 @@ When the source host is inaccessible:
 2. Externally fetch the exact binaries from each `sourceUrl`.
 3. Place each file at its `plannedImportDestination` under `tools/assets/imports/`.
 4. Run `node tools/assets/asset-factory.mjs --import-candidates`.
-5. Review the staged candidates and record explicit human approval.
-6. Run `--capture-approval-hashes` to bind each approved candidate to its SHA-256.
-7. Run `--finalize-approvals` to verify the hashes and promote immutable files into `tools/assets/verified/`.
+5. Run `--prepare-approvals`, open the generated contact sheet, and review the deterministic bindings.
+6. Change each reviewed entry from `REVIEW` to `ASSET-VERIFIED` or `REJECTED`.
+7. Run `--complete-approvals` to capture SHA-256 values, promote immutable verified files, copy
+   declared runtime sprites, and write runtime provenance in one idempotent command.
 
 Import matching is exact and deterministic across the import tree. One exact filename is `MATCHED`; no match is `MISSING`; more than one match is `AMBIGUOUS`. Missing and ambiguous imports are `BLOCKED` and never selected silently. Imported files remain `CANDIDATE` until the existing approval and hash-verification flow completes. Generic character images cannot be approved as game assets. Staging, imports, verified storage, and runtime sprites remain separate.
 
@@ -64,7 +66,8 @@ Explicit human approval finalization is supported through `tools/assets/approval
 - `--capture-approval-hashes` fills only the SHA-256 for an already-selected explicit candidate; it never creates approvals or chooses a candidate implicitly.
 - `--finalize-approvals` recomputes the stored hash again, rejects missing files, hash mismatches, ambiguity, or non-game/generic sources, and promotes only the approved binary into `tools/assets/verified/`.
 
-To capture hashes from already staged approved candidates on a machine that has the local staged files:
+The older two-step commands remain available for compatibility. To capture hashes from already
+staged approved candidates:
 
 ```text
 node tools/assets/asset-factory.mjs --approvals tools/assets/approvals/epsilon-ie2-poc.approvals.json --capture-approval-hashes
@@ -75,3 +78,6 @@ To verify the stored hashes, promote approved binaries into verified storage, an
 ```text
 node tools/assets/asset-factory.mjs --approvals tools/assets/approvals/epsilon-ie2-poc.approvals.json --finalize-approvals
 ```
+
+For any non-default manifest, pass `--manifest`. Staging and approvals paths are derived from its
+`manifestId`, so a new team does not reuse Epsilon paths.

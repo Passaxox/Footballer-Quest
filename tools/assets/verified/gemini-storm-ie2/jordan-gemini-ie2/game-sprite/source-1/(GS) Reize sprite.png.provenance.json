@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "gemini-storm-ie2",
+  "versionId": "jordan:gemini-ie2",
+  "displayName": "Jordan Greenway / Janus",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(GS) Reize sprite.png",
+  "sourceFilename": "(GS) Reize sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/gemini-storm-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/gemini-storm-ie2/originals/jordan-gemini-ie2/game-sprite/(GS) Reize sprite.png",
+  "verifiedPath": "tools/assets/verified/gemini-storm-ie2/jordan-gemini-ie2/game-sprite/source-1/(GS) Reize sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/jordan-gemini-ie2.png",
+  "sha256": "652d106902a1a4c1f9f945dc499e04d7c8a1376811a8b85a6e6820fa8121246f"
+}

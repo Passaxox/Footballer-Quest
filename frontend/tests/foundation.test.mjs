@@ -10,13 +10,14 @@ const dataUrl = moduleUrl(await source("data"));
 const rulesUrl = moduleUrl(await source("rules"));
 const validationUrl = moduleUrl(await source("catalogValidation"));
 const { validateCatalog, validateIdentityAudit } = await import(validationUrl);
-const metadataUrl = moduleUrl(await source("catalogMetadata"));
 const expansionUrl = moduleUrl(await source("catalogExpansion"));
-const catalogUrl = moduleUrl((await source("catalog")).replace("\"./catalogExpansion\"", JSON.stringify(expansionUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
+const teamContentUrl = moduleUrl(await source("teamContent.generated"));
+const metadataUrl = moduleUrl((await source("catalogMetadata")).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)));
+const catalogUrl = moduleUrl((await source("catalog")).replace("\"./catalogExpansion\"", JSON.stringify(expansionUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
 const collectionUrl = moduleUrl((await source("collection")).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
-const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
+const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)));
 const scenarios = await import(scenariosUrl);
 const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const engine = await import(engineUrl);
@@ -31,9 +32,10 @@ const ko = () => ({ ...player(), hp: 0 });
 
 test("Royal/Zeus expansion keeps identities, legacy aliases and collection progress distinct", async () => {
   const manifest = JSON.parse(await readFile(new URL("../../docs/royal-zeus-assets.json", import.meta.url), "utf8"));
-  assert.equal(catalog.CATALOG_SOURCE.versions.length, 67);
-  assert.equal(catalog.CATALOG_SOURCE.characters.length, 64);
   assert.equal(catalog.CATALOG_SOURCE.legacyMappings.length, 44);
+  assert.ok(catalog.CATALOG_SOURCE.versions.length > catalog.CATALOG_SOURCE.legacyMappings.length);
+  assert.equal(new Set(catalog.CATALOG_SOURCE.versions.map(v => v.versionId)).size, catalog.CATALOG_SOURCE.versions.length);
+  assert.equal(new Set(catalog.CATALOG_SOURCE.characters.map(c => c.characterId)).size, catalog.CATALOG_SOURCE.characters.length);
   for (const row of manifest.entries) {
     const v = catalog.resolveVersion(row.versionId);
     assert.equal(v.characterId, row.characterId);
@@ -133,6 +135,66 @@ test("Epsilon runtime sprites retain verified source hashes and provenance", asy
   assert.equal(provenance.schemaVersion, 1);
   assert.equal(provenance.sourceManifestId, "epsilon-ie2-poc");
   assert.equal(provenance.assets.length, 4);
+  for (const row of provenance.assets) {
+    const sourceBytes = await readFile(new URL("../../" + row.verifiedSourcePath, import.meta.url));
+    const runtimeBytes = await readFile(new URL("../../" + row.runtimeSpritePath, import.meta.url));
+    assert.equal(createHash("sha256").update(sourceBytes).digest("hex"), row.sha256);
+    assert.equal(createHash("sha256").update(runtimeBytes).digest("hex"), row.sha256);
+    assert.equal(catalog.resolveVersion(row.versionId).spriteId + ".png", row.runtimeSpritePath.split("/").at(-1));
+  }
+});
+
+test("Gemini manifest reuses Jordan and derives the complete isolated IE2 lineup", () => {
+  const geminiIds = [
+    "gordon-star:gemini-ie2", "connor-shuttle:gemini-ie2", "jim-landing:gemini-ie2",
+    "grant-icewater:gemini-ie2", "charles-riverboat:gemini-ie2", "pat-box:gemini-ie2",
+    "gregory-saturn:gemini-ie2", "izzy-jupiter:gemini-ie2", "rhona-countdown:gemini-ie2",
+    "jordan:gemini-ie2", "dylan-bluemoon:gemini-ie2"
+  ];
+  assert.equal(catalog.resolveVersion("jordan:gemini-ie2").characterId, catalog.resolveVersion("jordan:base").characterId);
+  assert.equal(catalog.CATALOG_SOURCE.characters.filter(character => character.characterId === "jordan").length, 1);
+  for (const id of geminiIds) {
+    const version = catalog.resolveVersion(id);
+    assert.ok(version);
+    assert.deepEqual(version.teamTags, ["gemini-storm"]);
+    assert.equal(version.arcId, "alius");
+    assert.equal(version.gameOrigin, "ie2");
+    assert.equal(version.encounterTier, 3);
+    assert.equal(createPlayer(id, 18).versionId, id);
+  }
+  assert.deepEqual(new Set(geminiIds.map(id => catalog.resolveVersion(id).role)), new Set(["P", "D", "C", "A"]));
+  assert.deepEqual(scenarios.scenarioPool("gemini-crash-site", 17, 3), []);
+  assert.deepEqual(scenarios.scenarioPool("gemini-crash-site", 18, 2), []);
+  assert.deepEqual(scenarios.scenarioPool("gemini-crash-site", 18, 3).map(row => row.version.versionId).sort(), geminiIds.sort());
+  for (const id of ["urban", "royal-academy", "zeus", "epsilon-lab", "international"]) {
+    assert.ok(scenarios.scenarioPool(id, 18, 3).every(row => !geminiIds.includes(row.version.versionId)));
+  }
+});
+
+test("Gemini scenario generates team battles and recruitment with version identity", () => {
+  const geminiIds = new Set(scenarios.scenarioPool("gemini-crash-site", 18, 3).map(row => row.version.versionId));
+  const run = { ...newRun(starters), wave: 18, scenarioState: { id: "gemini-crash-site", revision: 1, segmentStart: 18, segmentEnd: 23 } };
+  const random = Math.random;
+  try {
+    const rolls = [0.1, 0.9, 0.9];
+    Math.random = () => rolls.length ? rolls.shift() : 0.5;
+    const battle = engine.generateWave(run);
+    assert.equal(battle.kind, "team");
+    assert.ok(battle.enemies.every(player => geminiIds.has(player.versionId)));
+    Math.random = () => 0.55;
+    const recruit = engine.generateWave(run);
+    assert.equal(recruit.type, "recruit");
+    assert.ok(geminiIds.has(recruit.player.versionId));
+    assert.equal(catalog.resolveVersion(recruit.player.versionId).characterId, recruit.player.characterId);
+  } finally {
+    Math.random = random;
+  }
+});
+
+test("Gemini runtime sprites match immutable verified provenance", async () => {
+  const provenance = JSON.parse(await readFile(new URL("../../tools/assets/runtime-provenance/gemini-storm-ie2.json", import.meta.url), "utf8"));
+  assert.equal(provenance.schemaVersion, 1);
+  assert.equal(provenance.assets.length, 11);
   for (const row of provenance.assets) {
     const sourceBytes = await readFile(new URL("../../" + row.verifiedSourcePath, import.meta.url));
     const runtimeBytes = await readFile(new URL("../../" + row.runtimeSpritePath, import.meta.url));

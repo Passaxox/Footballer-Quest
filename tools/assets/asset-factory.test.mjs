@@ -13,6 +13,7 @@ import {
   ensureSafeImports,
   ensureSafeStaging,
   ensureSafeVerified,
+  prepareApprovalReview,
   reportStatus,
   runAssetFactory,
   sha256Hex,
@@ -667,12 +668,94 @@ test('capture-approval-hashes records the real hash for an explicitly selected c
         status: 200
       })
     });
+
     const approvalFile = JSON.parse(await readFile(approvalsPath, 'utf8'));
     assert.equal(report.targets[0].assetStatus, 'CANDIDATE');
     assert.equal(report.targets[0].sources[0].assetStatus, 'CANDIDATE');
     assert.equal(approvalFile.approvals[0].sha256, sha256Hex(samplePng));
     assert.equal(approvalFile.approvals[0].candidatePath, candidatePath);
     assert.equal(report.targets[0].verifiedFile, null);
+  } finally {
+    if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
+    if (verifiedRoot) await rm(verifiedRoot, { recursive: true, force: true });
+    if (reportsRoot) await rm(reportsRoot, { recursive: true, force: true });
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('approval preparation auto-binds one deterministic candidate and leaves ambiguity for review', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-approval-review-'));
+  try {
+    const approvalsPath = path.join(directory, 'approvals.json');
+    const approvals = { schemaVersion: 1, manifestId: 'test', approvals: [] };
+    const candidate = {
+      sourceKey: 'source-1',
+      assetStatus: 'CANDIDATE',
+      sourceSuitability: 'GAME-SPRITE',
+      outputFile: 'tools/assets/staging/test/player.png',
+      sourceFilename: 'player.png'
+    };
+    await prepareApprovalReview({
+      approvals,
+      approvalsPath,
+      targets: [
+        { versionId: 'matched:team', sources: [candidate] },
+        { versionId: 'ambiguous:team', sources: [candidate, { ...candidate, sourceKey: 'source-2', outputFile: 'tools/assets/staging/test/player-2.png' }] },
+        { versionId: 'missing:team', sources: [] }
+      ]
+    });
+    const written = JSON.parse(await readFile(approvalsPath, 'utf8'));
+    assert.deepEqual(written.approvals.map(row => [row.versionId, row.reviewStatus, row.candidatePath]), [
+      ['matched:team', 'MATCHED', candidate.outputFile],
+      ['ambiguous:team', 'AMBIGUOUS', null],
+      ['missing:team', 'MISSING', null]
+    ]);
+    assert.ok(written.approvals.every(row => row.decision === 'REVIEW' && row.sha256 === null));
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('complete-approvals captures hashes, promotes safely and is idempotent in one command', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-complete-'));
+  let stagingRoot;
+  let verifiedRoot;
+  let reportsRoot;
+  try {
+    const manifestPath = path.join(directory, 'manifest.json');
+    const approvalsPath = path.join(directory, 'approvals.json');
+    const manifestData = manifest();
+    manifestData.manifestId = 'complete-test';
+    manifestData.targets[0].sourceCandidates = [{
+      sourceType: 'fandom-file',
+      sourceAssetId: 'File:(E) Desarm sprite.png',
+      sourceSuitability: 'GAME-SPRITE'
+    }];
+    await writeFile(manifestPath, `${JSON.stringify(manifestData, null, 2)}\n`);
+    const samplePng = png(2, 2);
+    await mkdir(repoStagingRoot, { recursive: true });
+    await mkdir(repoVerifiedRoot, { recursive: true });
+    await mkdir(repoReportsRoot, { recursive: true });
+    stagingRoot = await mkdtemp(path.join(repoStagingRoot, 'test-staging-'));
+    verifiedRoot = await mkdtemp(path.join(repoVerifiedRoot, 'test-verified-'));
+    reportsRoot = await mkdtemp(path.join(repoReportsRoot, 'test-reports-'));
+    const candidatePath = relativeCandidatePath(stagingRoot, 'dvalin:epsilon-ie2', 'game-sprite', '(E) Desarm sprite.png');
+    await writeFile(approvalsPath, `${JSON.stringify({
+      schemaVersion: 1,
+      manifestId: 'complete-test',
+      approvals: [{ versionId: 'dvalin:epsilon-ie2', decision: 'ASSET-VERIFIED', candidatePath, sourceFilename: '(E) Desarm sprite.png', sha256: null }]
+    }, null, 2)}\n`);
+    const fetchImpl = async () => ({
+      ok: true,
+      json: async () => ({ query: { pages: { 1: { title: 'File:(E) Desarm sprite.png', imageinfo: [{ url: 'https://static.example.invalid/desarm.png' }] } } } }),
+      arrayBuffer: async () => samplePng,
+      status: 200
+    });
+    const first = await runAssetFactory({ manifestPath, stagingRoot, verifiedRoot, reportsRoot, approvalsPath, completeApprovals: true, fetchImpl });
+    const second = await runAssetFactory({ manifestPath, stagingRoot, verifiedRoot, reportsRoot, approvalsPath, completeApprovals: true, fetchImpl: async () => { throw new Error('should not fetch'); } });
+    assert.equal(first.targets[0].assetStatus, 'ASSET-VERIFIED');
+    assert.equal(first.targets[0].verifiedFile, second.targets[0].verifiedFile);
+    assert.equal(JSON.parse(await readFile(approvalsPath, 'utf8')).approvals[0].sha256, sha256Hex(samplePng));
   } finally {
     if (stagingRoot) await rm(stagingRoot, { recursive: true, force: true });
     if (verifiedRoot) await rm(verifiedRoot, { recursive: true, force: true });

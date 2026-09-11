@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "gemini-storm-ie2",
+  "versionId": "gregory-saturn:gemini-ie2",
+  "displayName": "Gregory Saturn / Grengo",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(GS) Omotsuki Sora sprite.png",
+  "sourceFilename": "(GS) Omotsuki Sora sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/gemini-storm-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/gemini-storm-ie2/originals/gregory-saturn-gemini-ie2/game-sprite/(GS) Omotsuki Sora sprite.png",
+  "verifiedPath": "tools/assets/verified/gemini-storm-ie2/gregory-saturn-gemini-ie2/game-sprite/source-1/(GS) Omotsuki Sora sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/gregory-saturn-gemini-ie2.png",
+  "sha256": "db9d1b3a5b214bfb410350bbefd9ee061128ae2d8df9679c3aa484fb3649d67d"
+}

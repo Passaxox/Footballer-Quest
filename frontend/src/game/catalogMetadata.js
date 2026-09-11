@@ -1,11 +1,11 @@
+import { GENERATED_TEAMS } from "./teamContent.generated";
+
 // gameOrigin = first original-trilogy game featuring this specific incarnation.
 // Never character debut across media, sprite source, current team or inferred arc.
 // GO registry entries remain reserved; this batch assigns only ie1/ie2/ie3.
 export const TEAMS = [
   { teamId: "royal-academy", displayName: "Royal Academy" },
   { teamId: "alius-academy", displayName: "Alius Academy" },
-  { teamId: "gemini-storm", displayName: "Gemini Storm" },
-  { teamId: "epsilon", displayName: "Epsilon" },
   { teamId: "epsilon-plus", displayName: "Epsilon Plus" },
   { teamId: "diamond-dust", displayName: "Diamond Dust" },
   { teamId: "prominence", displayName: "Prominence" },
@@ -25,6 +25,7 @@ export const TEAMS = [
   { teamId: "zeus", displayName: "Zeus" },
   { teamId: "genesis", displayName: "Genesis" },
   { teamId: "little-gigant", displayName: "Little Gigant" },
+  ...GENERATED_TEAMS,
 ];
 export const ERAS = [{ eraId: "original", displayName: "Original" }, { eraId: "go", displayName: "GO" }];
 export const ARCS = [

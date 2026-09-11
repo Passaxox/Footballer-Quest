@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "gemini-storm-ie2",
+  "versionId": "dylan-bluemoon:gemini-ie2",
+  "displayName": "Dylan Bluemoon / Diam",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(GS) Miura Hiromu sprite.png",
+  "sourceFilename": "(GS) Miura Hiromu sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/gemini-storm-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/gemini-storm-ie2/originals/dylan-bluemoon-gemini-ie2/game-sprite/(GS) Miura Hiromu sprite.png",
+  "verifiedPath": "tools/assets/verified/gemini-storm-ie2/dylan-bluemoon-gemini-ie2/game-sprite/source-1/(GS) Miura Hiromu sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/dylan-bluemoon-gemini-ie2.png",
+  "sha256": "de2318b73e9a8c89ea4ae45560a0daa8e2aaf233399232bf135dde95bf130f68"
+}

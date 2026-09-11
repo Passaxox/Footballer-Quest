@@ -84,7 +84,8 @@ export async function loadVersions() {
   const url = text => `data:text/javascript;base64,${Buffer.from(text).toString("base64")}`;
   const source = name => readFile(path.join(frontend,"src/game",name+".js"),"utf8");
   const dependencies={};
-  for(const name of ["data","catalogMetadata","catalogValidation","catalogExpansion"]) dependencies[name]=url(await source(name));
+  for(const name of ["data","catalogValidation","catalogExpansion","teamContent.generated"]) dependencies[name]=url(await source(name));
+  dependencies.catalogMetadata=url((await source("catalogMetadata")).replace('"./teamContent.generated"',JSON.stringify(dependencies["teamContent.generated"])));
   let catalog=await source("catalog");
   for(const [name,value] of Object.entries(dependencies)) catalog=catalog.replace(`"./${name}"`,JSON.stringify(value));
   return Object.values((await import(url(catalog))).CHARACTER_VERSIONS);

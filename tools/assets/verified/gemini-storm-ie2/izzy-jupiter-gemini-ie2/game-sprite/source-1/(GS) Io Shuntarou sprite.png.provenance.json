@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "gemini-storm-ie2",
+  "versionId": "izzy-jupiter:gemini-ie2",
+  "displayName": "Izzy Jupiter / Io",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(GS) Io Shuntarou sprite.png",
+  "sourceFilename": "(GS) Io Shuntarou sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/gemini-storm-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/gemini-storm-ie2/originals/izzy-jupiter-gemini-ie2/game-sprite/(GS) Io Shuntarou sprite.png",
+  "verifiedPath": "tools/assets/verified/gemini-storm-ie2/izzy-jupiter-gemini-ie2/game-sprite/source-1/(GS) Io Shuntarou sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/izzy-jupiter-gemini-ie2.png",
+  "sha256": "7d7ec3b328f9a8935f739ae9d966740a62cc131bc5d5cbe01aa68b4712de0df3"
+}

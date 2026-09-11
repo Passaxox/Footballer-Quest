@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "epsilon-ie2",
+  "team": {
+    "teamId": "epsilon",
+    "displayName": "Epsilon",
+    "arcId": "alius",
+    "eraId": "original",
+    "gameOrigin": "ie2",
+    "tags": ["epsilon"]
+  },
+  "scenario": {
+    "id": "epsilon-lab",
+    "displayName": "Laboratorio Epsilon",
+    "locationType": "facility",
+    "minTier": 3,
+    "waveFrom": 18
+  },
+  "players": [
+    {
+      "canonicalCharacterId": "dvalin",
+      "aliases": ["Dvalin", "Desarm", "Osamu Saginuma"],
+      "expectedIdentity": "reuse",
+      "versionId": "dvalin:epsilon-ie2",
+      "displayName": "Dvalin / Desarm",
+      "role": "P",
+      "element": "aria",
+      "spriteTargetId": "dvalin-epsilon-ie2",
+      "encounterTier": 3,
+      "baseStats": { "hp": 96, "atk": 34, "def": 44, "spd": 30 },
+      "primaryMove": { "name": "Guanto Rotante", "power": 70, "effect": "guard" },
+      "evidenceStatus": "VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "epsilon-ie2-poc"
+    },
+    {
+      "canonicalCharacterId": "tytan",
+      "aliases": ["Tytan", "Titan", "Taiji Tanba"],
+      "expectedIdentity": "new",
+      "versionId": "tytan:epsilon-ie2",
+      "displayName": "Tytan / Titan",
+      "role": "D",
+      "element": "terra",
+      "spriteTargetId": "tytan-epsilon-ie2",
+      "encounterTier": 3,
+      "baseStats": { "hp": 82, "atk": 28, "def": 36, "spd": 26 },
+      "primaryMove": { "name": "Contrasto deciso", "power": 60, "effect": "shatter" },
+      "evidenceStatus": "VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "epsilon-ie2-poc"
+    },
+    {
+      "canonicalCharacterId": "krypto",
+      "aliases": ["Krypto", "Fuuko Kuri"],
+      "expectedIdentity": "new",
+      "versionId": "krypto:epsilon-ie2",
+      "displayName": "Krypto",
+      "role": "C",
+      "element": "fuoco",
+      "spriteTargetId": "krypto-epsilon-ie2",
+      "encounterTier": 3,
+      "baseStats": { "hp": 72, "atk": 34, "def": 30, "spd": 34 },
+      "primaryMove": { "name": "Passaggio tattico", "power": 65, "effect": "weaken" },
+      "evidenceStatus": "VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "epsilon-ie2-poc"
+    },
+    {
+      "canonicalCharacterId": "zell",
+      "aliases": ["Zell", "Zel", "Ryuuichirou Segata"],
+      "expectedIdentity": "new",
+      "versionId": "zell:epsilon-ie2",
+      "displayName": "Zell / Zel",
+      "role": "A",
+      "element": "natura",
+      "spriteTargetId": "zell-epsilon-ie2",
+      "encounterTier": 3,
+      "baseStats": { "hp": 74, "atk": 40, "def": 26, "spd": 32 },
+      "primaryMove": { "name": "Tiro potente", "power": 85, "effect": null },
+      "evidenceStatus": "VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "epsilon-ie2-poc"
+    }
+  ]
+}

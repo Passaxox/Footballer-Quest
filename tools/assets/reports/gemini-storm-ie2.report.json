@@ -1,0 +1,1039 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "gemini-storm-ie2",
+  "title": "Gemini Storm IE2 verified game sprites",
+  "manifestPath": "tools/assets/manifests/gemini-storm-ie2.json",
+  "approvalsPath": "tools/assets/approvals/gemini-storm-ie2.approvals.json",
+  "stagingRoot": "tools/assets/staging/gemini-storm-ie2",
+  "importsRoot": "tools/assets/imports",
+  "verifiedRoot": "tools/assets/verified",
+  "contactSheetPath": "tools/assets/reports/gemini-storm-ie2.contact-sheet.html",
+  "markdownReportPath": "tools/assets/reports/gemini-storm-ie2.report.md",
+  "runtimeSpritesPath": "frontend/public/sprites",
+  "status": "PASS",
+  "summary": {
+    "targetCount": 11,
+    "verifiedCount": 11,
+    "candidateCount": 0,
+    "reviewCount": 0,
+    "assetGapCount": 0,
+    "unassessedCount": 0,
+    "sourceBlockedCount": 0,
+    "sourceMissingCount": 0
+  },
+  "targets": [
+    {
+      "canonicalCharacterId": "gordon-star",
+      "versionId": "gordon-star:gemini-ie2",
+      "displayName": "Gordon Star / Galileo",
+      "runtimeSpriteId": "gordon-star-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Goryuu Reo sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #1 goalkeeper; exact IE2 Gemini game sprite. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "747b0140079ad541de4a2e82c6c55070f3e2d4867fbeb2065f4245cf664d48fd",
+      "sourceAssetId": "File:(GS) Goryuu Reo sprite.png",
+      "sourceFilename": "(GS) Goryuu Reo sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/gordon-star-gemini-ie2/game-sprite/source-1/(GS) Goryuu Reo sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/gordon-star-gemini-ie2/game-sprite/source-1/(GS) Goryuu Reo sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Goryuu Reo sprite.png",
+          "sourceFilename": "(GS) Goryuu Reo sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/gordon-star-gemini-ie2/game-sprite/(GS) Goryuu Reo sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/gordon-star-gemini-ie2/game-sprite/source-1/(GS) Goryuu Reo sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/gordon-star-gemini-ie2/game-sprite/source-1/(GS) Goryuu Reo sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/gordon-star-gemini-ie2/game-sprite/source-1/(GS)%20Goryuu%20Reo%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "747b0140079ad541de4a2e82c6c55070f3e2d4867fbeb2065f4245cf664d48fd",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Goryuu Reo sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/gordon-star-gemini-ie2/game-sprite/(GS) Goryuu Reo sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/gordon-star-gemini-ie2/game-sprite/source-1/(GS)%20Goryuu%20Reo%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/gordon-star-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/gordon-star-gemini-ie2/game-sprite/(GS) Goryuu Reo sprite.png",
+        "sourceFilename": "(GS) Goryuu Reo sprite.png",
+        "sha256": "747b0140079ad541de4a2e82c6c55070f3e2d4867fbeb2065f4245cf664d48fd"
+      }
+    },
+    {
+      "canonicalCharacterId": "connor-shuttle",
+      "versionId": "connor-shuttle:gemini-ie2",
+      "displayName": "Connor Shuttle / Coral",
+      "runtimeSpriteId": "connor-shuttle-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Sango Yoshirou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #2 defender; exact IE2 Gemini game sprite. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "a615610b18cf3258617037f98c9f1585c3e3d745833bc11477eabbe8de2a3214",
+      "sourceAssetId": "File:(GS) Sango Yoshirou sprite.png",
+      "sourceFilename": "(GS) Sango Yoshirou sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/connor-shuttle-gemini-ie2/game-sprite/source-1/(GS) Sango Yoshirou sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/connor-shuttle-gemini-ie2/game-sprite/source-1/(GS) Sango Yoshirou sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Sango Yoshirou sprite.png",
+          "sourceFilename": "(GS) Sango Yoshirou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/connor-shuttle-gemini-ie2/game-sprite/(GS) Sango Yoshirou sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/connor-shuttle-gemini-ie2/game-sprite/source-1/(GS) Sango Yoshirou sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/connor-shuttle-gemini-ie2/game-sprite/source-1/(GS) Sango Yoshirou sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/connor-shuttle-gemini-ie2/game-sprite/source-1/(GS)%20Sango%20Yoshirou%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "a615610b18cf3258617037f98c9f1585c3e3d745833bc11477eabbe8de2a3214",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Sango Yoshirou sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/connor-shuttle-gemini-ie2/game-sprite/(GS) Sango Yoshirou sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/connor-shuttle-gemini-ie2/game-sprite/source-1/(GS)%20Sango%20Yoshirou%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/connor-shuttle-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/connor-shuttle-gemini-ie2/game-sprite/(GS) Sango Yoshirou sprite.png",
+        "sourceFilename": "(GS) Sango Yoshirou sprite.png",
+        "sha256": "a615610b18cf3258617037f98c9f1585c3e3d745833bc11477eabbe8de2a3214"
+      }
+    },
+    {
+      "canonicalCharacterId": "jim-landing",
+      "versionId": "jim-landing:gemini-ie2",
+      "displayName": "Jim Landing / Gigs",
+      "runtimeSpriteId": "jim-landing-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Kikuma Shousuke sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #3 defender; exact IE2 Gemini game sprite. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "ff9545895b30511c55a91789a484f19deec4aa67e23f2575f319aca6e300d577",
+      "sourceAssetId": "File:(GS) Kikuma Shousuke sprite.png",
+      "sourceFilename": "(GS) Kikuma Shousuke sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/jim-landing-gemini-ie2/game-sprite/source-1/(GS) Kikuma Shousuke sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/jim-landing-gemini-ie2/game-sprite/source-1/(GS) Kikuma Shousuke sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Kikuma Shousuke sprite.png",
+          "sourceFilename": "(GS) Kikuma Shousuke sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/jim-landing-gemini-ie2/game-sprite/(GS) Kikuma Shousuke sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/jim-landing-gemini-ie2/game-sprite/source-1/(GS) Kikuma Shousuke sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/jim-landing-gemini-ie2/game-sprite/source-1/(GS) Kikuma Shousuke sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/jim-landing-gemini-ie2/game-sprite/source-1/(GS)%20Kikuma%20Shousuke%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "ff9545895b30511c55a91789a484f19deec4aa67e23f2575f319aca6e300d577",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Kikuma Shousuke sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/jim-landing-gemini-ie2/game-sprite/(GS) Kikuma Shousuke sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/jim-landing-gemini-ie2/game-sprite/source-1/(GS)%20Kikuma%20Shousuke%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/jim-landing-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/jim-landing-gemini-ie2/game-sprite/(GS) Kikuma Shousuke sprite.png",
+        "sourceFilename": "(GS) Kikuma Shousuke sprite.png",
+        "sha256": "ff9545895b30511c55a91789a484f19deec4aa67e23f2575f319aca6e300d577"
+      }
+    },
+    {
+      "canonicalCharacterId": "grant-icewater",
+      "versionId": "grant-icewater:gemini-ie2",
+      "displayName": "Grant Icewater / Ganymede",
+      "runtimeSpriteId": "grant-icewater-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Kanime Iderou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #4 defender; exact IE2 Gemini game sprite. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "40ae5faf51469fd85a8f7a22ef14822e566ad17f347c38fc3b2385ed282b71e8",
+      "sourceAssetId": "File:(GS) Kanime Iderou sprite.png",
+      "sourceFilename": "(GS) Kanime Iderou sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/grant-icewater-gemini-ie2/game-sprite/source-1/(GS) Kanime Iderou sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/grant-icewater-gemini-ie2/game-sprite/source-1/(GS) Kanime Iderou sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Kanime Iderou sprite.png",
+          "sourceFilename": "(GS) Kanime Iderou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/grant-icewater-gemini-ie2/game-sprite/(GS) Kanime Iderou sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/grant-icewater-gemini-ie2/game-sprite/source-1/(GS) Kanime Iderou sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/grant-icewater-gemini-ie2/game-sprite/source-1/(GS) Kanime Iderou sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/grant-icewater-gemini-ie2/game-sprite/source-1/(GS)%20Kanime%20Iderou%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "40ae5faf51469fd85a8f7a22ef14822e566ad17f347c38fc3b2385ed282b71e8",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Kanime Iderou sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/grant-icewater-gemini-ie2/game-sprite/(GS) Kanime Iderou sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/grant-icewater-gemini-ie2/game-sprite/source-1/(GS)%20Kanime%20Iderou%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/grant-icewater-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/grant-icewater-gemini-ie2/game-sprite/(GS) Kanime Iderou sprite.png",
+        "sourceFilename": "(GS) Kanime Iderou sprite.png",
+        "sha256": "40ae5faf51469fd85a8f7a22ef14822e566ad17f347c38fc3b2385ed282b71e8"
+      }
+    },
+    {
+      "canonicalCharacterId": "charles-riverboat",
+      "versionId": "charles-riverboat:gemini-ie2",
+      "displayName": "Charles Riverboat / Charon",
+      "runtimeSpriteId": "charles-riverboat-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Karoku Satori sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #5 defender; exact IE2 Gemini game sprite. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "743319e7195a5d46e5228ce1d6d097577d449d219a07a1dd371af7fd24d13983",
+      "sourceAssetId": "File:(GS) Karoku Satori sprite.png",
+      "sourceFilename": "(GS) Karoku Satori sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/charles-riverboat-gemini-ie2/game-sprite/source-1/(GS) Karoku Satori sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/charles-riverboat-gemini-ie2/game-sprite/source-1/(GS) Karoku Satori sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Karoku Satori sprite.png",
+          "sourceFilename": "(GS) Karoku Satori sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/charles-riverboat-gemini-ie2/game-sprite/(GS) Karoku Satori sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/charles-riverboat-gemini-ie2/game-sprite/source-1/(GS) Karoku Satori sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/charles-riverboat-gemini-ie2/game-sprite/source-1/(GS) Karoku Satori sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/charles-riverboat-gemini-ie2/game-sprite/source-1/(GS)%20Karoku%20Satori%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "743319e7195a5d46e5228ce1d6d097577d449d219a07a1dd371af7fd24d13983",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Karoku Satori sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/charles-riverboat-gemini-ie2/game-sprite/(GS) Karoku Satori sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/charles-riverboat-gemini-ie2/game-sprite/source-1/(GS)%20Karoku%20Satori%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/charles-riverboat-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/charles-riverboat-gemini-ie2/game-sprite/(GS) Karoku Satori sprite.png",
+        "sourceFilename": "(GS) Karoku Satori sprite.png",
+        "sha256": "743319e7195a5d46e5228ce1d6d097577d449d219a07a1dd371af7fd24d13983"
+      }
+    },
+    {
+      "canonicalCharacterId": "pat-box",
+      "versionId": "pat-box:gemini-ie2",
+      "displayName": "Pat Box / Pandora",
+      "runtimeSpriteId": "pat-box-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Kinki Nozomi sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #6 midfielder; exact IE2 Gemini game sprite. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "fd554877b308aa64b61dfcfe470d776fd10d1a8da0fb64172447e9e5d3b5b13c",
+      "sourceAssetId": "File:(GS) Kinki Nozomi sprite.png",
+      "sourceFilename": "(GS) Kinki Nozomi sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/pat-box-gemini-ie2/game-sprite/source-1/(GS) Kinki Nozomi sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/pat-box-gemini-ie2/game-sprite/source-1/(GS) Kinki Nozomi sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Kinki Nozomi sprite.png",
+          "sourceFilename": "(GS) Kinki Nozomi sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/pat-box-gemini-ie2/game-sprite/(GS) Kinki Nozomi sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/pat-box-gemini-ie2/game-sprite/source-1/(GS) Kinki Nozomi sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/pat-box-gemini-ie2/game-sprite/source-1/(GS) Kinki Nozomi sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/pat-box-gemini-ie2/game-sprite/source-1/(GS)%20Kinki%20Nozomi%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "fd554877b308aa64b61dfcfe470d776fd10d1a8da0fb64172447e9e5d3b5b13c",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Kinki Nozomi sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/pat-box-gemini-ie2/game-sprite/(GS) Kinki Nozomi sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/pat-box-gemini-ie2/game-sprite/source-1/(GS)%20Kinki%20Nozomi%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/pat-box-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/pat-box-gemini-ie2/game-sprite/(GS) Kinki Nozomi sprite.png",
+        "sourceFilename": "(GS) Kinki Nozomi sprite.png",
+        "sha256": "fd554877b308aa64b61dfcfe470d776fd10d1a8da0fb64172447e9e5d3b5b13c"
+      }
+    },
+    {
+      "canonicalCharacterId": "gregory-saturn",
+      "versionId": "gregory-saturn:gemini-ie2",
+      "displayName": "Gregory Saturn / Grengo",
+      "runtimeSpriteId": "gregory-saturn-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Omotsuki Sora sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #7 midfielder; exact IE2 Gemini game sprite. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "db9d1b3a5b214bfb410350bbefd9ee061128ae2d8df9679c3aa484fb3649d67d",
+      "sourceAssetId": "File:(GS) Omotsuki Sora sprite.png",
+      "sourceFilename": "(GS) Omotsuki Sora sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/gregory-saturn-gemini-ie2/game-sprite/source-1/(GS) Omotsuki Sora sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/gregory-saturn-gemini-ie2/game-sprite/source-1/(GS) Omotsuki Sora sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Omotsuki Sora sprite.png",
+          "sourceFilename": "(GS) Omotsuki Sora sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/gregory-saturn-gemini-ie2/game-sprite/(GS) Omotsuki Sora sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/gregory-saturn-gemini-ie2/game-sprite/source-1/(GS) Omotsuki Sora sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/gregory-saturn-gemini-ie2/game-sprite/source-1/(GS) Omotsuki Sora sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/gregory-saturn-gemini-ie2/game-sprite/source-1/(GS)%20Omotsuki%20Sora%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "db9d1b3a5b214bfb410350bbefd9ee061128ae2d8df9679c3aa484fb3649d67d",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Omotsuki Sora sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/gregory-saturn-gemini-ie2/game-sprite/(GS) Omotsuki Sora sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/gregory-saturn-gemini-ie2/game-sprite/source-1/(GS)%20Omotsuki%20Sora%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/gregory-saturn-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/gregory-saturn-gemini-ie2/game-sprite/(GS) Omotsuki Sora sprite.png",
+        "sourceFilename": "(GS) Omotsuki Sora sprite.png",
+        "sha256": "db9d1b3a5b214bfb410350bbefd9ee061128ae2d8df9679c3aa484fb3649d67d"
+      }
+    },
+    {
+      "canonicalCharacterId": "izzy-jupiter",
+      "versionId": "izzy-jupiter:gemini-ie2",
+      "displayName": "Izzy Jupiter / Io",
+      "runtimeSpriteId": "izzy-jupiter-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Io Shuntarou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #8 midfielder; exact IE2 Gemini game sprite. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "7d7ec3b328f9a8935f739ae9d966740a62cc131bc5d5cbe01aa68b4712de0df3",
+      "sourceAssetId": "File:(GS) Io Shuntarou sprite.png",
+      "sourceFilename": "(GS) Io Shuntarou sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/izzy-jupiter-gemini-ie2/game-sprite/source-1/(GS) Io Shuntarou sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/izzy-jupiter-gemini-ie2/game-sprite/source-1/(GS) Io Shuntarou sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Io Shuntarou sprite.png",
+          "sourceFilename": "(GS) Io Shuntarou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/izzy-jupiter-gemini-ie2/game-sprite/(GS) Io Shuntarou sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/izzy-jupiter-gemini-ie2/game-sprite/source-1/(GS) Io Shuntarou sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/izzy-jupiter-gemini-ie2/game-sprite/source-1/(GS) Io Shuntarou sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/izzy-jupiter-gemini-ie2/game-sprite/source-1/(GS)%20Io%20Shuntarou%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "7d7ec3b328f9a8935f739ae9d966740a62cc131bc5d5cbe01aa68b4712de0df3",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Io Shuntarou sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/izzy-jupiter-gemini-ie2/game-sprite/(GS) Io Shuntarou sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/izzy-jupiter-gemini-ie2/game-sprite/source-1/(GS)%20Io%20Shuntarou%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/izzy-jupiter-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/izzy-jupiter-gemini-ie2/game-sprite/(GS) Io Shuntarou sprite.png",
+        "sourceFilename": "(GS) Io Shuntarou sprite.png",
+        "sha256": "7d7ec3b328f9a8935f739ae9d966740a62cc131bc5d5cbe01aa68b4712de0df3"
+      }
+    },
+    {
+      "canonicalCharacterId": "rhona-countdown",
+      "versionId": "rhona-countdown:gemini-ie2",
+      "displayName": "Rhona Countdown / Rihm",
+      "runtimeSpriteId": "rhona-countdown-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Nanakaze Rimu sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #9 attacker; exact IE2 Gemini game sprite. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "1f41cbb7436d1d64bcf6d9cd334aa3b7f30b6afd71711e00541471a86d44ef45",
+      "sourceAssetId": "File:(GS) Nanakaze Rimu sprite.png",
+      "sourceFilename": "(GS) Nanakaze Rimu sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/rhona-countdown-gemini-ie2/game-sprite/source-1/(GS) Nanakaze Rimu sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/rhona-countdown-gemini-ie2/game-sprite/source-1/(GS) Nanakaze Rimu sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Nanakaze Rimu sprite.png",
+          "sourceFilename": "(GS) Nanakaze Rimu sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/rhona-countdown-gemini-ie2/game-sprite/(GS) Nanakaze Rimu sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/rhona-countdown-gemini-ie2/game-sprite/source-1/(GS) Nanakaze Rimu sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/rhona-countdown-gemini-ie2/game-sprite/source-1/(GS) Nanakaze Rimu sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/rhona-countdown-gemini-ie2/game-sprite/source-1/(GS)%20Nanakaze%20Rimu%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "1f41cbb7436d1d64bcf6d9cd334aa3b7f30b6afd71711e00541471a86d44ef45",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Nanakaze Rimu sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/rhona-countdown-gemini-ie2/game-sprite/(GS) Nanakaze Rimu sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/rhona-countdown-gemini-ie2/game-sprite/source-1/(GS)%20Nanakaze%20Rimu%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/rhona-countdown-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/rhona-countdown-gemini-ie2/game-sprite/(GS) Nanakaze Rimu sprite.png",
+        "sourceFilename": "(GS) Nanakaze Rimu sprite.png",
+        "sha256": "1f41cbb7436d1d64bcf6d9cd334aa3b7f30b6afd71711e00541471a86d44ef45"
+      }
+    },
+    {
+      "canonicalCharacterId": "jordan",
+      "versionId": "jordan:gemini-ie2",
+      "displayName": "Jordan Greenway / Janus",
+      "runtimeSpriteId": "jordan-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Reize sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "canonical-alias-match",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #10 captain; Jordan Greenway, Janus, Midorikawa Ryuuji and Reize are one canonical person. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "652d106902a1a4c1f9f945dc499e04d7c8a1376811a8b85a6e6820fa8121246f",
+      "sourceAssetId": "File:(GS) Reize sprite.png",
+      "sourceFilename": "(GS) Reize sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/jordan-gemini-ie2/game-sprite/source-1/(GS) Reize sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/jordan-gemini-ie2/game-sprite/source-1/(GS) Reize sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Reize sprite.png",
+          "sourceFilename": "(GS) Reize sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/jordan-gemini-ie2/game-sprite/(GS) Reize sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/jordan-gemini-ie2/game-sprite/source-1/(GS) Reize sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/jordan-gemini-ie2/game-sprite/source-1/(GS) Reize sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/jordan-gemini-ie2/game-sprite/source-1/(GS)%20Reize%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "652d106902a1a4c1f9f945dc499e04d7c8a1376811a8b85a6e6820fa8121246f",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Reize sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/jordan-gemini-ie2/game-sprite/(GS) Reize sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/jordan-gemini-ie2/game-sprite/source-1/(GS)%20Reize%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/jordan-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/jordan-gemini-ie2/game-sprite/(GS) Reize sprite.png",
+        "sourceFilename": "(GS) Reize sprite.png",
+        "sha256": "652d106902a1a4c1f9f945dc499e04d7c8a1376811a8b85a6e6820fa8121246f"
+      }
+    },
+    {
+      "canonicalCharacterId": "dylan-bluemoon",
+      "versionId": "dylan-bluemoon:gemini-ie2",
+      "displayName": "Dylan Bluemoon / Diam",
+      "runtimeSpriteId": "dylan-bluemoon-gemini-ie2",
+      "teamId": "gemini-storm",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": null,
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceAssetId": "File:(GS) Miura Hiromu sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "gemini-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Gemini Storm #11 attacker; exact IE2 Gemini game sprite. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "de2318b73e9a8c89ea4ae45560a0daa8e2aaf233399232bf135dde95bf130f68",
+      "sourceAssetId": "File:(GS) Miura Hiromu sprite.png",
+      "sourceFilename": "(GS) Miura Hiromu sprite.png",
+      "verifiedFile": "tools/assets/verified/gemini-storm-ie2/dylan-bluemoon-gemini-ie2/game-sprite/source-1/(GS) Miura Hiromu sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/dylan-bluemoon-gemini-ie2/game-sprite/source-1/(GS) Miura Hiromu sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": null,
+          "sourceAssetId": "File:(GS) Miura Hiromu sprite.png",
+          "sourceFilename": "(GS) Miura Hiromu sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/dylan-bluemoon-gemini-ie2/game-sprite/(GS) Miura Hiromu sprite.png",
+          "verifiedFile": "tools/assets/verified/gemini-storm-ie2/dylan-bluemoon-gemini-ie2/game-sprite/source-1/(GS) Miura Hiromu sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/gemini-storm-ie2/dylan-bluemoon-gemini-ie2/game-sprite/source-1/(GS) Miura Hiromu sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/gemini-storm-ie2/dylan-bluemoon-gemini-ie2/game-sprite/source-1/(GS)%20Miura%20Hiromu%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/webp",
+          "detectedFormat": "WEBP",
+          "hasAlpha": true,
+          "sha256": "de2318b73e9a8c89ea4ae45560a0daa8e2aaf233399232bf135dde95bf130f68",
+          "provenanceNote": "Original downloaded filename preserved as (GS) Miura Hiromu sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/gemini-storm-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/gemini-storm-ie2/originals/dylan-bluemoon-gemini-ie2/game-sprite/(GS) Miura Hiromu sprite.png",
+      "contactSheetImageUrl": "../verified/gemini-storm-ie2/dylan-bluemoon-gemini-ie2/game-sprite/source-1/(GS)%20Miura%20Hiromu%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/webp",
+      "detectedFormat": "WEBP",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/dylan-bluemoon-gemini-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/gemini-storm-ie2/originals/dylan-bluemoon-gemini-ie2/game-sprite/(GS) Miura Hiromu sprite.png",
+        "sourceFilename": "(GS) Miura Hiromu sprite.png",
+        "sha256": "de2318b73e9a8c89ea4ae45560a0daa8e2aaf233399232bf135dde95bf130f68"
+      }
+    }
+  ]
+}

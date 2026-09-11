@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "sourceManifestId": "gemini-storm-ie2",
+  "assets": [
+    {
+      "versionId": "gordon-star:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/gordon-star-gemini-ie2/game-sprite/source-1/(GS) Goryuu Reo sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/gordon-star-gemini-ie2.png",
+      "sha256": "747b0140079ad541de4a2e82c6c55070f3e2d4867fbeb2065f4245cf664d48fd"
+    },
+    {
+      "versionId": "connor-shuttle:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/connor-shuttle-gemini-ie2/game-sprite/source-1/(GS) Sango Yoshirou sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/connor-shuttle-gemini-ie2.png",
+      "sha256": "a615610b18cf3258617037f98c9f1585c3e3d745833bc11477eabbe8de2a3214"
+    },
+    {
+      "versionId": "jim-landing:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/jim-landing-gemini-ie2/game-sprite/source-1/(GS) Kikuma Shousuke sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/jim-landing-gemini-ie2.png",
+      "sha256": "ff9545895b30511c55a91789a484f19deec4aa67e23f2575f319aca6e300d577"
+    },
+    {
+      "versionId": "grant-icewater:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/grant-icewater-gemini-ie2/game-sprite/source-1/(GS) Kanime Iderou sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/grant-icewater-gemini-ie2.png",
+      "sha256": "40ae5faf51469fd85a8f7a22ef14822e566ad17f347c38fc3b2385ed282b71e8"
+    },
+    {
+      "versionId": "charles-riverboat:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/charles-riverboat-gemini-ie2/game-sprite/source-1/(GS) Karoku Satori sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/charles-riverboat-gemini-ie2.png",
+      "sha256": "743319e7195a5d46e5228ce1d6d097577d449d219a07a1dd371af7fd24d13983"
+    },
+    {
+      "versionId": "pat-box:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/pat-box-gemini-ie2/game-sprite/source-1/(GS) Kinki Nozomi sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/pat-box-gemini-ie2.png",
+      "sha256": "fd554877b308aa64b61dfcfe470d776fd10d1a8da0fb64172447e9e5d3b5b13c"
+    },
+    {
+      "versionId": "gregory-saturn:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/gregory-saturn-gemini-ie2/game-sprite/source-1/(GS) Omotsuki Sora sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/gregory-saturn-gemini-ie2.png",
+      "sha256": "db9d1b3a5b214bfb410350bbefd9ee061128ae2d8df9679c3aa484fb3649d67d"
+    },
+    {
+      "versionId": "izzy-jupiter:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/izzy-jupiter-gemini-ie2/game-sprite/source-1/(GS) Io Shuntarou sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/izzy-jupiter-gemini-ie2.png",
+      "sha256": "7d7ec3b328f9a8935f739ae9d966740a62cc131bc5d5cbe01aa68b4712de0df3"
+    },
+    {
+      "versionId": "rhona-countdown:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/rhona-countdown-gemini-ie2/game-sprite/source-1/(GS) Nanakaze Rimu sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/rhona-countdown-gemini-ie2.png",
+      "sha256": "1f41cbb7436d1d64bcf6d9cd334aa3b7f30b6afd71711e00541471a86d44ef45"
+    },
+    {
+      "versionId": "jordan:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/jordan-gemini-ie2/game-sprite/source-1/(GS) Reize sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/jordan-gemini-ie2.png",
+      "sha256": "652d106902a1a4c1f9f945dc499e04d7c8a1376811a8b85a6e6820fa8121246f"
+    },
+    {
+      "versionId": "dylan-bluemoon:gemini-ie2",
+      "verifiedSourcePath": "tools/assets/verified/gemini-storm-ie2/dylan-bluemoon-gemini-ie2/game-sprite/source-1/(GS) Miura Hiromu sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/dylan-bluemoon-gemini-ie2.png",
+      "sha256": "de2318b73e9a8c89ea4ae45560a0daa8e2aaf233399232bf135dde95bf130f68"
+    }
+  ]
+}

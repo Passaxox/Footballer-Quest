@@ -243,20 +243,7 @@ const moveProfiles = {
   C: { name: "Passaggio tattico", power: 65, effect: "weaken" },
   A: { name: "Tiro potente", power: 85, effect: null },
 };
-const epsilonRows = [
-  { characterId: "dvalin", displayName: "Dvalin / Desarm", role: "P", element: "aria", versionId: "dvalin:epsilon-ie2", spriteId: "dvalin-epsilon-ie2" },
-  { characterId: "tytan", displayName: "Tytan / Titan", role: "D", element: "terra", versionId: "tytan:epsilon-ie2", spriteId: "tytan-epsilon-ie2" },
-  { characterId: "krypto", displayName: "Krypto", role: "C", element: "fuoco", versionId: "krypto:epsilon-ie2", spriteId: "krypto-epsilon-ie2" },
-  { characterId: "zell", displayName: "Zell / Zel", role: "A", element: "natura", versionId: "zell:epsilon-ie2", spriteId: "zell-epsilon-ie2" },
-];
-const epsilonProfiles = {
-  P: { hp: 96, atk: 34, def: 44, spd: 30 },
-  D: { hp: 82, atk: 28, def: 36, spd: 26 },
-  C: { hp: 72, atk: 34, def: 30, spd: 34 },
-  A: { hp: 74, atk: 40, def: 26, spd: 32 },
-};
-
-export const EXPANSION_CHARACTERS = [...rows.filter(r => !["jude", "jonas"].includes(r.characterId)), ...epsilonRows.filter(r => r.characterId !== "dvalin")]
+export const EXPANSION_CHARACTERS = rows.filter(r => !["jude", "jonas"].includes(r.characterId))
   .map(r => ({ characterId: r.characterId, displayName: r.displayName }));
 export const EXPANSION_VERSIONS = [
   ...rows.map(r => ({
@@ -269,22 +256,9 @@ export const EXPANSION_VERSIONS = [
     categoryId: null, arcId: "football-frontier", eraId: "original", gameOrigin: "ie1",
     encounterTier: r.team === "zeus" ? 3 : 2,
   })),
-  ...epsilonRows.map(r => ({
-    versionId: r.versionId, characterId: r.characterId, legacyRosterId: null,
-    displayName: r.displayName, kind: "player", role: r.role, gender: null,
-    spriteId: r.spriteId, teamTags: ["epsilon"], element: r.element, types: [r.element],
-    baseStats: { ...epsilonProfiles[r.role] }, primaryMoveId: r.versionId + ":primary",
-    secondaryMoveId: null, rarityId: null, variantId: "epsilon-ie2",
-    categoryId: null, arcId: "alius", eraId: "original", gameOrigin: "ie2",
-    encounterTier: 3,
-  })),
 ];
 export const EXPANSION_MOVES = [
   ...rows.filter(r => r.characterId !== "jude").map(r => ({
     moveId: r.versionId + ":primary", element: r.element, ...moveProfiles[r.role],
-  })),
-  ...epsilonRows.map(r => ({
-    moveId: r.versionId + ":primary", element: r.element,
-    ...(r.characterId === "dvalin" ? { name: "Guanto Rotante", power: 70, effect: "guard" } : moveProfiles[r.role]),
   })),
 ];

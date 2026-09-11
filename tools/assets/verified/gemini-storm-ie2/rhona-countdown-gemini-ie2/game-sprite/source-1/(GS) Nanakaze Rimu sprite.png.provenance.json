@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "gemini-storm-ie2",
+  "versionId": "rhona-countdown:gemini-ie2",
+  "displayName": "Rhona Countdown / Rihm",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(GS) Nanakaze Rimu sprite.png",
+  "sourceFilename": "(GS) Nanakaze Rimu sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/gemini-storm-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/gemini-storm-ie2/originals/rhona-countdown-gemini-ie2/game-sprite/(GS) Nanakaze Rimu sprite.png",
+  "verifiedPath": "tools/assets/verified/gemini-storm-ie2/rhona-countdown-gemini-ie2/game-sprite/source-1/(GS) Nanakaze Rimu sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/rhona-countdown-gemini-ie2.png",
+  "sha256": "1f41cbb7436d1d64bcf6d9cd334aa3b7f30b6afd71711e00541471a86d44ef45"
+}

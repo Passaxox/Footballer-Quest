@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "gemini-storm-ie2",
+  "versionId": "charles-riverboat:gemini-ie2",
+  "displayName": "Charles Riverboat / Charon",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(GS) Karoku Satori sprite.png",
+  "sourceFilename": "(GS) Karoku Satori sprite.png",
+  "sourceRef": null,
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/gemini-storm-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/gemini-storm-ie2/originals/charles-riverboat-gemini-ie2/game-sprite/(GS) Karoku Satori sprite.png",
+  "verifiedPath": "tools/assets/verified/gemini-storm-ie2/charles-riverboat-gemini-ie2/game-sprite/source-1/(GS) Karoku Satori sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/charles-riverboat-gemini-ie2.png",
+  "sha256": "743319e7195a5d46e5228ce1d6d097577d449d219a07a1dd371af7fd24d13983"
+}
