@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "approvals": [
+    {
+      "versionId": "beluga:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/beluga-diamond-dust-ie2/game-sprite/(DD) Shirai Ikkaku sprite.png",
+      "sourceFilename": "(DD) Shirai Ikkaku sprite.png",
+      "sha256": "222cdcdc4281960ee918a535e14f577fba2a1178b97b45e1a568e917cf8eb9fe",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "iq:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/iq-diamond-dust-ie2/game-sprite/(DD) Touchi Shuuji sprite.png",
+      "sourceFilename": "(DD) Touchi Shuuji sprite.png",
+      "sha256": "6ef446d0fab15ef55d2e29f5a102c68ca85434e0f9711852a3f1f6dcbccd1a5c",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "clara:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/clara-diamond-dust-ie2/game-sprite/(DD) Kurakake Clara sprite.png",
+      "sourceFilename": "(DD) Kurakake Clara sprite.png",
+      "sha256": "60e864ed9bd7a99bd10ff2cc97618bbf25787732fceda48a25b6311c53b072d9",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "gokka:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/gokka-diamond-dust-ie2/game-sprite/(DD) Gokukawa Kantarou sprite.png",
+      "sourceFilename": "(DD) Gokukawa Kantarou sprite.png",
+      "sha256": "bdd8f3d74ef5d77a5069f3779b8ae60614d5346a0d4cebb9fc55560aada6de2d",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "ic:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/ic-diamond-dust-ie2/game-sprite/(DD) Touchi Ai sprite.png",
+      "sourceFilename": "(DD) Touchi Ai sprite.png",
+      "sha256": "c01a873bb26b81761a537cc4716754bba62b68f4c1a8e0f5398fa5f88a3a021e",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "barren:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/barren-diamond-dust-ie2/game-sprite/(DD) Toba Ren sprite.png",
+      "sourceFilename": "(DD) Toba Ren sprite.png",
+      "sha256": "ff0e556cd77cfb2b4db9ba6bc5d87a6c62da2212d2efaa282c9138c34f953309",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "droll:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/droll-diamond-dust-ie2/game-sprite/(DD) Kadomichi Tooru sprite.png",
+      "sourceFilename": "(DD) Kadomichi Tooru sprite.png",
+      "sha256": "e4a1c6e1eec68e9987f7628cf39008ac661f7ce10e1b4c6b051a37ba01c7bf5b",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "lionne:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/lionne-diamond-dust-ie2/game-sprite/(DD) Kurione Yuki sprite.png",
+      "sourceFilename": "(DD) Kurione Yuki sprite.png",
+      "sha256": "b4a44192bbdf1b9845161e67fe0f256678219e3bd6e869b69637396a06525948",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "blow:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/blow-diamond-dust-ie2/game-sprite/(DD) Tsumujino Touji sprite.png",
+      "sourceFilename": "(DD) Tsumujino Touji sprite.png",
+      "sha256": "8da5b93cace59cfac332afb0f65da1da423ed4fe80a39f5cfba2ec40294eaa93",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "gazelle:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/gazelle-diamond-dust-ie2/game-sprite/(DD) Gazel sprite.png",
+      "sourceFilename": "(DD) Gazel sprite.png",
+      "sha256": "7bd5c9c3030f43075c9de736d81c53b1e7499d17d9374956dd602dbc62d21ac7",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "frost:diamond-dust-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/frost-diamond-dust-ie2/game-sprite/(DD) Mikoori Rei sprite.png",
+      "sourceFilename": "(DD) Mikoori Rei sprite.png",
+      "sha256": "f8135b3bbd637581bf87a036952c60c6be2f59845b0cb17c74b072bafdfe8678",
+      "reviewStatus": "MATCHED"
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import { GENERATED_TEAMS } from "./teamContent.generated";
 // gameOrigin = first original-trilogy game featuring this specific incarnation.
 // Never character debut across media, sprite source, current team or inferred arc.
 // GO registry entries remain reserved; this batch assigns only ie1/ie2/ie3.
-export const TEAMS = [
+const LEGACY_TEAMS = [
   { teamId: "royal-academy", displayName: "Royal Academy" },
   { teamId: "alius-academy", displayName: "Alius Academy" },
   { teamId: "epsilon-plus", displayName: "Epsilon Plus" },
@@ -25,8 +25,9 @@ export const TEAMS = [
   { teamId: "zeus", displayName: "Zeus" },
   { teamId: "genesis", displayName: "Genesis" },
   { teamId: "little-gigant", displayName: "Little Gigant" },
-  ...GENERATED_TEAMS,
 ];
+const GENERATED_TEAM_IDS = new Set(GENERATED_TEAMS.map(team => team.teamId));
+export const TEAMS = [...LEGACY_TEAMS.filter(team => !GENERATED_TEAM_IDS.has(team.teamId)), ...GENERATED_TEAMS];
 export const ERAS = [{ eraId: "original", displayName: "Original" }, { eraId: "go", displayName: "GO" }];
 export const ARCS = [
   { arcId: "football-frontier", eraId: "original" },

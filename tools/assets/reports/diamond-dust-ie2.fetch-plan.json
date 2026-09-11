@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "importsRoot": "tools/assets/imports",
+  "targets": [
+    {
+      "targetId": "beluga:diamond-dust-ie2",
+      "canonicalCharacterId": "beluga",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Shirai Ikkaku sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Shirai%20Ikkaku%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/beluga-diamond-dust-ie2/source-1/(DD) Shirai Ikkaku sprite.png"
+        }
+      ]
+    },
+    {
+      "targetId": "iq:diamond-dust-ie2",
+      "canonicalCharacterId": "iq",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Touchi Shuuji sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Touchi%20Shuuji%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/iq-diamond-dust-ie2/source-1/(DD) Touchi Shuuji sprite.png"
+        }
+      ]
+    },
+    {
+      "targetId": "clara:diamond-dust-ie2",
+      "canonicalCharacterId": "clara",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Kurakake Clara sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Kurakake%20Clara%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/clara-diamond-dust-ie2/source-1/(DD) Kurakake Clara sprite.png"
+        }
+      ]
+    },
+    {
+      "targetId": "gokka:diamond-dust-ie2",
+      "canonicalCharacterId": "gokka",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Gokukawa Kantarou sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Gokukawa%20Kantarou%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/gokka-diamond-dust-ie2/source-1/(DD) Gokukawa Kantarou sprite.png"
+        }
+      ]
+    },
+    {
+      "targetId": "ic:diamond-dust-ie2",
+      "canonicalCharacterId": "ic",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Touchi Ai sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Touchi%20Ai%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/ic-diamond-dust-ie2/source-1/(DD) Touchi Ai sprite.png"
+        }
+      ]
+    },
+    {
+      "targetId": "barren:diamond-dust-ie2",
+      "canonicalCharacterId": "barren",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Toba Ren sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Toba%20Ren%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/barren-diamond-dust-ie2/source-1/(DD) Toba Ren sprite.png"
+        }
+      ]
+    },
+    {
+      "targetId": "droll:diamond-dust-ie2",
+      "canonicalCharacterId": "droll",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Kadomichi Tooru sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Kadomichi%20Tooru%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/droll-diamond-dust-ie2/source-1/(DD) Kadomichi Tooru sprite.png"
+        }
+      ]
+    },
+    {
+      "targetId": "lionne:diamond-dust-ie2",
+      "canonicalCharacterId": "lionne",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Kurione Yuki sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Kurione%20Yuki%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/lionne-diamond-dust-ie2/source-1/(DD) Kurione Yuki sprite.png"
+        }
+      ]
+    },
+    {
+      "targetId": "blow:diamond-dust-ie2",
+      "canonicalCharacterId": "blow",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Tsumujino Touji sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Tsumujino%20Touji%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/blow-diamond-dust-ie2/source-1/(DD) Tsumujino Touji sprite.png"
+        }
+      ]
+    },
+    {
+      "targetId": "gazelle:diamond-dust-ie2",
+      "canonicalCharacterId": "gazelle",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Gazel sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Gazel%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/gazelle-diamond-dust-ie2/source-1/(DD) Gazel sprite.png"
+        }
+      ]
+    },
+    {
+      "targetId": "frost:diamond-dust-ie2",
+      "canonicalCharacterId": "frost",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "expectedSourceFilename": "(DD) Mikoori Rei sprite.png",
+          "sourceUrl": "https://inazuma-eleven.fandom.com/wiki/Special:Redirect/file/File%3A(DD)%20Mikoori%20Rei%20sprite.png",
+          "plannedImportDestination": "tools/assets/imports/diamond-dust-ie2/frost-diamond-dust-ie2/source-1/(DD) Mikoori Rei sprite.png"
+        }
+      ]
+    }
+  ]
+}

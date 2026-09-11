@@ -10,6 +10,8 @@ const defaultReportPath = path.join(root, "tools/content/content-report.json");
 const roles = new Set(["P", "D", "C", "A"]);
 const elements = new Set(["fuoco", "aria", "terra", "natura"]);
 const locations = new Set(["field", "city", "facility", "hq", "stadium", "special", "generic"]);
+const identityClaims = new Set(["canonical-identity", "aliases", "team-membership", "game-origin"]);
+const evidenceSourceTypes = new Set(["url", "repository"]);
 
 const normalizeIdentity = value => String(value ?? "")
   .normalize("NFKD")
@@ -24,6 +26,30 @@ const uniqueBy = (rows, key, label) => {
     seen.add(row[key]);
   }
 };
+
+function validateIdentityEvidence(player) {
+  if (!Array.isArray(player.identityEvidence) || !player.identityEvidence.length) {
+    throw new Error(`VERIFIED player ${player.versionId} missing identityEvidence`);
+  }
+  const coveredClaims = new Set();
+  for (const evidence of player.identityEvidence) {
+    if (!evidence || !evidenceSourceTypes.has(evidence.sourceType)) {
+      throw new Error(`Invalid identity evidence sourceType: ${player.versionId}`);
+    }
+    if (typeof evidence.reference !== "string" || !evidence.reference.trim()) {
+      throw new Error(`Invalid identity evidence reference: ${player.versionId}`);
+    }
+    if (!Array.isArray(evidence.claims) || !evidence.claims.length || evidence.claims.some(claim => !identityClaims.has(claim))) {
+      throw new Error(`Invalid identity evidence claims: ${player.versionId}`);
+    }
+    evidence.claims.forEach(claim => coveredClaims.add(claim));
+    if (evidence.notes != null && (typeof evidence.notes !== "string" || !evidence.notes.trim())) {
+      throw new Error(`Invalid identity evidence notes: ${player.versionId}`);
+    }
+  }
+  const missing = [...identityClaims].filter(claim => !coveredClaims.has(claim));
+  if (missing.length) throw new Error(`Incomplete identity evidence for ${player.versionId}: ${missing.join(", ")}`);
+}
 
 async function readJson(file) {
   return JSON.parse(await readFile(file, "utf8"));
@@ -71,6 +97,7 @@ export function validateTeamManifest(manifest) {
     if (!roles.has(player.role) || !elements.has(player.element)) throw new Error(`Invalid role/element: ${player.versionId}`);
     if (!Number.isInteger(player.encounterTier) || player.encounterTier < scenario.minTier) throw new Error(`Invalid encounterTier: ${player.versionId}`);
     if (!["VERIFIED", "REVIEW"].includes(player.evidenceStatus)) throw new Error(`Invalid evidenceStatus: ${player.versionId}`);
+    if (player.evidenceStatus === "VERIFIED") validateIdentityEvidence(player);
     if (!["ASSET-VERIFIED", "REVIEW", "MISSING"].includes(player.assetStatus)) throw new Error(`Invalid assetStatus: ${player.versionId}`);
     if (!player.provenanceManifestId) throw new Error(`Missing provenanceManifestId: ${player.versionId}`);
     if (!player.baseStats || !["hp", "atk", "def", "spd"].every(key => Number.isFinite(player.baseStats[key]) && player.baseStats[key] > 0)) {
@@ -88,10 +115,13 @@ export function resolveTeamIdentities(manifests, existingCharacters = []) {
     ...character,
     names: new Set([character.characterId, character.displayName, ...(character.aliases ?? [])].map(normalizeIdentity).filter(Boolean))
   }));
-  const claimedNew = new Map();
+  const requestedNew = new Set();
   const decisions = [];
   for (const manifest of manifests) {
     for (const player of manifest.players) {
+      if (player.expectedIdentity === "new" && requestedNew.has(player.canonicalCharacterId)) {
+        throw new Error(`Duplicate new canonical identity: ${player.canonicalCharacterId}`);
+      }
       const names = new Set([player.canonicalCharacterId, player.displayName, ...player.aliases].map(normalizeIdentity).filter(Boolean));
       const idMatch = existing.find(character => character.characterId === player.canonicalCharacterId);
       const aliasMatches = existing.filter(character => [...names].some(name => character.names.has(name)));
@@ -111,9 +141,7 @@ export function resolveTeamIdentities(manifests, existingCharacters = []) {
         throw new Error(`Identity expectation mismatch for ${player.versionId}: expected ${player.expectedIdentity}, resolved ${status}`);
       }
       if (status === "NEW") {
-        const collision = claimedNew.get(characterId);
-        if (collision && collision !== player.displayName) throw new Error(`Ambiguous new canonical identity: ${characterId}`);
-        claimedNew.set(characterId, player.displayName);
+        requestedNew.add(characterId);
         existing.push({ characterId, displayName: player.displayName, names });
       }
       decisions.push({ manifestId: manifest.manifestId, versionId: player.versionId, requestedCharacterId: player.canonicalCharacterId, characterId: characterId ?? null, status, matches: matches.map(match => match.characterId) });
@@ -154,9 +182,6 @@ export function deriveTeamContent(manifests, existingCharacters = []) {
   uniqueBy(manifests.map(manifest => manifest.team), "teamId", "teamId");
   uniqueBy(manifests.map(manifest => manifest.scenario), "id", "scenario id");
   const decisions = resolveTeamIdentities(manifests, existingCharacters);
-  if (decisions.some(decision => decision.status === "REVIEW")) {
-    throw new Error(`Ambiguous identities require REVIEW: ${decisions.filter(decision => decision.status === "REVIEW").map(decision => decision.versionId).join(", ")}`);
-  }
   const decisionByVersion = new Map(decisions.map(decision => [decision.versionId, decision]));
   const characters = [];
   const versions = [];
@@ -167,11 +192,17 @@ export function deriveTeamContent(manifests, existingCharacters = []) {
   for (const manifest of manifests) {
     const appliedVersionIds = [];
     for (const player of manifest.players) {
-      if (player.evidenceStatus !== "VERIFIED" || player.assetStatus !== "ASSET-VERIFIED") {
-        reviewItems.push({ manifestId: manifest.manifestId, versionId: player.versionId, evidenceStatus: player.evidenceStatus, assetStatus: player.assetStatus });
+      const decision = decisionByVersion.get(player.versionId);
+      if (decision.status === "REVIEW" || player.evidenceStatus !== "VERIFIED" || player.assetStatus !== "ASSET-VERIFIED") {
+        reviewItems.push({
+          manifestId: manifest.manifestId,
+          versionId: player.versionId,
+          identityStatus: decision.status,
+          evidenceStatus: player.evidenceStatus,
+          assetStatus: player.assetStatus
+        });
         continue;
       }
-      const decision = decisionByVersion.get(player.versionId);
       if (decision.status === "NEW" && !characters.some(character => character.characterId === decision.characterId)) {
         characters.push({ characterId: decision.characterId, displayName: player.displayName, aliases: [...player.aliases] });
       }
@@ -215,6 +246,12 @@ export function deriveTeamContent(manifests, existingCharacters = []) {
     moves,
     scenarios,
     provenanceExpectations,
+    manifestVersionIds: manifests.map(manifest => ({
+      manifestId: manifest.manifestId,
+      scenarioId: manifest.scenario.id,
+      versionIds: manifest.players.filter(player => decisionByVersion.get(player.versionId)?.status !== "REVIEW"
+        && player.evidenceStatus === "VERIFIED" && player.assetStatus === "ASSET-VERIFIED").map(player => player.versionId)
+    })),
     reviewItems,
     identityDecisions: decisions
   };
@@ -272,6 +309,7 @@ export async function applyTeamContent({
     reviewCount: content.reviewItems.length,
     reviewItems: content.reviewItems,
     identityDecisions: content.identityDecisions,
+    manifestVersionIds: content.manifestVersionIds,
     manifests: files.map(file => path.relative(root, file).split(path.sep).join("/"))
   };
   await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`);

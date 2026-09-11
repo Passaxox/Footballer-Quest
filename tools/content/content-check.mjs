@@ -14,6 +14,27 @@ export async function contentCheck() {
   const errors = [];
   if (content.reviewItems.length) errors.push(`Unresolved REVIEW items: ${content.reviewItems.map(item => item.versionId).join(", ")}`);
   if (auditExitCode(assetAudit)) errors.push(`Asset audit failed: ${JSON.stringify(assetAudit.summary)}`);
+  const versionsById = new Map(content.versions.map(version => [version.versionId, version]));
+  const movesById = new Map(content.moves.map(move => [move.moveId, move]));
+  for (const version of content.versions) {
+    if (!movesById.has(version.primaryMoveId)) errors.push(`Missing generated move for ${version.versionId}`);
+    if (!content.provenanceExpectations.some(expected => expected.versionId === version.versionId && expected.spriteId === version.spriteId)) {
+      errors.push(`Missing provenance linkage for ${version.versionId}`);
+    }
+  }
+  for (const manifest of content.manifestVersionIds) {
+    const scenario = content.scenarios.find(candidate => candidate.id === manifest.scenarioId);
+    if (!scenario) {
+      errors.push(`Missing generated scenario ${manifest.scenarioId}`);
+      continue;
+    }
+    if (JSON.stringify([...scenario.allowedVersionIds].sort()) !== JSON.stringify([...manifest.versionIds].sort())) {
+      errors.push(`Scenario membership mismatch for ${manifest.scenarioId}`);
+    }
+    for (const versionId of scenario.allowedVersionIds) {
+      if (!versionsById.has(versionId)) errors.push(`Unknown generated scenario version ${versionId}`);
+    }
+  }
   const provenanceCache = new Map();
   for (const expected of content.provenanceExpectations) {
     if (!provenanceCache.has(expected.manifestId)) {
@@ -28,8 +49,13 @@ export async function contentCheck() {
     }
     if (path.basename(asset.runtimeSpritePath) !== `${expected.spriteId}.png`) errors.push(`Runtime sprite mismatch for ${expected.versionId}`);
     for (const key of ["verifiedSourcePath", "runtimeSpritePath"]) {
-      const actual = await hashFile(path.join(root, asset[key]));
-      if (actual !== asset.sha256) errors.push(`SHA mismatch for ${expected.versionId} ${key}`);
+      try {
+        const actual = await hashFile(path.join(root, asset[key]));
+        if (actual !== asset.sha256) errors.push(`SHA mismatch for ${expected.versionId} ${key}`);
+      } catch (error) {
+        if (error?.code === "ENOENT") errors.push(`Missing provenance file for ${expected.versionId} ${key}`);
+        else throw error;
+      }
     }
   }
   const result = {

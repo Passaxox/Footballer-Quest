@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "beluga:diamond-dust-ie2",
+  "displayName": "Beluga",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Shirai Ikkaku sprite.png",
+  "sourceFilename": "(DD) Shirai Ikkaku sprite.png",
+  "sourceRef": "Shirai_Ikkaku",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/e4/%28DD%29_Shirai_Ikkaku_sprite.png/revision/latest?cb=20230629152021&format=original",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/beluga-diamond-dust-ie2/game-sprite/(DD) Shirai Ikkaku sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/beluga-diamond-dust-ie2/game-sprite/source-1/(DD) Shirai Ikkaku sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/beluga-diamond-dust-ie2.png",
+  "sha256": "222cdcdc4281960ee918a535e14f577fba2a1178b97b45e1a568e917cf8eb9fe"
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "clara:diamond-dust-ie2",
+  "displayName": "Clara",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Kurakake Clara sprite.png",
+  "sourceFilename": "(DD) Kurakake Clara sprite.png",
+  "sourceRef": "Kurakake_Clara",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/1/11/%28DD%29_Kurakake_Clara_sprite.png/revision/latest?cb=20230629152628&format=original&raw=1",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/clara-diamond-dust-ie2/game-sprite/(DD) Kurakake Clara sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/clara-diamond-dust-ie2/game-sprite/source-1/(DD) Kurakake Clara sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/clara-diamond-dust-ie2.png",
+  "sha256": "60e864ed9bd7a99bd10ff2cc97618bbf25787732fceda48a25b6311c53b072d9"
+}

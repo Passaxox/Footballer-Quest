@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "gokka:diamond-dust-ie2",
+  "displayName": "Gokka",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Gokukawa Kantarou sprite.png",
+  "sourceFilename": "(DD) Gokukawa Kantarou sprite.png",
+  "sourceRef": "Gokukawa_Kantarou",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/0/05/%28DD%29_Gokukawa_Kantarou_sprite.png/revision/latest?cb=20230629152957&format=original&raw=1",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/gokka-diamond-dust-ie2/game-sprite/(DD) Gokukawa Kantarou sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/gokka-diamond-dust-ie2/game-sprite/source-1/(DD) Gokukawa Kantarou sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/gokka-diamond-dust-ie2.png",
+  "sha256": "bdd8f3d74ef5d77a5069f3779b8ae60614d5346a0d4cebb9fc55560aada6de2d"
+}

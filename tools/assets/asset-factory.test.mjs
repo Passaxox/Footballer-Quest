@@ -186,6 +186,7 @@ test('fetch plans are machine-readable, side-effect free and constrained to the 
       sourceUrl: 'https://example.invalid/wiki/Special:Redirect/file/File%3A(E)%20Desarm%20sprite.png',
       plannedImportDestination: `tools/assets/imports/missing-${path.basename(directory)}/epsilon-ie2-poc/dvalin-epsilon-ie2/source-1/(E) Desarm sprite.png`
     });
+
     await assert.rejects(() => readFile(importsRoot), error => error.code === 'ENOENT');
     assert.throws(() => ensureSafeImports({
       importsRoot: path.join(repoRoot, 'tools/assets/staging'),
@@ -194,6 +195,17 @@ test('fetch plans are machine-readable, side-effect free and constrained to the 
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
+});
+
+test('Diamond Dust fetch plan is deterministic and covers every target', async () => {
+  const manifestPath = path.join(repoRoot, 'tools/assets/manifests/diamond-dust-ie2.json');
+  const first = await createFetchPlan({ manifestPath });
+  const second = await createFetchPlan({ manifestPath });
+  assert.deepEqual(second, first);
+  assert.equal(first.targets.length, 11);
+  assert.ok(first.targets.every(target => target.sources.length === 1
+    && target.sources[0].expectedSourceFilename.startsWith('(DD) ')
+    && target.sources[0].plannedImportDestination.startsWith('tools/assets/imports/diamond-dust-ie2/')));
 });
 
 test('import workflow stages one exact binary as CANDIDATE without fetching', async () => {

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "sourceManifestId": "diamond-dust-ie2",
+  "assets": [
+    {
+      "versionId": "beluga:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/beluga-diamond-dust-ie2/game-sprite/source-1/(DD) Shirai Ikkaku sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/beluga-diamond-dust-ie2.png",
+      "sha256": "222cdcdc4281960ee918a535e14f577fba2a1178b97b45e1a568e917cf8eb9fe"
+    },
+    {
+      "versionId": "iq:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/iq-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Shuuji sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/iq-diamond-dust-ie2.png",
+      "sha256": "6ef446d0fab15ef55d2e29f5a102c68ca85434e0f9711852a3f1f6dcbccd1a5c"
+    },
+    {
+      "versionId": "clara:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/clara-diamond-dust-ie2/game-sprite/source-1/(DD) Kurakake Clara sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/clara-diamond-dust-ie2.png",
+      "sha256": "60e864ed9bd7a99bd10ff2cc97618bbf25787732fceda48a25b6311c53b072d9"
+    },
+    {
+      "versionId": "gokka:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/gokka-diamond-dust-ie2/game-sprite/source-1/(DD) Gokukawa Kantarou sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/gokka-diamond-dust-ie2.png",
+      "sha256": "bdd8f3d74ef5d77a5069f3779b8ae60614d5346a0d4cebb9fc55560aada6de2d"
+    },
+    {
+      "versionId": "ic:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/ic-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Ai sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/ic-diamond-dust-ie2.png",
+      "sha256": "c01a873bb26b81761a537cc4716754bba62b68f4c1a8e0f5398fa5f88a3a021e"
+    },
+    {
+      "versionId": "barren:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/barren-diamond-dust-ie2/game-sprite/source-1/(DD) Toba Ren sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/barren-diamond-dust-ie2.png",
+      "sha256": "ff0e556cd77cfb2b4db9ba6bc5d87a6c62da2212d2efaa282c9138c34f953309"
+    },
+    {
+      "versionId": "droll:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/droll-diamond-dust-ie2/game-sprite/source-1/(DD) Kadomichi Tooru sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/droll-diamond-dust-ie2.png",
+      "sha256": "e4a1c6e1eec68e9987f7628cf39008ac661f7ce10e1b4c6b051a37ba01c7bf5b"
+    },
+    {
+      "versionId": "lionne:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/lionne-diamond-dust-ie2/game-sprite/source-1/(DD) Kurione Yuki sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/lionne-diamond-dust-ie2.png",
+      "sha256": "b4a44192bbdf1b9845161e67fe0f256678219e3bd6e869b69637396a06525948"
+    },
+    {
+      "versionId": "blow:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/blow-diamond-dust-ie2/game-sprite/source-1/(DD) Tsumujino Touji sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/blow-diamond-dust-ie2.png",
+      "sha256": "8da5b93cace59cfac332afb0f65da1da423ed4fe80a39f5cfba2ec40294eaa93"
+    },
+    {
+      "versionId": "gazelle:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/gazelle-diamond-dust-ie2/game-sprite/source-1/(DD) Gazel sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/gazelle-diamond-dust-ie2.png",
+      "sha256": "7bd5c9c3030f43075c9de736d81c53b1e7499d17d9374956dd602dbc62d21ac7"
+    },
+    {
+      "versionId": "frost:diamond-dust-ie2",
+      "verifiedSourcePath": "tools/assets/verified/diamond-dust-ie2/frost-diamond-dust-ie2/game-sprite/source-1/(DD) Mikoori Rei sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/frost-diamond-dust-ie2.png",
+      "sha256": "f8135b3bbd637581bf87a036952c60c6be2f59845b0cb17c74b072bafdfe8678"
+    }
+  ]
+}

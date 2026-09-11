@@ -30,6 +30,7 @@
       "baseStats": { "hp": 94, "atk": 30, "def": 43, "spd": 29 },
       "primaryMove": { "name": "Parata cosmica", "power": 70, "effect": "guard" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Goryuu_Reo", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Goryuu's Galileo identity and Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     },
@@ -46,6 +47,7 @@
       "baseStats": { "hp": 82, "atk": 29, "def": 37, "spd": 27 },
       "primaryMove": { "name": "Barriera orbitale", "power": 63, "effect": "shatter" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Sango_Yoshirou", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Sango's Coral identity and Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     },
@@ -62,6 +64,7 @@
       "baseStats": { "hp": 84, "atk": 27, "def": 38, "spd": 25 },
       "primaryMove": { "name": "Blocco meteora", "power": 65, "effect": "shatter" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Kikuma_Shousuke", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Kikuma's Gigs identity and Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     },
@@ -78,6 +81,7 @@
       "baseStats": { "hp": 80, "atk": 30, "def": 36, "spd": 30 },
       "primaryMove": { "name": "Scudo lunare", "power": 64, "effect": "weaken" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Kanime_Iderou", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Kanime's Ganymede identity and Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     },
@@ -94,6 +98,7 @@
       "baseStats": { "hp": 81, "atk": 31, "def": 35, "spd": 28 },
       "primaryMove": { "name": "Contrasto solare", "power": 64, "effect": "burn" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Karoku_Satori", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Karoku's Charon identity and Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     },
@@ -110,6 +115,7 @@
       "baseStats": { "hp": 73, "atk": 34, "def": 31, "spd": 35 },
       "primaryMove": { "name": "Passaggio stellare", "power": 66, "effect": "weaken" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Kinki_Nozomi", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Kinki's Pandora identity and Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     },
@@ -126,6 +132,7 @@
       "baseStats": { "hp": 74, "atk": 35, "def": 32, "spd": 33 },
       "primaryMove": { "name": "Orbita pesante", "power": 67, "effect": "shatter" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Omotsuki_Sora", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Omotsuki's Grengo identity and Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     },
@@ -142,6 +149,7 @@
       "baseStats": { "hp": 71, "atk": 36, "def": 29, "spd": 37 },
       "primaryMove": { "name": "Scia di Giove", "power": 68, "effect": "priority" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Io_Shuntarou", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Io's localized identity and Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     },
@@ -158,6 +166,7 @@
       "baseStats": { "hp": 75, "atk": 42, "def": 26, "spd": 34 },
       "primaryMove": { "name": "Conto alla rovescia", "power": 88, "effect": null },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Nanakaze_Rimu", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Nanakaze's Rihm identity and Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     },
@@ -174,6 +183,7 @@
       "baseStats": { "hp": 78, "atk": 41, "def": 31, "spd": 44 },
       "primaryMove": { "name": "Cerchio Astrale", "power": 88, "effect": "weaken" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Midorikawa_Ryuuji", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Jordan/Janus/Reize as Midorikawa and documents Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     },
@@ -190,6 +200,7 @@
       "baseStats": { "hp": 76, "atk": 43, "def": 27, "spd": 35 },
       "primaryMove": { "name": "Tiro galattico", "power": 90, "effect": "burn" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Miura_Hiromu", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Miura's Diam identity and Gemini Storm IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "gemini-storm-ie2"
     }

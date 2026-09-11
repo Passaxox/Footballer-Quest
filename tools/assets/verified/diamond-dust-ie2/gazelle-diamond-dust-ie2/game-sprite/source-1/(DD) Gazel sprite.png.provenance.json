@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "gazelle:diamond-dust-ie2",
+  "displayName": "Gazelle / Gazel",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Gazel sprite.png",
+  "sourceFilename": "(DD) Gazel sprite.png",
+  "sourceRef": "Suzuno_Fuusuke",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/45/%28DD%29_Gazel_sprite.png/revision/latest?cb=20230629155239&format=original&raw=1",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/gazelle-diamond-dust-ie2/game-sprite/(DD) Gazel sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/gazelle-diamond-dust-ie2/game-sprite/source-1/(DD) Gazel sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/gazelle-diamond-dust-ie2.png",
+  "sha256": "7bd5c9c3030f43075c9de736d81c53b1e7499d17d9374956dd602dbc62d21ac7"
+}

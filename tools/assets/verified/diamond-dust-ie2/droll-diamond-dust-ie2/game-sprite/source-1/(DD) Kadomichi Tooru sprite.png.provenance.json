@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "droll:diamond-dust-ie2",
+  "displayName": "Droll",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Kadomichi Tooru sprite.png",
+  "sourceFilename": "(DD) Kadomichi Tooru sprite.png",
+  "sourceRef": "Kadomichi_Tooru",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/c4/%28DD%29_Kadomichi_Tooru_sprite.png/revision/latest?cb=20230629153810&format=original&raw=1",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/droll-diamond-dust-ie2/game-sprite/(DD) Kadomichi Tooru sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/droll-diamond-dust-ie2/game-sprite/source-1/(DD) Kadomichi Tooru sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/droll-diamond-dust-ie2.png",
+  "sha256": "e4a1c6e1eec68e9987f7628cf39008ac661f7ce10e1b4c6b051a37ba01c7bf5b"
+}

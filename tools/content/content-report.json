@@ -2,15 +2,105 @@
   "schemaVersion": 1,
   "status": "PASS",
   "changed": false,
-  "manifestCount": 2,
-  "teamCount": 2,
-  "characterCount": 13,
-  "versionCount": 15,
-  "moveCount": 15,
-  "scenarioCount": 2,
+  "manifestCount": 3,
+  "teamCount": 3,
+  "characterCount": 23,
+  "versionCount": 26,
+  "moveCount": 26,
+  "scenarioCount": 3,
   "reviewCount": 0,
   "reviewItems": [],
   "identityDecisions": [
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "beluga:diamond-dust-ie2",
+      "requestedCharacterId": "beluga",
+      "characterId": "beluga",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "iq:diamond-dust-ie2",
+      "requestedCharacterId": "iq",
+      "characterId": "iq",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "clara:diamond-dust-ie2",
+      "requestedCharacterId": "clara",
+      "characterId": "clara",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "gokka:diamond-dust-ie2",
+      "requestedCharacterId": "gokka",
+      "characterId": "gokka",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "ic:diamond-dust-ie2",
+      "requestedCharacterId": "ic",
+      "characterId": "ic",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "barren:diamond-dust-ie2",
+      "requestedCharacterId": "barren",
+      "characterId": "barren",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "droll:diamond-dust-ie2",
+      "requestedCharacterId": "droll",
+      "characterId": "droll",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "lionne:diamond-dust-ie2",
+      "requestedCharacterId": "lionne",
+      "characterId": "lionne",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "blow:diamond-dust-ie2",
+      "requestedCharacterId": "blow",
+      "characterId": "blow",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "gazelle:diamond-dust-ie2",
+      "requestedCharacterId": "gazelle",
+      "characterId": "gazelle",
+      "status": "REUSED",
+      "matches": [
+        "gazelle"
+      ]
+    },
+    {
+      "manifestId": "diamond-dust-ie2",
+      "versionId": "frost:diamond-dust-ie2",
+      "requestedCharacterId": "frost",
+      "characterId": "frost",
+      "status": "NEW",
+      "matches": []
+    },
     {
       "manifestId": "epsilon-ie2",
       "versionId": "dvalin:epsilon-ie2",
@@ -136,7 +226,54 @@
       "matches": []
     }
   ],
+  "manifestVersionIds": [
+    {
+      "manifestId": "diamond-dust-ie2",
+      "scenarioId": "diamond-dust-glacier",
+      "versionIds": [
+        "beluga:diamond-dust-ie2",
+        "iq:diamond-dust-ie2",
+        "clara:diamond-dust-ie2",
+        "gokka:diamond-dust-ie2",
+        "ic:diamond-dust-ie2",
+        "barren:diamond-dust-ie2",
+        "droll:diamond-dust-ie2",
+        "lionne:diamond-dust-ie2",
+        "blow:diamond-dust-ie2",
+        "gazelle:diamond-dust-ie2",
+        "frost:diamond-dust-ie2"
+      ]
+    },
+    {
+      "manifestId": "epsilon-ie2",
+      "scenarioId": "epsilon-lab",
+      "versionIds": [
+        "dvalin:epsilon-ie2",
+        "tytan:epsilon-ie2",
+        "krypto:epsilon-ie2",
+        "zell:epsilon-ie2"
+      ]
+    },
+    {
+      "manifestId": "gemini-storm-ie2",
+      "scenarioId": "gemini-crash-site",
+      "versionIds": [
+        "gordon-star:gemini-ie2",
+        "connor-shuttle:gemini-ie2",
+        "jim-landing:gemini-ie2",
+        "grant-icewater:gemini-ie2",
+        "charles-riverboat:gemini-ie2",
+        "pat-box:gemini-ie2",
+        "gregory-saturn:gemini-ie2",
+        "izzy-jupiter:gemini-ie2",
+        "rhona-countdown:gemini-ie2",
+        "jordan:gemini-ie2",
+        "dylan-bluemoon:gemini-ie2"
+      ]
+    }
+  ],
   "manifests": [
+    "tools/content/manifests/diamond-dust-ie2.json",
     "tools/content/manifests/epsilon-ie2.json",
     "tools/content/manifests/gemini-storm-ie2.json"
   ]

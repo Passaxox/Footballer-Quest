@@ -1,0 +1,1061 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "title": "Diamond Dust IE2 verified game sprites",
+  "manifestPath": "tools/assets/manifests/diamond-dust-ie2.json",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingRoot": "tools/assets/staging/diamond-dust-ie2",
+  "importsRoot": "tools/assets/imports",
+  "verifiedRoot": "tools/assets/verified",
+  "contactSheetPath": "tools/assets/reports/diamond-dust-ie2.contact-sheet.html",
+  "markdownReportPath": "tools/assets/reports/diamond-dust-ie2.report.md",
+  "runtimeSpritesPath": "frontend/public/sprites",
+  "status": "PASS",
+  "summary": {
+    "targetCount": 11,
+    "verifiedCount": 11,
+    "candidateCount": 0,
+    "reviewCount": 0,
+    "assetGapCount": 0,
+    "unassessedCount": 0,
+    "sourceBlockedCount": 0,
+    "sourceMissingCount": 0
+  },
+  "targets": [
+    {
+      "canonicalCharacterId": "beluga",
+      "versionId": "beluga:diamond-dust-ie2",
+      "displayName": "Beluga",
+      "runtimeSpriteId": "beluga-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Shirai_Ikkaku",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Shirai_Ikkaku",
+          "sourceAssetId": "File:(DD) Shirai Ikkaku sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 goalkeeper; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "222cdcdc4281960ee918a535e14f577fba2a1178b97b45e1a568e917cf8eb9fe",
+      "sourceAssetId": "File:(DD) Shirai Ikkaku sprite.png",
+      "sourceFilename": "(DD) Shirai Ikkaku sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/beluga-diamond-dust-ie2/game-sprite/source-1/(DD) Shirai Ikkaku sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/beluga-diamond-dust-ie2/game-sprite/source-1/(DD) Shirai Ikkaku sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Shirai_Ikkaku",
+          "sourceAssetId": "File:(DD) Shirai Ikkaku sprite.png",
+          "sourceFilename": "(DD) Shirai Ikkaku sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/beluga-diamond-dust-ie2/game-sprite/(DD) Shirai Ikkaku sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/beluga-diamond-dust-ie2/game-sprite/source-1/(DD) Shirai Ikkaku sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/beluga-diamond-dust-ie2/game-sprite/source-1/(DD) Shirai Ikkaku sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/beluga-diamond-dust-ie2/game-sprite/source-1/(DD)%20Shirai%20Ikkaku%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "222cdcdc4281960ee918a535e14f577fba2a1178b97b45e1a568e917cf8eb9fe",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Shirai Ikkaku sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/e4/%28DD%29_Shirai_Ikkaku_sprite.png/revision/latest?cb=20230629152021&format=original"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/beluga-diamond-dust-ie2/game-sprite/(DD) Shirai Ikkaku sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/beluga-diamond-dust-ie2/game-sprite/source-1/(DD)%20Shirai%20Ikkaku%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/beluga-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/beluga-diamond-dust-ie2/game-sprite/(DD) Shirai Ikkaku sprite.png",
+        "sourceFilename": "(DD) Shirai Ikkaku sprite.png",
+        "sha256": "222cdcdc4281960ee918a535e14f577fba2a1178b97b45e1a568e917cf8eb9fe"
+      }
+    },
+    {
+      "canonicalCharacterId": "iq",
+      "versionId": "iq:diamond-dust-ie2",
+      "displayName": "IQ",
+      "runtimeSpriteId": "iq-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Touchi_Shuuji",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Touchi_Shuuji",
+          "sourceAssetId": "File:(DD) Touchi Shuuji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "6ef446d0fab15ef55d2e29f5a102c68ca85434e0f9711852a3f1f6dcbccd1a5c",
+      "sourceAssetId": "File:(DD) Touchi Shuuji sprite.png",
+      "sourceFilename": "(DD) Touchi Shuuji sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/iq-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Shuuji sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/iq-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Shuuji sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Touchi_Shuuji",
+          "sourceAssetId": "File:(DD) Touchi Shuuji sprite.png",
+          "sourceFilename": "(DD) Touchi Shuuji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/iq-diamond-dust-ie2/game-sprite/(DD) Touchi Shuuji sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/iq-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Shuuji sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/iq-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Shuuji sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/iq-diamond-dust-ie2/game-sprite/source-1/(DD)%20Touchi%20Shuuji%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "6ef446d0fab15ef55d2e29f5a102c68ca85434e0f9711852a3f1f6dcbccd1a5c",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Touchi Shuuji sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/b4/%28DD%29_Touchi_Shuuji_sprite.png/revision/latest?cb=20230629152402&format=original&raw=1"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/iq-diamond-dust-ie2/game-sprite/(DD) Touchi Shuuji sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/iq-diamond-dust-ie2/game-sprite/source-1/(DD)%20Touchi%20Shuuji%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/iq-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/iq-diamond-dust-ie2/game-sprite/(DD) Touchi Shuuji sprite.png",
+        "sourceFilename": "(DD) Touchi Shuuji sprite.png",
+        "sha256": "6ef446d0fab15ef55d2e29f5a102c68ca85434e0f9711852a3f1f6dcbccd1a5c"
+      }
+    },
+    {
+      "canonicalCharacterId": "clara",
+      "versionId": "clara:diamond-dust-ie2",
+      "displayName": "Clara",
+      "runtimeSpriteId": "clara-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Kurakake_Clara",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Kurakake_Clara",
+          "sourceAssetId": "File:(DD) Kurakake Clara sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "60e864ed9bd7a99bd10ff2cc97618bbf25787732fceda48a25b6311c53b072d9",
+      "sourceAssetId": "File:(DD) Kurakake Clara sprite.png",
+      "sourceFilename": "(DD) Kurakake Clara sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/clara-diamond-dust-ie2/game-sprite/source-1/(DD) Kurakake Clara sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/clara-diamond-dust-ie2/game-sprite/source-1/(DD) Kurakake Clara sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Kurakake_Clara",
+          "sourceAssetId": "File:(DD) Kurakake Clara sprite.png",
+          "sourceFilename": "(DD) Kurakake Clara sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/clara-diamond-dust-ie2/game-sprite/(DD) Kurakake Clara sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/clara-diamond-dust-ie2/game-sprite/source-1/(DD) Kurakake Clara sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/clara-diamond-dust-ie2/game-sprite/source-1/(DD) Kurakake Clara sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/clara-diamond-dust-ie2/game-sprite/source-1/(DD)%20Kurakake%20Clara%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "60e864ed9bd7a99bd10ff2cc97618bbf25787732fceda48a25b6311c53b072d9",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Kurakake Clara sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/1/11/%28DD%29_Kurakake_Clara_sprite.png/revision/latest?cb=20230629152628&format=original&raw=1"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/clara-diamond-dust-ie2/game-sprite/(DD) Kurakake Clara sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/clara-diamond-dust-ie2/game-sprite/source-1/(DD)%20Kurakake%20Clara%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/clara-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/clara-diamond-dust-ie2/game-sprite/(DD) Kurakake Clara sprite.png",
+        "sourceFilename": "(DD) Kurakake Clara sprite.png",
+        "sha256": "60e864ed9bd7a99bd10ff2cc97618bbf25787732fceda48a25b6311c53b072d9"
+      }
+    },
+    {
+      "canonicalCharacterId": "gokka",
+      "versionId": "gokka:diamond-dust-ie2",
+      "displayName": "Gokka",
+      "runtimeSpriteId": "gokka-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Gokukawa_Kantarou",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Gokukawa_Kantarou",
+          "sourceAssetId": "File:(DD) Gokukawa Kantarou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "bdd8f3d74ef5d77a5069f3779b8ae60614d5346a0d4cebb9fc55560aada6de2d",
+      "sourceAssetId": "File:(DD) Gokukawa Kantarou sprite.png",
+      "sourceFilename": "(DD) Gokukawa Kantarou sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/gokka-diamond-dust-ie2/game-sprite/source-1/(DD) Gokukawa Kantarou sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/gokka-diamond-dust-ie2/game-sprite/source-1/(DD) Gokukawa Kantarou sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Gokukawa_Kantarou",
+          "sourceAssetId": "File:(DD) Gokukawa Kantarou sprite.png",
+          "sourceFilename": "(DD) Gokukawa Kantarou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/gokka-diamond-dust-ie2/game-sprite/(DD) Gokukawa Kantarou sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/gokka-diamond-dust-ie2/game-sprite/source-1/(DD) Gokukawa Kantarou sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/gokka-diamond-dust-ie2/game-sprite/source-1/(DD) Gokukawa Kantarou sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/gokka-diamond-dust-ie2/game-sprite/source-1/(DD)%20Gokukawa%20Kantarou%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "bdd8f3d74ef5d77a5069f3779b8ae60614d5346a0d4cebb9fc55560aada6de2d",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Gokukawa Kantarou sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/0/05/%28DD%29_Gokukawa_Kantarou_sprite.png/revision/latest?cb=20230629152957&format=original&raw=1"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/gokka-diamond-dust-ie2/game-sprite/(DD) Gokukawa Kantarou sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/gokka-diamond-dust-ie2/game-sprite/source-1/(DD)%20Gokukawa%20Kantarou%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/gokka-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/gokka-diamond-dust-ie2/game-sprite/(DD) Gokukawa Kantarou sprite.png",
+        "sourceFilename": "(DD) Gokukawa Kantarou sprite.png",
+        "sha256": "bdd8f3d74ef5d77a5069f3779b8ae60614d5346a0d4cebb9fc55560aada6de2d"
+      }
+    },
+    {
+      "canonicalCharacterId": "ic",
+      "versionId": "ic:diamond-dust-ie2",
+      "displayName": "IC",
+      "runtimeSpriteId": "ic-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Touchi_Ai",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Touchi_Ai",
+          "sourceAssetId": "File:(DD) Touchi Ai sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "c01a873bb26b81761a537cc4716754bba62b68f4c1a8e0f5398fa5f88a3a021e",
+      "sourceAssetId": "File:(DD) Touchi Ai sprite.png",
+      "sourceFilename": "(DD) Touchi Ai sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/ic-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Ai sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/ic-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Ai sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Touchi_Ai",
+          "sourceAssetId": "File:(DD) Touchi Ai sprite.png",
+          "sourceFilename": "(DD) Touchi Ai sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/ic-diamond-dust-ie2/game-sprite/(DD) Touchi Ai sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/ic-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Ai sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/ic-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Ai sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/ic-diamond-dust-ie2/game-sprite/source-1/(DD)%20Touchi%20Ai%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "c01a873bb26b81761a537cc4716754bba62b68f4c1a8e0f5398fa5f88a3a021e",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Touchi Ai sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/4a/%28DD%29_Touchi_Ai_sprite.png/revision/latest?cb=20230629153223&format=original&raw=1"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/ic-diamond-dust-ie2/game-sprite/(DD) Touchi Ai sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/ic-diamond-dust-ie2/game-sprite/source-1/(DD)%20Touchi%20Ai%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/ic-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/ic-diamond-dust-ie2/game-sprite/(DD) Touchi Ai sprite.png",
+        "sourceFilename": "(DD) Touchi Ai sprite.png",
+        "sha256": "c01a873bb26b81761a537cc4716754bba62b68f4c1a8e0f5398fa5f88a3a021e"
+      }
+    },
+    {
+      "canonicalCharacterId": "barren",
+      "versionId": "barren:diamond-dust-ie2",
+      "displayName": "Barren",
+      "runtimeSpriteId": "barren-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Toba_Ren",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Toba_Ren",
+          "sourceAssetId": "File:(DD) Toba Ren sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "ff0e556cd77cfb2b4db9ba6bc5d87a6c62da2212d2efaa282c9138c34f953309",
+      "sourceAssetId": "File:(DD) Toba Ren sprite.png",
+      "sourceFilename": "(DD) Toba Ren sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/barren-diamond-dust-ie2/game-sprite/source-1/(DD) Toba Ren sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/barren-diamond-dust-ie2/game-sprite/source-1/(DD) Toba Ren sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Toba_Ren",
+          "sourceAssetId": "File:(DD) Toba Ren sprite.png",
+          "sourceFilename": "(DD) Toba Ren sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/barren-diamond-dust-ie2/game-sprite/(DD) Toba Ren sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/barren-diamond-dust-ie2/game-sprite/source-1/(DD) Toba Ren sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/barren-diamond-dust-ie2/game-sprite/source-1/(DD) Toba Ren sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/barren-diamond-dust-ie2/game-sprite/source-1/(DD)%20Toba%20Ren%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "ff0e556cd77cfb2b4db9ba6bc5d87a6c62da2212d2efaa282c9138c34f953309",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Toba Ren sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/bf/%28DD%29_Toba_Ren_sprite.png/revision/latest?cb=20230629153458&format=original&raw=1"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/barren-diamond-dust-ie2/game-sprite/(DD) Toba Ren sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/barren-diamond-dust-ie2/game-sprite/source-1/(DD)%20Toba%20Ren%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/barren-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/barren-diamond-dust-ie2/game-sprite/(DD) Toba Ren sprite.png",
+        "sourceFilename": "(DD) Toba Ren sprite.png",
+        "sha256": "ff0e556cd77cfb2b4db9ba6bc5d87a6c62da2212d2efaa282c9138c34f953309"
+      }
+    },
+    {
+      "canonicalCharacterId": "droll",
+      "versionId": "droll:diamond-dust-ie2",
+      "displayName": "Droll",
+      "runtimeSpriteId": "droll-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Kadomichi_Tooru",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Kadomichi_Tooru",
+          "sourceAssetId": "File:(DD) Kadomichi Tooru sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 midfielder; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "e4a1c6e1eec68e9987f7628cf39008ac661f7ce10e1b4c6b051a37ba01c7bf5b",
+      "sourceAssetId": "File:(DD) Kadomichi Tooru sprite.png",
+      "sourceFilename": "(DD) Kadomichi Tooru sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/droll-diamond-dust-ie2/game-sprite/source-1/(DD) Kadomichi Tooru sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/droll-diamond-dust-ie2/game-sprite/source-1/(DD) Kadomichi Tooru sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Kadomichi_Tooru",
+          "sourceAssetId": "File:(DD) Kadomichi Tooru sprite.png",
+          "sourceFilename": "(DD) Kadomichi Tooru sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/droll-diamond-dust-ie2/game-sprite/(DD) Kadomichi Tooru sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/droll-diamond-dust-ie2/game-sprite/source-1/(DD) Kadomichi Tooru sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/droll-diamond-dust-ie2/game-sprite/source-1/(DD) Kadomichi Tooru sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/droll-diamond-dust-ie2/game-sprite/source-1/(DD)%20Kadomichi%20Tooru%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "e4a1c6e1eec68e9987f7628cf39008ac661f7ce10e1b4c6b051a37ba01c7bf5b",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Kadomichi Tooru sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/c4/%28DD%29_Kadomichi_Tooru_sprite.png/revision/latest?cb=20230629153810&format=original&raw=1"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/droll-diamond-dust-ie2/game-sprite/(DD) Kadomichi Tooru sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/droll-diamond-dust-ie2/game-sprite/source-1/(DD)%20Kadomichi%20Tooru%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/droll-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/droll-diamond-dust-ie2/game-sprite/(DD) Kadomichi Tooru sprite.png",
+        "sourceFilename": "(DD) Kadomichi Tooru sprite.png",
+        "sha256": "e4a1c6e1eec68e9987f7628cf39008ac661f7ce10e1b4c6b051a37ba01c7bf5b"
+      }
+    },
+    {
+      "canonicalCharacterId": "lionne",
+      "versionId": "lionne:diamond-dust-ie2",
+      "displayName": "Lionne",
+      "runtimeSpriteId": "lionne-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Kurione_Yuki",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Kurione_Yuki",
+          "sourceAssetId": "File:(DD) Kurione Yuki sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 midfielder; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "b4a44192bbdf1b9845161e67fe0f256678219e3bd6e869b69637396a06525948",
+      "sourceAssetId": "File:(DD) Kurione Yuki sprite.png",
+      "sourceFilename": "(DD) Kurione Yuki sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/lionne-diamond-dust-ie2/game-sprite/source-1/(DD) Kurione Yuki sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/lionne-diamond-dust-ie2/game-sprite/source-1/(DD) Kurione Yuki sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Kurione_Yuki",
+          "sourceAssetId": "File:(DD) Kurione Yuki sprite.png",
+          "sourceFilename": "(DD) Kurione Yuki sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/lionne-diamond-dust-ie2/game-sprite/(DD) Kurione Yuki sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/lionne-diamond-dust-ie2/game-sprite/source-1/(DD) Kurione Yuki sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/lionne-diamond-dust-ie2/game-sprite/source-1/(DD) Kurione Yuki sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/lionne-diamond-dust-ie2/game-sprite/source-1/(DD)%20Kurione%20Yuki%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "b4a44192bbdf1b9845161e67fe0f256678219e3bd6e869b69637396a06525948",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Kurione Yuki sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/3d/%28DD%29_Kurione_Yuki_sprite.png/revision/latest?cb=20230629154157&format=original&raw=1"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/lionne-diamond-dust-ie2/game-sprite/(DD) Kurione Yuki sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/lionne-diamond-dust-ie2/game-sprite/source-1/(DD)%20Kurione%20Yuki%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/lionne-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/lionne-diamond-dust-ie2/game-sprite/(DD) Kurione Yuki sprite.png",
+        "sourceFilename": "(DD) Kurione Yuki sprite.png",
+        "sha256": "b4a44192bbdf1b9845161e67fe0f256678219e3bd6e869b69637396a06525948"
+      }
+    },
+    {
+      "canonicalCharacterId": "blow",
+      "versionId": "blow:diamond-dust-ie2",
+      "displayName": "Blow",
+      "runtimeSpriteId": "blow-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Tsumujino_Touji",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Tsumujino_Touji",
+          "sourceAssetId": "File:(DD) Tsumujino Touji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 midfielder; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "8da5b93cace59cfac332afb0f65da1da423ed4fe80a39f5cfba2ec40294eaa93",
+      "sourceAssetId": "File:(DD) Tsumujino Touji sprite.png",
+      "sourceFilename": "(DD) Tsumujino Touji sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/blow-diamond-dust-ie2/game-sprite/source-1/(DD) Tsumujino Touji sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/blow-diamond-dust-ie2/game-sprite/source-1/(DD) Tsumujino Touji sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Tsumujino_Touji",
+          "sourceAssetId": "File:(DD) Tsumujino Touji sprite.png",
+          "sourceFilename": "(DD) Tsumujino Touji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/blow-diamond-dust-ie2/game-sprite/(DD) Tsumujino Touji sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/blow-diamond-dust-ie2/game-sprite/source-1/(DD) Tsumujino Touji sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/blow-diamond-dust-ie2/game-sprite/source-1/(DD) Tsumujino Touji sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/blow-diamond-dust-ie2/game-sprite/source-1/(DD)%20Tsumujino%20Touji%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "8da5b93cace59cfac332afb0f65da1da423ed4fe80a39f5cfba2ec40294eaa93",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Tsumujino Touji sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/ed/%28DD%29_Tsumujino_Touji_sprite.png/revision/latest?cb=20230629154457&format=original&raw=1"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/blow-diamond-dust-ie2/game-sprite/(DD) Tsumujino Touji sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/blow-diamond-dust-ie2/game-sprite/source-1/(DD)%20Tsumujino%20Touji%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/blow-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/blow-diamond-dust-ie2/game-sprite/(DD) Tsumujino Touji sprite.png",
+        "sourceFilename": "(DD) Tsumujino Touji sprite.png",
+        "sha256": "8da5b93cace59cfac332afb0f65da1da423ed4fe80a39f5cfba2ec40294eaa93"
+      }
+    },
+    {
+      "canonicalCharacterId": "gazelle",
+      "versionId": "gazelle:diamond-dust-ie2",
+      "displayName": "Gazelle / Gazel",
+      "runtimeSpriteId": "gazelle-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Suzuno_Fuusuke",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Suzuno_Fuusuke",
+          "sourceAssetId": "File:(DD) Gazel sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "canonical-alias-match",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 captain; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "7bd5c9c3030f43075c9de736d81c53b1e7499d17d9374956dd602dbc62d21ac7",
+      "sourceAssetId": "File:(DD) Gazel sprite.png",
+      "sourceFilename": "(DD) Gazel sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/gazelle-diamond-dust-ie2/game-sprite/source-1/(DD) Gazel sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/gazelle-diamond-dust-ie2/game-sprite/source-1/(DD) Gazel sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Suzuno_Fuusuke",
+          "sourceAssetId": "File:(DD) Gazel sprite.png",
+          "sourceFilename": "(DD) Gazel sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/gazelle-diamond-dust-ie2/game-sprite/(DD) Gazel sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/gazelle-diamond-dust-ie2/game-sprite/source-1/(DD) Gazel sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/gazelle-diamond-dust-ie2/game-sprite/source-1/(DD) Gazel sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/gazelle-diamond-dust-ie2/game-sprite/source-1/(DD)%20Gazel%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "7bd5c9c3030f43075c9de736d81c53b1e7499d17d9374956dd602dbc62d21ac7",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Gazel sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/45/%28DD%29_Gazel_sprite.png/revision/latest?cb=20230629155239&format=original&raw=1"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/gazelle-diamond-dust-ie2/game-sprite/(DD) Gazel sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/gazelle-diamond-dust-ie2/game-sprite/source-1/(DD)%20Gazel%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/gazelle-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/gazelle-diamond-dust-ie2/game-sprite/(DD) Gazel sprite.png",
+        "sourceFilename": "(DD) Gazel sprite.png",
+        "sha256": "7bd5c9c3030f43075c9de736d81c53b1e7499d17d9374956dd602dbc62d21ac7"
+      }
+    },
+    {
+      "canonicalCharacterId": "frost",
+      "versionId": "frost:diamond-dust-ie2",
+      "displayName": "Frost",
+      "runtimeSpriteId": "frost-diamond-dust-ie2",
+      "teamId": "diamond-dust",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Mikoori_Rei",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Mikoori_Rei",
+          "sourceAssetId": "File:(DD) Mikoori Rei sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "diamond-dust-roster",
+        "character-page",
+        "exact-file-title",
+        "resolved-file-title",
+        "binary-signature-validated",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Diamond Dust IE2 attacker; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE"
+      ],
+      "sha256": "f8135b3bbd637581bf87a036952c60c6be2f59845b0cb17c74b072bafdfe8678",
+      "sourceAssetId": "File:(DD) Mikoori Rei sprite.png",
+      "sourceFilename": "(DD) Mikoori Rei sprite.png",
+      "verifiedFile": "tools/assets/verified/diamond-dust-ie2/frost-diamond-dust-ie2/game-sprite/source-1/(DD) Mikoori Rei sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/frost-diamond-dust-ie2/game-sprite/source-1/(DD) Mikoori Rei sprite.png.provenance.json",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Mikoori_Rei",
+          "sourceAssetId": "File:(DD) Mikoori Rei sprite.png",
+          "sourceFilename": "(DD) Mikoori Rei sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/frost-diamond-dust-ie2/game-sprite/(DD) Mikoori Rei sprite.png",
+          "verifiedFile": "tools/assets/verified/diamond-dust-ie2/frost-diamond-dust-ie2/game-sprite/source-1/(DD) Mikoori Rei sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/diamond-dust-ie2/frost-diamond-dust-ie2/game-sprite/source-1/(DD) Mikoori Rei sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/diamond-dust-ie2/frost-diamond-dust-ie2/game-sprite/source-1/(DD)%20Mikoori%20Rei%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "f8135b3bbd637581bf87a036952c60c6be2f59845b0cb17c74b072bafdfe8678",
+          "provenanceNote": "Original downloaded filename preserved as (DD) Mikoori Rei sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/diamond-dust-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "human-approval"
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": [],
+          "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/6d/%28DD%29_Mikoori_Rei_sprite.png/revision/latest?cb=20230629155703&format=original&raw=1"
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/diamond-dust-ie2/originals/frost-diamond-dust-ie2/game-sprite/(DD) Mikoori Rei sprite.png",
+      "contactSheetImageUrl": "../verified/diamond-dust-ie2/frost-diamond-dust-ie2/game-sprite/source-1/(DD)%20Mikoori%20Rei%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/frost-diamond-dust-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/diamond-dust-ie2/originals/frost-diamond-dust-ie2/game-sprite/(DD) Mikoori Rei sprite.png",
+        "sourceFilename": "(DD) Mikoori Rei sprite.png",
+        "sha256": "f8135b3bbd637581bf87a036952c60c6be2f59845b0cb17c74b072bafdfe8678"
+      }
+    }
+  ]
+}

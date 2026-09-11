@@ -36,6 +36,12 @@ const manifest = () => ({
     baseStats: { hp: 70, atk: 30, def: 30, spd: 35 },
     primaryMove: { name: "Test Move", power: 60, effect: "weaken" },
     evidenceStatus: "VERIFIED",
+    identityEvidence: [{
+      sourceType: "url",
+      reference: "https://example.invalid/known",
+      claims: ["canonical-identity", "aliases", "team-membership", "game-origin"],
+      notes: "Test evidence."
+    }],
     assetStatus: "ASSET-VERIFIED",
     provenanceManifestId: "test-assets"
   }]
@@ -57,10 +63,62 @@ test("alias matching reuses one character and ambiguous aliases remain REVIEW", 
   const input = manifest();
   input.players[0].canonicalCharacterId = "localized-id";
   assert.equal(resolveTeamIdentities([input], [{ characterId: "known", displayName: "Known Canon" }])[0].characterId, "known");
-  assert.throws(() => deriveTeamContent([input], [
+  const result = deriveTeamContent([input], [
     { characterId: "known", displayName: "Known Canon" },
     { characterId: "other", displayName: "Known Localized" }
-  ]), /require REVIEW/);
+  ]);
+  assert.equal(result.identityDecisions[0].status, "REVIEW");
+  assert.deepEqual(result.versions, []);
+  assert.equal(result.reviewItems[0].identityStatus, "REVIEW");
+});
+
+test("exact canonical id remains strongest when aliases overlap", () => {
+  const input = manifest();
+  const decision = resolveTeamIdentities([input], [
+    { characterId: "known", displayName: "Known Canon" },
+    { characterId: "other", displayName: "Known Localized" }
+  ])[0];
+  assert.equal(decision.status, "REUSED");
+  assert.equal(decision.characterId, "known");
+});
+
+test("VERIFIED identity evidence is mandatory and complete", () => {
+  const missing = manifest();
+  delete missing.players[0].identityEvidence;
+  assert.throws(() => validateTeamManifest(missing), /missing identityEvidence/);
+  const incomplete = manifest();
+  incomplete.players[0].identityEvidence[0].claims = ["canonical-identity"];
+  assert.throws(() => validateTeamManifest(incomplete), /Incomplete identity evidence/);
+  const valid = manifest();
+  assert.equal(validateTeamManifest(valid), valid);
+});
+
+test("duplicate new canonical ids and identity expectation mismatches are blocked", () => {
+  const duplicated = manifest();
+  duplicated.players[0].canonicalCharacterId = "new-person";
+  duplicated.players[0].expectedIdentity = "new";
+  duplicated.players.push({
+    ...structuredClone(duplicated.players[0]),
+    versionId: "new-person:other-team",
+    displayName: "Another Form"
+  });
+  assert.throws(() => resolveTeamIdentities([duplicated], []), /Duplicate new canonical identity/);
+  const mismatch = manifest();
+  mismatch.players[0].expectedIdentity = "new";
+  assert.throws(() => resolveTeamIdentities([mismatch], [{ characterId: "known", displayName: "Known Canon" }]), /Identity expectation mismatch/);
+});
+
+test("duplicate team and scenario ids are blocked", () => {
+  const first = manifest();
+  const duplicateTeam = structuredClone(first);
+  duplicateTeam.manifestId = "other-manifest";
+  duplicateTeam.scenario.id = "other-scenario";
+  duplicateTeam.players[0].versionId = "known:other";
+  assert.throws(() => deriveTeamContent([first, duplicateTeam], [{ characterId: "known", displayName: "Known Canon" }]), /teamId/);
+  duplicateTeam.team.teamId = "other-team";
+  duplicateTeam.team.tags = ["other-team"];
+  duplicateTeam.scenario.id = first.scenario.id;
+  assert.throws(() => deriveTeamContent([first, duplicateTeam], [{ characterId: "known", displayName: "Known Canon" }]), /scenario id/);
 });
 
 test("unverified evidence and assets never enter runtime output", () => {

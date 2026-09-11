@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "lionne:diamond-dust-ie2",
+  "displayName": "Lionne",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Kurione Yuki sprite.png",
+  "sourceFilename": "(DD) Kurione Yuki sprite.png",
+  "sourceRef": "Kurione_Yuki",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/3d/%28DD%29_Kurione_Yuki_sprite.png/revision/latest?cb=20230629154157&format=original&raw=1",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/lionne-diamond-dust-ie2/game-sprite/(DD) Kurione Yuki sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/lionne-diamond-dust-ie2/game-sprite/source-1/(DD) Kurione Yuki sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/lionne-diamond-dust-ie2.png",
+  "sha256": "b4a44192bbdf1b9845161e67fe0f256678219e3bd6e869b69637396a06525948"
+}

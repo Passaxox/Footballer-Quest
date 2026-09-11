@@ -24,6 +24,12 @@ const mimeExtension = mime => ({ 'image/png': '.png', 'image/webp': '.webp', 'im
 const toPosix = value => value.split(path.sep).join('/');
 const unique = values => [...new Set(values.filter(Boolean))];
 
+function originalBinaryUrl(url) {
+  if (!url || !/^https:\/\/static\.wikia\.nocookie\.net\//i.test(url)) return url;
+  const separator = url.includes('?') ? '&' : '?';
+  return /[?&]format=original(?:&|$)/i.test(url) ? url : `${url}${separator}format=original`;
+}
+
 function relativeFromRoot(file) {
   return toPosix(path.relative(root, file));
 }
@@ -563,7 +569,13 @@ export class FandomMediaWikiAdapter {
 
   async request(url, { responseType = 'json' } = {}) {
     try {
-      const response = await this.fetchImpl(url, { redirect: 'follow', headers: { 'user-agent': 'FootballerQuestAssetFactory/1.0' } });
+      const response = await this.fetchImpl(url, {
+        redirect: 'follow',
+        headers: {
+          'user-agent': 'FootballerQuestAssetFactory/1.0',
+          referer: `${this.baseUrl}/`
+        }
+      });
       if (!response.ok) {
         if ([401, 403, 404, 429, 500, 502, 503, 504].includes(response.status)) {
           const error = new Error(`Source request failed: ${response.status}`);
@@ -600,7 +612,7 @@ export class FandomMediaWikiAdapter {
         const page = Object.values(data?.query?.pages ?? {})[0];
         if (!page || page.missing !== undefined) return { sourceStatus: 'SOURCE-MISSING', note: `Missing exact file title ${fileTitle}` };
         const resolvedTitle = normalizeFileTitle(page.title ?? fileTitle);
-        const imageInfoUrl = page.imageinfo?.[0]?.url ?? null;
+        const imageInfoUrl = originalBinaryUrl(page.imageinfo?.[0]?.url ?? null);
         const urls = unique([imageInfoUrl, ...candidateFileUrls(this.baseUrl, resolvedTitle)]);
         return {
           sourceStatus: 'SOURCE-CANDIDATE',
@@ -880,9 +892,13 @@ function renderContactSheet(report) {
       return `<section class="source">
   <div class="thumb">${image}</div>
   <dl>
+    <div><dt>Source reference</dt><dd>${source.sourceRef ?? source.sourceAssetId ?? 'n/a'}</dd></div>
     <div><dt>Source filename</dt><dd>${source.sourceFilename ?? filenameFromFileTitle(source.sourceAssetId) ?? 'n/a'}</dd></div>
     <div><dt>Suitability</dt><dd>${source.sourceSuitability ?? 'n/a'}</dd></div>
     <div><dt>Resolution</dt><dd>${source.width && source.height ? `${source.width}×${source.height}` : 'n/a'}</dd></div>
+    <div><dt>Format</dt><dd>${source.detectedFormat ?? 'n/a'}</dd></div>
+    <div><dt>Candidate SHA</dt><dd>${source.sha256 ?? 'n/a'}</dd></div>
+    <div><dt>Match</dt><dd>${source.importStatus ?? (source.outputFile ? 'MATCHED' : 'MISSING')}</dd></div>
     <div><dt>Status</dt><dd>${source.assetStatus}</dd></div>
   </dl>
 </section>`;
@@ -891,6 +907,7 @@ function renderContactSheet(report) {
   <h2>${target.displayName}</h2>
   <dl>
     <div><dt>Version</dt><dd>${target.versionId}</dd></div>
+    <div><dt>Canonical ID</dt><dd>${target.canonicalCharacterId}</dd></div>
     <div><dt>Team/Game</dt><dd>${target.teamId} / ${target.sourceGame}</dd></div>
     <div><dt>Target status</dt><dd>${target.assetStatus}</dd></div>
   </dl>

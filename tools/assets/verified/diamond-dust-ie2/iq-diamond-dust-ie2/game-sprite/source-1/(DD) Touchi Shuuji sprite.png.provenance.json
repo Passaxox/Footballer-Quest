@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "iq:diamond-dust-ie2",
+  "displayName": "IQ",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Touchi Shuuji sprite.png",
+  "sourceFilename": "(DD) Touchi Shuuji sprite.png",
+  "sourceRef": "Touchi_Shuuji",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/b4/%28DD%29_Touchi_Shuuji_sprite.png/revision/latest?cb=20230629152402&format=original&raw=1",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/iq-diamond-dust-ie2/game-sprite/(DD) Touchi Shuuji sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/iq-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Shuuji sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/iq-diamond-dust-ie2.png",
+  "sha256": "6ef446d0fab15ef55d2e29f5a102c68ca85434e0f9711852a3f1f6dcbccd1a5c"
+}

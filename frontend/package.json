@@ -71,6 +71,7 @@
     "test:assets": "node --test tests/asset-audit.test.mjs",
     "content:apply": "node ../tools/content/content-factory.mjs --apply",
     "content:check": "node ../tools/content/content-check.mjs",
+    "content:team": "node ../tools/content/team-pipeline.mjs",
     "android:prepare": "npm run build && npx cap sync android",
     "android:debug": "npm run android:prepare && cd android && ./gradlew assembleDebug"
   },

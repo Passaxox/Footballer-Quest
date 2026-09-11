@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "blow:diamond-dust-ie2",
+  "displayName": "Blow",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Tsumujino Touji sprite.png",
+  "sourceFilename": "(DD) Tsumujino Touji sprite.png",
+  "sourceRef": "Tsumujino_Touji",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/ed/%28DD%29_Tsumujino_Touji_sprite.png/revision/latest?cb=20230629154457&format=original&raw=1",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/blow-diamond-dust-ie2/game-sprite/(DD) Tsumujino Touji sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/blow-diamond-dust-ie2/game-sprite/source-1/(DD) Tsumujino Touji sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/blow-diamond-dust-ie2.png",
+  "sha256": "8da5b93cace59cfac332afb0f65da1da423ed4fe80a39f5cfba2ec40294eaa93"
+}

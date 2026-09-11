@@ -204,6 +204,63 @@ test("Gemini runtime sprites match immutable verified provenance", async () => {
   }
 });
 
+test("Diamond Dust manifest reuses Gazelle and stays isolated behind its gate", () => {
+  const ids = [
+    "beluga:diamond-dust-ie2", "iq:diamond-dust-ie2", "clara:diamond-dust-ie2",
+    "gokka:diamond-dust-ie2", "ic:diamond-dust-ie2", "barren:diamond-dust-ie2",
+    "droll:diamond-dust-ie2", "lionne:diamond-dust-ie2", "blow:diamond-dust-ie2",
+    "gazelle:diamond-dust-ie2", "frost:diamond-dust-ie2"
+  ];
+  assert.equal(catalog.resolveVersion("gazelle:diamond-dust-ie2").characterId, catalog.resolveVersion("gazelle:base").characterId);
+  assert.equal(catalog.CATALOG_SOURCE.characters.filter(character => character.characterId === "gazelle").length, 1);
+  assert.deepEqual(new Set(ids.map(id => catalog.resolveVersion(id).role)), new Set(["P", "D", "C", "A"]));
+  assert.deepEqual(scenarios.scenarioPool("diamond-dust-glacier", 23, 3), []);
+  assert.deepEqual(scenarios.scenarioPool("diamond-dust-glacier", 24, 2), []);
+  assert.deepEqual(scenarios.scenarioPool("diamond-dust-glacier", 24, 3).map(row => row.version.versionId).sort(), ids.sort());
+  for (const scenarioId of ["urban", "royal-academy", "zeus", "epsilon-lab", "gemini-crash-site", "international"]) {
+    assert.ok(scenarios.scenarioPool(scenarioId, 24, 3).every(row => !ids.includes(row.version.versionId)));
+  }
+});
+
+test("Diamond Dust encounters and recruitment preserve version content", () => {
+  const ids = new Set(scenarios.scenarioPool("diamond-dust-glacier", 24, 3).map(row => row.version.versionId));
+  const run = { ...newRun(starters), wave: 24, scenarioState: { id: "diamond-dust-glacier", revision: 1, segmentStart: 24, segmentEnd: 29 } };
+  const random = Math.random;
+  try {
+    const rolls = [0.1, 0.9, 0.9];
+    Math.random = () => rolls.length ? rolls.shift() : 0.5;
+    const battle = engine.generateWave(run);
+    assert.equal(battle.kind, "team");
+    assert.ok(battle.enemies.length >= 2 && battle.enemies.length <= 3);
+    assert.ok(battle.enemies.every(player => ids.has(player.versionId)));
+    Math.random = () => 0.55;
+    const recruit = engine.generateWave(run);
+    assert.equal(recruit.type, "recruit");
+    assert.ok(ids.has(recruit.player.versionId));
+    const version = catalog.resolveVersion(recruit.player.versionId);
+    assert.equal(recruit.player.characterId, version.characterId);
+    assert.equal(catalog.resolveVersion(recruit.player.versionId).spriteId, version.spriteId);
+    assert.ok(version.spriteId.endsWith("-diamond-dust-ie2"));
+    assert.deepEqual(recruit.player.move, catalog.PRIMARY_MOVES[version.primaryMoveId]);
+    assert.deepEqual(recruit.player.base, version.baseStats);
+  } finally {
+    Math.random = random;
+  }
+});
+
+test("Diamond Dust runtime sprites match immutable verified provenance", async () => {
+  const provenance = JSON.parse(await readFile(new URL("../../tools/assets/runtime-provenance/diamond-dust-ie2.json", import.meta.url), "utf8"));
+  assert.equal(provenance.schemaVersion, 1);
+  assert.equal(provenance.assets.length, 11);
+  for (const row of provenance.assets) {
+    const sourceBytes = await readFile(new URL("../../" + row.verifiedSourcePath, import.meta.url));
+    const runtimeBytes = await readFile(new URL("../../" + row.runtimeSpritePath, import.meta.url));
+    assert.equal(createHash("sha256").update(sourceBytes).digest("hex"), row.sha256);
+    assert.equal(createHash("sha256").update(runtimeBytes).digest("hex"), row.sha256);
+    assert.equal(catalog.resolveVersion(row.versionId).spriteId + ".png", row.runtimeSpritePath.split("/").at(-1));
+  }
+});
+
 test("Royal/Zeus generated battles, recruitment and pending saves use authored versions", () => {
   const random = Math.random;
   try {

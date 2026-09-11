@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "frost:diamond-dust-ie2",
+  "displayName": "Frost",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Mikoori Rei sprite.png",
+  "sourceFilename": "(DD) Mikoori Rei sprite.png",
+  "sourceRef": "Mikoori_Rei",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/6d/%28DD%29_Mikoori_Rei_sprite.png/revision/latest?cb=20230629155703&format=original&raw=1",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/frost-diamond-dust-ie2/game-sprite/(DD) Mikoori Rei sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/frost-diamond-dust-ie2/game-sprite/source-1/(DD) Mikoori Rei sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/frost-diamond-dust-ie2.png",
+  "sha256": "f8135b3bbd637581bf87a036952c60c6be2f59845b0cb17c74b072bafdfe8678"
+}

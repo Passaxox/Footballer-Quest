@@ -30,6 +30,7 @@
       "baseStats": { "hp": 96, "atk": 34, "def": 44, "spd": 30 },
       "primaryMove": { "name": "Guanto Rotante", "power": 70, "effect": "guard" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Saginuma_Osamu", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Saginuma's Desarm/Dvalin identity and Epsilon IE2 form." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "epsilon-ie2-poc"
     },
@@ -46,6 +47,7 @@
       "baseStats": { "hp": 82, "atk": 28, "def": 36, "spd": 26 },
       "primaryMove": { "name": "Contrasto deciso", "power": 60, "effect": "shatter" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Tanba_Taiji", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Tanba's Titan/Tytan identity and Epsilon IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "epsilon-ie2-poc"
     },
@@ -62,6 +64,7 @@
       "baseStats": { "hp": 72, "atk": 34, "def": 30, "spd": 34 },
       "primaryMove": { "name": "Passaggio tattico", "power": 65, "effect": "weaken" },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Kuri_Fuuko", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Kuri's Krypto identity and Epsilon IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "epsilon-ie2-poc"
     },
@@ -78,6 +81,7 @@
       "baseStats": { "hp": 74, "atk": 40, "def": 26, "spd": 32 },
       "primaryMove": { "name": "Tiro potente", "power": 85, "effect": null },
       "evidenceStatus": "VERIFIED",
+      "identityEvidence": [{ "sourceType": "url", "reference": "https://inazuma-eleven.fandom.com/wiki/Segata_Ryuuichirou", "claims": ["canonical-identity", "aliases", "team-membership", "game-origin"], "notes": "Character page identifies Segata's Zel/Zell identity and Epsilon IE2 membership." }],
       "assetStatus": "ASSET-VERIFIED",
       "provenanceManifestId": "epsilon-ie2-poc"
     }

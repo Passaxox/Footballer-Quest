@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "ic:diamond-dust-ie2",
+  "displayName": "IC",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Touchi Ai sprite.png",
+  "sourceFilename": "(DD) Touchi Ai sprite.png",
+  "sourceRef": "Touchi_Ai",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/4a/%28DD%29_Touchi_Ai_sprite.png/revision/latest?cb=20230629153223&format=original&raw=1",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/ic-diamond-dust-ie2/game-sprite/(DD) Touchi Ai sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/ic-diamond-dust-ie2/game-sprite/source-1/(DD) Touchi Ai sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/ic-diamond-dust-ie2.png",
+  "sha256": "c01a873bb26b81761a537cc4716754bba62b68f4c1a8e0f5398fa5f88a3a021e"
+}

@@ -8,20 +8,37 @@ metadata, provenance expectations, and scenario membership. Do not edit the gene
 
 1. Add one team manifest under `tools/content/manifests/`.
 2. Add the matching asset manifest under `tools/assets/manifests/`.
-3. Run `node tools/assets/asset-factory.mjs --manifest <asset-manifest> --fetch-plan`.
-4. Place downloaded candidates anywhere below `tools/assets/imports/`, then run the same command
-   with `--import-candidates --prepare-approvals`.
+3. Run `node tools/content/team-pipeline.mjs --team <manifest-id> --prepare`. This writes the exact
+   fetch plan, acquires available sources, prepares approvals, and may be rerun safely.
+4. If a source host blocks acquisition, place downloaded candidates below the fetch plan's exact
+   `tools/assets/imports/` destinations, then rerun with `--prepare --import-candidates`.
 5. Open `tools/assets/reports/<manifest>.contact-sheet.html`; change each reviewed approval from
    `REVIEW` to `ASSET-VERIFIED` or `REJECTED`.
-6. Run the asset command with `--complete-approvals`. It captures hashes, promotes immutable
-   verified sources, copies runtime sprites, and writes provenance.
-7. Run `node tools/content/content-factory.mjs --apply`.
-8. Run `node tools/content/content-check.mjs`.
+6. Run `node tools/content/team-pipeline.mjs --team <manifest-id> --finalize`. It captures hashes,
+   promotes immutable verified sources, copies runtime sprites, writes provenance, generates
+   content, and runs content-check. It never approves an asset automatically.
+
+Each `VERIFIED` player must include non-empty `identityEvidence`. Evidence entries use
+`sourceType` (`url` or `repository`), a traceable `reference`, optional `notes`, and `claims`.
+Across the entries, claims must cover `canonical-identity`, `aliases`, `team-membership`, and
+`game-origin`. Missing or incomplete evidence is rejected; ambiguous identity matches remain
+`REVIEW` and are excluded from runtime.
 
 Only the two manifests normally need manual editing. Human judgment remains required for canonical
 identity evidence, visual candidate approval, and authored gameplay balance. Paths, hashes, runtime
 rows, moves, scenario version lists, provenance checks, and changing catalog/asset counts are
 derived.
+
+## M2.5 Diamond Dust cost
+
+- Before M2, a comparable team required roughly 8-12 authored/derived registry, scenario, asset,
+  provenance, and assertion edits.
+- M2.5 authored inputs: one content manifest and one asset manifest.
+- Generated outputs: runtime module, fetch plan, review reports, approvals with captured hashes,
+  immutable verified provenance, runtime sprites, and content report.
+- Team-specific runtime registry edits: **0**.
+- Commands: one `--prepare`, one `--finalize` after review.
+- Human decisions: identity evidence, gameplay balance, and one explicit asset decision per target.
 
 ## Epsilon M1 process audit
 

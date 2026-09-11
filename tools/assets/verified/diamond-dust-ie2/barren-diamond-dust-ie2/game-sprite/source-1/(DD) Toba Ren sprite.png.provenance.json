@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "diamond-dust-ie2",
+  "versionId": "barren:diamond-dust-ie2",
+  "displayName": "Barren",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(DD) Toba Ren sprite.png",
+  "sourceFilename": "(DD) Toba Ren sprite.png",
+  "sourceRef": "Toba_Ren",
+  "resolvedBinaryUrl": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/bf/%28DD%29_Toba_Ren_sprite.png/revision/latest?cb=20230629153458&format=original&raw=1",
+  "approvalsPath": "tools/assets/approvals/diamond-dust-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/diamond-dust-ie2/originals/barren-diamond-dust-ie2/game-sprite/(DD) Toba Ren sprite.png",
+  "verifiedPath": "tools/assets/verified/diamond-dust-ie2/barren-diamond-dust-ie2/game-sprite/source-1/(DD) Toba Ren sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/barren-diamond-dust-ie2.png",
+  "sha256": "ff0e556cd77cfb2b4db9ba6bc5d87a6c62da2212d2efaa282c9138c34f953309"
+}
