@@ -1,6 +1,6 @@
 # Footballer Quest — Element Traits v1
 
-**Status:** DESIGN — Fuoco, Aria and Terra approved; Natura under Director review  
+**Status:** APPROVED_CONCEPT — Fuoco, Aria, Terra and Natura tier identities frozen; exact numbers remain balance work  
 **Milestone:** M2 Traits/Synergies foundation  
 **Purpose:** define broad element identities that influence build decisions without replacing Team/Faction identity.
 
@@ -13,6 +13,10 @@ Guardrails:
 - Effects should create decisions, not only permanent flat stat inflation.
 - Team/Faction/Legacy/Manager identity remains separate from Element identity.
 - DNA contribution follows `docs/TRAIT_DNA_RULES.md`.
+- Trait tiers are earned composition thresholds, not guaranteed progression rewards. A run may legitimately finish with only Tier I, or with no tier of a desired Trait, if recruitment/DNA/team choices never reach the next threshold.
+- Different Trait families do not contribute points to each other: Team/Faction/other Element progress cannot silently complete a Natura, Terra, Aria or Fuoco threshold.
+
+Under the current working `2 / 4 / 6` threshold model, for example, starting a run with three Natura players would activate Natura Tier I and leave the build at `3 / 4` toward Tier II. The fourth point must come from another valid Natura contribution (including eligible DNA half-points under the DNA rules). The game may provide opportunities to continue the build, but normal runs do not guarantee that every chosen Trait reaches Tier II or Tier III.
 
 ---
 
@@ -216,8 +220,89 @@ Terra v1 does not imply:
 
 ---
 
-## Next element under review
+## NATURA — Recovery / Growth / Conversion
 
-**NATURA — Sustain / Adaptation / Recovery**
+**Status:** APPROVED_CONCEPT — tier identity frozen; exact healing fractions/thresholds remain balance work  
+**Identity:** convert real recovery into a short growth resource, then cash that resource out as high sustain and team-wide healing efficiency.
 
-Exact Tier I/II/III effects remain under Director review.
+Natura is intentionally **not** the status-resistance element. Terra owns stability/resistance/counterpressure; Natura owns recovery that becomes new growth.
+
+### Tier I — Linfa Vitale
+
+Eligible Natura heal/drain effects become more efficient when they are restoring **real missing HP** rather than producing overheal.
+
+Approved direction:
+
+- reward healing when the active player is meaningfully injured;
+- do not create value from healing an already-full target;
+- do not generate free passive regeneration simply from having the Trait active.
+
+Exact missing-HP threshold and efficiency bonus remain balance data.
+
+### Tier II — Germinazione
+
+When an eligible Natura heal/drain action restores a sufficiently meaningful amount of **actual missing HP**, the active Natura player gains one `Germoglio` charge.
+
+`Germoglio` is a short single-charge resource, not a stacking Momentum system.
+
+Guardrails:
+
+- maximum one Germoglio charge at a time;
+- overheal does not generate Germoglio;
+- routine passive chip/recovery should not farm repeated Germoglio charges;
+- the qualifying recovery must come from an authored compatible Natura heal/drain interaction;
+- exact recovery threshold and whether Germoglio persists through voluntary switching remain balance/implementation work.
+
+Purpose:
+
+- make recovery feed future growth;
+- distinguish Natura from Terra's “absorb pressure and resist” identity;
+- create a simple prepare -> bloom gameplay loop without another multi-stack bar.
+
+### Tier III — Fioritura
+
+Once per battle, while `Germoglio` is available, the player may consume it to empower the next eligible **offensive Natura technique** into a major recovery play.
+
+**Approved behaviour direction:** Fioritura converts a large but not-yet-frozen portion of the technique's direct damage dealt into a healing pool.
+
+Healing distribution is deterministic and follows this order:
+
+1. heal the currently active player first, up to that player's missing HP;
+2. if healing remains, pass the excess to injured teammates, prioritising the most injured eligible teammate and continuing while healing remains;
+3. if no eligible player has missing HP, remaining healing is lost — it does not become shield, overheal, currency or another stored resource.
+
+This means a strong Fioritura hit can rescue the active player first and then use otherwise-wasted healing to repair the rest of the roster, while a fully healthy team gains no extra value from surplus healing.
+
+Purpose:
+
+- make Tier III visibly stronger than ordinary drain without becoming a generic team heal button;
+- reward preparing Germoglio before committing to the payoff;
+- preserve active-player priority and avoid free value from overheal;
+- give Natura a distinct “damage -> recovery -> redistribution” capstone rather than another defensive effect.
+
+Exact damage-to-healing fraction, eligible techniques, once-per-battle activation UX and whether a missed/blocked technique consumes the activation remain balance work.
+
+### Explicit exclusions
+
+Natura v1 does not imply:
+
+- passive full-team regeneration;
+- overheal converting into shields or permanent HP;
+- unlimited Germoglio stacking;
+- automatic status resistance/immunity;
+- Fioritura reviving KO players;
+- surplus Fioritura healing being stored for later;
+- every Natura offensive technique having innate drain outside authored effects/Trait interactions.
+
+---
+
+## Cross-element identity check
+
+The approved v1 lanes are intentionally distinct:
+
+- **Fuoco** -> pressure, execution and risky overextension;
+- **Aria** -> tempo, control and short battlefield timing windows;
+- **Terra** -> stability, counterpressure and deliberate anchoring;
+- **Natura** -> real recovery, growth resource and healing redistribution.
+
+Future simulation must test not only raw strength, but whether mixed teams make meaningful trade-offs and whether one Element Trait becomes a universal best answer regardless of Team/Faction composition.
