@@ -182,6 +182,8 @@ Examples:
 
 Arc, era, tournament, scenario and location remain Condition/metadata axes unless a genuine shared organization/identity is separately justified.
 
+The Faction layer is intentionally sparse. Alius may remain the only Faction for a long time if no other canon grouping creates equally strong gameplay value. Do not invent additional Factions merely for symmetry.
+
 ---
 
 ## 11. Coverage rules by layer
@@ -213,13 +215,98 @@ Trait coverage reports should separately show Team and Faction counts/overlaps s
 
 ---
 
-## 13. Current approved direction
+## 13. Alius Faction Trait — “Risonanza Alius”
 
-- **Alius** -> first approved Faction model.
+**Status:** APPROVED_CONCEPT — tier structure frozen; exact values/effect magnitudes remain balance work.
+
+Alius should reward **cross-team faction composition**, not simply duplicate the reward already granted by a mono-team specialization.
+
+The core design is horizontal vs vertical commitment:
+
+- **vertical build:** commit strongly to one Alius subteam and climb its Team Trait;
+- **horizontal build:** mix multiple Alius subteams and climb the shared Faction Trait.
+
+A mono-team six-player roster should not automatically receive the full Faction tree on top of the full Team tree.
+
+### Tier I — Risonanza Alius
+
+Working activation shape:
+
+- at least **2 Alius CharacterVersions**;
+- representing at least **2 distinct Alius subteams**.
+
+Behaviour direction:
+
+- unlock/increase Alius-flavoured future events, routes, recruit opportunities and controlled risk/reward choices;
+- use future generated nodes only; never reroll a persisted pending node.
+
+The point of Tier I is to make the player notice that mixing Alius teams changes the run before granting large combat power.
+
+### Tier II — Evoluzione Forzata
+
+Working activation shape:
+
+- at least **4 Alius CharacterVersions**;
+- representing at least **2 distinct Alius subteams**.
+
+Behaviour direction:
+
+- successful high-risk Alius/elite challenges can improve reward/recruit quality in a bounded way;
+- the effect must use explicit per-segment/checkpoint/run limits so it cannot become an infinite farming loop;
+- exact reward classes, caps and event hooks remain balance/content work.
+
+This tier expresses Alius growth-through-pressure without reducing the faction to a permanent ATK bonus.
+
+### Tier III — Sovraccarico Alius
+
+Working activation shape:
+
+- **6 Alius CharacterVersions**;
+- representing at least **3 distinct Alius subteams**.
+
+Behaviour direction:
+
+- once per battle, allow a deliberate short **Overdrive/Sovraccarico** window with a strong payoff and an explicit cost;
+- valid future costs may include recoil/HP loss, temporary vulnerability, resource loss or another readable downside;
+- it must be an active tactical decision, not a passive free buff;
+- exact cost, magnitude, eligible actions and whether Manager AI may shape the tradeoff remain balance work.
+
+### Composition examples
+
+`6 Diamond Dust`
+
+- may reach Diamond Dust Tier III;
+- does **not** satisfy the intended cross-team requirement for full Risonanza Alius.
+
+`4 Diamond Dust + 2 Epsilon`
+
+- may reach Diamond Dust Tier II;
+- reaches a meaningful Alius Faction tier through mixed-team composition.
+
+`2 Diamond Dust + 2 Gemini Storm + 2 Epsilon`
+
+- qualifies for the intended full Alius horizontal build shape;
+- may simultaneously hold low Team-specialization tiers where those Team Traits exist.
+
+Exact interaction with the general `2 / 4 / 6` Trait display model must be made explicit in UI and simulation because Alius also requires **distinct subteam counts**, not only raw points.
+
+### Alius guardrails
+
+- A CharacterVersion counts as Alius only through verified current faction identity; Legacy Alius history alone does not contribute.
+- One CharacterVersion contributes once to the Alius member count even if it has multiple compatible metadata fields.
+- A team/faction overlap must never duplicate the same effect trigger invisibly.
+- Faction thresholds and subteam-diversity conditions must be visible in Starter/Team composition UI.
+- Manager AI must obey the same activation/cost rules unless an explicit authored boss rule says otherwise.
+- Coverage simulation must compare mono-team vertical builds against mixed-faction horizontal builds to detect a dominant composition.
+
+---
+
+## 14. Current approved direction
+
+- **Alius** -> first approved Faction model and currently the only Faction justified strongly enough to design; no need to invent peers for symmetry.
+- **Risonanza Alius** -> cross-team horizontal Faction Trait using mixed-subteam requirements; Tier I/II/III identity approved, exact balance values remain open.
 - **Diamond Dust / Gemini Storm** -> Team specializations inside Alius.
 - **Epsilon** -> valid Alius contributor; specific Team Trait deferred until coverage/exception justifies it.
 - **Raimon** -> Team Trait only; former membership belongs in Legacy, not persistent Raimon Trait contribution.
 - **Inazuma Japan** -> future independent Team Trait based on its CharacterVersions.
 - **Ray Dark** -> future cross-team Manager profile, not an automatic player Faction.
-
-Exact Alius Faction Tier I/II/III effects remain the next Director design decision and are not frozen by this document.
