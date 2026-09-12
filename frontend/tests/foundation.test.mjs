@@ -807,12 +807,12 @@ test("difficulty and version survive reload; creating another run does not alter
 });
 
 test("local playtest summary includes all final players including KO", () => {
-  const run = newRun(starters, "easy");
+  const run = newRun(starters, "easy", "foundation-summary-seed");
   run.team = [createPlayer(starters[0], 5), { ...createPlayer(starters[1], 7), hp: 0 }];
   run.wave = 10; run.stats.wins = 5; run.stats.recruits = 3; run.stats.fusions = 1;
   run.pending = { kind: "boss", teamName: "Test boss" };
   run.stats.lastBossDefeated = "Previous boss";
-  assert.deepEqual(engine.playtestSummary(run), { difficulty: "FACILE", wave: 10, wins: 5, recruits: 3, fusions: 1,
+  assert.deepEqual(engine.playtestSummary(run), { seed: "foundation-summary-seed", difficulty: "FACILE", wave: 10, wins: 5, recruits: 3, fusions: 1,
     averageLevel: 6, maxLevel: 7, bossReached: "Test boss", bossDefeated: "Previous boss" });
 });
 
