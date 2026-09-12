@@ -11,6 +11,8 @@ const rarityUrl = moduleUrl(await source("rarity"));
 const runRandomUrl = moduleUrl(await source("runRandom"));
 const eventsUrl = moduleUrl((await source("events")).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./data"', JSON.stringify(dataUrl)));
 const rulesUrl = moduleUrl(await source("rules"));
+const routeDeckUrl = moduleUrl(await source("routeDeck"));
+const synergiesUrl = moduleUrl(await source("synergies"));
 const validationUrl = moduleUrl(await source("catalogValidation"));
 const { validateCatalog, validateIdentityAudit } = await import(validationUrl);
 const expansionUrl = moduleUrl(await source("catalogExpansion"));
@@ -22,7 +24,7 @@ const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
 const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./events"', JSON.stringify(eventsUrl)));
 const scenarios = await import(scenariosUrl);
-const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./events"', JSON.stringify(eventsUrl)).replace('"./runRandom"', JSON.stringify(runRandomUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)));
+const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./events"', JSON.stringify(eventsUrl)).replace('"./runRandom"', JSON.stringify(runRandomUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./routeDeck"', JSON.stringify(routeDeckUrl)).replace('"./synergies"', JSON.stringify(synergiesUrl)));
 const engine = await import(engineUrl);
 const data = await import(dataUrl);
 const storage = await import(moduleUrl((await source("storage"))
@@ -37,11 +39,11 @@ const rows = [];
 const guardrails = process.argv.includes("--guardrails");
 try {
  for (const difficulty of ["normal", "easy"]) for (const [profile, rate] of [["few", .25], ["medium", .5], ["many", .75], ["ko-stress", .5]]) {
-  const samples = Array.from({length:20}, () => []);
+  const samples = Array.from({length:30}, () => []);
   for (let iteration=0; iteration<300; iteration++) {
    let combatXp=0;
    let run=engine.newRun(data.STARTER_IDS.slice(0,3), difficulty);
-   for (let wave=1; wave<=20; wave++) {
+   for (let wave=1; wave<=30; wave++) {
     run.wave=wave;
     if(profile === "ko-stress") run.team[2].hp = wave>=4 && wave<=9 ? 0 : run.team[2].maxHp;
     const tier=wave<8?1:wave<18?2:3;
@@ -64,12 +66,12 @@ try {
     run.pending=null;
    }
   }
-  for(let wave=1;wave<=20;wave++) {
+  for(let wave=1;wave<=30;wave++) {
    const s=samples[wave-1], avg=k=>s.reduce((a,b)=>a+b[k],0)/s.length;
    rows.push({difficulty,profile,wave,raw:+avg("raw").toFixed(2),reference:+avg("reference").toFixed(2),capPercent:+(100*avg("capped")).toFixed(2),combatXp:+avg("combatXp").toFixed(2),teamMean:+avg("mean").toFixed(2),teamP10:+s.map(r=>r.mean).sort((a,b)=>a-b)[29].toFixed(2),teamP90:+s.map(r=>r.mean).sort((a,b)=>a-b)[269].toFixed(2),gapP90:+s.map(r=>r.gap).sort((a,b)=>a-b)[269].toFixed(2),teamMax:+avg("max").toFixed(2),enemyMean:+avg("enemy").toFixed(2),gap:+avg("gap").toFixed(2),ko:+avg("ko").toFixed(2),scenarioCounts:Object.fromEntries(scenarios.SCENARIOS.map(c=>[c.id,s.filter(r=>r.scenario===c.id).length])),enemyTierMean:+avg("tier").toFixed(2)});
   }
  }
- assert.equal(rows.length,160);
+ assert.equal(rows.length,240);
  assert.ok(rows.every(r=>Number.isFinite(r.teamMean)&&r.teamMean>=3));
  console.log(JSON.stringify(rows,null,2));
 } finally { Math.random=originalRandom; }

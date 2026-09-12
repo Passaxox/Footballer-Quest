@@ -91,10 +91,20 @@ const itemDefinitions = {
   fischietto: { id: "fischietto", rarity: "RARE", dropFactor: 4/5, name: "Fischietto d'Argento", desc: "Il prossimo avversario singolo si unirà a te se lo sconfiggi.", price: 200, battle: false },
   talismano: { id: "talismano", rarity: "RARE", battleOnly: true, name: "Talismano Elementale", desc: "In battaglia: la tua mossa colpisce sempre come superefficace per 1 turno.", price: 110, battle: true },
   impacco: { id: "impacco", rarity: "COMMON", name: "Impacco da Bordocampo", desc: "Ripristina il 25% degli HP e cura la bruciatura. Solo giocatori non KO.", price: 35, battle: true, effect: { type: "recovery", hpShare: 0.25, cureBurn: true }, tags: ["recovery"] },
-  grinta: { id: "grinta", rarity: "UNCOMMON", name: "Grinta in Bottiglia", desc: "In lotta: ATK +1 stadio, massimo +3. Dura fino alla fine della battaglia.", price: 55, battle: true, battleOnly: true, effect: { type: "stages", atk: 1, def: 0 }, tags: ["offense"] },
-  tenuta: { id: "tenuta", rarity: "UNCOMMON", name: "Tenuta Difensiva", desc: "In lotta: DIF +1 stadio, massimo +3. Dura fino alla fine della battaglia.", price: 55, battle: true, battleOnly: true, effect: { type: "stages", atk: 0, def: 1 }, tags: ["defense"] },
-  buono: { id: "buono", shopWeight: 0, rarity: "UNCOMMON", name: "Buono Sponsor", desc: "Dallo zaino: converti questo buono in 35 Prestigio. Si consuma una volta.", price: 50, battle: false, effect: { type: "money", amount: 35 }, tags: ["economy"] },
-  azzardo: { id: "azzardo", rarity: "RARE", name: "Slancio Spericolato", desc: "In lotta: ATK +2 stadi e DIF -1, entro ±3. Richiede ATK sotto +3 e DIF sopra -3. Dura fino a fine battaglia.", price: 70, battle: true, battleOnly: true, effect: { type: "stages", atk: 2, def: -1 }, tags: ["risk", "offense"] },
+  grinta: { id: "grinta", rarity: "UNCOMMON", name: "Grinta in Bottiglia", desc: "ATK +1 stadio (massimo +3) fino alla fine del nodo. Solo su un giocatore non KO, durante una lotta.", price: 55, battle: true, battleOnly: true, effect: { type: "stages", atk: 1, def: 0 }, tags: ["offense", "node"] },
+  tenuta: { id: "tenuta", rarity: "UNCOMMON", name: "Tenuta Difensiva", desc: "DIF +1 stadio (massimo +3) fino alla fine del nodo. Solo su un giocatore non KO, durante una lotta.", price: 55, battle: true, battleOnly: true, effect: { type: "stages", atk: 0, def: 1 }, tags: ["defense", "node"] },
+  buono: { id: "buono", shopWeight: 0, rarity: "UNCOMMON", name: "Buono Sponsor", desc: "Si riscatta automaticamente quando viene ottenuto: +35 Prestigio. Non occupa spazio nello zaino.", price: 50, battle: false, effect: { type: "money", amount: 35 }, tags: ["economy", "auto-redeem"] },
+  azzardo: { id: "azzardo", rarity: "RARE", name: "Slancio Spericolato", desc: "ATK +2 stadi e DIF -1 stadio. ATK non può superare +3; DIF non può scendere sotto -3. Dura fino alla fine del nodo. Solo su un giocatore non KO, durante una lotta.", price: 70, battle: true, battleOnly: true, effect: { type: "stages", atk: 2, def: -1 }, tags: ["risk", "offense", "node"] },
+  muro: { id: "muro", rarity: "RARE", name: "Schema Catenaccio", desc: "DIF +2 stadi e ATK -1 stadio, con limiti da -3 a +3. Dura fino alla fine del nodo. Solo in lotta.", price: 75, battle: true, battleOnly: true, effect: { type: "stages", atk: -1, def: 2 }, tags: ["risk", "defense", "node"] },
+  equilibrio: { id: "equilibrio", rarity: "RARE", name: "Lavagna Equilibrata", desc: "ATK +1 e DIF +1 stadio (massimo +3) fino alla fine del nodo. Solo su un giocatore non KO, durante una lotta.", price: 85, battle: true, battleOnly: true, effect: { type: "stages", atk: 1, def: 1 }, tags: ["offense", "defense", "node"] },
+  pressing: { id: "pressing", rarity: "UNCOMMON", name: "Pressing Coraggioso", desc: "ATK +1 e DIF -1 stadio, con limiti da -3 a +3. Dura fino alla fine del nodo. Solo in lotta.", price: 50, battle: true, battleOnly: true, effect: { type: "stages", atk: 1, def: -1 }, tags: ["risk", "node"] },
+  ghiaccio: { id: "ghiaccio", rarity: "COMMON", name: "Ghiaccio Istantaneo", desc: "Recupera il 20% degli HP e cura la bruciatura. Solo su un giocatore non KO.", price: 30, battle: true, effect: { type: "recovery", hpShare: 0.2, cureBurn: true }, tags: ["recovery"] },
+  borraccia: { id: "borraccia", rarity: "COMMON", name: "Borraccia Isotonica", desc: "Recupera il 35% degli HP. Solo su un giocatore non KO.", price: 38, battle: true, effect: { type: "recovery", hpShare: 0.35 }, tags: ["recovery"] },
+  defibrillatore: { id: "defibrillatore", rarity: "RARE", name: "Defibrillatore da Campo", desc: "Rianima un giocatore KO con il 25% degli HP.", price: 130, battle: true, effect: { type: "revive", hpShare: 0.25 }, tags: ["recovery", "revive"] },
+  taccuino: { id: "taccuino", rarity: "UNCOMMON", name: "Taccuino Tattico", desc: "+3 ATK permanente a un giocatore non KO.", price: 90, battle: false, effect: { type: "permanentStat", stat: "atk", amount: 3 }, tags: ["training"] },
+  parastinchi: { id: "parastinchi", rarity: "UNCOMMON", name: "Parastinchi Tecnici", desc: "+3 DIF permanente a un giocatore non KO.", price: 90, battle: false, effect: { type: "permanentStat", stat: "def", amount: 3 }, tags: ["training"] },
+  cronometro: { id: "cronometro", rarity: "UNCOMMON", name: "Cronometro da Scatto", desc: "+4 VEL permanente a un giocatore non KO.", price: 95, battle: false, effect: { type: "permanentStat", stat: "spd", amount: 4 }, tags: ["training"] },
+  pasto: { id: "pasto", rarity: "UNCOMMON", name: "Pasto del Ritiro", desc: "+10 HP massimi permanenti e +10 HP attuali a un giocatore non KO.", price: 95, battle: false, effect: { type: "permanentStat", stat: "hp", amount: 10 }, tags: ["training", "recovery"] },
 };
 
 // Legacy desc and pool exports remain adapters; inventories save IDs/counts only.
@@ -102,6 +112,17 @@ export const ITEMS = Object.fromEntries(Object.entries(itemDefinitions).map(([id
   ...item, description: item.desc, tags: item.tags || [], effect: item.effect || { type: "legacy", handler: id },
   rewardWeight: ITEM_RARITIES[item.rarity].rewardWeight * (item.dropFactor ?? 1), shopWeight: item.shopWeight ?? 1,
 }]));
+export function validateItems(items = ITEMS) {
+  const values = Object.values(items);
+  const ids = values.map(item => item.id);
+  if (new Set(ids).size !== ids.length) throw new Error("Duplicate item ID");
+  for (const item of values) {
+    if (!item.id || !item.name || !item.description || !ITEM_RARITIES[item.rarity] || !(item.price >= 0)) throw new Error(`Invalid item metadata: ${item.id || "missing"}`);
+    if (item.effect.type === "stages" && (!item.battleOnly || !item.description.includes("fine del nodo"))) throw new Error(`Temporary item must declare node duration: ${item.id}`);
+  }
+  return true;
+}
+validateItems();
 export const itemPresentation = id => ITEM_RARITIES[ITEMS[id]?.rarity] || ITEM_RARITIES.COMMON;
 export const SHOP_POOL = Object.values(ITEMS).flatMap(item => Array(item.shopWeight).fill(item.id));
 export const REWARD_POOL = Object.values(ITEMS).map(item => ({ id: item.id, w: item.rewardWeight }));

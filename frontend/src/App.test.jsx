@@ -367,6 +367,7 @@ test("final wave victory bypasses item rewards, preserves final XP and registers
  expect(final.money).toBe(run.money+(20+FINAL_WAVE*3)*3);
  expect(final.stats.wins).toBe(run.stats.wins+1);
  expect(final.stats.lastBossDefeated).toBe("Little Gigant");
+ expect(final.routeHistory.at(-1)).toMatchObject({wave:FINAL_WAVE,kind:"boss",teamName:"Little Gigant"});
  expect(loadRun()).toBeNull();expect(loadMeta().records).toHaveLength(1);
  expect(loadMeta().records[0].glory).toBe(engine.glory(final));
  expect(loadMeta().records[0].teamSnapshot.map(p=>p.level)).toEqual(award.team.map(p=>p.level));

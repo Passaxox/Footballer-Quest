@@ -9,7 +9,7 @@ export const EVENT_OUTCOME_TYPES = new Set([
 const outcome = (text, effects, weight = 1) => ({ text, effects, weight });
 const choice = (label, outcomes, cost = 0) => ({ label, outcomes, ...(cost ? { cost } : {}) });
 
-export const RUN_EVENTS = [
+const authoredEvents = [
   {
     eventId: "sideline-clinic", title: "Clinica a Bordocampo", body: "Un fisioterapista offre una pausa breve prima della prossima sfida.",
     category: "recovery", rarity: "common", weight: 8, oncePerRun: false, cooldownWaves: 5,
@@ -138,7 +138,7 @@ export const RUN_EVENTS = [
     category: "reward", rarity: "uncommon", weight: 7, scenarioIds: ["international"], oncePerRun: false, cooldownWaves: 8,
     choices: [
       choice("Gioca la dimostrazione", [outcome("Tre avversari internazionali entrano in campo.", [{ type: "startEncounter", count: 3, levelBonus: 2, rewardItem: "buono" }, { type: "grantCurrency", amount: 50 }])]),
-      choice("Firma solo per le forniture", [outcome("Ricevi un Buono Sponsor.", [{ type: "grantItem", itemId: "buono" }])]),
+      choice("Firma solo per le forniture", [outcome("Buono riscattato: +35 P. Non entra nello zaino.", [{ type: "grantItem", itemId: "buono" }])]),
     ],
   },
   {
@@ -149,17 +149,98 @@ export const RUN_EVENTS = [
       choice("Alza la posta", [outcome("Per due ondate gli incontri non comuni e rari sono favoriti.", [{ type: "temporaryModifier", id: "captain-ambition", remainingWaves: 2, rarityWeights: { uncommon: 1.4, rare: 1.7 } }, { type: "incrementFlag", flag: "bold-decisions", amount: 1 }])]),
     ],
   },
+  {
+    eventId: "video-analysis", title: "Nastro della Partita", body: "Un vecchio filmato mostra un varco nella tattica dei prossimi avversari.",
+    category: "training", rarity: "common", weight: 6, oncePerRun: true,
+    choices: [
+      choice("Studia il filmato", [outcome("Tutti guadagnano 18 XP e l'analista promette altri dati.", [{ type: "grantXp", amount: 18 }, { type: "setFlag", flag: "analysis-started", value: true }])]),
+      choice("Vendi la registrazione", [outcome("Un collezionista paga 55 Prestigio.", [{ type: "grantCurrency", amount: 55 }])]),
+    ],
+  },
+  {
+    eventId: "analyst-return", title: "Il Rapporto dell'Analista", body: "Dopo alcune tappe arriva il rapporto promesso: una rotta poco battuta nasconde talenti.",
+    category: "recruitment", rarity: "rare", weight: 5, requiresFlags: { "analysis-started": true }, excludesFlags: ["analysis-complete"], oncePerRun: true,
+    weightModifiers: [{ flag: "bold-decisions", multiplier: 1.5 }],
+    choices: [
+      choice("Segui la pista", [outcome("Per quattro ondate aumentano le probabilità di talenti rari.", [{ type: "temporaryModifier", id: "analyst-route", remainingWaves: 4, rarityWeights: { rare: 1.8, special: 1.25 } }, { type: "setFlag", flag: "analysis-complete", value: true }])]),
+      choice("Chiedi un contatto diretto", [outcome("L'analista presenta un giocatore disponibile.", [{ type: "offerRecruit", maxRarity: "rare", price: 45 }, { type: "setFlag", flag: "analysis-complete", value: true }])]),
+    ],
+  },
+  {
+    eventId: "youth-scout", title: "Osservatore delle Giovanili", body: "Un osservatore segnala un talento fuori dai radar. Potrebbe essere comune o sorprendentemente raro.",
+    category: "recruitment", rarity: "rare", weight: 3, oncePerRun: true,
+    weightModifiers: [{ flag: "trusted-coach", multiplier: 2 }],
+    choices: [
+      choice("Organizza un provino", [outcome("Il talento accetta il provino senza vincoli di ondata.", [{ type: "offerRecruit", maxRarity: "rare", price: 55 }])]),
+      choice("Chiedi materiale tecnico", [outcome("Ricevi un Taccuino Tattico.", [{ type: "grantItem", itemId: "taccuino" }])]),
+    ],
+  },
+  {
+    eventId: "equipment-drive", title: "Raccolta Attrezzatura", body: "I tifosi hanno raccolto materiale utile, ma chiedono di scegliere una priorità.",
+    category: "reward", rarity: "common", weight: 6, oncePerRun: false, cooldownWaves: 8,
+    choices: [
+      choice("Kit di recupero", [outcome("Ricevi Ghiaccio Istantaneo e una Borraccia Isotonica.", [{ type: "grantItem", itemId: "ghiaccio" }, { type: "grantItem", itemId: "borraccia" }])]),
+      choice("Materiale tattico", [outcome("Ricevi una Lavagna Equilibrata.", [{ type: "grantItem", itemId: "equilibrio" }])]),
+    ],
+  },
+  {
+    eventId: "storm-warning", title: "Allerta Meteo", body: "Il cielo si chiude. La strada sicura è lunga, quella esposta attira avversari insoliti.",
+    category: "risk-reward", rarity: "uncommon", weight: 5, oncePerRun: false, cooldownWaves: 9,
+    choices: [
+      choice("Attraversa il temporale", [outcome("Per tre ondate aumentano gli incontri rari, ma la squadra perde il 12% degli HP.", [{ type: "damageTeam", percent: 12 }, { type: "temporaryModifier", id: "storm-route", remainingWaves: 3, rarityWeights: { rare: 1.6, special: 1.35 } }, { type: "setFlag", flag: "crossed-storm", value: true }])]),
+      choice("Aspetta al coperto", [outcome("La squadra recupera il 20% degli HP.", [{ type: "healTeam", percent: 20 }])]),
+    ],
+  },
+  {
+    eventId: "alius-whisper", title: "Eco dall'Alius", body: "Una frequenza cifrata promette un incontro clandestino con un atleta dell'Alius.",
+    category: "special-team encounter", rarity: "rare", weight: 4, scenarioIds: ["epsilon-lab", "gemini-crash-site", "diamond-dust-glacier"], oncePerRun: true,
+    choices: [
+      choice("Rispondi al segnale", [outcome("La risposta apre un contatto nelle prossime tappe.", [{ type: "setFlag", flag: "alius-contact", value: true }, { type: "temporaryModifier", id: "alius-frequency", remainingWaves: 4, teamWeights: { epsilon: 1.5, "gemini-storm": 1.5, "diamond-dust": 1.5 } }])]),
+      choice("Smonta il trasmettitore", [outcome("I componenti valgono 85 Prestigio.", [{ type: "grantCurrency", amount: 85 }])]),
+    ],
+  },
+  {
+    eventId: "alius-contact", title: "Appuntamento Stellare", body: "Il contatto Alius mantiene la parola e arriva senza scorta.",
+    category: "recruitment", rarity: "rare", weight: 7, scenarioIds: ["epsilon-lab", "gemini-crash-site", "diamond-dust-glacier"], requiresFlags: { "alius-contact": true }, excludesFlags: ["alius-contact-complete"], oncePerRun: true,
+    choices: [
+      choice("Proponi un posto", [outcome("Il giocatore ascolta la proposta.", [{ type: "offerRecruit", maxRarity: "rare", price: 35 }, { type: "setFlag", flag: "alius-contact-complete", value: true }])]),
+      choice("Scambia informazioni", [outcome("Ottieni 100 Prestigio e chiudi il contatto.", [{ type: "grantCurrency", amount: 100 }, { type: "setFlag", flag: "alius-contact-complete", value: true }])]),
+    ],
+  },
+  {
+    eventId: "supporters-bus", title: "Pullman dei Tifosi", body: "Il pullman dei tifosi offre un passaggio, cibo e un piccolo fondo trasferta.",
+    category: "recovery", rarity: "common", weight: 6, oncePerRun: false, cooldownWaves: 8,
+    choices: [
+      choice("Condividi il pasto", [outcome("La squadra recupera il 30% degli HP.", [{ type: "healTeam", percent: 30 }])]),
+      choice("Accetta il fondo", [outcome("Ottieni 45 Prestigio e prometti una partita coraggiosa.", [{ type: "grantCurrency", amount: 45 }, { type: "incrementFlag", flag: "supporter-promises", amount: 1 }])]),
+    ],
+  },
 ];
 
+const EVENT_PRESENTATION = {
+  recovery: { symbol: "❤", accentClass: "border-emerald-500", panelClass: "from-emerald-950/80 to-slate-950", hint: "Recupero" },
+  training: { symbol: "▲", accentClass: "border-sky-500", panelClass: "from-sky-950/80 to-slate-950", hint: "Allenamento" },
+  "risk-reward": { symbol: "⚡", accentClass: "border-amber-500", panelClass: "from-amber-950/80 to-slate-950", hint: "Rischio / premio" },
+  recruitment: { symbol: "★", accentClass: "border-violet-500", panelClass: "from-violet-950/80 to-slate-950", hint: "Talento" },
+  reward: { symbol: "◆", accentClass: "border-yellow-500", panelClass: "from-yellow-950/80 to-slate-950", hint: "Ricompensa" },
+  narrative: { symbol: "●", accentClass: "border-slate-400", panelClass: "from-slate-800 to-slate-950", hint: "Incontro" },
+  "special-team encounter": { symbol: "✦", accentClass: "border-pink-500", panelClass: "from-pink-950/80 to-slate-950", hint: "Sfida speciale" },
+};
+export const RUN_EVENTS = authoredEvents.map(event => ({
+  ...event,
+  presentation: { ...(EVENT_PRESENTATION[event.category] || EVENT_PRESENTATION.narrative), ...(event.presentation || {}) },
+}));
+
+const GLOBAL_EVENT_IDS = ["video-analysis", "analyst-return", "youth-scout", "equipment-drive", "storm-warning", "supporters-bus"];
 export const SCENARIO_EVENT_POOLS = {
-  "raimon-training": { include: ["sideline-clinic", "camelia-checkup", "iron-tower-drill", "honest-wallet", "trusted-coach-recruit", "route-split", "captains-choice"] },
-  urban: { include: ["sideline-clinic", "camelia-checkup", "iron-tower-drill", "street-tournament", "route-split", "honest-wallet", "trusted-coach-recruit", "captains-choice"] },
-  "royal-academy": { include: ["sideline-clinic", "camelia-checkup", "royal-tactics", "route-split", "captains-choice"] },
-  zeus: { include: ["sideline-clinic", "camelia-checkup", "zeus-altar", "route-split", "captains-choice"] },
-  "epsilon-lab": { include: ["sideline-clinic", "camelia-checkup", "epsilon-console", "epsilon-defector", "route-split", "captains-choice"] },
-  "gemini-crash-site": { include: ["sideline-clinic", "camelia-checkup", "gemini-fragment", "gemini-rendezvous", "route-split", "captains-choice"] },
-  "diamond-dust-glacier": { include: ["sideline-clinic", "camelia-checkup", "diamond-whiteout", "diamond-scout", "route-split", "captains-choice"] },
-  international: { include: ["sideline-clinic", "camelia-checkup", "international-sponsor", "route-split", "captains-choice"] },
+  "raimon-training": { include: ["sideline-clinic", "camelia-checkup", "iron-tower-drill", "honest-wallet", "trusted-coach-recruit", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
+  urban: { include: ["sideline-clinic", "camelia-checkup", "iron-tower-drill", "street-tournament", "route-split", "honest-wallet", "trusted-coach-recruit", "captains-choice", ...GLOBAL_EVENT_IDS] },
+  "royal-academy": { include: ["sideline-clinic", "camelia-checkup", "royal-tactics", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
+  zeus: { include: ["sideline-clinic", "camelia-checkup", "zeus-altar", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
+  "epsilon-lab": { include: ["sideline-clinic", "camelia-checkup", "epsilon-console", "epsilon-defector", "route-split", "captains-choice", "alius-whisper", "alius-contact", ...GLOBAL_EVENT_IDS] },
+  "gemini-crash-site": { include: ["sideline-clinic", "camelia-checkup", "gemini-fragment", "gemini-rendezvous", "route-split", "captains-choice", "alius-whisper", "alius-contact", ...GLOBAL_EVENT_IDS] },
+  "diamond-dust-glacier": { include: ["sideline-clinic", "camelia-checkup", "diamond-whiteout", "diamond-scout", "route-split", "captains-choice", "alius-whisper", "alius-contact", ...GLOBAL_EVENT_IDS] },
+  international: { include: ["sideline-clinic", "camelia-checkup", "international-sponsor", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
 };
 
 const validPositive = value => Number.isFinite(value) && value > 0;
@@ -171,7 +252,8 @@ export function validateEvents(events = RUN_EVENTS) {
   for (const event of events) {
     if (!event?.eventId || ids.has(event.eventId)) errors.push(`Duplicate/invalid event ID: ${event?.eventId || "missing"}`);
     ids.add(event?.eventId);
-    if (!event?.title || !event?.body || !event?.category || !RARITIES[event?.rarity] || !validPositive(event?.weight)) errors.push(`Invalid event metadata: ${event?.eventId}`);
+    if (!event?.title || !event?.body || !event?.category || !RARITIES[event?.rarity] || !validPositive(event?.weight)
+      || !event.presentation?.symbol || !event.presentation?.accentClass || !event.presentation?.panelClass) errors.push(`Invalid event metadata: ${event?.eventId}`);
     if (!Array.isArray(event?.choices) || event.choices.length < 2) errors.push(`Event needs meaningful choices: ${event?.eventId}`);
     for (const eventChoice of event?.choices || []) {
       if (!eventChoice.label || !Array.isArray(eventChoice.outcomes) || !eventChoice.outcomes.length) errors.push(`Invalid choice: ${event?.eventId}`);
@@ -203,7 +285,11 @@ export function eventEligible(event, run, scenario) {
 export function eventPool(run, scenario) {
   const configured = scenario.eventPool?.include;
   return RUN_EVENTS.filter(event => (!configured || configured.includes(event.eventId)) && eventEligible(event, run, scenario))
-    .map(event => ({ event, weight: event.weight * RARITIES[event.rarity].selectionWeight * (scenario.eventPool?.weights?.[event.eventId] || 1) }));
+    .map(event => {
+      const consequenceWeight = (event.weightModifiers || []).reduce((weight, modifier) =>
+        weight * (run.storyFlags?.[modifier.flag] ? modifier.multiplier : 1), 1);
+      return { event, weight: event.weight * consequenceWeight * RARITIES[event.rarity].selectionWeight * (scenario.eventPool?.weights?.[event.eventId] || 1) };
+    });
 }
 
 export function weightedPick(rows, rng = Math.random) {

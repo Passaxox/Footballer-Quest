@@ -10,7 +10,7 @@ export default function RewardScreen({ rewards, bonus, money, xpReport, onPick }
       <div className="p-3 space-y-3 flex-1">
         <Panel className="font-body text-lg text-slate-200 leading-tight">
           Vittoria! Guadagni <span className="text-amber-300">+{money} Prestigio</span>.
-          {bonus && <div className="text-emerald-400 mt-1">Bonus: {ITEMS[bonus].name} aggiunto allo zaino!</div>}
+          {bonus && <div className="text-emerald-400 mt-1">Bonus: {ITEMS[bonus].effect.type === "money" ? `${ITEMS[bonus].name} riscattato automaticamente (+${ITEMS[bonus].effect.amount} P).` : `${ITEMS[bonus].name} aggiunto allo zaino!`}</div>}
         </Panel>
         <XpReport report={xpReport} />
         {rewards.map((id, i) => (

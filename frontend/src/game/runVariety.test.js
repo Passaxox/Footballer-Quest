@@ -14,7 +14,7 @@ const runIn = (scenarioId, wave = 18, seed = "event-test") => ({
 });
 
 test("event schema accepts the authored pack and rejects duplicates and unknown outcomes", () => {
-  expect(RUN_EVENTS).toHaveLength(17);
+  expect(RUN_EVENTS).toHaveLength(25);
   expect(validateEvents()).toBe(true);
   expect(() => validateEvents([RUN_EVENTS[0], RUN_EVENTS[0]])).toThrow(/Duplicate/);
   const invalid = [{ ...RUN_EVENTS[0], eventId: "invalid", choices: [{ label: "No", outcomes: [{ text: "No", weight: 1, effects: [{ type: "executeCode" }] }] }] }];

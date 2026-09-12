@@ -8,6 +8,8 @@ const source = (name) => readFile(new URL(`../src/game/${name}.js`, import.meta.
 const moduleUrl = (text) => `data:text/javascript;base64,${Buffer.from(text).toString("base64")}`;
 const dataUrl = moduleUrl(await source("data"));
 const rulesUrl = moduleUrl(await source("rules"));
+const routeDeckUrl = moduleUrl(await source("routeDeck"));
+const synergiesUrl = moduleUrl(await source("synergies"));
 const rarityUrl = moduleUrl(await source("rarity"));
 const rarity = await import(rarityUrl);
 const runRandomUrl = moduleUrl(await source("runRandom"));
@@ -24,7 +26,7 @@ const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
 const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./events"', JSON.stringify(eventsUrl)));
 const scenarios = await import(scenariosUrl);
-const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./events"', JSON.stringify(eventsUrl)).replace('"./runRandom"', JSON.stringify(runRandomUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)));
+const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./events"', JSON.stringify(eventsUrl)).replace('"./runRandom"', JSON.stringify(runRandomUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./routeDeck"', JSON.stringify(routeDeckUrl)).replace('"./synergies"', JSON.stringify(synergiesUrl)));
 const engine = await import(engineUrl);
 const data = await import(dataUrl);
 const storage = await import(moduleUrl((await source("storage"))
@@ -813,7 +815,10 @@ test("local playtest summary includes all final players including KO", () => {
   run.pending = { kind: "boss", teamName: "Test boss" };
   run.stats.lastBossDefeated = "Previous boss";
   assert.deepEqual(engine.playtestSummary(run), { seed: "foundation-summary-seed", difficulty: "FACILE", wave: 10, wins: 5, recruits: 3, fusions: 1,
-    averageLevel: 6, maxLevel: 7, bossReached: "Test boss", bossDefeated: "Previous boss" });
+    averageLevel: 6, maxLevel: 7, bossReached: "Test boss", bossDefeated: "Previous boss",
+    route: [], eventsSeen: [], itemsOffered: [], itemsChosen: [], temporaryItemsUsed: [],
+    recruitsOffered: [], recruitsAcquired: [], versionsEncountered: [],
+    synergies: [], finalTeam: [{ versionId: "mark:base", level: 5, ko: false }, { versionId: "axel:base", level: 7, ko: true }], currency: 100 });
 });
 
 test("completed history extends old records and survives new run/reload with unlocks", () => {
@@ -1208,7 +1213,7 @@ test("V2i generated ordinary groups use the selected pool and bosses remain scri
     Math.random = () => 0.7;
     const run = newRun(starters);
     const node = engine.generateWave(run); // wave 1 is a battle, 0.7 selects a group
-    const allowed = scenarios.scenarioPool(node.scenarioState.id, 1, 1).map(r => r.version.legacyRosterId);
+    const allowed = scenarios.scenarioPool(node.scenarioState.id, 1, engine.tierForWave(1)).map(r => r.version.legacyRosterId);
     assert.ok(node.enemies.every(p => allowed.includes(p.baseId)));
     assert.equal(new Set(node.enemies.map(p => p.baseId)).size, node.enemies.length);
     for (const scenario of scenarios.SCENARIOS) {
@@ -1329,12 +1334,12 @@ test("V2l Camelia explains non-KO healing without changing price or effects", ()
 test("V2m items have unique legacy-compatible metadata, presentation and weighted pools", () => {
  const legacy=["barretta","bibita","pallone","cuneo","fascia","guanti","scarpini","proteine","trofeo","fischietto","talismano"];
  const items=Object.values(data.ITEMS);
- assert.equal(items.length,16); assert.equal(new Set(items.map(i=>i.id)).size,16);
+ assert.equal(items.length,26); assert.equal(new Set(items.map(i=>i.id)).size,26);
  for(const id of legacy) assert.ok(data.ITEMS[id]);
  for(const [key,item] of Object.entries(data.ITEMS)) {
   assert.equal(item.id,key);assert.ok(item.name && item.description);assert.equal(item.desc,item.description);
   assert.ok(Array.isArray(item.tags));assert.equal(new Set(item.tags).size,item.tags.length);
-  assert.ok(["legacy","recovery","stages","money"].includes(item.effect.type));
+  assert.ok(["legacy","recovery","stages","money","revive","permanentStat"].includes(item.effect.type));
   const rarity=data.ITEM_RARITIES[item.rarity]; assert.ok(rarity);
   assert.ok(rarity.label && rarity.cardClass && rarity.accentClass);
   assert.equal(data.itemPresentation(item.id),rarity);
@@ -1342,8 +1347,8 @@ test("V2m items have unique legacy-compatible metadata, presentation and weighte
   assert.ok(Number.isFinite(item.rewardWeight) && item.rewardWeight>0);
   assert.ok(Number.isInteger(item.shopWeight) && item.shopWeight>=0);
  }
- assert.equal(data.REWARD_POOL.length,16);
- assert.equal(new Set(data.REWARD_POOL.map(r=>r.id)).size,16);
+ assert.equal(data.REWARD_POOL.length,26);
+ assert.equal(new Set(data.REWARD_POOL.map(r=>r.id)).size,26);
  for(const row of data.REWARD_POOL) assert.equal(row.w,data.ITEMS[row.id].rewardWeight);
  for(const id of data.SHOP_POOL) assert.ok(data.ITEMS[id]);
  const weights=r=>items.filter(i=>i.rarity===r).map(i=>i.rewardWeight);

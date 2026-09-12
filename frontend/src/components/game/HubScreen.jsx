@@ -4,12 +4,14 @@ import { glory } from "@/game/engine";
 import { DIFFICULTIES, getRules } from "@/game/rules";
 import { Btn, Header, Panel, PlayerCard, XpReport } from "./ui";
 import { Coins, Backpack } from "lucide-react";
+import { activeSynergies } from "@/game/synergies";
 
 export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon }) {
   const nextBoss = Object.keys(BOSSES).map(Number).find((w) => w >= run.wave);
   const isBoss = !!BOSSES[run.wave];
   const itemCount = Object.values(run.items).reduce((a, b) => a + b, 0);
   const pendingLabel = run.pending ? ({ battle: "Battaglia in corso", recruit: "Incontro", shop: "Mercante", training: "Allenamento", reward: "Ricompensa", event: "Evento" })[run.pending.type] : null;
+  const synergies = activeSynergies(run.team);
   return (
     <div data-testid="hub-screen" className="flex flex-col flex-1">
       <Header title={`Ondata ${run.wave} / ${FINAL_WAVE}`} sub={isBoss ? `BOSS: ${BOSSES[run.wave].team}` : nextBoss ? `Prossimo boss all'ondata ${nextBoss}` : "Finale!"}
@@ -30,6 +32,10 @@ export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon }) {
           <span>Vittorie {run.stats.wins} · Reclutati {run.stats.recruits} · Fusioni {run.stats.fusions}</span>
           <span className="text-purple-300">Gloria {glory(run)}</span>
         </div>
+        {synergies.length > 0 && <Panel data-testid="active-synergies" className="font-body text-base border-violet-600">
+          <div className="font-pixel text-[8px] text-violet-300 mb-1">INTESE ATTIVE {synergies.length}/2</div>
+          {synergies.map(synergy => <div key={synergy.id}>{synergy.label} ({synergy.members}) · {synergy.description}</div>)}
+        </Panel>}
         <XpReport report={!run.pending ? run.lastProgression?.report : null} />
         <div className="space-y-2">
           {run.team.map((p, i) => <PlayerCard key={p.uid} p={p} compact testId={`hub-player-${i}`} right={i === 0 ? <span className="font-pixel text-[7px] text-amber-300 border border-amber-400 px-1">CAP</span> : null} />)}

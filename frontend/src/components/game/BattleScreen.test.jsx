@@ -13,7 +13,7 @@ const settle = async () => {
   for (let i = 0; i < 20; i++) await act(async () => { jest.advanceTimersByTime(1000); });
 };
 const setup = async (run, strict = false, overrides = {}) => {
-  const callbacks = { onWin: jest.fn(), onLose: jest.fn(), onFlee: jest.fn(), onActiveChange: jest.fn(), onDiscover: jest.fn() };
+  const callbacks = { onWin: jest.fn(), onLose: jest.fn(), onFlee: jest.fn(), onActiveChange: jest.fn(), onDiscover: jest.fn(), onStateChange: jest.fn() };
   const encounter = { kind: "team", teamName: "Test", enemies: [engine.createPlayer(STARTER_IDS[0], 1)], ...overrides };
   const view = <BattleScreen run={run} encounter={encounter} {...callbacks} />;
   await act(async () => root.render(strict ? <StrictMode>{view}</StrictMode> : view));
@@ -59,6 +59,21 @@ test("discovery reports only the opponent actually displayed, not the hidden ben
   expect(callbacks.onDiscover).toHaveBeenCalledWith(first);
   expect(callbacks.onDiscover).not.toHaveBeenCalledWith(second);
   expect(callbacks.onWin).not.toHaveBeenCalled();
+});
+
+test("node item consumption publishes inventory and modifier state immediately", async () => {
+  const run = engine.newRun(STARTER_IDS.slice(0, 3));
+  run.items.grinta = 1;
+  const callbacks = await setup(run);
+  await click("pre-battle-keep");
+  await settle();
+  await click("item-button");
+  await click("use-item-grinta");
+  await click("item-target-0");
+  expect(callbacks.onStateChange).toHaveBeenCalledWith(expect.objectContaining({
+    items: expect.not.objectContaining({ grinta: expect.anything() }),
+    nodeModifiers: { [run.team[0].uid]: { atkMod: 1, defMod: 0 } },
+  }));
 });
 
 test("pre-battle switch is free, excludes KO and leaves captain/order unchanged", async () => {

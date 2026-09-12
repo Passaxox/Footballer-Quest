@@ -53,6 +53,8 @@ export function validateScenarios(scenarios = SCENARIOS) {
 }
 validateScenarios();
 export const getScenario = id => SCENARIOS.find(s => s.id === id) || SCENARIOS.find(s => s.id === "urban");
+// Scenario wave ranges remain explicit coherence gates; rarity within an eligible
+// context is weighted rather than hard-locked by progression.
 const eligible = (s, wave) => s.availability && wave >= s.waveRange.from && (s.waveRange.to == null || wave <= s.waveRange.to);
 export function scenarioPool(scenarioId, wave, maxTier, exclude = [], modifiers = []) {
   const s = getScenario(scenarioId);

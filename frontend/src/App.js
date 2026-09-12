@@ -3,8 +3,10 @@ import { useCallback, useState } from "react";
 import "@/App.css";
 import { FINAL_WAVE } from "@/game/data";
 import { getRunEvent } from "@/game/events";
-import { advanceRunWave, applyRunEventOutcome, chooseRunEvent, generateWave, recruitChallengePlayer, generateRewards, addItem, createPlayer, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
+import { advanceRunWave, applyRunEventOutcome, chooseRunEvent, generateWave, recruitChallengePlayer, generateRewards, addItem, grantRunItem, createPlayer, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
+import { synergyRewardMultiplier } from "@/game/synergies";
 import { createRunRandomCursor } from "@/game/runRandom";
+import { routeEntry } from "@/game/routeDeck";
 import { loadMeta, saveMeta, loadRun, saveRun, clearRun, recordFinishedRun } from "@/game/storage";
 import { setSoundEnabled } from "@/game/audio";
 import TitleScreen from "@/components/game/TitleScreen";
@@ -27,6 +29,7 @@ function App() {
   const [run, setRun] = useState(() => loadRun());
   const [meta, setMeta] = useState(() => { const saved = loadMeta(); setSoundEnabled(saved.sound); return saved; });
   const [ctx, setCtx] = useState({});
+  const [feedback, setFeedback] = useState(null);
 
   const updateRun = (r) => { const nextRun = normalizeRun(r); setRun(nextRun); saveRun(nextRun); return nextRun; };
   const updateMeta = (m) => { setMeta(m); saveMeta(m); };
@@ -62,7 +65,13 @@ function App() {
     if (!r.pending) {
       const generated = generateWave(r);
       const { scenarioState, seed, rngState, rngCounter, ...pending } = generated;
-      r = updateRun({ ...r, scenarioState, seed, rngState, rngCounter, pending });
+      const offered = pending.type === "recruit" ? [pending.player.versionId] : [];
+      const encountered = (pending.enemies || []).map(player => player.versionId);
+      r = updateRun({ ...r, scenarioState, seed, rngState, rngCounter, pending, telemetry: {
+        ...r.telemetry,
+        recruitsOffered: [...(r.telemetry?.recruitsOffered || []), ...offered],
+        versionsEncountered: [...(r.telemetry?.versionsEncountered || []), ...encountered],
+      } });
     }
     gotoPending(r);
   };
@@ -76,22 +85,30 @@ function App() {
 
   const advanceWave = (r, nonCombat = false) => {
     if (nonCombat) r = completeNonCombatNode(r);
-    if (r.wave >= FINAL_WAVE) { finishRun(r, "win"); return; }
+    if (r.wave >= FINAL_WAVE) {
+      finishRun({ ...r, routeHistory: [...(r.routeHistory || []), routeEntry(r)].filter(Boolean).slice(-60) }, "win");
+      return;
+    }
     updateRun(advanceRunWave(r));
     setScreen("hub");
   };
 
-  const onWin = (team, items, activeUid, combatReport) => {
+  const onWin = (team, items, activeUid, combatReport, nodeModifiers = run.nodeModifiers, temporaryItemsUsed = []) => {
     const xpReport = mergeXpReports(run.pending.progression?.report, combatReport);
     const enc = run.pending;
     const boss = enc.kind === "boss";
-    const rewardMultiplier = (run.temporaryModifiers || []).reduce((multiplier, modifier) => multiplier * (modifier.rewardMultiplier || 1), 1);
+    const rewardMultiplier = (run.temporaryModifiers || []).reduce((multiplier, modifier) => multiplier * (modifier.rewardMultiplier || 1), synergyRewardMultiplier(team));
     const gain = (20 + run.wave * 3) * (boss ? 3 : enc.kind === "team" ? 1.6 : 1) * rewardMultiplier;
-    let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? team.map((p) => ({ ...p, hp: p.maxHp })) : team, items, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : {}) } };
+    let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? team.map((p) => ({ ...p, hp: p.maxHp })) : team, items, nodeModifiers, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : {}) },
+      telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] } };
     // Final victory keeps earned growth/money, but has no next-node item phase.
-    if (r.wave >= FINAL_WAVE) { finishRun(r, "win"); return; }
+    if (r.wave >= FINAL_WAVE) {
+      finishRun({ ...r, routeHistory: [...(r.routeHistory || []), routeEntry(r)].filter(Boolean).slice(-60) }, "win");
+      return;
+    }
     const cursor = createRunRandomCursor(r);
     const rewards = generateRewards(cursor.next);
+    r = { ...r, telemetry: { ...r.telemetry, itemsOffered: [...(r.telemetry?.itemsOffered || []), ...rewards, ...(enc.rewardItem ? [enc.rewardItem] : [])] } };
     const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport };
     const recruitOffered = enc.kind === "wild" && (r.fischietto || enc.forceRecruit || cursor.next() * 100 < 40);
     r = { ...r, ...cursor.patch() };
@@ -100,7 +117,9 @@ function App() {
       const fresh = { ...createPlayer(e.versionId || e.baseId, e.level), uid: e.uid };
       r = { ...r, fischietto: false };
       const context = { ...base, mode: "offer", offer: fresh, after: "rewards" };
-      updateRun({ ...r, pending: { type: "recruit", context } });
+      updateRun({ ...r, pending: { type: "recruit", context }, telemetry: {
+        ...r.telemetry, recruitsOffered: [...(r.telemetry?.recruitsOffered || []), fresh.versionId],
+      } });
       setCtx(context);
       setScreen("recruit");
       return;
@@ -111,10 +130,16 @@ function App() {
   };
 
   const onPickReward = (id) => {
-    let items = run.items;
-    if (id) items = addItem(items, id);
-    if (ctx.bonus) items = addItem(items, ctx.bonus);
-    advanceWave({ ...run, items });
+    let next = run;
+    const feedbacks = [];
+    for (const rewardId of [id, ctx.bonus].filter(Boolean)) {
+      const granted = grantRunItem(next, rewardId);
+      next = granted.run;
+      if (granted.feedback) feedbacks.push(granted.feedback);
+    }
+    next = { ...next, telemetry: { ...next.telemetry, itemsChosen: id ? [...(next.telemetry?.itemsChosen || []), id] : (next.telemetry?.itemsChosen || []) } };
+    if (feedbacks.some(message => message.includes("riscattato"))) setFeedback(feedbacks.find(message => message.includes("riscattato")));
+    advanceWave(next);
   };
 
   const continueAfterRecruit = (r) => {
@@ -125,7 +150,8 @@ function App() {
   const joinTeam = (replaceIdx, paid) => {
     const p = { ...ctx.offer, hp: ctx.offer.maxHp };
     const team = replaceIdx === null ? [...run.team, p] : run.team.map((q, i) => (i === replaceIdx ? p : q));
-    const r = { ...run, team, money: paid ? run.money - ctx.price : run.money, stats: { ...run.stats, recruits: run.stats.recruits + 1 } };
+    const r = { ...run, team, money: paid ? run.money - ctx.price : run.money, stats: { ...run.stats, recruits: run.stats.recruits + 1 },
+      telemetry: { ...run.telemetry, recruitsAcquired: [...(run.telemetry?.recruitsAcquired || []), p.versionId] } };
     if (!p.fused) updateMeta(recruitVersion(meta, p.versionId || p.baseId));
     continueAfterRecruit(r);
   };
@@ -163,7 +189,7 @@ function App() {
       case "hub": return <HubScreen run={run} onPause={() => { saveRun(run); setCtx({}); setScreen("title"); }} onNext={next} onTeam={() => setScreen("team")} onAbandon={() => { if (window.confirm("Abbandonare la run? Il progresso andrà perso.")) finishRun(run, "lose"); }} />;
       case "team": return <TeamScreen run={run} onUpdate={(patch) => updateRun({ ...run, ...patch })} onFusion={() => setScreen("fusion")} onBack={() => setScreen("hub")} />;
       case "fusion": return <FusionScreen run={run} onFuse={onFuse} onBack={() => setScreen("team")} />;
-      case "battle": return <BattleScreen onDiscover={onDiscover} key={`${run.wave}-${run.pending.enemies[0].uid}`} run={run} encounter={run.pending} onWin={onWin} onActiveChange={(activeUid) => updateRun({ ...run, activeUid })} onLose={(team, items, activeUid, report) => finishRun({ ...run, team, items, activeUid, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } }, "lose")} onFlee={(team, items, activeUid, report) => advanceWave({ ...run, team, items, activeUid, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } })} />;
+      case "battle": return <BattleScreen onDiscover={onDiscover} key={`${run.wave}-${run.pending.enemies[0].uid}`} run={run} encounter={run.pending} onWin={onWin} onActiveChange={(activeUid) => updateRun({ ...run, activeUid })} onStateChange={(patch) => updateRun({ ...run, ...patch })} onLose={(team, items, activeUid, report, nodeModifiers, temporaryItemsUsed = []) => finishRun({ ...run, team, items, activeUid, nodeModifiers, telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] }, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } }, "lose")} onFlee={(team, items, activeUid, report, nodeModifiers, temporaryItemsUsed = []) => advanceWave({ ...run, team, items, activeUid, nodeModifiers, telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] }, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } })} />;
       case "reward": return <RewardScreen rewards={ctx.rewards} bonus={ctx.bonus} money={ctx.money} xpReport={ctx.xpReport} onPick={onPickReward} />;
       case "event": {
         const event = getRunEvent(run.pending.eventId);
@@ -185,6 +211,7 @@ function App() {
   return (
     <div className="min-h-screen bg-[#05070d] flex justify-center font-body">
       <div className="w-full max-w-md min-h-screen bg-[#0d1322] text-slate-100 flex flex-col border-x-4 border-slate-800 relative overflow-hidden scanlines">
+        {feedback && <button data-testid="run-feedback" onClick={() => setFeedback(null)} className="absolute z-50 top-2 left-3 right-3 border-2 border-amber-400 bg-slate-950 p-2 font-pixel text-[9px] text-amber-200 shadow-lg">{feedback}</button>}
         {render()}
       </div>
     </div>

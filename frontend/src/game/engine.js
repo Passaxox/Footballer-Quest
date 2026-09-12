@@ -5,6 +5,8 @@ import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, FINAL_WAVE, TEAM_NAMES, S
 import { normalizeEventResult, resolveEventChoice, selectEvent, weightedPick } from "./events";
 import { createRunRandomCursor, createRunSeed, hashSeed, normalizeRandomState } from "./runRandom";
 import { RARITIES, rarityIdForVersion } from "./rarity";
+import { routeEntry, selectNodeArchetype } from "./routeDeck";
+import { activeSynergies } from "./synergies";
 
 export const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 export const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -140,6 +142,24 @@ export const turnOrder = (a, b) => {
 };
 
 export const resetBattleStatus = (team) => team.map((p) => ({ ...p, status: freshStatus() }));
+const clampStage = value => Math.max(-3, Math.min(3, Number(value) || 0));
+export const normalizeNodeModifiers = modifiers => Object.fromEntries(Object.entries(modifiers && typeof modifiers === "object" ? modifiers : {})
+  .filter(([, value]) => value && typeof value === "object")
+  .map(([uid, value]) => [uid, { atkMod: clampStage(value.atkMod), defMod: clampStage(value.defMod) }])
+  .filter(([, value]) => value.atkMod || value.defMod));
+export const applyNodeModifiers = (team, modifiers = {}) => resetBattleStatus(team).map(player => {
+  const modifier = normalizeNodeModifiers(modifiers)[player.uid];
+  return modifier ? { ...player, status: { ...player.status, ...modifier } } : player;
+});
+export const addNodeStageModifier = (modifiers, uid, effect) => {
+  const normalized = normalizeNodeModifiers(modifiers);
+  const current = normalized[uid] || { atkMod: 0, defMod: 0 };
+  const next = {
+    atkMod: clampStage(current.atkMod + (effect.atk || 0)),
+    defMod: clampStage(current.defMod + (effect.def || 0)),
+  };
+  return normalizeNodeModifiers({ ...normalized, [uid]: next });
+};
 
 // ---------- Fusion ----------
 export const fusePlayers = (a, b, moveFrom) => {
@@ -192,7 +212,9 @@ export const randomRosterId = (maxTier, exclude = [], rng = Math.random) => {
   return weightedPick(rows, rng)?.player.id;
 };
 
-export const tierForWave = (wave) => (wave < 8 ? 1 : wave < 18 ? 2 : 3);
+// Rarity weights, scenario context and enemy-level guardrails control early danger.
+// A high-tier CharacterVersion is therefore possible from wave one, but remains very unlikely.
+export const tierForWave = () => 4;
 
 const generateWaveNode = (run, rng, cursor) => {
   const wave = run.wave;
@@ -209,18 +231,18 @@ const generateWaveNode = (run, rng, cursor) => {
   const eventDue = wave > 1 && (wave + cadenceOffset) % 3 === 0 && wave - (run.lastEventWave || -10) >= 2;
   const event = eventDue ? selectEvent(run, getScenario(run.scenarioState.id), rng) : null;
   if (event) return { type: "event", eventId: event.eventId };
-  const roll = rng() * 100;
-  if (wave === 1 || roll < 55) {
+  const archetype = selectNodeArchetype(run, rng);
+  if (archetype.kind === "battle") {
     const solo = rng() * 100 < 60;
-    if (solo) return { type: "battle", kind: "wild", enemies: [spawn(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId, rng), run.team, run.rulesetId))] };
+    if (solo) return { type: "battle", kind: "wild", nodeArchetype: "duel", enemies: [spawn(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId, rng), run.team, run.rulesetId))] };
     const n = wave < 5 ? 2 : 2 + Math.floor(rng() * 2);
     const ids = [];
     while (ids.length < n) ids.push(pickOpponent(tierForWave(wave), ids));
-    return { type: "battle", kind: "team", teamName: TEAM_NAMES[Math.floor(rng() * TEAM_NAMES.length)], enemies: ids.map((id) => spawn(id, cappedEnemyLevel(enemyLevel(wave, run.rulesetId, rng), run.team, run.rulesetId))) };
+    return { type: "battle", kind: "team", nodeArchetype: "squad", teamName: TEAM_NAMES[Math.floor(rng() * TEAM_NAMES.length)], enemies: ids.map((id) => spawn(id, cappedEnemyLevel(enemyLevel(wave, run.rulesetId, rng), run.team, run.rulesetId))) };
   }
-  if (roll < 70) return { type: "recruit", player: spawn(pickOpponent(tierForWave(wave) + (rng() * 100 < 20 ? 1 : 0)), Math.max(1, wave - 1)), price: 60 + wave * 4 };
-  if (roll < 85) return { type: "shop", stock: generateShop(wave, rng) };
-  return { type: "training" };
+  if (archetype.kind === "recruit") return { type: "recruit", nodeArchetype: archetype.id, player: spawn(pickOpponent(tierForWave(wave)), Math.max(1, wave - 1)), price: 60 + wave * 4 };
+  if (archetype.kind === "shop") return { type: "shop", nodeArchetype: archetype.id, stock: generateShop(wave, rng) };
+  return { type: "training", nodeArchetype: archetype.id };
 };
 
 // Scenario is selected once per segment and returned for atomic persistence with the pending node.
@@ -278,7 +300,10 @@ export const newRun = (starterIds, difficultyId = "normal", requestedSeed = crea
     ...cursor.patch(), scenarioState, difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
     wave: 1, team, items: { barretta: 2 }, money: 100,
     stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], eventHistory: {}, storyFlags: {},
-    temporaryModifiers: [], lastEventWave: null, pending: null, fischietto: false, startedAt,
+    temporaryModifiers: [], nodeModifiers: {}, routeHistory: [], telemetry: {
+      itemsOffered: [], itemsChosen: [], temporaryItemsUsed: [], recruitsOffered: [], recruitsAcquired: [], versionsEncountered: [],
+    },
+    lastEventWave: null, pending: null, fischietto: false, startedAt,
   });
 };
 
@@ -296,6 +321,16 @@ export const normalizeRun = (run) => {
     eventHistory: run.eventHistory && typeof run.eventHistory === "object" ? run.eventHistory : {},
     storyFlags: run.storyFlags && typeof run.storyFlags === "object" ? run.storyFlags : {},
     temporaryModifiers: Array.isArray(run.temporaryModifiers) ? run.temporaryModifiers.filter(modifier => modifier && modifier.remainingWaves > 0) : [],
+    nodeModifiers: normalizeNodeModifiers(run.nodeModifiers),
+    routeHistory: Array.isArray(run.routeHistory) ? run.routeHistory.slice(-60) : [],
+    telemetry: run.telemetry && typeof run.telemetry === "object" ? {
+      itemsOffered: Array.isArray(run.telemetry.itemsOffered) ? run.telemetry.itemsOffered : [],
+      itemsChosen: Array.isArray(run.telemetry.itemsChosen) ? run.telemetry.itemsChosen : [],
+      temporaryItemsUsed: Array.isArray(run.telemetry.temporaryItemsUsed) ? run.telemetry.temporaryItemsUsed : [],
+      recruitsOffered: Array.isArray(run.telemetry.recruitsOffered) ? run.telemetry.recruitsOffered : [],
+      recruitsAcquired: Array.isArray(run.telemetry.recruitsAcquired) ? run.telemetry.recruitsAcquired : [],
+      versionsEncountered: Array.isArray(run.telemetry.versionsEncountered) ? run.telemetry.versionsEncountered : [],
+    } : { itemsOffered: [], itemsChosen: [], temporaryItemsUsed: [], recruitsOffered: [], recruitsAcquired: [], versionsEncountered: [] },
     lastEventWave: Number.isInteger(run.lastEventWave) ? run.lastEventWave : null,
     activeUid: resolveActiveUid(run.team, run.activeUid) };
 };
@@ -304,6 +339,8 @@ export const advanceRunWave = run => normalizeRun({
   ...run,
   wave: run.wave + 1,
   pending: null,
+  nodeModifiers: {},
+  routeHistory: [...(run.routeHistory || []), routeEntry(run)].filter(Boolean).slice(-60),
   temporaryModifiers: (run.temporaryModifiers || []).map(modifier => modifier.appliedWave === run.wave
     ? modifier
     : { ...modifier, remainingWaves: modifier.remainingWaves - 1 }).filter(modifier => modifier.remainingWaves > 0),
@@ -317,6 +354,17 @@ export const playtestSummary = (run) => ({
   maxLevel: Math.max(0, ...run.team.map((p) => p.level)),
   bossReached: run.pending?.kind === "boss" ? run.pending.teamName : null,
   bossDefeated: run.stats.lastBossDefeated || null,
+  route: (run.routeHistory || []).map(entry => ({ wave: entry.wave, scenarioId: entry.scenarioId, archetype: entry.archetype, kind: entry.kind, teamName: entry.teamName, eventId: entry.eventId })),
+  eventsSeen: [...(run.seenEvents || [])],
+  itemsOffered: [...(run.telemetry?.itemsOffered || [])],
+  itemsChosen: [...(run.telemetry?.itemsChosen || [])],
+  temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || [])],
+  recruitsOffered: [...(run.telemetry?.recruitsOffered || [])],
+  recruitsAcquired: [...(run.telemetry?.recruitsAcquired || [])],
+  versionsEncountered: [...(run.telemetry?.versionsEncountered || [])],
+  synergies: activeSynergies(run.team).map(synergy => synergy.id),
+  finalTeam: run.team.map(player => ({ versionId: player.versionId ?? null, level: player.level, ko: player.hp === 0 })),
+  currency: run.money,
 });
 
 export const canReleasePlayer = (team, uid) => team.some((p) => p.uid !== uid && p.hp > 0);
@@ -455,7 +503,7 @@ export function applyRunEventOutcome(run, event, result) {
         next.money = Math.max(0, next.money + effect.amount);
         break;
       case "grantItem":
-        next.items = addItem(next.items, effect.itemId, effect.quantity || 1);
+        next = grantRunItem(next, effect.itemId, effect.quantity || 1).run;
         break;
       case "grantXp":
         next.team = eventTargets(next, effect, player => gainXp(player, effect.amount).player);
@@ -495,6 +543,7 @@ export function applyRunEventOutcome(run, event, result) {
   if (transition?.type === "battle") {
     const enemies = enemiesForEffect(transition.effect, run.wave, next, cursor.next, prefix => cursor.uid(prefix));
     next.pending = { type: "battle", kind: enemies.length === 1 ? "wild" : "team", teamName: event.title, enemies, progression, rewardItem: transition.effect.rewardItem };
+    next.telemetry = { ...next.telemetry, versionsEncountered: [...(next.telemetry?.versionsEncountered || []), ...enemies.map(player => player.versionId)] };
   } else if (transition?.type === "recruit") {
     const ranks = { common: 0, uncommon: 1, rare: 2, special: 3 };
     const candidates = scenarioPool(next.scenarioState.id, next.wave, 4, [], next.temporaryModifiers)
@@ -504,6 +553,7 @@ export function applyRunEventOutcome(run, event, result) {
     if (!selected) throw new Error(`Nessun reclutamento valido per ${event.eventId}`);
     const offer = createPlayer(selected.version.versionId, Math.max(1, run.wave), cursor.uid("recruit"));
     next.pending = { type: "recruit", context: { mode: "offer", offer, price: transition.effect.price ?? 0, after: "advance" }, progression };
+    next.telemetry = { ...next.telemetry, recruitsOffered: [...(next.telemetry?.recruitsOffered || []), offer.versionId] };
   } else {
     next.pending = { ...next.pending, progression };
   }
@@ -512,6 +562,15 @@ export function applyRunEventOutcome(run, event, result) {
 
 export const addItem = (items, id, n = 1) => ({ ...items, [id]: (items[id] || 0) + n });
 export const removeItem = (items, id) => { const c = (items[id] || 0) - 1; const next = { ...items }; if (c <= 0) delete next[id]; else next[id] = c; return next; };
+export const grantRunItem = (run, id, quantity = 1) => {
+  const item = ITEMS[id];
+  if (!item) return { run, feedback: null };
+  if (item.effect?.type === "money") {
+    const amount = item.effect.amount * quantity;
+    return { run: { ...run, money: run.money + amount }, feedback: `${item.name} riscattato: +${amount} P` };
+  }
+  return { run: { ...run, items: addItem(run.items, id, quantity) }, feedback: `${item.name} aggiunto allo zaino` };
+};
 
 // New effects are data-driven; legacy handlers retain their historical semantics.
 export const consumeRunItem = (run, id) => {
@@ -524,7 +583,12 @@ export const applyItemTo = (item, p) => {
   if (effect && effect.type !== "legacy") {
     if (!canApplyItem(item, p)) return p;
     if (effect.type === "recovery") return { ...p, hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * effect.hpShare)), status: { ...p.status, burn: effect.cureBurn ? 0 : p.status.burn } };
+    if (effect.type === "revive") return { ...p, hp: Math.max(1, Math.round(p.maxHp * effect.hpShare)) };
     if (effect.type === "stages") return { ...p, status: { ...p.status, atkMod: Math.max(-3, Math.min(3, p.status.atkMod + effect.atk)), defMod: Math.max(-3, Math.min(3, p.status.defMod + effect.def)) } };
+    if (effect.type === "permanentStat") {
+      const updated = recalcStats({ ...p, bonus: { ...p.bonus, [effect.stat]: p.bonus[effect.stat] + effect.amount } });
+      return effect.stat === "hp" ? { ...updated, hp: Math.min(updated.maxHp, p.hp + effect.amount) } : updated;
+    }
     return p;
   }
   switch (item) {
@@ -544,10 +608,12 @@ export const canApplyItem = (item, p) => {
   const effect = ITEMS[item]?.effect;
   if (!effect || !p) return false;
   if (effect.type !== "legacy") {
+    if (effect.type === "revive") return p.hp <= 0;
     if (p.hp <= 0) return false;
     if (effect.type === "recovery") return p.hp < p.maxHp || (effect.cureBurn && p.status.burn > 0);
     if (effect.type === "stages") return (!effect.atk || (effect.atk > 0 ? p.status.atkMod < 3 : p.status.atkMod > -3))
       && (!effect.def || (effect.def > 0 ? p.status.defMod < 3 : p.status.defMod > -3));
+    if (effect.type === "permanentStat") return true;
     return false; // Run-target effects cannot be consumed on a player.
   }
   if (item === "pallone") return p.hp === 0;

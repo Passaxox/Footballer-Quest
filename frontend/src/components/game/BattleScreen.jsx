@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { attackFeedback } from "@/game/battleFeedback";
 import { ITEMS, WILD_INTROS, ELEMENTS } from "@/game/data";
-import { performAttack, applyBurn, turnOrder, resetBattleStatus, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, removeItem, pick, chance, resolveActiveUid, xpProgress } from "@/game/engine";
+import { performAttack, applyBurn, turnOrder, applyNodeModifiers, addNodeStageModifier, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, removeItem, pick, chance, resolveActiveUid, xpProgress } from "@/game/engine";
 import { sfx } from "@/game/audio";
 import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, ItemTargetCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
@@ -39,11 +39,12 @@ const Dots = ({ team, active }) => (
   </div>
 );
 
-export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, onActiveChange, onDiscover }) {
+export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, onActiveChange, onDiscover, onStateChange }) {
   const s = useRef(null);
   if (!s.current) {
     s.current = {
-      initialTeam: run.team.map(p => ({ ...p })), team: resetBattleStatus(run.team), items: { ...run.items }, active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
+      initialTeam: run.team.map(p => ({ ...p })), team: applyNodeModifiers(run.team, run.nodeModifiers), nodeModifiers: { ...run.nodeModifiers },
+      items: { ...run.items }, temporaryItemsUsed: [], active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
       enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", cue: null, hit: null, menu: "main", itemSel: null, xpReport: null,
     };
   }
@@ -70,7 +71,11 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   useEffect(() => {
     let cancelled = false;
     if (st.active < 0) {
-      if (st.phase !== "end") { st.phase = "end"; onLose(st.team, st.items, null); }
+      if (st.phase !== "end") {
+        st.phase = "end";
+        if (Object.keys(st.nodeModifiers).length || st.temporaryItemsUsed.length) onLose(st.team, st.items, null, null, st.nodeModifiers, st.temporaryItemsUsed);
+        else onLose(st.team, st.items, null);
+      }
       return;
     }
     (async () => {
@@ -131,7 +136,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       st.phase = "end"; rr();
       const settled = settleCombatProgression("lose", st.initialTeam, st.team, st.xpReport);
       st.team = settled.team; st.xpReport = settled.report;
-      onLose(st.team, st.items, active()?.uid, st.xpReport);
+      if (Object.keys(st.nodeModifiers).length || st.temporaryItemsUsed.length) onLose(st.team, st.items, active()?.uid, st.xpReport, st.nodeModifiers, st.temporaryItemsUsed);
+      else onLose(st.team, st.items, active()?.uid, st.xpReport);
       return;
     }
     if (enemy().hp === 0) {
@@ -143,7 +149,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         sfx.win();
         await say(encounter.kind === "boss" ? `Avete sconfitto ${encounter.teamName}!` : "Vittoria!", 1100);
         st.phase = "end"; rr();
-        onWin(st.team.map((p) => ({ ...p, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false } })), st.items, resolveActiveUid(st.team, active()?.uid), finishCombatReport(st.team, st.xpReport));
+        onWin(st.team.map((p) => ({ ...p, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false } })), st.items, resolveActiveUid(st.team, active()?.uid), finishCombatReport(st.team, st.xpReport), st.nodeModifiers, st.temporaryItemsUsed);
         return;
       }
     }
@@ -200,7 +206,12 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     const before = st.team[idx];
     const after = applyItemTo(itemId, before);
     st.team = st.team.map((q, j) => (j === idx ? after : q));
+    if (ITEMS[itemId].effect?.type === "stages") {
+      st.nodeModifiers = addNodeStageModifier(st.nodeModifiers, before.uid, ITEMS[itemId].effect);
+      st.temporaryItemsUsed.push({ itemId, playerUid: before.uid, wave: run.wave });
+    }
     st.items = removeItem(st.items, itemId);
+    onStateChange?.({ team: st.team, items: st.items, nodeModifiers: st.nodeModifiers });
     sfx.heal();
     await say(`Usi ${ITEMS[itemId].name} su ${before.name}!`, 800);
     await enemyFreeTurn();
@@ -211,7 +222,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     sfx.cancel();
     st.phase = "busy"; rr();
     const ok = chance(45 + Math.max(-30, Math.min(30, (active().spd - enemy().spd) * 2)));
-    if (ok) { await say("Siete fuggiti con successo!", 900); st.phase = "end"; rr(); onFlee(st.team, st.items, active()?.uid, finishCombatReport(st.team, st.xpReport)); return; }
+    if (ok) { await say("Siete fuggiti con successo!", 900); st.phase = "end"; rr(); onFlee(st.team, st.items, active()?.uid, finishCombatReport(st.team, st.xpReport), st.nodeModifiers, st.temporaryItemsUsed); return; }
     await say("La fuga è fallita!", 700);
     await enemyFreeTurn();
   };
