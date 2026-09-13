@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "prominence-ie2",
+  "versionId": "bomber:prominence-ie2",
+  "displayName": "Bomber",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(P) Honba Geki sprite.png",
+  "sourceFilename": "(P) Honba Geki sprite.png",
+  "sourceRef": "Honba_Geki",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/prominence-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/prominence-ie2/originals/bomber-prominence-ie2/game-sprite/(P) Honba Geki sprite.png",
+  "verifiedPath": "tools/assets/verified/prominence-ie2/bomber-prominence-ie2/game-sprite/source-1/(P) Honba Geki sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/bomber-prominence-ie2.png",
+  "sha256": "fa4bec2cd7c00270e02a48807d753beb6ce07099025bc451355de2101093daab"
+}

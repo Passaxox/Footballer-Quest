@@ -1,0 +1,614 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "prominence-ie2",
+  "title": "Prominence IE2 verified game sprites",
+  "manifestPath": "tools/assets/manifests/prominence-ie2.json",
+  "approvalsPath": "tools/assets/approvals/prominence-ie2.approvals.json",
+  "stagingRoot": "tools/assets/staging/prominence-ie2",
+  "importsRoot": "tools/assets/imports",
+  "verifiedRoot": "tools/assets/verified",
+  "contactSheetPath": "tools/assets/reports/prominence-ie2.contact-sheet.html",
+  "markdownReportPath": "tools/assets/reports/prominence-ie2.report.md",
+  "runtimeSpritesPath": "frontend/public/sprites",
+  "status": "PASS",
+  "summary": {
+    "targetCount": 6,
+    "verifiedCount": 6,
+    "candidateCount": 0,
+    "reviewCount": 0,
+    "assetGapCount": 0,
+    "unassessedCount": 0,
+    "sourceBlockedCount": 0,
+    "sourceMissingCount": 0
+  },
+  "targets": [
+    {
+      "canonicalCharacterId": "torch",
+      "versionId": "torch:prominence-ie2",
+      "displayName": "Torch / Burn",
+      "runtimeSpriteId": "torch-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Nagumo_Haruya",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Nagumo_Haruya",
+          "sourceAssetId": "File:(P) Burn sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Prominence IE2 captain; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "e781bdf0dc14a094309ad217b8f6662939ef2271f9345e00619e06b7ed7ab9f5",
+      "sourceAssetId": "File:(P) Burn sprite.png",
+      "sourceFilename": "(P) Burn sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Nagumo_Haruya",
+          "sourceAssetId": "File:(P) Burn sprite.png",
+          "sourceFilename": "(P) Burn sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/prominence-ie2/originals/torch-prominence-ie2/game-sprite/(P) Burn sprite.png",
+          "verifiedFile": "tools/assets/verified/prominence-ie2/torch-prominence-ie2/game-sprite/source-1/(P) Burn sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/torch-prominence-ie2/game-sprite/source-1/(P) Burn sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/prominence-ie2/torch-prominence-ie2/game-sprite/source-1/(P)%20Burn%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "e781bdf0dc14a094309ad217b8f6662939ef2271f9345e00619e06b7ed7ab9f5",
+          "provenanceNote": "Original downloaded filename preserved as (P) Burn sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/prominence-ie2/(P) Burn sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/prominence-ie2/torch-prominence-ie2/source-1/(P) Burn sprite.png",
+          "importMatches": [
+            "tools/assets/imports/prominence-ie2/(P) Burn sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/prominence-ie2/originals/torch-prominence-ie2/game-sprite/(P) Burn sprite.png",
+      "verifiedFile": "tools/assets/verified/prominence-ie2/torch-prominence-ie2/game-sprite/source-1/(P) Burn sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/torch-prominence-ie2/game-sprite/source-1/(P) Burn sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/prominence-ie2/torch-prominence-ie2/game-sprite/source-1/(P)%20Burn%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/torch-prominence-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/prominence-ie2/originals/torch-prominence-ie2/game-sprite/(P) Burn sprite.png",
+        "sourceFilename": "(P) Burn sprite.png",
+        "sha256": "e781bdf0dc14a094309ad217b8f6662939ef2271f9345e00619e06b7ed7ab9f5"
+      }
+    },
+    {
+      "canonicalCharacterId": "grent",
+      "versionId": "grent:prominence-ie2",
+      "displayName": "Grent",
+      "runtimeSpriteId": "grent-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Ooiwa_Kurando",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Ooiwa_Kurando",
+          "sourceAssetId": "File:(P) Ooiwa Kurando sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Prominence IE2 goalkeeper; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "c42f49f033000eedc95273c0ad29ddb4f4239328886265f75a544b464f5d37ba",
+      "sourceAssetId": "File:(P) Ooiwa Kurando sprite.png",
+      "sourceFilename": "(P) Ooiwa Kurando sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Ooiwa_Kurando",
+          "sourceAssetId": "File:(P) Ooiwa Kurando sprite.png",
+          "sourceFilename": "(P) Ooiwa Kurando sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/prominence-ie2/originals/grent-prominence-ie2/game-sprite/(P) Ooiwa Kurando sprite.png",
+          "verifiedFile": "tools/assets/verified/prominence-ie2/grent-prominence-ie2/game-sprite/source-1/(P) Ooiwa Kurando sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/grent-prominence-ie2/game-sprite/source-1/(P) Ooiwa Kurando sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/prominence-ie2/grent-prominence-ie2/game-sprite/source-1/(P)%20Ooiwa%20Kurando%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "c42f49f033000eedc95273c0ad29ddb4f4239328886265f75a544b464f5d37ba",
+          "provenanceNote": "Original downloaded filename preserved as (P) Ooiwa Kurando sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/prominence-ie2/(P) Ooiwa Kurando sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/prominence-ie2/grent-prominence-ie2/source-1/(P) Ooiwa Kurando sprite.png",
+          "importMatches": [
+            "tools/assets/imports/prominence-ie2/(P) Ooiwa Kurando sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/prominence-ie2/originals/grent-prominence-ie2/game-sprite/(P) Ooiwa Kurando sprite.png",
+      "verifiedFile": "tools/assets/verified/prominence-ie2/grent-prominence-ie2/game-sprite/source-1/(P) Ooiwa Kurando sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/grent-prominence-ie2/game-sprite/source-1/(P) Ooiwa Kurando sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/prominence-ie2/grent-prominence-ie2/game-sprite/source-1/(P)%20Ooiwa%20Kurando%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/grent-prominence-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/prominence-ie2/originals/grent-prominence-ie2/game-sprite/(P) Ooiwa Kurando sprite.png",
+        "sourceFilename": "(P) Ooiwa Kurando sprite.png",
+        "sha256": "c42f49f033000eedc95273c0ad29ddb4f4239328886265f75a544b464f5d37ba"
+      }
+    },
+    {
+      "canonicalCharacterId": "baller",
+      "versionId": "baller:prominence-ie2",
+      "displayName": "Baller",
+      "runtimeSpriteId": "baller-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Barazono_Hana",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Barazono_Hana",
+          "sourceAssetId": "File:(P) Barazono Hana sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Prominence IE2 defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "4356db87243c4c6efffc4a3505380d962f10cc60ba135750aa15d68b2b4822e9",
+      "sourceAssetId": "File:(P) Barazono Hana sprite.png",
+      "sourceFilename": "(P) Barazono Hana sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Barazono_Hana",
+          "sourceAssetId": "File:(P) Barazono Hana sprite.png",
+          "sourceFilename": "(P) Barazono Hana sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/prominence-ie2/originals/baller-prominence-ie2/game-sprite/(P) Barazono Hana sprite.png",
+          "verifiedFile": "tools/assets/verified/prominence-ie2/baller-prominence-ie2/game-sprite/source-1/(P) Barazono Hana sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/baller-prominence-ie2/game-sprite/source-1/(P) Barazono Hana sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/prominence-ie2/baller-prominence-ie2/game-sprite/source-1/(P)%20Barazono%20Hana%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "4356db87243c4c6efffc4a3505380d962f10cc60ba135750aa15d68b2b4822e9",
+          "provenanceNote": "Original downloaded filename preserved as (P) Barazono Hana sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/prominence-ie2/(P) Barazono Hana sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/prominence-ie2/baller-prominence-ie2/source-1/(P) Barazono Hana sprite.png",
+          "importMatches": [
+            "tools/assets/imports/prominence-ie2/(P) Barazono Hana sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/prominence-ie2/originals/baller-prominence-ie2/game-sprite/(P) Barazono Hana sprite.png",
+      "verifiedFile": "tools/assets/verified/prominence-ie2/baller-prominence-ie2/game-sprite/source-1/(P) Barazono Hana sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/baller-prominence-ie2/game-sprite/source-1/(P) Barazono Hana sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/prominence-ie2/baller-prominence-ie2/game-sprite/source-1/(P)%20Barazono%20Hana%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/baller-prominence-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/prominence-ie2/originals/baller-prominence-ie2/game-sprite/(P) Barazono Hana sprite.png",
+        "sourceFilename": "(P) Barazono Hana sprite.png",
+        "sha256": "4356db87243c4c6efffc4a3505380d962f10cc60ba135750aa15d68b2b4822e9"
+      }
+    },
+    {
+      "canonicalCharacterId": "bomber",
+      "versionId": "bomber:prominence-ie2",
+      "displayName": "Bomber",
+      "runtimeSpriteId": "bomber-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Honba_Geki",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Honba_Geki",
+          "sourceAssetId": "File:(P) Honba Geki sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Prominence IE2 defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "fa4bec2cd7c00270e02a48807d753beb6ce07099025bc451355de2101093daab",
+      "sourceAssetId": "File:(P) Honba Geki sprite.png",
+      "sourceFilename": "(P) Honba Geki sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Honba_Geki",
+          "sourceAssetId": "File:(P) Honba Geki sprite.png",
+          "sourceFilename": "(P) Honba Geki sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/prominence-ie2/originals/bomber-prominence-ie2/game-sprite/(P) Honba Geki sprite.png",
+          "verifiedFile": "tools/assets/verified/prominence-ie2/bomber-prominence-ie2/game-sprite/source-1/(P) Honba Geki sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/bomber-prominence-ie2/game-sprite/source-1/(P) Honba Geki sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/prominence-ie2/bomber-prominence-ie2/game-sprite/source-1/(P)%20Honba%20Geki%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "fa4bec2cd7c00270e02a48807d753beb6ce07099025bc451355de2101093daab",
+          "provenanceNote": "Original downloaded filename preserved as (P) Honba Geki sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/prominence-ie2/(P) Honba Geki sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/prominence-ie2/bomber-prominence-ie2/source-1/(P) Honba Geki sprite.png",
+          "importMatches": [
+            "tools/assets/imports/prominence-ie2/(P) Honba Geki sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/prominence-ie2/originals/bomber-prominence-ie2/game-sprite/(P) Honba Geki sprite.png",
+      "verifiedFile": "tools/assets/verified/prominence-ie2/bomber-prominence-ie2/game-sprite/source-1/(P) Honba Geki sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/bomber-prominence-ie2/game-sprite/source-1/(P) Honba Geki sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/prominence-ie2/bomber-prominence-ie2/game-sprite/source-1/(P)%20Honba%20Geki%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/bomber-prominence-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/prominence-ie2/originals/bomber-prominence-ie2/game-sprite/(P) Honba Geki sprite.png",
+        "sourceFilename": "(P) Honba Geki sprite.png",
+        "sha256": "fa4bec2cd7c00270e02a48807d753beb6ce07099025bc451355de2101093daab"
+      }
+    },
+    {
+      "canonicalCharacterId": "heat",
+      "versionId": "heat:prominence-ie2",
+      "displayName": "Heat",
+      "runtimeSpriteId": "heat-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Atsuishi_Shigeto",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Atsuishi_Shigeto",
+          "sourceAssetId": "File:(P) Atsuishi Shigeto sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Prominence IE2 midfielder; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "9dab53fdd67f59a6f1f7bf04150238b331c51fe40c3289a1adccb680a9311a96",
+      "sourceAssetId": "File:(P) Atsuishi Shigeto sprite.png",
+      "sourceFilename": "(P) Atsuishi Shigeto sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Atsuishi_Shigeto",
+          "sourceAssetId": "File:(P) Atsuishi Shigeto sprite.png",
+          "sourceFilename": "(P) Atsuishi Shigeto sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/prominence-ie2/originals/heat-prominence-ie2/game-sprite/(P) Atsuishi Shigeto sprite.png",
+          "verifiedFile": "tools/assets/verified/prominence-ie2/heat-prominence-ie2/game-sprite/source-1/(P) Atsuishi Shigeto sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/heat-prominence-ie2/game-sprite/source-1/(P) Atsuishi Shigeto sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/prominence-ie2/heat-prominence-ie2/game-sprite/source-1/(P)%20Atsuishi%20Shigeto%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "9dab53fdd67f59a6f1f7bf04150238b331c51fe40c3289a1adccb680a9311a96",
+          "provenanceNote": "Original downloaded filename preserved as (P) Atsuishi Shigeto sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/prominence-ie2/(P) Atsuishi Shigeto sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/prominence-ie2/heat-prominence-ie2/source-1/(P) Atsuishi Shigeto sprite.png",
+          "importMatches": [
+            "tools/assets/imports/prominence-ie2/(P) Atsuishi Shigeto sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/prominence-ie2/originals/heat-prominence-ie2/game-sprite/(P) Atsuishi Shigeto sprite.png",
+      "verifiedFile": "tools/assets/verified/prominence-ie2/heat-prominence-ie2/game-sprite/source-1/(P) Atsuishi Shigeto sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/heat-prominence-ie2/game-sprite/source-1/(P) Atsuishi Shigeto sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/prominence-ie2/heat-prominence-ie2/game-sprite/source-1/(P)%20Atsuishi%20Shigeto%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/heat-prominence-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/prominence-ie2/originals/heat-prominence-ie2/game-sprite/(P) Atsuishi Shigeto sprite.png",
+        "sourceFilename": "(P) Atsuishi Shigeto sprite.png",
+        "sha256": "9dab53fdd67f59a6f1f7bf04150238b331c51fe40c3289a1adccb680a9311a96"
+      }
+    },
+    {
+      "canonicalCharacterId": "neppten",
+      "versionId": "neppten:prominence-ie2",
+      "displayName": "Neppten / Nepper",
+      "runtimeSpriteId": "neppten-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Netsuha_Natsuhiko",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Netsuha_Natsuhiko",
+          "sourceAssetId": "File:(P) Netsuha Natsuhiko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Prominence IE2 attacker; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "a2be4f1c9c17336f61a28ea815eb2e028f0d5cf60933946cf367e6952084bfa2",
+      "sourceAssetId": "File:(P) Netsuha Natsuhiko sprite.png",
+      "sourceFilename": "(P) Netsuha Natsuhiko sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Netsuha_Natsuhiko",
+          "sourceAssetId": "File:(P) Netsuha Natsuhiko sprite.png",
+          "sourceFilename": "(P) Netsuha Natsuhiko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/prominence-ie2/originals/neppten-prominence-ie2/game-sprite/(P) Netsuha Natsuhiko sprite.png",
+          "verifiedFile": "tools/assets/verified/prominence-ie2/neppten-prominence-ie2/game-sprite/source-1/(P) Netsuha Natsuhiko sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/neppten-prominence-ie2/game-sprite/source-1/(P) Netsuha Natsuhiko sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/prominence-ie2/neppten-prominence-ie2/game-sprite/source-1/(P)%20Netsuha%20Natsuhiko%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "a2be4f1c9c17336f61a28ea815eb2e028f0d5cf60933946cf367e6952084bfa2",
+          "provenanceNote": "Original downloaded filename preserved as (P) Netsuha Natsuhiko sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/prominence-ie2/(P) Netsuha Natsuhiko sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/prominence-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/prominence-ie2/neppten-prominence-ie2/source-1/(P) Netsuha Natsuhiko sprite.png",
+          "importMatches": [
+            "tools/assets/imports/prominence-ie2/(P) Netsuha Natsuhiko sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/prominence-ie2/originals/neppten-prominence-ie2/game-sprite/(P) Netsuha Natsuhiko sprite.png",
+      "verifiedFile": "tools/assets/verified/prominence-ie2/neppten-prominence-ie2/game-sprite/source-1/(P) Netsuha Natsuhiko sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/prominence-ie2/neppten-prominence-ie2/game-sprite/source-1/(P) Netsuha Natsuhiko sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/prominence-ie2/neppten-prominence-ie2/game-sprite/source-1/(P)%20Netsuha%20Natsuhiko%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/neppten-prominence-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/prominence-ie2/originals/neppten-prominence-ie2/game-sprite/(P) Netsuha Natsuhiko sprite.png",
+        "sourceFilename": "(P) Netsuha Natsuhiko sprite.png",
+        "sha256": "a2be4f1c9c17336f61a28ea815eb2e028f0d5cf60933946cf367e6952084bfa2"
+      }
+    }
+  ]
+}

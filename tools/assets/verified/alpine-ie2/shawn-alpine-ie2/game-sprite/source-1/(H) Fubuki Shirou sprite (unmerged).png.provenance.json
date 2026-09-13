@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "alpine-ie2",
+  "versionId": "shawn:alpine-ie2",
+  "displayName": "Shawn Froste",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(H) Fubuki Shirou sprite (unmerged).png",
+  "sourceFilename": "(H) Fubuki Shirou sprite (unmerged).png",
+  "sourceRef": "Fubuki_Shirou",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/alpine-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/alpine-ie2/originals/shawn-alpine-ie2/game-sprite/(H) Fubuki Shirou sprite (unmerged).png",
+  "verifiedPath": "tools/assets/verified/alpine-ie2/shawn-alpine-ie2/game-sprite/source-1/(H) Fubuki Shirou sprite (unmerged).png",
+  "runtimeSpritePath": "frontend/public/sprites/shawn-alpine-ie2.png",
+  "sha256": "2d84764072ddcb7dcc1d64a2d4921918aa8cdf9709124c799577a95ce6bb3f22"
+}

@@ -61,13 +61,39 @@ export const ROSTER = [
 
 export const STARTER_IDS = ["mark", "axel", "jude", "nathan", "shawn", "jack", "kevin", "tod"];
 
-export const BOSSES = {
-  10: { team: "Royal Academy", intro: "La Royal Academy vi sbarra la strada. Il Preside Ray Dark osserva dalla tribuna...", ids: ["jude", "david", "joseph"] },
-  20: { team: "Zeus", intro: "Gli dèi dello stadio scendono in campo. Byron Love sorride con aria di superiorità.", ids: ["jonas", "byron"] },
-  30: { team: "Chaos", intro: "Fuoco e ghiaccio: Torch e Gazelle uniscono le forze contro di voi!", ids: ["dvalin", "torch", "gazelle"] },
-  40: { team: "Genesis", intro: "L'Alius Academy schiera la sua squadra definitiva. Xavier Foster vi attende.", ids: ["jordan", "dvalin", "xavier"] },
-  50: { team: "Little Gigant", intro: "La finale del Football Frontier International! Rococo Urupa para tutto... o quasi.", ids: ["fidio", "kruger", "rococo"] },
+export const BOSS_POOLS = {
+  10: [
+    { id: "royal-academy", team: "Royal Academy", intro: "La Royal Academy vi sbarra la strada. Il Preside Ray Dark osserva dalla tribuna...", ids: ["jude", "david", "joseph"], captainId: "jude", scenarioId: "royal-academy", teamTags: ["royal-academy"] },
+    { id: "alpine-snow", team: "Alpine Jr. High", intro: "Il vento gelido di Hokkaido accompagna la discesa della leggendaria Alpine!", ids: ["shawn:alpine-ie2", "adam-ropes:alpine-ie2", "joaquine:alpine-ie2"], captainId: "shawn", scenarioId: "alpine-snow", teamTags: ["alpine"] },
+    { id: "gemini-field", team: "Gemini Storm", intro: "Una luce accecante precede l'arrivo della seconda squadra Alius: Gemini Storm!", ids: ["jordan", "pat-box:gemini-ie2", "gordon-star:gemini-ie2"], captainId: "jordan", scenarioId: "gemini-field", teamTags: ["gemini-storm", "alius"] },
+  ],
+  20: [
+    { id: "zeus", team: "Zeus", intro: "Gli dèi dello stadio scendono in campo. Byron Love sorride con aria di superiorità.", ids: ["jonas", "byron"], captainId: "byron", scenarioId: "zeus", teamTags: ["zeus"] },
+    { id: "prominence-crater", team: "Prominence", intro: "Fiamme ardenti avvolgono il campo: il capitano Torch guida la Prominence!", ids: ["torch:prominence-ie2", "grent:prominence-ie2", "neppten:prominence-ie2"], captainId: "torch", scenarioId: "prominence-crater", teamTags: ["prominence", "alius"] },
+    { id: "diamond-dust-glacier", team: "Diamond Dust", intro: "I ghiacci perenni si infrangono: Gazelle e la Diamond Dust vi attendono!", ids: ["gazelle:diamond-dust-ie2", "beluga:diamond-dust-ie2", "clara:diamond-dust-ie2"], captainId: "gazelle", scenarioId: "diamond-dust-glacier", teamTags: ["diamond-dust", "alius"] },
+    { id: "epsilon-base", team: "Epsilon", intro: "La squadra d'élite di primo rango: Dvalin vi sfida a superare la Trivella Spaziale!", ids: ["dvalin:epsilon-ie2", "tytan:epsilon-ie2", "zell:epsilon-ie2"], captainId: "dvalin", scenarioId: "epsilon-base", teamTags: ["epsilon", "alius"] },
+  ],
+  30: [
+    { id: "chaos-stadium", team: "Chaos", intro: "Fuoco e ghiaccio: Torch e Gazelle uniscono le forze contro di voi!", ids: ["dvalin", "torch", "gazelle"], captainId: "torch", scenarioId: "chaos-stadium", teamTags: ["chaos", "alius"] },
+    { id: "prominence-inferno", team: "Prominence Inferno", intro: "L'esplosione solare della Prominence al massimo potenziale!", ids: ["torch:prominence-ie2", "grent:prominence-ie2", "heat:prominence-ie2", "bomber:prominence-ie2"], captainId: "torch", scenarioId: "prominence-crater", teamTags: ["prominence", "alius"] },
+    { id: "diamond-dust-elite", team: "Diamond Dust Elite", intro: "La bufera glaciale della Diamond Dust alla massima intensità!", ids: ["gazelle:diamond-dust-ie2", "beluga:diamond-dust-ie2", "gokka:diamond-dust-ie2", "clara:diamond-dust-ie2"], captainId: "gazelle", scenarioId: "diamond-dust-glacier", teamTags: ["diamond-dust", "alius"] },
+    { id: "epsilon-plus", team: "Epsilon Plus", intro: "L'evoluzione suprema dell'Epsilon: Dvalin e i suoi compagni potenziati!", ids: ["dvalin:epsilon-ie2", "tytan:epsilon-ie2", "krypto:epsilon-ie2", "zell:epsilon-ie2"], captainId: "dvalin", scenarioId: "epsilon-base", teamTags: ["epsilon", "alius"] },
+  ],
+  40: [
+    { id: "genesis-dome", team: "Genesis", intro: "L'Alius Academy schiera la sua squadra definitiva. Xavier Foster vi attende.", ids: ["jordan", "dvalin", "xavier"], captainId: "xavier", scenarioId: "genesis-dome", teamTags: ["genesis", "alius"] },
+    { id: "chaos-prime", team: "Chaos Prime", intro: "La fusione titanica di fuoco e ghiaccio al culmine della potenza!", ids: ["torch:chaos-ie2", "gazelle:chaos-ie2", "grent:chaos-ie2", "gokka:chaos-ie2"], captainId: "torch", scenarioId: "chaos-stadium", teamTags: ["chaos", "alius"] },
+    { id: "zeus-divine", team: "Zeus Divina", intro: "Byron Love e gli dei dello stadio rivelano il loro vero potere divino!", ids: ["byron", "jonas", "poseidon:zeus", "hera:zeus"], captainId: "byron", scenarioId: "zeus", teamTags: ["zeus"] },
+    { id: "international-allstars", team: "All-Stars Internazionali", intro: "I migliori campioni del mondo si sono riuniti per sbarrarvi il passo!", ids: ["edgar", "teres", "fidio", "kruger"], captainId: "fidio", scenarioId: "international", teamTags: ["unicorn", "knights-of-queen", "the-empire"] },
+  ],
+  50: [
+    { id: "little-gigant", team: "Little Gigant", intro: "La finale del Football Frontier International! Rococo Urupa para tutto... o quasi.", ids: ["fidio", "kruger", "rococo"], captainId: "rococo", scenarioId: "international", teamTags: ["little-gigant"] },
+    { id: "genesis-supreme", team: "Genesis Supreme", intro: "La massima vetta della tecnologia Alius e i campioni del mondo uniti!", ids: ["xavier:genesis-ie2", "bellatrix:genesis-ie2", "nero:genesis-ie2", "rococo"], captainId: "xavier", scenarioId: "genesis-dome", teamTags: ["genesis", "alius"] },
+  ],
 };
+
+export const BOSSES = Object.fromEntries(
+  Object.entries(BOSS_POOLS).map(([wave, pool]) => [wave, pool[0]])
+);
 
 export const FINAL_WAVE = 50;
 

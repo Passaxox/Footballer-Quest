@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "genesis-ie2",
+  "title": "Genesis IE2 verified game sprites",
+  "wikiBaseUrl": "https://inazuma-eleven.fandom.com",
+  "targets": [
+    {
+      "canonicalCharacterId": "xavier",
+      "versionId": "xavier:genesis-ie2",
+      "displayName": "Xavier / Xene",
+      "runtimeSpriteId": "xavier-genesis-ie2",
+      "teamId": "genesis",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Kiyama_Hiroto",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Kiyama_Hiroto",
+          "sourceAssetId": "File:(TG) Gran sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "genesis-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "The Genesis captain; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "nero",
+      "versionId": "nero:genesis-ie2",
+      "displayName": "Nero",
+      "runtimeSpriteId": "nero-genesis-ie2",
+      "teamId": "genesis",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Nemuro_Kimiyuki",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Nemuro_Kimiyuki",
+          "sourceAssetId": "File:(TG) Nemuro Kimiyuki sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "genesis-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "The Genesis goalkeeper; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "gele",
+      "versionId": "gele:genesis-ie2",
+      "displayName": "Gele",
+      "runtimeSpriteId": "gele-genesis-ie2",
+      "teamId": "genesis",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Kujirai_Takanori",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Kujirai_Takanori",
+          "sourceAssetId": "File:(TG) Kujirai Takanori sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "genesis-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "The Genesis defender; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "zohen",
+      "versionId": "zohen:genesis-ie2",
+      "displayName": "Zohen",
+      "runtimeSpriteId": "zohen-genesis-ie2",
+      "teamId": "genesis",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Ishidaira_Hanzou",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Ishidaira_Hanzou",
+          "sourceAssetId": "File:(TG) Ishidaira Hanzou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "genesis-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "The Genesis defender; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "ark",
+      "versionId": "ark:genesis-ie2",
+      "displayName": "Ark",
+      "runtimeSpriteId": "ark-genesis-ie2",
+      "teamId": "genesis",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Akutsu_Kiyoshi",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Akutsu_Kiyoshi",
+          "sourceAssetId": "File:(TG) Akutsu Kiyoshi sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "genesis-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "The Genesis midfielder; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "bellatrix",
+      "versionId": "bellatrix:genesis-ie2",
+      "displayName": "Bellatrix",
+      "runtimeSpriteId": "bellatrix-genesis-ie2",
+      "teamId": "genesis",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Yagami_Reina",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Yagami_Reina",
+          "sourceAssetId": "File:(TG) Yagami Reina sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "genesis-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "The Genesis attacker; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    }
+  ]
+}

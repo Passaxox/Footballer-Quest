@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "alpine-ie2",
+  "versionId": "kerry-bootgaiter:alpine-ie2",
+  "displayName": "Kerry Bootgaiter",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(H) Araya Konko sprite.png",
+  "sourceFilename": "(H) Araya Konko sprite.png",
+  "sourceRef": "Araya_Konko",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/alpine-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/alpine-ie2/originals/kerry-bootgaiter-alpine-ie2/game-sprite/(H) Araya Konko sprite.png",
+  "verifiedPath": "tools/assets/verified/alpine-ie2/kerry-bootgaiter-alpine-ie2/game-sprite/source-1/(H) Araya Konko sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/kerry-bootgaiter-alpine-ie2.png",
+  "sha256": "04652fc9df29fc8822ada0a45d017da06b1a15826cfa7cc88ff89cbfb248b55c"
+}

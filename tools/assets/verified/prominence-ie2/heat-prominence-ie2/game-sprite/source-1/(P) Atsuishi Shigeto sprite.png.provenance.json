@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "prominence-ie2",
+  "versionId": "heat:prominence-ie2",
+  "displayName": "Heat",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(P) Atsuishi Shigeto sprite.png",
+  "sourceFilename": "(P) Atsuishi Shigeto sprite.png",
+  "sourceRef": "Atsuishi_Shigeto",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/prominence-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/prominence-ie2/originals/heat-prominence-ie2/game-sprite/(P) Atsuishi Shigeto sprite.png",
+  "verifiedPath": "tools/assets/verified/prominence-ie2/heat-prominence-ie2/game-sprite/source-1/(P) Atsuishi Shigeto sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/heat-prominence-ie2.png",
+  "sha256": "9dab53fdd67f59a6f1f7bf04150238b331c51fe40c3289a1adccb680a9311a96"
+}

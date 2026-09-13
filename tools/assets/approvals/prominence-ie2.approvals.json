@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "prominence-ie2",
+  "approvals": [
+    {
+      "versionId": "torch:prominence-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/prominence-ie2/originals/torch-prominence-ie2/game-sprite/(P) Burn sprite.png",
+      "sourceFilename": "(P) Burn sprite.png",
+      "sha256": "e781bdf0dc14a094309ad217b8f6662939ef2271f9345e00619e06b7ed7ab9f5",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "grent:prominence-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/prominence-ie2/originals/grent-prominence-ie2/game-sprite/(P) Ooiwa Kurando sprite.png",
+      "sourceFilename": "(P) Ooiwa Kurando sprite.png",
+      "sha256": "c42f49f033000eedc95273c0ad29ddb4f4239328886265f75a544b464f5d37ba",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "baller:prominence-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/prominence-ie2/originals/baller-prominence-ie2/game-sprite/(P) Barazono Hana sprite.png",
+      "sourceFilename": "(P) Barazono Hana sprite.png",
+      "sha256": "4356db87243c4c6efffc4a3505380d962f10cc60ba135750aa15d68b2b4822e9",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "bomber:prominence-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/prominence-ie2/originals/bomber-prominence-ie2/game-sprite/(P) Honba Geki sprite.png",
+      "sourceFilename": "(P) Honba Geki sprite.png",
+      "sha256": "fa4bec2cd7c00270e02a48807d753beb6ce07099025bc451355de2101093daab",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "heat:prominence-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/prominence-ie2/originals/heat-prominence-ie2/game-sprite/(P) Atsuishi Shigeto sprite.png",
+      "sourceFilename": "(P) Atsuishi Shigeto sprite.png",
+      "sha256": "9dab53fdd67f59a6f1f7bf04150238b331c51fe40c3289a1adccb680a9311a96",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "neppten:prominence-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/prominence-ie2/originals/neppten-prominence-ie2/game-sprite/(P) Netsuha Natsuhiko sprite.png",
+      "sourceFilename": "(P) Netsuha Natsuhiko sprite.png",
+      "sha256": "a2be4f1c9c17336f61a28ea815eb2e028f0d5cf60933946cf367e6952084bfa2",
+      "reviewStatus": "MATCHED"
+    }
+  ]
+}

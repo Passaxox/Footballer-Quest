@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "chaos-ie2",
+  "title": "Chaos IE2 verified game sprites",
+  "wikiBaseUrl": "https://inazuma-eleven.fandom.com",
+  "targets": [
+    {
+      "canonicalCharacterId": "torch",
+      "versionId": "torch:chaos-ie2",
+      "displayName": "Torch / Burn",
+      "runtimeSpriteId": "torch-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Nagumo_Haruya",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Nagumo_Haruya",
+          "sourceAssetId": "File:(C) Burn sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Chaos co-captain; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "gazelle",
+      "versionId": "gazelle:chaos-ie2",
+      "displayName": "Gazelle / Gazel",
+      "runtimeSpriteId": "gazelle-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Suzuno_Fuusuke",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Suzuno_Fuusuke",
+          "sourceAssetId": "File:(C) Gazel sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Chaos co-captain; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "grent",
+      "versionId": "grent:chaos-ie2",
+      "displayName": "Grent",
+      "runtimeSpriteId": "grent-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Ooiwa_Kurando",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Ooiwa_Kurando",
+          "sourceAssetId": "File:(C) Ooiwa Kurando sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Chaos goalkeeper; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "gokka",
+      "versionId": "gokka:chaos-ie2",
+      "displayName": "Gokka",
+      "runtimeSpriteId": "gokka-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Gokukawa_Kantarou",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Gokukawa_Kantarou",
+          "sourceAssetId": "File:(C) Gokukawa Kantarou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Chaos defender; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "clara",
+      "versionId": "clara:chaos-ie2",
+      "displayName": "Clara",
+      "runtimeSpriteId": "clara-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Kurakake_Clara",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Kurakake_Clara",
+          "sourceAssetId": "File:(C) Kurakake Clara sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Chaos defender; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "neppten",
+      "versionId": "neppten:chaos-ie2",
+      "displayName": "Neppten",
+      "runtimeSpriteId": "neppten-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Netsuha_Natsuhiko",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Netsuha_Natsuhiko",
+          "sourceAssetId": "File:(C) Netsuha Natsuhiko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Chaos midfielder; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    }
+  ]
+}

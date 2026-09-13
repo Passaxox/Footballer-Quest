@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "genesis-ie2",
+  "team": {
+    "teamId": "genesis",
+    "displayName": "Genesis",
+    "arcId": "alius",
+    "eraId": "original",
+    "gameOrigin": "ie2",
+    "tags": [
+      "genesis",
+      "alius",
+      "alius-genesis"
+    ]
+  },
+  "scenario": {
+    "id": "genesis-dome",
+    "displayName": "Cupola Genesis",
+    "locationType": "stadium",
+    "minTier": 3,
+    "waveFrom": 25
+  },
+  "players": [
+    {
+      "canonicalCharacterId": "xavier",
+      "aliases": [
+        "Xavier Foster",
+        "Xavier",
+        "Xene",
+        "Hiroto Kiyama",
+        "Gran"
+      ],
+      "expectedIdentity": "reuse",
+      "versionId": "xavier:genesis-ie2",
+      "displayName": "Xavier / Xene",
+      "role": "A",
+      "element": "fuoco",
+      "spriteTargetId": "xavier-genesis-ie2",
+      "encounterTier": 4,
+      "baseStats": {
+        "hp": 80,
+        "atk": 48,
+        "def": 30,
+        "spd": 40
+      },
+      "primaryMove": {
+        "name": "Meteora Radiosa",
+        "power": 95,
+        "effect": "burn"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Kiyama_Hiroto",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Kiyama's Xene/Gran identity and The Genesis captaincy."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "genesis-ie2"
+    },
+    {
+      "canonicalCharacterId": "nero",
+      "aliases": [
+        "Nero",
+        "Nelson Rockwell",
+        "Kimiyuki Nemuro"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "nero:genesis-ie2",
+      "displayName": "Nero",
+      "role": "P",
+      "element": "aria",
+      "spriteTargetId": "nero-genesis-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 98,
+        "atk": 32,
+        "def": 48,
+        "spd": 30
+      },
+      "primaryMove": {
+        "name": "Rete Dimensionale",
+        "power": 80,
+        "effect": "guard"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Nemuro_Kimiyuki",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Nemuro's Nero identity and The Genesis goalkeeper role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "genesis-ie2"
+    },
+    {
+      "canonicalCharacterId": "gele",
+      "aliases": [
+        "Gele",
+        "Grant Gazer",
+        "Takanori Kujirai"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "gele:genesis-ie2",
+      "displayName": "Gele",
+      "role": "D",
+      "element": "terra",
+      "spriteTargetId": "gele-genesis-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 85,
+        "atk": 28,
+        "def": 40,
+        "spd": 28
+      },
+      "primaryMove": {
+        "name": "Sbarramento Spaziale",
+        "power": 65,
+        "effect": "shatter"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Kujirai_Takanori",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Kujirai's Gele identity and The Genesis defender role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "genesis-ie2"
+    },
+    {
+      "canonicalCharacterId": "zohen",
+      "aliases": [
+        "Zohen",
+        "Zack Henson",
+        "Hanzou Ishidaira"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "zohen:genesis-ie2",
+      "displayName": "Zohen",
+      "role": "D",
+      "element": "natura",
+      "spriteTargetId": "zohen-genesis-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 82,
+        "atk": 30,
+        "def": 39,
+        "spd": 31
+      },
+      "primaryMove": {
+        "name": "Gravità Oscura",
+        "power": 65,
+        "effect": "guard"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Ishidaira_Hanzou",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Ishidaira's Zohen identity and The Genesis defender role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "genesis-ie2"
+    },
+    {
+      "canonicalCharacterId": "ark",
+      "aliases": [
+        "Ark",
+        "Aaron Adams",
+        "Kiyoshi Akutsu"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "ark:genesis-ie2",
+      "displayName": "Ark",
+      "role": "C",
+      "element": "aria",
+      "spriteTargetId": "ark-genesis-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 76,
+        "atk": 38,
+        "def": 32,
+        "spd": 36
+      },
+      "primaryMove": {
+        "name": "Flash Cosmico",
+        "power": 70,
+        "effect": "weaken"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Akutsu_Kiyoshi",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Akutsu's Ark identity and The Genesis midfielder role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "genesis-ie2"
+    },
+    {
+      "canonicalCharacterId": "bellatrix",
+      "aliases": [
+        "Bellatrix",
+        "Isabelle Trick",
+        "Reina Yagami"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "bellatrix:genesis-ie2",
+      "displayName": "Bellatrix",
+      "role": "A",
+      "element": "aria",
+      "spriteTargetId": "bellatrix-genesis-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 74,
+        "atk": 44,
+        "def": 28,
+        "spd": 37
+      },
+      "primaryMove": {
+        "name": "Supernova",
+        "power": 88,
+        "effect": null
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Yagami_Reina",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Yagami's Bellatrix identity and The Genesis forward role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "genesis-ie2"
+    }
+  ]
+}

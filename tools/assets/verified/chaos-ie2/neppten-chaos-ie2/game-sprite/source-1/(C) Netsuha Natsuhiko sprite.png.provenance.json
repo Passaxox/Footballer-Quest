@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "chaos-ie2",
+  "versionId": "neppten:chaos-ie2",
+  "displayName": "Neppten",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(C) Netsuha Natsuhiko sprite.png",
+  "sourceFilename": "(C) Netsuha Natsuhiko sprite.png",
+  "sourceRef": "Netsuha_Natsuhiko",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/chaos-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/chaos-ie2/originals/neppten-chaos-ie2/game-sprite/(C) Netsuha Natsuhiko sprite.png",
+  "verifiedPath": "tools/assets/verified/chaos-ie2/neppten-chaos-ie2/game-sprite/source-1/(C) Netsuha Natsuhiko sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/neppten-chaos-ie2.png",
+  "sha256": "17e84c63c761684b2fad5ff73b509c2fcc2f58c7e8e7df56ea83ad47f0ed8a5e"
+}

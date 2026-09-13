@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "prominence-ie2",
+  "title": "Prominence IE2 verified game sprites",
+  "wikiBaseUrl": "https://inazuma-eleven.fandom.com",
+  "targets": [
+    {
+      "canonicalCharacterId": "torch",
+      "versionId": "torch:prominence-ie2",
+      "displayName": "Torch / Burn",
+      "runtimeSpriteId": "torch-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Nagumo_Haruya",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Nagumo_Haruya",
+          "sourceAssetId": "File:(P) Burn sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Prominence IE2 captain; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "grent",
+      "versionId": "grent:prominence-ie2",
+      "displayName": "Grent",
+      "runtimeSpriteId": "grent-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Ooiwa_Kurando",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Ooiwa_Kurando",
+          "sourceAssetId": "File:(P) Ooiwa Kurando sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Prominence IE2 goalkeeper; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "baller",
+      "versionId": "baller:prominence-ie2",
+      "displayName": "Baller",
+      "runtimeSpriteId": "baller-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Barazono_Hana",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Barazono_Hana",
+          "sourceAssetId": "File:(P) Barazono Hana sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Prominence IE2 defender; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "bomber",
+      "versionId": "bomber:prominence-ie2",
+      "displayName": "Bomber",
+      "runtimeSpriteId": "bomber-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Honba_Geki",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Honba_Geki",
+          "sourceAssetId": "File:(P) Honba Geki sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Prominence IE2 defender; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "heat",
+      "versionId": "heat:prominence-ie2",
+      "displayName": "Heat",
+      "runtimeSpriteId": "heat-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Atsuishi_Shigeto",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Atsuishi_Shigeto",
+          "sourceAssetId": "File:(P) Atsuishi Shigeto sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Prominence IE2 midfielder; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "neppten",
+      "versionId": "neppten:prominence-ie2",
+      "displayName": "Neppten / Nepper",
+      "runtimeSpriteId": "neppten-prominence-ie2",
+      "teamId": "prominence",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Netsuha_Natsuhiko",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Netsuha_Natsuhiko",
+          "sourceAssetId": "File:(P) Netsuha Natsuhiko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "prominence-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Prominence IE2 attacker; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    }
+  ]
+}

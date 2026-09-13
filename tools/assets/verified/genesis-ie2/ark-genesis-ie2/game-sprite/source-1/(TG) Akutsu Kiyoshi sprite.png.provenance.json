@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "genesis-ie2",
+  "versionId": "ark:genesis-ie2",
+  "displayName": "Ark",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(TG) Akutsu Kiyoshi sprite.png",
+  "sourceFilename": "(TG) Akutsu Kiyoshi sprite.png",
+  "sourceRef": "Akutsu_Kiyoshi",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/genesis-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/genesis-ie2/originals/ark-genesis-ie2/game-sprite/(TG) Akutsu Kiyoshi sprite.png",
+  "verifiedPath": "tools/assets/verified/genesis-ie2/ark-genesis-ie2/game-sprite/source-1/(TG) Akutsu Kiyoshi sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/ark-genesis-ie2.png",
+  "sha256": "e6c283616d5a8af3f84be0b954c06d0df261f510ec140012adc4ed6fb8902a25"
+}

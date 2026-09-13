@@ -25,6 +25,13 @@ const LEGACY_TEAMS = [
   { teamId: "zeus", displayName: "Zeus" },
   { teamId: "genesis", displayName: "Genesis" },
   { teamId: "little-gigant", displayName: "Little Gigant" },
+  { teamId: "alius", displayName: "Alius Academy" },
+  { teamId: "alius-gemini", displayName: "Alius Gemini" },
+  { teamId: "alius-epsilon", displayName: "Alius Epsilon" },
+  { teamId: "alius-diamond", displayName: "Alius Diamond" },
+  { teamId: "alius-prominence", displayName: "Alius Prominence" },
+  { teamId: "alius-genesis", displayName: "Alius Genesis" },
+  { teamId: "alius-chaos", displayName: "Alius Chaos" },
 ];
 const GENERATED_TEAM_IDS = new Set(GENERATED_TEAMS.map(team => team.teamId));
 export const TEAMS = [...LEGACY_TEAMS.filter(team => !GENERATED_TEAM_IDS.has(team.teamId)), ...GENERATED_TEAMS];

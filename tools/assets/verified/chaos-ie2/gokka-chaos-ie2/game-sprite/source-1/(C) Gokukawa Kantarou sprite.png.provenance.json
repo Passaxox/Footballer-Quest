@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "chaos-ie2",
+  "versionId": "gokka:chaos-ie2",
+  "displayName": "Gokka",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(C) Gokukawa Kantarou sprite.png",
+  "sourceFilename": "(C) Gokukawa Kantarou sprite.png",
+  "sourceRef": "Gokukawa_Kantarou",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/chaos-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/chaos-ie2/originals/gokka-chaos-ie2/game-sprite/(C) Gokukawa Kantarou sprite.png",
+  "verifiedPath": "tools/assets/verified/chaos-ie2/gokka-chaos-ie2/game-sprite/source-1/(C) Gokukawa Kantarou sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/gokka-chaos-ie2.png",
+  "sha256": "80dc99502b2cb262700be939072d9ecdbc956704e485d786339c8cf01a189465"
+}

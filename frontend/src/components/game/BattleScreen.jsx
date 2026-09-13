@@ -18,7 +18,14 @@ const Fighter = ({ p, side, hit, cue }) => (
     </div>
     <div className={`flex-1 min-w-0 bg-[#0b101d]/90 border-2 border-slate-600 p-2 ${side === "enemy" ? "text-left" : ""}`}>
       <div className="flex items-center justify-between gap-1">
-        <span className="font-pixel text-[9px] text-white break-words min-w-0 leading-relaxed" data-testid={`${side}-name`}>{p.name}</span>
+        <div className="flex items-center gap-1 min-w-0">
+          {p.isCaptain && (
+            <span className="font-pixel text-[7px] text-amber-300 bg-amber-950/70 border border-amber-500/70 px-1" data-testid={`${side}-captain-badge`}>
+              CAP
+            </span>
+          )}
+          <span className="font-pixel text-[9px] text-white break-words min-w-0 leading-relaxed" data-testid={`${side}-name`}>{p.name}</span>
+        </div>
         <span className="font-pixel text-[8px] text-amber-300">Lv{p.level}</span>
       </div>
       <div className="flex flex-wrap items-center gap-1 my-1">

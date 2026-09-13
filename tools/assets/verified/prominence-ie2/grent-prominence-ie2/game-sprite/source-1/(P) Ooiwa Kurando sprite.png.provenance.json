@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "prominence-ie2",
+  "versionId": "grent:prominence-ie2",
+  "displayName": "Grent",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(P) Ooiwa Kurando sprite.png",
+  "sourceFilename": "(P) Ooiwa Kurando sprite.png",
+  "sourceRef": "Ooiwa_Kurando",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/prominence-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/prominence-ie2/originals/grent-prominence-ie2/game-sprite/(P) Ooiwa Kurando sprite.png",
+  "verifiedPath": "tools/assets/verified/prominence-ie2/grent-prominence-ie2/game-sprite/source-1/(P) Ooiwa Kurando sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/grent-prominence-ie2.png",
+  "sha256": "c42f49f033000eedc95273c0ad29ddb4f4239328886265f75a544b464f5d37ba"
+}

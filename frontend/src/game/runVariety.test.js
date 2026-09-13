@@ -1,6 +1,7 @@
 import { CHARACTER_VERSIONS, resolveVersion } from "./catalog";
 import { RUN_EVENTS, eventEligible, eventPool, getRunEvent, resolveEventChoice, validateEvents } from "./events";
-import { advanceRunWave, applyRunEventOutcome, chooseRunEvent, createPlayer, generateWave, newRun } from "./engine";
+import { advanceRunWave, applyRunEventOutcome, chooseRunEvent, createPlayer, generateWave, newRun, getBossForWave } from "./engine";
+import { BOSS_POOLS, BOSSES } from "./data";
 import { RARITIES, rarityIdForVersion } from "./rarity";
 import { SCENARIOS, scenarioPool, selectEncounterVersion } from "./scenarios";
 import { simulateRunVariety } from "./varietySimulation";
@@ -14,7 +15,7 @@ const runIn = (scenarioId, wave = 18, seed = "event-test") => ({
 });
 
 test("event schema accepts the authored pack and rejects duplicates and unknown outcomes", () => {
-  expect(RUN_EVENTS).toHaveLength(25);
+  expect(RUN_EVENTS).toHaveLength(35);
   expect(validateEvents()).toBe(true);
   expect(() => validateEvents([RUN_EVENTS[0], RUN_EVENTS[0]])).toThrow(/Duplicate/);
   const invalid = [{ ...RUN_EVENTS[0], eventId: "invalid", choices: [{ label: "No", outcomes: [{ text: "No", weight: 1, effects: [{ type: "executeCode" }] }] }] }];
@@ -149,3 +150,76 @@ test("representative seeds vary while rare content stays contextual and non-domi
     expect(total === 0 || rare / total < 0.8).toBe(true);
   }
 });
+
+test("BOSS_POOLS contains structured checkpoints with valid CharacterVersion references and captainId", () => {
+  for (const wave of [10, 20, 30, 40, 50]) {
+    const pool = BOSS_POOLS[wave];
+    expect(Array.isArray(pool)).toBe(true);
+    expect(pool.length).toBeGreaterThanOrEqual(2);
+    for (const boss of pool) {
+      expect(typeof boss.team).toBe("string");
+      expect(typeof boss.intro).toBe("string");
+      expect(Array.isArray(boss.ids)).toBe(true);
+      expect(boss.ids.length).toBeGreaterThanOrEqual(2);
+      expect(boss.captainId).toBeDefined();
+      for (const id of boss.ids) {
+        const v = resolveVersion(id);
+        expect(v).toBeDefined();
+        expect(v.kind).toBe("player");
+      }
+    }
+    // Backward-compatibility adapter BOSSES[wave] equals first pool entry
+    expect(BOSSES[wave]).toBe(pool[0]);
+  }
+});
+
+test("getBossForWave defaults to canonical boss without dynamicRoute and selects seeded boss with dynamicRoute", () => {
+  const baseRun = newRun(starters, "normal", "static-boss-test");
+  expect(getBossForWave(baseRun, 10)).toBe(BOSSES[10]);
+  expect(getBossForWave(baseRun, 20)).toBe(BOSSES[20]);
+
+  // With dynamicRoute enabled, selection uses seed and scenario bias
+  const dynamicRun = newRun(starters, "normal", "seed-a", { dynamicRoute: true });
+  const boss1 = getBossForWave(dynamicRun, 10, () => 0.0);
+  const boss2 = getBossForWave(dynamicRun, 10, () => 0.5);
+  const boss3 = getBossForWave(dynamicRun, 10, () => 0.99);
+  expect([boss1, boss2, boss3].every(Boolean)).toBe(true);
+
+  // Scenario bias: if run is in alpine-snow, checkpoint 10 selects Alpine Jr. High
+  const alpineRun = { ...dynamicRun, scenarioState: { id: "alpine-snow" } };
+  const alpineBoss = getBossForWave(alpineRun, 10, () => 0.5);
+  expect(alpineBoss.team).toBe("Alpine Jr. High");
+});
+
+test("boss and squad encounters mark the lead enemy with isCaptain: true and enforce encounter sizes", () => {
+  // Checkpoint 10 boss encounter
+  const run = newRun(starters, "normal", "captain-test");
+  const bossWave = generateWave({ ...run, wave: 10 });
+  expect(bossWave.type).toBe("battle");
+  expect(bossWave.kind).toBe("boss");
+  expect(bossWave.enemies[0].isCaptain).toBe(true);
+  expect(bossWave.enemies.length).toBe(3);
+
+  // Squad encounters comply with AGENTS.md sizing rules:
+  // 1-3 standard, 4 rare, 5-6 progression gated
+  const sizes = new Set();
+  for (let w = 1; w <= 40; w++) {
+    const r = { ...run, wave: w, pending: null };
+    const node = generateWave(r);
+    if (node.type === "battle" && node.enemies) {
+      sizes.add(node.enemies.length);
+      expect(node.enemies.some(p => p.isCaptain)).toBe(true);
+      if (node.kind === "wild") {
+        expect(node.enemies.length).toBe(1);
+        expect(node.enemies[0].isCaptain).toBe(true);
+      }
+      if (node.kind === "team") {
+        expect(node.enemies.length).toBeGreaterThanOrEqual(2);
+        expect(node.enemies.length).toBeLessThanOrEqual(6);
+        expect(node.enemies[0].isCaptain).toBe(true);
+      }
+    }
+  }
+  expect(sizes.has(1) || sizes.has(2) || sizes.has(3)).toBe(true);
+});
+

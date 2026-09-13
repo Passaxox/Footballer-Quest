@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "prominence-ie2",
+  "versionId": "torch:prominence-ie2",
+  "displayName": "Torch / Burn",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(P) Burn sprite.png",
+  "sourceFilename": "(P) Burn sprite.png",
+  "sourceRef": "Nagumo_Haruya",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/prominence-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/prominence-ie2/originals/torch-prominence-ie2/game-sprite/(P) Burn sprite.png",
+  "verifiedPath": "tools/assets/verified/prominence-ie2/torch-prominence-ie2/game-sprite/source-1/(P) Burn sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/torch-prominence-ie2.png",
+  "sha256": "e781bdf0dc14a094309ad217b8f6662939ef2271f9345e00619e06b7ed7ab9f5"
+}

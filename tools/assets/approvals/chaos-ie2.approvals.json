@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "chaos-ie2",
+  "approvals": [
+    {
+      "versionId": "torch:chaos-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/chaos-ie2/originals/torch-chaos-ie2/game-sprite/(C) Burn sprite.png",
+      "sourceFilename": "(C) Burn sprite.png",
+      "sha256": "ab7e63732e335c23d6f1fe7289c72f9cd2b7e21d419bde136e65ca215ff308b9",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "gazelle:chaos-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/chaos-ie2/originals/gazelle-chaos-ie2/game-sprite/(C) Gazel sprite.png",
+      "sourceFilename": "(C) Gazel sprite.png",
+      "sha256": "451d635be43e53cf04ffcd370f0bf687920d35388f9e7458fcd4805a06fc6128",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "grent:chaos-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/chaos-ie2/originals/grent-chaos-ie2/game-sprite/(C) Ooiwa Kurando sprite.png",
+      "sourceFilename": "(C) Ooiwa Kurando sprite.png",
+      "sha256": "0acc19504a1a72ae6aaeb4fd0084300332c026470f89e3b0d638a6b5a7901b1a",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "gokka:chaos-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/chaos-ie2/originals/gokka-chaos-ie2/game-sprite/(C) Gokukawa Kantarou sprite.png",
+      "sourceFilename": "(C) Gokukawa Kantarou sprite.png",
+      "sha256": "80dc99502b2cb262700be939072d9ecdbc956704e485d786339c8cf01a189465",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "clara:chaos-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/chaos-ie2/originals/clara-chaos-ie2/game-sprite/(C) Kurakake Clara sprite.png",
+      "sourceFilename": "(C) Kurakake Clara sprite.png",
+      "sha256": "3893c9907b431f14dfeac3b011c27cf52e49798452642ebd33993b72a7e1339d",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "neppten:chaos-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/chaos-ie2/originals/neppten-chaos-ie2/game-sprite/(C) Netsuha Natsuhiko sprite.png",
+      "sourceFilename": "(C) Netsuha Natsuhiko sprite.png",
+      "sha256": "17e84c63c761684b2fad5ff73b509c2fcc2f58c7e8e7df56ea83ad47f0ed8a5e",
+      "reviewStatus": "MATCHED"
+    }
+  ]
+}

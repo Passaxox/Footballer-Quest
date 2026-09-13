@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "genesis-ie2",
+  "versionId": "bellatrix:genesis-ie2",
+  "displayName": "Bellatrix",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(TG) Yagami Reina sprite.png",
+  "sourceFilename": "(TG) Yagami Reina sprite.png",
+  "sourceRef": "Yagami_Reina",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/genesis-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/genesis-ie2/originals/bellatrix-genesis-ie2/game-sprite/(TG) Yagami Reina sprite.png",
+  "verifiedPath": "tools/assets/verified/genesis-ie2/bellatrix-genesis-ie2/game-sprite/source-1/(TG) Yagami Reina sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/bellatrix-genesis-ie2.png",
+  "sha256": "5fd8889e7a705b8b2c552cdfdf450b2e5138e8f06ff9313446ac416485960b9e"
+}

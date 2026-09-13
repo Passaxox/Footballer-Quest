@@ -136,17 +136,17 @@ export default function GuideScreen({ onBack }) {
         {activeTab === "nodes" && (
           <Panel data-testid="guide-section-nodes" className="space-y-3">
             <h3 className="font-pixel text-[10px] text-amber-300 flex items-center gap-1.5">
-              <MapPin size={14} /> Nodi & Progressione
+              <MapPin size={14} /> Nodi, Rotte & Progressione
             </h3>
             <p className="text-slate-300">
-              Ogni run si snoda lungo <strong>{FINAL_WAVE} ondate</strong> progressive attraverso diversi stadi del Football Frontier.
+              Ogni run si snoda lungo <strong>{FINAL_WAVE} ondate</strong> progressive attraverso scenari e bivi del Football Frontier e dell'Alius Academy.
             </p>
             <div className="space-y-2 text-sm text-slate-300">
               <div className="p-2 bg-slate-900 border border-slate-700 rounded">
-                <strong className="text-white font-pixel text-[8px]">BATTAGLIE & SQUADRE:</strong> Scontri standard contro calciatori selvaggi o squadre rivali. Ricompensano con Prestigio, EXP e oggetti.
+                <strong className="text-white font-pixel text-[8px]">BATTAGLIE & COMPOSIZIONE:</strong> Incontri singoli (duello 1v1) o contro squadre nemiche (1-3 calciatori standard, formazioni rare da 4 calciatori e assalti d'élite da 5 calciatori a onda avanzata). Il capitano avversario è segnalato dal badge dorato <span className="font-pixel text-[7px] text-amber-300 bg-amber-950/70 border border-amber-500/70 px-1">CAP</span>.
               </div>
               <div className="p-2 bg-slate-900 border border-slate-700 rounded">
-                <strong className="text-amber-300 font-pixel text-[8px]">BOSS DI TAPPA:</strong> Ondate 10 (Royal Academy), 20 (Zeus), 30 (Chaos), 40 (Genesis) e 50 (Little Gigant). Battere un boss ripristina completamente gli HP di tutta la squadra!
+                <strong className="text-amber-300 font-pixel text-[8px]">CHECKPOINT BOSS DINAMICI:</strong> Alle ondate 10, 20, 30, 40 e 50 vi attendono le formazioni più temibili. Con la <em>Rotta Libera</em>, i boss attingono a pool data-driven in base al seed e allo scenario: Royal Academy, Alpine Jr. High o Gemini Storm (Onda 10); Zeus, Prominence, Diamond Dust o Epsilon (Onda 20); Chaos, Prominence Inferno o Diamond Dust Elite (Onda 30); Genesis, Chaos Prime, Zeus Divina o All-Stars (Onda 40); Little Gigant o Genesis Supreme (Onda 50).
               </div>
               <div className="p-2 bg-slate-900 border border-slate-700 rounded">
                 <strong className="text-emerald-300 font-pixel text-[8px]">INCONTRO / RECLUTAMENTO:</strong> Opportunità di reclutare nuovi calciatori o sfidarli per convincerli a unirsi alla squadra.
@@ -198,11 +198,11 @@ export default function GuideScreen({ onBack }) {
               <Users size={14} /> Character & Versioni
             </h3>
             <p className="text-slate-300">
-              Il gioco separa l'identità fondamentale (<strong>Character</strong>) dalle sue molteplici incarnazioni (<strong>CharacterVersion</strong>).
+              Il gioco separa l'identità fondamentale (<strong>Character</strong>) dalle sue molteplici incarnazioni (<strong>CharacterVersion</strong>). Il roster conta oltre 110 versioni giocabili ed esplorabili!
             </p>
             <div className="p-2.5 bg-slate-900 border border-slate-700 rounded space-y-2 text-sm text-slate-300">
               <p>
-                Per esempio, <em>Jude Sharp</em> è una singola identità canonica, ma può essere schierato nella forma <strong>Raimon (Base)</strong> o nella celebre versione <strong>Royal Academy</strong>, ciascuna con statistiche, ruoli e supertecniche differenziate.
+                Per esempio, <em>Jude Sharp</em> è una singola identità canonica, ma può essere schierato nella forma <strong>Raimon (Base)</strong> o nella celebre versione <strong>Royal Academy</strong>. Lo stesso vale per <em>Shawn Frost</em> (Raimon o Alpine), <em>Torch</em> (Prominence o Chaos), <em>Gazelle</em> (Diamond Dust o Chaos) e <em>Xavier Foster</em> (Genesis o Base). Ciascuna incarnazione offre statistiche, ruoli ed elementi dedicati.
               </p>
               <div className="p-2 bg-amber-950/40 border border-amber-600 rounded text-amber-200">
                 <strong>Regola del Draft:</strong> 1 calciatore occupa esattamente 1 slot squadra. Non è permesso schierare due incarnazioni dello stesso calciatore nello stesso team: nel selettore iniziale puoi alternare la forma desiderata tramite gli appositi selettori.

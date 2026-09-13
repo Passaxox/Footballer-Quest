@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "alpine-ie2",
+  "versionId": "quentin-rackner:alpine-ie2",
+  "displayName": "Quentin Rackner",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(H) Kitami Ryuu sprite.png",
+  "sourceFilename": "(H) Kitami Ryuu sprite.png",
+  "sourceRef": "Kitami_Ryuu",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/alpine-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/alpine-ie2/originals/quentin-rackner-alpine-ie2/game-sprite/(H) Kitami Ryuu sprite.png",
+  "verifiedPath": "tools/assets/verified/alpine-ie2/quentin-rackner-alpine-ie2/game-sprite/source-1/(H) Kitami Ryuu sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/quentin-rackner-alpine-ie2.png",
+  "sha256": "6633338283312ddd40bbe4d99277e3019e2acdf5176881772535099e907a0048"
+}

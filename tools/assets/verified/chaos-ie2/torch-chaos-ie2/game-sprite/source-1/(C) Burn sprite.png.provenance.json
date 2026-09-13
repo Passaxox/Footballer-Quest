@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "chaos-ie2",
+  "versionId": "torch:chaos-ie2",
+  "displayName": "Torch / Burn",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(C) Burn sprite.png",
+  "sourceFilename": "(C) Burn sprite.png",
+  "sourceRef": "Nagumo_Haruya",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/chaos-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/chaos-ie2/originals/torch-chaos-ie2/game-sprite/(C) Burn sprite.png",
+  "verifiedPath": "tools/assets/verified/chaos-ie2/torch-chaos-ie2/game-sprite/source-1/(C) Burn sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/torch-chaos-ie2.png",
+  "sha256": "ab7e63732e335c23d6f1fe7289c72f9cd2b7e21d419bde136e65ca215ff308b9"
+}

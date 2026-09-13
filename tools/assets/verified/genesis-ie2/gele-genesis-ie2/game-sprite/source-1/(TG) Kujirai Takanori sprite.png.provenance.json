@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "genesis-ie2",
+  "versionId": "gele:genesis-ie2",
+  "displayName": "Gele",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(TG) Kujirai Takanori sprite.png",
+  "sourceFilename": "(TG) Kujirai Takanori sprite.png",
+  "sourceRef": "Kujirai_Takanori",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/genesis-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/genesis-ie2/originals/gele-genesis-ie2/game-sprite/(TG) Kujirai Takanori sprite.png",
+  "verifiedPath": "tools/assets/verified/genesis-ie2/gele-genesis-ie2/game-sprite/source-1/(TG) Kujirai Takanori sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/gele-genesis-ie2.png",
+  "sha256": "485f4ae544ecf4d6ff3c28c6abd15e8b4156daaa099afb7544bca0ade6a47416"
+}

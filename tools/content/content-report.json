@@ -2,15 +2,65 @@
   "schemaVersion": 1,
   "status": "PASS",
   "changed": false,
-  "manifestCount": 3,
-  "teamCount": 3,
-  "characterCount": 23,
-  "versionCount": 26,
-  "moveCount": 26,
-  "scenarioCount": 3,
+  "manifestCount": 7,
+  "teamCount": 7,
+  "characterCount": 38,
+  "versionCount": 50,
+  "moveCount": 50,
+  "scenarioCount": 7,
   "reviewCount": 0,
   "reviewItems": [],
   "identityDecisions": [
+    {
+      "manifestId": "alpine-ie2",
+      "versionId": "shawn:alpine-ie2",
+      "requestedCharacterId": "shawn",
+      "characterId": "shawn",
+      "status": "REUSED",
+      "matches": [
+        "shawn"
+      ]
+    },
+    {
+      "manifestId": "alpine-ie2",
+      "versionId": "adam-ropes:alpine-ie2",
+      "requestedCharacterId": "adam-ropes",
+      "characterId": "adam-ropes",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "alpine-ie2",
+      "versionId": "joaquine:alpine-ie2",
+      "requestedCharacterId": "joaquine",
+      "characterId": "joaquine",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "alpine-ie2",
+      "versionId": "spike-gleeson:alpine-ie2",
+      "requestedCharacterId": "spike-gleeson",
+      "characterId": "spike-gleeson",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "alpine-ie2",
+      "versionId": "kerry-bootgaiter:alpine-ie2",
+      "requestedCharacterId": "kerry-bootgaiter",
+      "characterId": "kerry-bootgaiter",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "alpine-ie2",
+      "versionId": "quentin-rackner:alpine-ie2",
+      "requestedCharacterId": "quentin-rackner",
+      "characterId": "quentin-rackner",
+      "status": "NEW",
+      "matches": []
+    },
     {
       "manifestId": "diamond-dust-ie2",
       "versionId": "beluga:diamond-dust-ie2",
@@ -224,9 +274,181 @@
       "characterId": "dylan-bluemoon",
       "status": "NEW",
       "matches": []
+    },
+    {
+      "manifestId": "genesis-ie2",
+      "versionId": "xavier:genesis-ie2",
+      "requestedCharacterId": "xavier",
+      "characterId": "xavier",
+      "status": "REUSED",
+      "matches": [
+        "xavier"
+      ]
+    },
+    {
+      "manifestId": "genesis-ie2",
+      "versionId": "nero:genesis-ie2",
+      "requestedCharacterId": "nero",
+      "characterId": "nero",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "genesis-ie2",
+      "versionId": "gele:genesis-ie2",
+      "requestedCharacterId": "gele",
+      "characterId": "gele",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "genesis-ie2",
+      "versionId": "zohen:genesis-ie2",
+      "requestedCharacterId": "zohen",
+      "characterId": "zohen",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "genesis-ie2",
+      "versionId": "ark:genesis-ie2",
+      "requestedCharacterId": "ark",
+      "characterId": "ark",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "genesis-ie2",
+      "versionId": "bellatrix:genesis-ie2",
+      "requestedCharacterId": "bellatrix",
+      "characterId": "bellatrix",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "prominence-ie2",
+      "versionId": "torch:prominence-ie2",
+      "requestedCharacterId": "torch",
+      "characterId": "torch",
+      "status": "REUSED",
+      "matches": [
+        "torch"
+      ]
+    },
+    {
+      "manifestId": "prominence-ie2",
+      "versionId": "grent:prominence-ie2",
+      "requestedCharacterId": "grent",
+      "characterId": "grent",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "prominence-ie2",
+      "versionId": "baller:prominence-ie2",
+      "requestedCharacterId": "baller",
+      "characterId": "baller",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "prominence-ie2",
+      "versionId": "bomber:prominence-ie2",
+      "requestedCharacterId": "bomber",
+      "characterId": "bomber",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "prominence-ie2",
+      "versionId": "heat:prominence-ie2",
+      "requestedCharacterId": "heat",
+      "characterId": "heat",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "prominence-ie2",
+      "versionId": "neppten:prominence-ie2",
+      "requestedCharacterId": "neppten",
+      "characterId": "neppten",
+      "status": "NEW",
+      "matches": []
+    },
+    {
+      "manifestId": "chaos-ie2",
+      "versionId": "torch:chaos-ie2",
+      "requestedCharacterId": "torch",
+      "characterId": "torch",
+      "status": "REUSED",
+      "matches": [
+        "torch"
+      ]
+    },
+    {
+      "manifestId": "chaos-ie2",
+      "versionId": "gazelle:chaos-ie2",
+      "requestedCharacterId": "gazelle",
+      "characterId": "gazelle",
+      "status": "REUSED",
+      "matches": [
+        "gazelle"
+      ]
+    },
+    {
+      "manifestId": "chaos-ie2",
+      "versionId": "grent:chaos-ie2",
+      "requestedCharacterId": "grent",
+      "characterId": "grent",
+      "status": "REUSED",
+      "matches": [
+        "grent"
+      ]
+    },
+    {
+      "manifestId": "chaos-ie2",
+      "versionId": "gokka:chaos-ie2",
+      "requestedCharacterId": "gokka",
+      "characterId": "gokka",
+      "status": "REUSED",
+      "matches": [
+        "gokka"
+      ]
+    },
+    {
+      "manifestId": "chaos-ie2",
+      "versionId": "clara:chaos-ie2",
+      "requestedCharacterId": "clara",
+      "characterId": "clara",
+      "status": "REUSED",
+      "matches": [
+        "clara"
+      ]
+    },
+    {
+      "manifestId": "chaos-ie2",
+      "versionId": "neppten:chaos-ie2",
+      "requestedCharacterId": "neppten",
+      "characterId": "neppten",
+      "status": "REUSED",
+      "matches": [
+        "neppten"
+      ]
     }
   ],
   "manifestVersionIds": [
+    {
+      "manifestId": "alpine-ie2",
+      "scenarioId": "alpine-snow",
+      "versionIds": [
+        "shawn:alpine-ie2",
+        "adam-ropes:alpine-ie2",
+        "joaquine:alpine-ie2",
+        "spike-gleeson:alpine-ie2",
+        "kerry-bootgaiter:alpine-ie2",
+        "quentin-rackner:alpine-ie2"
+      ]
+    },
     {
       "manifestId": "diamond-dust-ie2",
       "scenarioId": "diamond-dust-glacier",
@@ -270,11 +492,51 @@
         "jordan:gemini-ie2",
         "dylan-bluemoon:gemini-ie2"
       ]
+    },
+    {
+      "manifestId": "genesis-ie2",
+      "scenarioId": "genesis-dome",
+      "versionIds": [
+        "xavier:genesis-ie2",
+        "nero:genesis-ie2",
+        "gele:genesis-ie2",
+        "zohen:genesis-ie2",
+        "ark:genesis-ie2",
+        "bellatrix:genesis-ie2"
+      ]
+    },
+    {
+      "manifestId": "prominence-ie2",
+      "scenarioId": "prominence-crater",
+      "versionIds": [
+        "torch:prominence-ie2",
+        "grent:prominence-ie2",
+        "baller:prominence-ie2",
+        "bomber:prominence-ie2",
+        "heat:prominence-ie2",
+        "neppten:prominence-ie2"
+      ]
+    },
+    {
+      "manifestId": "chaos-ie2",
+      "scenarioId": "chaos-stadium",
+      "versionIds": [
+        "torch:chaos-ie2",
+        "gazelle:chaos-ie2",
+        "grent:chaos-ie2",
+        "gokka:chaos-ie2",
+        "clara:chaos-ie2",
+        "neppten:chaos-ie2"
+      ]
     }
   ],
   "manifests": [
+    "tools/content/manifests/alpine-ie2.json",
+    "tools/content/manifests/chaos-ie2.json",
     "tools/content/manifests/diamond-dust-ie2.json",
     "tools/content/manifests/epsilon-ie2.json",
-    "tools/content/manifests/gemini-storm-ie2.json"
+    "tools/content/manifests/gemini-storm-ie2.json",
+    "tools/content/manifests/genesis-ie2.json",
+    "tools/content/manifests/prominence-ie2.json"
   ]
 }

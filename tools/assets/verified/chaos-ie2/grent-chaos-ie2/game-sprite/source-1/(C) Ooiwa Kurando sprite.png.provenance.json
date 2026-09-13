@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "chaos-ie2",
+  "versionId": "grent:chaos-ie2",
+  "displayName": "Grent",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(C) Ooiwa Kurando sprite.png",
+  "sourceFilename": "(C) Ooiwa Kurando sprite.png",
+  "sourceRef": "Ooiwa_Kurando",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/chaos-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/chaos-ie2/originals/grent-chaos-ie2/game-sprite/(C) Ooiwa Kurando sprite.png",
+  "verifiedPath": "tools/assets/verified/chaos-ie2/grent-chaos-ie2/game-sprite/source-1/(C) Ooiwa Kurando sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/grent-chaos-ie2.png",
+  "sha256": "0acc19504a1a72ae6aaeb4fd0084300332c026470f89e3b0d638a6b5a7901b1a"
+}

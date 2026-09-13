@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "genesis-ie2",
+  "approvals": [
+    {
+      "versionId": "xavier:genesis-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/genesis-ie2/originals/xavier-genesis-ie2/game-sprite/(TG) Gran sprite.png",
+      "sourceFilename": "(TG) Gran sprite.png",
+      "sha256": "809e4803b111ce6557a6a5688c23520c976c7831fb6675e0e036a1a8dfbae594",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "nero:genesis-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/genesis-ie2/originals/nero-genesis-ie2/game-sprite/(TG) Nemuro Kimiyuki sprite.png",
+      "sourceFilename": "(TG) Nemuro Kimiyuki sprite.png",
+      "sha256": "19afc2eed672af48b6592bcb472be795475971cba87d6b3d20603825e0aebd6a",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "gele:genesis-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/genesis-ie2/originals/gele-genesis-ie2/game-sprite/(TG) Kujirai Takanori sprite.png",
+      "sourceFilename": "(TG) Kujirai Takanori sprite.png",
+      "sha256": "485f4ae544ecf4d6ff3c28c6abd15e8b4156daaa099afb7544bca0ade6a47416",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "zohen:genesis-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/genesis-ie2/originals/zohen-genesis-ie2/game-sprite/(TG) Ishidaira Hanzou sprite.png",
+      "sourceFilename": "(TG) Ishidaira Hanzou sprite.png",
+      "sha256": "79df881115aeb22182d169008b535bfd5a4809b7fa0858c241ac867d7c2873ce",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "ark:genesis-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/genesis-ie2/originals/ark-genesis-ie2/game-sprite/(TG) Akutsu Kiyoshi sprite.png",
+      "sourceFilename": "(TG) Akutsu Kiyoshi sprite.png",
+      "sha256": "e6c283616d5a8af3f84be0b954c06d0df261f510ec140012adc4ed6fb8902a25",
+      "reviewStatus": "MATCHED"
+    },
+    {
+      "versionId": "bellatrix:genesis-ie2",
+      "decision": "ASSET-VERIFIED",
+      "candidatePath": "tools/assets/staging/genesis-ie2/originals/bellatrix-genesis-ie2/game-sprite/(TG) Yagami Reina sprite.png",
+      "sourceFilename": "(TG) Yagami Reina sprite.png",
+      "sha256": "5fd8889e7a705b8b2c552cdfdf450b2e5138e8f06ff9313446ac416485960b9e",
+      "reviewStatus": "MATCHED"
+    }
+  ]
+}

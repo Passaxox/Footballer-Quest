@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "genesis-ie2",
+  "versionId": "zohen:genesis-ie2",
+  "displayName": "Zohen",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(TG) Ishidaira Hanzou sprite.png",
+  "sourceFilename": "(TG) Ishidaira Hanzou sprite.png",
+  "sourceRef": "Ishidaira_Hanzou",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/genesis-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/genesis-ie2/originals/zohen-genesis-ie2/game-sprite/(TG) Ishidaira Hanzou sprite.png",
+  "verifiedPath": "tools/assets/verified/genesis-ie2/zohen-genesis-ie2/game-sprite/source-1/(TG) Ishidaira Hanzou sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/zohen-genesis-ie2.png",
+  "sha256": "79df881115aeb22182d169008b535bfd5a4809b7fa0858c241ac867d7c2873ce"
+}

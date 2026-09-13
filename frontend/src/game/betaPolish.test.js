@@ -53,7 +53,7 @@ test("node stage modifiers persist between battles, clamp safely, survive saves 
 });
 
 test("event expansion validates presentation, linked gates and consequence weights", () => {
-  expect(RUN_EVENTS).toHaveLength(25);
+  expect(RUN_EVENTS).toHaveLength(35);
   expect(validateEvents()).toBe(true);
   expect(RUN_EVENTS.every(event => event.presentation.symbol && event.presentation.accentClass)).toBe(true);
   const scenario = SCENARIOS.find(candidate => candidate.id === "urban");

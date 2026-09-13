@@ -1,7 +1,7 @@
 import { getScenario, scenarioPool, selectEncounterVersion, scenarioForWave, normalizeScenarioState } from "./scenarios";
 import { CHARACTERS, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
-import { ROSTER, ELEMENTS, BOSSES, ITEMS, ITEM_CLASSES, REWARD_POOL, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
+import { ROSTER, ELEMENTS, BOSSES, BOSS_POOLS, ITEMS, ITEM_CLASSES, REWARD_POOL, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
 import { normalizeEventResult, resolveEventChoice, selectEvent, weightedPick } from "./events";
 import { createRunRandomCursor, createRunSeed, hashSeed, normalizeRandomState } from "./runRandom";
 import { RARITIES, rarityIdForVersion } from "./rarity";
@@ -260,16 +260,45 @@ export const randomRosterId = (maxTier, exclude = [], rng = Math.random) => {
 // A high-tier CharacterVersion is therefore possible from wave one, but remains very unlikely.
 export const tierForWave = () => 4;
 
+export const getBossForWave = (run, wave, rng = Math.random) => {
+  const pool = BOSS_POOLS[wave];
+  if (!pool || !pool.length) return null;
+  const isDynamic = Boolean(
+    run?.dynamicRoute ||
+    run?.flexibleRoute ||
+    run?.routeBranch ||
+    run?.storyFlags?.["route-freedom"] ||
+    run?.storyFlags?.["flexible-routes"] ||
+    run?.storyFlags?.["bold-route"] ||
+    run?.scenarioState?.bossPool
+  );
+  if (!isDynamic) {
+    return BOSSES[wave] || pool[0];
+  }
+  const scenarioId = run?.scenarioState?.id;
+  const matching = pool.filter(b => b.scenarioId === scenarioId || b.id === scenarioId || (b.teamTags && run?.scenarioState?.allowedTeamTags?.some(t => b.teamTags.includes(t))));
+  const candidatePool = matching.length ? matching : pool;
+  const index = Math.floor(rng() * candidatePool.length);
+  return candidatePool[index] || pool[0];
+};
+
 const generateWaveNode = (run, rng, cursor) => {
   const wave = run.wave;
   const pickOpponent = (tier, exclude = []) => selectEncounterVersion(run.scenarioState.id, wave, tier, exclude, rng, run.temporaryModifiers)?.versionId;
   const spawn = (id, level) => createPlayer(id, level, cursor.uid("encounter"));
-  const boss = BOSSES[wave];
+  const boss = getBossForWave(run, wave, rng);
   if (boss) {
     const rules = getRules(run.rulesetId);
     const rawLevel = wave + (rules.checkpoints[wave]?.levelOffset ?? rules.defaultBossLevelOffset);
     const level = cappedEnemyLevel(rawLevel, run.team, run.rulesetId, "boss");
-    return { type: "battle", kind: "boss", teamName: boss.team, intro: boss.intro, enemies: boss.ids.map((id) => spawn(id, level)) };
+    const enemies = boss.ids.map((id, index) => {
+      const p = spawn(id, level);
+      if (boss.captainId ? (p.baseId === boss.captainId || p.versionId === boss.captainId || p.characterId === boss.captainId) : index === 0) {
+        p.isCaptain = true;
+      }
+      return p;
+    });
+    return { type: "battle", kind: "boss", teamName: boss.team, intro: boss.intro, enemies };
   }
   const cadenceOffset = hashSeed(run.seed) % 3;
   const eventDue = wave > 1 && (wave + cadenceOffset) % 3 === 0 && wave - (run.lastEventWave || -10) >= 2;
@@ -278,11 +307,31 @@ const generateWaveNode = (run, rng, cursor) => {
   const archetype = selectNodeArchetype(run, rng);
   if (archetype.kind === "battle") {
     const solo = rng() * 100 < 60;
-    if (solo) return { type: "battle", kind: "wild", nodeArchetype: "duel", enemies: [spawn(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId, rng), run.team, run.rulesetId))] };
-    const n = wave < 5 ? 2 : 2 + Math.floor(rng() * 2);
+    if (solo) {
+      const enemy = spawn(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId, rng), run.team, run.rulesetId));
+      enemy.isCaptain = true;
+      return { type: "battle", kind: "wild", nodeArchetype: "duel", enemies: [enemy] };
+    }
+    // Encounter sizing according to AGENTS.md policy:
+    // 1-3 standard, 4 rare (wave >= 15), 5-6 progression gated (wave >= 35)
+    let n;
+    const sizeRoll = rng();
+    if (wave >= 35 && sizeRoll < 0.15) {
+      n = 5;
+    } else if (wave >= 15 && sizeRoll < 0.25) {
+      n = 4;
+    } else {
+      n = wave < 5 ? 2 : (sizeRoll < 0.55 ? 2 : 3);
+    }
     const ids = [];
     while (ids.length < n) ids.push(pickOpponent(tierForWave(wave), ids));
-    return { type: "battle", kind: "team", nodeArchetype: "squad", teamName: TEAM_NAMES[Math.floor(rng() * TEAM_NAMES.length)], enemies: ids.map((id) => spawn(id, cappedEnemyLevel(enemyLevel(wave, run.rulesetId, rng), run.team, run.rulesetId))) };
+    const enemyLvl = cappedEnemyLevel(enemyLevel(wave, run.rulesetId, rng), run.team, run.rulesetId);
+    const enemies = ids.map((id, index) => {
+      const p = spawn(id, enemyLvl);
+      if (index === 0) p.isCaptain = true;
+      return p;
+    });
+    return { type: "battle", kind: "team", nodeArchetype: "squad", teamName: TEAM_NAMES[Math.floor(rng() * TEAM_NAMES.length)], enemies };
   }
   if (archetype.kind === "recruit") return { type: "recruit", nodeArchetype: archetype.id, player: spawn(pickOpponent(tierForWave(wave)), Math.max(1, wave - 1)), price: 60 + wave * 4 };
   if (archetype.kind === "shop") return { type: "shop", nodeArchetype: archetype.id, stock: generateShop(wave, rng) };
@@ -335,14 +384,15 @@ export const enemiesForEffect = (eff, wave, run, rng = Math.random, uidFactory =
 };
 
 // ---------- Run helpers ----------
-export const newRun = (starterIds, difficultyId = "normal", requestedSeed = createRunSeed()) => {
+export const newRun = (starterIds, difficultyId = "normal", requestedSeed = createRunSeed(), options = {}) => {
   const startedAt = Date.now();
   const cursor = createRunRandomCursor({ seed: requestedSeed, startedAt });
   const team = starterIds.map(id => createPlayer(id, 3, cursor.uid("starter")));
   const scenarioState = scenarioForWave(null, 1, tierForWave(1), cursor.next);
+  const dynamicRoute = Boolean(options?.dynamicRoute ?? options?.flexibleRoute);
   return normalizeRun({
     ...cursor.patch(), scenarioState, difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
-    wave: 1, team, items: { barretta: 2 }, money: 100,
+    wave: 1, team, items: { barretta: 2 }, money: 100, dynamicRoute,
     stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], eventHistory: {}, storyFlags: {},
     temporaryModifiers: [], nodeModifiers: {}, activeNodeItems: [], routeHistory: [], telemetry: {
       itemsOffered: [], itemsChosen: [], temporaryItemsUsed: [], recruitsOffered: [], recruitsAcquired: [], versionsEncountered: [],
@@ -359,7 +409,9 @@ export const normalizeRun = (run) => {
   const rulesetId = run.rulesetId || DIFFICULTIES[run.difficultyId || "normal"]?.rulesetId || DEFAULT_RULESET;
   const rules = getRules(rulesetId);
   const randomState = normalizeRandomState(run);
+  const dynamicRoute = Boolean(run.dynamicRoute || run.flexibleRoute || run.storyFlags?.["route-freedom"]);
   return { ...run, ...randomState, scenarioState: normalizeScenarioState(run.scenarioState, run.wave), team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
+    dynamicRoute,
     rulesetVersion: run.rulesetVersion ?? rules.version,
     seenEvents: Array.isArray(run.seenEvents) ? run.seenEvents : [],
     eventHistory: run.eventHistory && typeof run.eventHistory === "object" ? run.eventHistory : {},

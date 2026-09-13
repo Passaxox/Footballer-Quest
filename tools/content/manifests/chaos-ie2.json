@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "chaos-ie2",
+  "team": {
+    "teamId": "chaos",
+    "displayName": "Chaos",
+    "arcId": "alius",
+    "eraId": "original",
+    "gameOrigin": "ie2",
+    "tags": [
+      "chaos",
+      "alius",
+      "alius-chaos"
+    ]
+  },
+  "scenario": {
+    "id": "chaos-stadium",
+    "displayName": "Stadio Chaos",
+    "locationType": "stadium",
+    "minTier": 3,
+    "waveFrom": 22
+  },
+  "players": [
+    {
+      "canonicalCharacterId": "torch",
+      "aliases": [
+        "Torch",
+        "Burn",
+        "Haruya Nagumo"
+      ],
+      "expectedIdentity": "reuse",
+      "versionId": "torch:chaos-ie2",
+      "displayName": "Torch / Burn (Chaos)",
+      "role": "A",
+      "element": "fuoco",
+      "spriteTargetId": "torch-chaos-ie2",
+      "encounterTier": 4,
+      "baseStats": {
+        "hp": 78,
+        "atk": 46,
+        "def": 28,
+        "spd": 38
+      },
+      "primaryMove": {
+        "name": "Ghiaccio e Fuoco",
+        "power": 92,
+        "effect": "burn"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Nagumo_Haruya",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Nagumo's Torch/Burn identity and Chaos co-captaincy."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "chaos-ie2"
+    },
+    {
+      "canonicalCharacterId": "gazelle",
+      "aliases": [
+        "Gazelle",
+        "Gazel",
+        "Fuusuke Suzuno"
+      ],
+      "expectedIdentity": "reuse",
+      "versionId": "gazelle:chaos-ie2",
+      "displayName": "Gazelle / Gazel (Chaos)",
+      "role": "A",
+      "element": "aria",
+      "spriteTargetId": "gazelle-chaos-ie2",
+      "encounterTier": 4,
+      "baseStats": {
+        "hp": 78,
+        "atk": 47,
+        "def": 27,
+        "spd": 39
+      },
+      "primaryMove": {
+        "name": "Sfera del Caos",
+        "power": 92,
+        "effect": "shatter"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Suzuno_Fuusuke",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Suzuno's Gazelle/Gazel identity and Chaos co-captaincy."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "chaos-ie2"
+    },
+    {
+      "canonicalCharacterId": "grent",
+      "aliases": [
+        "Grent",
+        "Grant Cook",
+        "Kenichi Oogai"
+      ],
+      "expectedIdentity": "reuse",
+      "versionId": "grent:chaos-ie2",
+      "displayName": "Grent (Chaos)",
+      "role": "P",
+      "element": "fuoco",
+      "spriteTargetId": "grent-chaos-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 98,
+        "atk": 32,
+        "def": 47,
+        "spd": 27
+      },
+      "primaryMove": {
+        "name": "Barriera Infernale",
+        "power": 78,
+        "effect": "guard"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Ooiwa_Kurando",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Ooiwa's Grent identity and Chaos goalkeeper role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "chaos-ie2"
+    },
+    {
+      "canonicalCharacterId": "gokka",
+      "aliases": [
+        "Gokka",
+        "Gokukawa Kantarou"
+      ],
+      "expectedIdentity": "reuse",
+      "versionId": "gokka:chaos-ie2",
+      "displayName": "Gokka (Chaos)",
+      "role": "D",
+      "element": "terra",
+      "spriteTargetId": "gokka-chaos-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 86,
+        "atk": 32,
+        "def": 42,
+        "spd": 26
+      },
+      "primaryMove": {
+        "name": "Impatto Polare",
+        "power": 68,
+        "effect": "shatter"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Gokukawa_Kantarou",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Gokukawa's Gokka identity and Chaos defender role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "chaos-ie2"
+    },
+    {
+      "canonicalCharacterId": "clara",
+      "aliases": [
+        "Clara",
+        "Kurakake Clara"
+      ],
+      "expectedIdentity": "reuse",
+      "versionId": "clara:chaos-ie2",
+      "displayName": "Clara (Chaos)",
+      "role": "D",
+      "element": "natura",
+      "spriteTargetId": "clara-chaos-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 84,
+        "atk": 31,
+        "def": 38,
+        "spd": 34
+      },
+      "primaryMove": {
+        "name": "Danza Cristallina",
+        "power": 68,
+        "effect": "guard"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Kurakake_Clara",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Kurakake's Clara identity and Chaos defender role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "chaos-ie2"
+    },
+    {
+      "canonicalCharacterId": "neppten",
+      "aliases": [
+        "Neppten",
+        "Nepper",
+        "Natsuhiko Netsuha"
+      ],
+      "expectedIdentity": "reuse",
+      "versionId": "neppten:chaos-ie2",
+      "displayName": "Neppten (Chaos)",
+      "role": "C",
+      "element": "fuoco",
+      "spriteTargetId": "neppten-chaos-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 76,
+        "atk": 38,
+        "def": 32,
+        "spd": 36
+      },
+      "primaryMove": {
+        "name": "Pressing Incandescente",
+        "power": 72,
+        "effect": "weaken"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Netsuha_Natsuhiko",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Netsuha's Neppten identity and Chaos midfielder role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "chaos-ie2"
+    }
+  ]
+}

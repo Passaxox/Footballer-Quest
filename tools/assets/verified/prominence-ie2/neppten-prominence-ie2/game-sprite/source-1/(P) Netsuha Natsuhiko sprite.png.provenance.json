@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "prominence-ie2",
+  "versionId": "neppten:prominence-ie2",
+  "displayName": "Neppten / Nepper",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(P) Netsuha Natsuhiko sprite.png",
+  "sourceFilename": "(P) Netsuha Natsuhiko sprite.png",
+  "sourceRef": "Netsuha_Natsuhiko",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/prominence-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/prominence-ie2/originals/neppten-prominence-ie2/game-sprite/(P) Netsuha Natsuhiko sprite.png",
+  "verifiedPath": "tools/assets/verified/prominence-ie2/neppten-prominence-ie2/game-sprite/source-1/(P) Netsuha Natsuhiko sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/neppten-prominence-ie2.png",
+  "sha256": "a2be4f1c9c17336f61a28ea815eb2e028f0d5cf60933946cf367e6952084bfa2"
+}

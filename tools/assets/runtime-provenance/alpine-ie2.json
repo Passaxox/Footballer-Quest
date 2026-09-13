@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "sourceManifestId": "alpine-ie2",
+  "assets": [
+    {
+      "versionId": "shawn:alpine-ie2",
+      "verifiedSourcePath": "tools/assets/verified/alpine-ie2/shawn-alpine-ie2/game-sprite/source-1/(H) Fubuki Shirou sprite (unmerged).png",
+      "runtimeSpritePath": "frontend/public/sprites/shawn-alpine-ie2.png",
+      "sha256": "2d84764072ddcb7dcc1d64a2d4921918aa8cdf9709124c799577a95ce6bb3f22"
+    },
+    {
+      "versionId": "adam-ropes:alpine-ie2",
+      "verifiedSourcePath": "tools/assets/verified/alpine-ie2/adam-ropes-alpine-ie2/game-sprite/source-1/(H) Hakoda Tetsu sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/adam-ropes-alpine-ie2.png",
+      "sha256": "9824d19d031d03dbf736c252d2825fcd72c38ad3e1a8d60edfab570c81b51c08"
+    },
+    {
+      "versionId": "joaquine:alpine-ie2",
+      "verifiedSourcePath": "tools/assets/verified/alpine-ie2/joaquine-alpine-ie2/game-sprite/source-1/(H) Matoro Juka sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/joaquine-alpine-ie2.png",
+      "sha256": "adb797aa1bc582abd3018e4d59f2027d4f2d7ec3161a02a7ccd59187ebd9fce1"
+    },
+    {
+      "versionId": "spike-gleeson:alpine-ie2",
+      "verifiedSourcePath": "tools/assets/verified/alpine-ie2/spike-gleeson-alpine-ie2/game-sprite/source-1/(H) Mabuka Souji sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/spike-gleeson-alpine-ie2.png",
+      "sha256": "2fb85bd568e23137d8e0ec805856550a58e592c872bb4ae66f3b6d0c65eb3bf0"
+    },
+    {
+      "versionId": "kerry-bootgaiter:alpine-ie2",
+      "verifiedSourcePath": "tools/assets/verified/alpine-ie2/kerry-bootgaiter-alpine-ie2/game-sprite/source-1/(H) Araya Konko sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/kerry-bootgaiter-alpine-ie2.png",
+      "sha256": "04652fc9df29fc8822ada0a45d017da06b1a15826cfa7cc88ff89cbfb248b55c"
+    },
+    {
+      "versionId": "quentin-rackner:alpine-ie2",
+      "verifiedSourcePath": "tools/assets/verified/alpine-ie2/quentin-rackner-alpine-ie2/game-sprite/source-1/(H) Kitami Ryuu sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/quentin-rackner-alpine-ie2.png",
+      "sha256": "6633338283312ddd40bbe4d99277e3019e2acdf5176881772535099e907a0048"
+    }
+  ]
+}

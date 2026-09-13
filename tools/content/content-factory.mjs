@@ -110,14 +110,65 @@ export function validateTeamManifest(manifest) {
   return manifest;
 }
 
+export function sortManifestsByDependency(manifests) {
+  const providers = new Map();
+  for (const manifest of manifests) {
+    for (const player of manifest.players ?? []) {
+      if (player.expectedIdentity === "new") {
+        providers.set(player.canonicalCharacterId, manifest.manifestId);
+      }
+    }
+  }
+  const adj = new Map();
+  const inDegree = new Map();
+  for (const m of manifests) {
+    adj.set(m.manifestId, new Set());
+    inDegree.set(m.manifestId, 0);
+  }
+  for (const m of manifests) {
+    for (const player of m.players ?? []) {
+      if (player.expectedIdentity === "reuse") {
+        const providerManifestId = providers.get(player.canonicalCharacterId);
+        if (providerManifestId && providerManifestId !== m.manifestId) {
+          if (!adj.get(providerManifestId).has(m.manifestId)) {
+            adj.get(providerManifestId).add(m.manifestId);
+            inDegree.set(m.manifestId, inDegree.get(m.manifestId) + 1);
+          }
+        }
+      }
+    }
+  }
+  const queue = manifests
+    .filter(m => inDegree.get(m.manifestId) === 0)
+    .sort((a, b) => a.manifestId.localeCompare(b.manifestId));
+  const result = [];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    result.push(current);
+    for (const neighborId of adj.get(current.manifestId)) {
+      inDegree.set(neighborId, inDegree.get(neighborId) - 1);
+      if (inDegree.get(neighborId) === 0) {
+        const neighbor = manifests.find(m => m.manifestId === neighborId);
+        queue.push(neighbor);
+        queue.sort((a, b) => a.manifestId.localeCompare(b.manifestId));
+      }
+    }
+  }
+  if (result.length !== manifests.length) {
+    throw new Error("Cycle detected in manifest character dependencies");
+  }
+  return result;
+}
+
 export function resolveTeamIdentities(manifests, existingCharacters = []) {
+  const orderedManifests = sortManifestsByDependency(manifests);
   const existing = existingCharacters.map(character => ({
     ...character,
     names: new Set([character.characterId, character.displayName, ...(character.aliases ?? [])].map(normalizeIdentity).filter(Boolean))
   }));
   const requestedNew = new Set();
   const decisions = [];
-  for (const manifest of manifests) {
+  for (const manifest of orderedManifests) {
     for (const player of manifest.players) {
       if (player.expectedIdentity === "new" && requestedNew.has(player.canonicalCharacterId)) {
         throw new Error(`Duplicate new canonical identity: ${player.canonicalCharacterId}`);
@@ -181,7 +232,8 @@ export function deriveTeamContent(manifests, existingCharacters = []) {
   uniqueBy(manifests, "manifestId", "manifestId");
   uniqueBy(manifests.map(manifest => manifest.team), "teamId", "teamId");
   uniqueBy(manifests.map(manifest => manifest.scenario), "id", "scenario id");
-  const decisions = resolveTeamIdentities(manifests, existingCharacters);
+  const orderedManifests = sortManifestsByDependency(manifests);
+  const decisions = resolveTeamIdentities(orderedManifests, existingCharacters);
   const decisionByVersion = new Map(decisions.map(decision => [decision.versionId, decision]));
   const characters = [];
   const versions = [];
@@ -189,7 +241,7 @@ export function deriveTeamContent(manifests, existingCharacters = []) {
   const scenarios = [];
   const provenanceExpectations = [];
   const reviewItems = [];
-  for (const manifest of manifests) {
+  for (const manifest of orderedManifests) {
     const appliedVersionIds = [];
     for (const player of manifest.players) {
       const decision = decisionByVersion.get(player.versionId);
@@ -240,13 +292,13 @@ export function deriveTeamContent(manifests, existingCharacters = []) {
   uniqueBy(versions, "versionId", "generated versionId");
   uniqueBy(moves, "moveId", "generated moveId");
   return {
-    teams: manifests.map(manifest => ({ teamId: manifest.team.teamId, displayName: manifest.team.displayName })),
+    teams: orderedManifests.map(manifest => ({ teamId: manifest.team.teamId, displayName: manifest.team.displayName })),
     characters,
     versions,
     moves,
     scenarios,
     provenanceExpectations,
-    manifestVersionIds: manifests.map(manifest => ({
+    manifestVersionIds: orderedManifests.map(manifest => ({
       manifestId: manifest.manifestId,
       scenarioId: manifest.scenario.id,
       versionIds: manifest.players.filter(player => decisionByVersion.get(player.versionId)?.status !== "REVIEW"

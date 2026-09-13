@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "alpine-ie2",
+  "versionId": "adam-ropes:alpine-ie2",
+  "displayName": "Adam Ropes",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(H) Hakoda Tetsu sprite.png",
+  "sourceFilename": "(H) Hakoda Tetsu sprite.png",
+  "sourceRef": "Hakoda_Tetsu",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/alpine-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/alpine-ie2/originals/adam-ropes-alpine-ie2/game-sprite/(H) Hakoda Tetsu sprite.png",
+  "verifiedPath": "tools/assets/verified/alpine-ie2/adam-ropes-alpine-ie2/game-sprite/source-1/(H) Hakoda Tetsu sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/adam-ropes-alpine-ie2.png",
+  "sha256": "9824d19d031d03dbf736c252d2825fcd72c38ad3e1a8d60edfab570c81b51c08"
+}

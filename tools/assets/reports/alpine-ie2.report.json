@@ -1,0 +1,614 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "alpine-ie2",
+  "title": "Alpine IE2 verified game sprites",
+  "manifestPath": "tools/assets/manifests/alpine-ie2.json",
+  "approvalsPath": "tools/assets/approvals/alpine-ie2.approvals.json",
+  "stagingRoot": "tools/assets/staging/alpine-ie2",
+  "importsRoot": "tools/assets/imports",
+  "verifiedRoot": "tools/assets/verified",
+  "contactSheetPath": "tools/assets/reports/alpine-ie2.contact-sheet.html",
+  "markdownReportPath": "tools/assets/reports/alpine-ie2.report.md",
+  "runtimeSpritesPath": "frontend/public/sprites",
+  "status": "PASS",
+  "summary": {
+    "targetCount": 6,
+    "verifiedCount": 6,
+    "candidateCount": 0,
+    "reviewCount": 0,
+    "assetGapCount": 0,
+    "unassessedCount": 0,
+    "sourceBlockedCount": 0,
+    "sourceMissingCount": 0
+  },
+  "targets": [
+    {
+      "canonicalCharacterId": "shawn",
+      "versionId": "shawn:alpine-ie2",
+      "displayName": "Shawn Froste",
+      "runtimeSpriteId": "shawn-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Fubuki_Shirou",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Fubuki_Shirou",
+          "sourceAssetId": "File:(H) Fubuki Shirou sprite (unmerged).png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Alpine captain defender form; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "2d84764072ddcb7dcc1d64a2d4921918aa8cdf9709124c799577a95ce6bb3f22",
+      "sourceAssetId": "File:(H) Fubuki Shirou sprite (unmerged).png",
+      "sourceFilename": "(H) Fubuki Shirou sprite (unmerged).png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Fubuki_Shirou",
+          "sourceAssetId": "File:(H) Fubuki Shirou sprite (unmerged).png",
+          "sourceFilename": "(H) Fubuki Shirou sprite (unmerged).png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/alpine-ie2/originals/shawn-alpine-ie2/game-sprite/(H) Fubuki Shirou sprite (unmerged).png",
+          "verifiedFile": "tools/assets/verified/alpine-ie2/shawn-alpine-ie2/game-sprite/source-1/(H) Fubuki Shirou sprite (unmerged).png",
+          "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/shawn-alpine-ie2/game-sprite/source-1/(H) Fubuki Shirou sprite (unmerged).png.provenance.json",
+          "contactSheetImageUrl": "../verified/alpine-ie2/shawn-alpine-ie2/game-sprite/source-1/(H)%20Fubuki%20Shirou%20sprite%20(unmerged).png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "2d84764072ddcb7dcc1d64a2d4921918aa8cdf9709124c799577a95ce6bb3f22",
+          "provenanceNote": "Original downloaded filename preserved as (H) Fubuki Shirou sprite (unmerged).png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/alpine-ie2/(H) Fubuki Shirou sprite (unmerged).png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/alpine-ie2/shawn-alpine-ie2/source-1/(H) Fubuki Shirou sprite (unmerged).png",
+          "importMatches": [
+            "tools/assets/imports/alpine-ie2/(H) Fubuki Shirou sprite (unmerged).png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/alpine-ie2/originals/shawn-alpine-ie2/game-sprite/(H) Fubuki Shirou sprite (unmerged).png",
+      "verifiedFile": "tools/assets/verified/alpine-ie2/shawn-alpine-ie2/game-sprite/source-1/(H) Fubuki Shirou sprite (unmerged).png",
+      "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/shawn-alpine-ie2/game-sprite/source-1/(H) Fubuki Shirou sprite (unmerged).png.provenance.json",
+      "contactSheetImageUrl": "../verified/alpine-ie2/shawn-alpine-ie2/game-sprite/source-1/(H)%20Fubuki%20Shirou%20sprite%20(unmerged).png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/shawn-alpine-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/alpine-ie2/originals/shawn-alpine-ie2/game-sprite/(H) Fubuki Shirou sprite (unmerged).png",
+        "sourceFilename": "(H) Fubuki Shirou sprite (unmerged).png",
+        "sha256": "2d84764072ddcb7dcc1d64a2d4921918aa8cdf9709124c799577a95ce6bb3f22"
+      }
+    },
+    {
+      "canonicalCharacterId": "adam-ropes",
+      "versionId": "adam-ropes:alpine-ie2",
+      "displayName": "Adam Ropes",
+      "runtimeSpriteId": "adam-ropes-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Hakoda_Tetsu",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Hakoda_Tetsu",
+          "sourceAssetId": "File:(H) Hakoda Tetsu sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Alpine goalkeeper; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "9824d19d031d03dbf736c252d2825fcd72c38ad3e1a8d60edfab570c81b51c08",
+      "sourceAssetId": "File:(H) Hakoda Tetsu sprite.png",
+      "sourceFilename": "(H) Hakoda Tetsu sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Hakoda_Tetsu",
+          "sourceAssetId": "File:(H) Hakoda Tetsu sprite.png",
+          "sourceFilename": "(H) Hakoda Tetsu sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/alpine-ie2/originals/adam-ropes-alpine-ie2/game-sprite/(H) Hakoda Tetsu sprite.png",
+          "verifiedFile": "tools/assets/verified/alpine-ie2/adam-ropes-alpine-ie2/game-sprite/source-1/(H) Hakoda Tetsu sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/adam-ropes-alpine-ie2/game-sprite/source-1/(H) Hakoda Tetsu sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/alpine-ie2/adam-ropes-alpine-ie2/game-sprite/source-1/(H)%20Hakoda%20Tetsu%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "9824d19d031d03dbf736c252d2825fcd72c38ad3e1a8d60edfab570c81b51c08",
+          "provenanceNote": "Original downloaded filename preserved as (H) Hakoda Tetsu sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/alpine-ie2/(H) Hakoda Tetsu sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/alpine-ie2/adam-ropes-alpine-ie2/source-1/(H) Hakoda Tetsu sprite.png",
+          "importMatches": [
+            "tools/assets/imports/alpine-ie2/(H) Hakoda Tetsu sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/alpine-ie2/originals/adam-ropes-alpine-ie2/game-sprite/(H) Hakoda Tetsu sprite.png",
+      "verifiedFile": "tools/assets/verified/alpine-ie2/adam-ropes-alpine-ie2/game-sprite/source-1/(H) Hakoda Tetsu sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/adam-ropes-alpine-ie2/game-sprite/source-1/(H) Hakoda Tetsu sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/alpine-ie2/adam-ropes-alpine-ie2/game-sprite/source-1/(H)%20Hakoda%20Tetsu%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/adam-ropes-alpine-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/alpine-ie2/originals/adam-ropes-alpine-ie2/game-sprite/(H) Hakoda Tetsu sprite.png",
+        "sourceFilename": "(H) Hakoda Tetsu sprite.png",
+        "sha256": "9824d19d031d03dbf736c252d2825fcd72c38ad3e1a8d60edfab570c81b51c08"
+      }
+    },
+    {
+      "canonicalCharacterId": "joaquine",
+      "versionId": "joaquine:alpine-ie2",
+      "displayName": "Joaquine Downtown",
+      "runtimeSpriteId": "joaquine-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Matoro_Juka",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Matoro_Juka",
+          "sourceAssetId": "File:(H) Matoro Juka sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Alpine defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "adb797aa1bc582abd3018e4d59f2027d4f2d7ec3161a02a7ccd59187ebd9fce1",
+      "sourceAssetId": "File:(H) Matoro Juka sprite.png",
+      "sourceFilename": "(H) Matoro Juka sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Matoro_Juka",
+          "sourceAssetId": "File:(H) Matoro Juka sprite.png",
+          "sourceFilename": "(H) Matoro Juka sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/alpine-ie2/originals/joaquine-alpine-ie2/game-sprite/(H) Matoro Juka sprite.png",
+          "verifiedFile": "tools/assets/verified/alpine-ie2/joaquine-alpine-ie2/game-sprite/source-1/(H) Matoro Juka sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/joaquine-alpine-ie2/game-sprite/source-1/(H) Matoro Juka sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/alpine-ie2/joaquine-alpine-ie2/game-sprite/source-1/(H)%20Matoro%20Juka%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "adb797aa1bc582abd3018e4d59f2027d4f2d7ec3161a02a7ccd59187ebd9fce1",
+          "provenanceNote": "Original downloaded filename preserved as (H) Matoro Juka sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/alpine-ie2/(H) Matoro Juka sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/alpine-ie2/joaquine-alpine-ie2/source-1/(H) Matoro Juka sprite.png",
+          "importMatches": [
+            "tools/assets/imports/alpine-ie2/(H) Matoro Juka sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/alpine-ie2/originals/joaquine-alpine-ie2/game-sprite/(H) Matoro Juka sprite.png",
+      "verifiedFile": "tools/assets/verified/alpine-ie2/joaquine-alpine-ie2/game-sprite/source-1/(H) Matoro Juka sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/joaquine-alpine-ie2/game-sprite/source-1/(H) Matoro Juka sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/alpine-ie2/joaquine-alpine-ie2/game-sprite/source-1/(H)%20Matoro%20Juka%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/joaquine-alpine-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/alpine-ie2/originals/joaquine-alpine-ie2/game-sprite/(H) Matoro Juka sprite.png",
+        "sourceFilename": "(H) Matoro Juka sprite.png",
+        "sha256": "adb797aa1bc582abd3018e4d59f2027d4f2d7ec3161a02a7ccd59187ebd9fce1"
+      }
+    },
+    {
+      "canonicalCharacterId": "spike-gleeson",
+      "versionId": "spike-gleeson:alpine-ie2",
+      "displayName": "Spike Gleeson",
+      "runtimeSpriteId": "spike-gleeson-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Mabuka_Souji",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Mabuka_Souji",
+          "sourceAssetId": "File:(H) Mabuka Souji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Alpine defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "2fb85bd568e23137d8e0ec805856550a58e592c872bb4ae66f3b6d0c65eb3bf0",
+      "sourceAssetId": "File:(H) Mabuka Souji sprite.png",
+      "sourceFilename": "(H) Mabuka Souji sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Mabuka_Souji",
+          "sourceAssetId": "File:(H) Mabuka Souji sprite.png",
+          "sourceFilename": "(H) Mabuka Souji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/alpine-ie2/originals/spike-gleeson-alpine-ie2/game-sprite/(H) Mabuka Souji sprite.png",
+          "verifiedFile": "tools/assets/verified/alpine-ie2/spike-gleeson-alpine-ie2/game-sprite/source-1/(H) Mabuka Souji sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/spike-gleeson-alpine-ie2/game-sprite/source-1/(H) Mabuka Souji sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/alpine-ie2/spike-gleeson-alpine-ie2/game-sprite/source-1/(H)%20Mabuka%20Souji%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "2fb85bd568e23137d8e0ec805856550a58e592c872bb4ae66f3b6d0c65eb3bf0",
+          "provenanceNote": "Original downloaded filename preserved as (H) Mabuka Souji sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/alpine-ie2/(H) Mabuka Souji sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/alpine-ie2/spike-gleeson-alpine-ie2/source-1/(H) Mabuka Souji sprite.png",
+          "importMatches": [
+            "tools/assets/imports/alpine-ie2/(H) Mabuka Souji sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/alpine-ie2/originals/spike-gleeson-alpine-ie2/game-sprite/(H) Mabuka Souji sprite.png",
+      "verifiedFile": "tools/assets/verified/alpine-ie2/spike-gleeson-alpine-ie2/game-sprite/source-1/(H) Mabuka Souji sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/spike-gleeson-alpine-ie2/game-sprite/source-1/(H) Mabuka Souji sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/alpine-ie2/spike-gleeson-alpine-ie2/game-sprite/source-1/(H)%20Mabuka%20Souji%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/spike-gleeson-alpine-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/alpine-ie2/originals/spike-gleeson-alpine-ie2/game-sprite/(H) Mabuka Souji sprite.png",
+        "sourceFilename": "(H) Mabuka Souji sprite.png",
+        "sha256": "2fb85bd568e23137d8e0ec805856550a58e592c872bb4ae66f3b6d0c65eb3bf0"
+      }
+    },
+    {
+      "canonicalCharacterId": "kerry-bootgaiter",
+      "versionId": "kerry-bootgaiter:alpine-ie2",
+      "displayName": "Kerry Bootgaiter",
+      "runtimeSpriteId": "kerry-bootgaiter-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Araya_Konko",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Araya_Konko",
+          "sourceAssetId": "File:(H) Araya Konko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Alpine midfielder; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "04652fc9df29fc8822ada0a45d017da06b1a15826cfa7cc88ff89cbfb248b55c",
+      "sourceAssetId": "File:(H) Araya Konko sprite.png",
+      "sourceFilename": "(H) Araya Konko sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Araya_Konko",
+          "sourceAssetId": "File:(H) Araya Konko sprite.png",
+          "sourceFilename": "(H) Araya Konko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/alpine-ie2/originals/kerry-bootgaiter-alpine-ie2/game-sprite/(H) Araya Konko sprite.png",
+          "verifiedFile": "tools/assets/verified/alpine-ie2/kerry-bootgaiter-alpine-ie2/game-sprite/source-1/(H) Araya Konko sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/kerry-bootgaiter-alpine-ie2/game-sprite/source-1/(H) Araya Konko sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/alpine-ie2/kerry-bootgaiter-alpine-ie2/game-sprite/source-1/(H)%20Araya%20Konko%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "04652fc9df29fc8822ada0a45d017da06b1a15826cfa7cc88ff89cbfb248b55c",
+          "provenanceNote": "Original downloaded filename preserved as (H) Araya Konko sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/alpine-ie2/(H) Araya Konko sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/alpine-ie2/kerry-bootgaiter-alpine-ie2/source-1/(H) Araya Konko sprite.png",
+          "importMatches": [
+            "tools/assets/imports/alpine-ie2/(H) Araya Konko sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/alpine-ie2/originals/kerry-bootgaiter-alpine-ie2/game-sprite/(H) Araya Konko sprite.png",
+      "verifiedFile": "tools/assets/verified/alpine-ie2/kerry-bootgaiter-alpine-ie2/game-sprite/source-1/(H) Araya Konko sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/kerry-bootgaiter-alpine-ie2/game-sprite/source-1/(H) Araya Konko sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/alpine-ie2/kerry-bootgaiter-alpine-ie2/game-sprite/source-1/(H)%20Araya%20Konko%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/kerry-bootgaiter-alpine-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/alpine-ie2/originals/kerry-bootgaiter-alpine-ie2/game-sprite/(H) Araya Konko sprite.png",
+        "sourceFilename": "(H) Araya Konko sprite.png",
+        "sha256": "04652fc9df29fc8822ada0a45d017da06b1a15826cfa7cc88ff89cbfb248b55c"
+      }
+    },
+    {
+      "canonicalCharacterId": "quentin-rackner",
+      "versionId": "quentin-rackner:alpine-ie2",
+      "displayName": "Quentin Rackner",
+      "runtimeSpriteId": "quentin-rackner-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Kitami_Ryuu",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Kitami_Ryuu",
+          "sourceAssetId": "File:(H) Kitami Ryuu sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Alpine attacker; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "6633338283312ddd40bbe4d99277e3019e2acdf5176881772535099e907a0048",
+      "sourceAssetId": "File:(H) Kitami Ryuu sprite.png",
+      "sourceFilename": "(H) Kitami Ryuu sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Kitami_Ryuu",
+          "sourceAssetId": "File:(H) Kitami Ryuu sprite.png",
+          "sourceFilename": "(H) Kitami Ryuu sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/alpine-ie2/originals/quentin-rackner-alpine-ie2/game-sprite/(H) Kitami Ryuu sprite.png",
+          "verifiedFile": "tools/assets/verified/alpine-ie2/quentin-rackner-alpine-ie2/game-sprite/source-1/(H) Kitami Ryuu sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/quentin-rackner-alpine-ie2/game-sprite/source-1/(H) Kitami Ryuu sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/alpine-ie2/quentin-rackner-alpine-ie2/game-sprite/source-1/(H)%20Kitami%20Ryuu%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "6633338283312ddd40bbe4d99277e3019e2acdf5176881772535099e907a0048",
+          "provenanceNote": "Original downloaded filename preserved as (H) Kitami Ryuu sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/alpine-ie2/(H) Kitami Ryuu sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/alpine-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/alpine-ie2/quentin-rackner-alpine-ie2/source-1/(H) Kitami Ryuu sprite.png",
+          "importMatches": [
+            "tools/assets/imports/alpine-ie2/(H) Kitami Ryuu sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/alpine-ie2/originals/quentin-rackner-alpine-ie2/game-sprite/(H) Kitami Ryuu sprite.png",
+      "verifiedFile": "tools/assets/verified/alpine-ie2/quentin-rackner-alpine-ie2/game-sprite/source-1/(H) Kitami Ryuu sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/alpine-ie2/quentin-rackner-alpine-ie2/game-sprite/source-1/(H) Kitami Ryuu sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/alpine-ie2/quentin-rackner-alpine-ie2/game-sprite/source-1/(H)%20Kitami%20Ryuu%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/quentin-rackner-alpine-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/alpine-ie2/originals/quentin-rackner-alpine-ie2/game-sprite/(H) Kitami Ryuu sprite.png",
+        "sourceFilename": "(H) Kitami Ryuu sprite.png",
+        "sha256": "6633338283312ddd40bbe4d99277e3019e2acdf5176881772535099e907a0048"
+      }
+    }
+  ]
+}

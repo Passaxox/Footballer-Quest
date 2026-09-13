@@ -30,19 +30,23 @@ test("CharacterVersion clone audit verifies 0 clones across all multi-version ch
   assert.equal(auditResult.clonesCount, 0);
   assert.equal(auditResult.clones.length, 0);
 
-  // Explicitly check multi-version characters: jude, jonas, jordan, gazelle, dvalin
-  const multiCharIds = ["jude", "jonas", "jordan", "gazelle", "dvalin"];
+  // Explicitly check multi-version characters across all teams and forms
+  const multiCharIds = ["jude", "jonas", "jordan", "gazelle", "dvalin", "torch", "shawn", "xavier", "grent", "gokka", "clara", "neppten"];
   for (const charId of multiCharIds) {
     const versions = Object.values(catalog.CHARACTER_VERSIONS).filter(v => v.characterId === charId);
     assert.ok(versions.length >= 2, `Character ${charId} should have >= 2 versions, found ${versions.length}`);
-    const [v1, v2] = versions;
-    const move1 = catalog.PRIMARY_MOVES[v1.primaryMoveId];
-    const move2 = catalog.PRIMARY_MOVES[v2.primaryMoveId];
-    // Stats, move name, or effect must be differentiated
-    const statsDiff = v1.baseStats.hp !== v2.baseStats.hp || v1.baseStats.atk !== v2.baseStats.atk ||
-      v1.baseStats.def !== v2.baseStats.def || v1.baseStats.spd !== v2.baseStats.spd;
-    const moveDiff = move1.name !== move2.name || move1.power !== move2.power || move1.effect !== move2.effect;
-    assert.ok(statsDiff || moveDiff, `Versions of ${charId} (${v1.versionId} vs ${v2.versionId}) must be differentiated`);
+    for (let i = 0; i < versions.length; i++) {
+      for (let j = i + 1; j < versions.length; j++) {
+        const v1 = versions[i];
+        const v2 = versions[j];
+        const move1 = catalog.PRIMARY_MOVES[v1.primaryMoveId];
+        const move2 = catalog.PRIMARY_MOVES[v2.primaryMoveId];
+        const statsDiff = v1.baseStats.hp !== v2.baseStats.hp || v1.baseStats.atk !== v2.baseStats.atk ||
+          v1.baseStats.def !== v2.baseStats.def || v1.baseStats.spd !== v2.baseStats.spd;
+        const moveDiff = move1.name !== move2.name || move1.power !== move2.power || move1.effect !== move2.effect;
+        assert.ok(statsDiff || moveDiff, `Versions of ${charId} (${v1.versionId} vs ${v2.versionId}) must be differentiated`);
+      }
+    }
   }
 });
 

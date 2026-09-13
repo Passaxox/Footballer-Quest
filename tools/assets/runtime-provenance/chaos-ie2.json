@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "sourceManifestId": "chaos-ie2",
+  "assets": [
+    {
+      "versionId": "torch:chaos-ie2",
+      "verifiedSourcePath": "tools/assets/verified/chaos-ie2/torch-chaos-ie2/game-sprite/source-1/(C) Burn sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/torch-chaos-ie2.png",
+      "sha256": "ab7e63732e335c23d6f1fe7289c72f9cd2b7e21d419bde136e65ca215ff308b9"
+    },
+    {
+      "versionId": "gazelle:chaos-ie2",
+      "verifiedSourcePath": "tools/assets/verified/chaos-ie2/gazelle-chaos-ie2/game-sprite/source-1/(C) Gazel sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/gazelle-chaos-ie2.png",
+      "sha256": "451d635be43e53cf04ffcd370f0bf687920d35388f9e7458fcd4805a06fc6128"
+    },
+    {
+      "versionId": "grent:chaos-ie2",
+      "verifiedSourcePath": "tools/assets/verified/chaos-ie2/grent-chaos-ie2/game-sprite/source-1/(C) Ooiwa Kurando sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/grent-chaos-ie2.png",
+      "sha256": "0acc19504a1a72ae6aaeb4fd0084300332c026470f89e3b0d638a6b5a7901b1a"
+    },
+    {
+      "versionId": "gokka:chaos-ie2",
+      "verifiedSourcePath": "tools/assets/verified/chaos-ie2/gokka-chaos-ie2/game-sprite/source-1/(C) Gokukawa Kantarou sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/gokka-chaos-ie2.png",
+      "sha256": "80dc99502b2cb262700be939072d9ecdbc956704e485d786339c8cf01a189465"
+    },
+    {
+      "versionId": "clara:chaos-ie2",
+      "verifiedSourcePath": "tools/assets/verified/chaos-ie2/clara-chaos-ie2/game-sprite/source-1/(C) Kurakake Clara sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/clara-chaos-ie2.png",
+      "sha256": "3893c9907b431f14dfeac3b011c27cf52e49798452642ebd33993b72a7e1339d"
+    },
+    {
+      "versionId": "neppten:chaos-ie2",
+      "verifiedSourcePath": "tools/assets/verified/chaos-ie2/neppten-chaos-ie2/game-sprite/source-1/(C) Netsuha Natsuhiko sprite.png",
+      "runtimeSpritePath": "frontend/public/sprites/neppten-chaos-ie2.png",
+      "sha256": "17e84c63c761684b2fad5ff73b509c2fcc2f58c7e8e7df56ea83ad47f0ed8a5e"
+    }
+  ]
+}

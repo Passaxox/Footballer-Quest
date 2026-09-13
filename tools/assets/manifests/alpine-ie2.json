@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "alpine-ie2",
+  "title": "Alpine IE2 verified game sprites",
+  "wikiBaseUrl": "https://inazuma-eleven.fandom.com",
+  "targets": [
+    {
+      "canonicalCharacterId": "shawn",
+      "versionId": "shawn:alpine-ie2",
+      "displayName": "Shawn Froste",
+      "runtimeSpriteId": "shawn-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Fubuki_Shirou",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Fubuki_Shirou",
+          "sourceAssetId": "File:(H) Fubuki Shirou sprite (unmerged).png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Alpine captain defender form; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "adam-ropes",
+      "versionId": "adam-ropes:alpine-ie2",
+      "displayName": "Adam Ropes",
+      "runtimeSpriteId": "adam-ropes-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Hakoda_Tetsu",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Hakoda_Tetsu",
+          "sourceAssetId": "File:(H) Hakoda Tetsu sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Alpine goalkeeper; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "joaquine",
+      "versionId": "joaquine:alpine-ie2",
+      "displayName": "Joaquine Downtown",
+      "runtimeSpriteId": "joaquine-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Matoro_Juka",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Matoro_Juka",
+          "sourceAssetId": "File:(H) Matoro Juka sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Alpine defender; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "spike-gleeson",
+      "versionId": "spike-gleeson:alpine-ie2",
+      "displayName": "Spike Gleeson",
+      "runtimeSpriteId": "spike-gleeson-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Mabuka_Souji",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Mabuka_Souji",
+          "sourceAssetId": "File:(H) Mabuka Souji sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Alpine defender; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "kerry-bootgaiter",
+      "versionId": "kerry-bootgaiter:alpine-ie2",
+      "displayName": "Kerry Bootgaiter",
+      "runtimeSpriteId": "kerry-bootgaiter-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Araya_Konko",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Araya_Konko",
+          "sourceAssetId": "File:(H) Araya Konko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Alpine midfielder; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    },
+    {
+      "canonicalCharacterId": "quentin-rackner",
+      "versionId": "quentin-rackner:alpine-ie2",
+      "displayName": "Quentin Rackner",
+      "runtimeSpriteId": "quentin-rackner-alpine-ie2",
+      "teamId": "alpine",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Kitami_Ryuu",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Kitami_Ryuu",
+          "sourceAssetId": "File:(H) Kitami Ryuu sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "UNASSESSED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "UNASSESSED",
+      "verificationEvidence": [
+        "alpine-roster",
+        "character-page",
+        "exact-file-title"
+      ],
+      "provenanceNote": "Alpine attacker; exact team-specific game sprite.",
+      "validationWarnings": [],
+      "sha256": null
+    }
+  ]
+}

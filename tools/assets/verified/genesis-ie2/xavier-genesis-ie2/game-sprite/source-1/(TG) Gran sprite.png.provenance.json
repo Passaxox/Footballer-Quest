@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "genesis-ie2",
+  "versionId": "xavier:genesis-ie2",
+  "displayName": "Xavier / Xene",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(TG) Gran sprite.png",
+  "sourceFilename": "(TG) Gran sprite.png",
+  "sourceRef": "Kiyama_Hiroto",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/genesis-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/genesis-ie2/originals/xavier-genesis-ie2/game-sprite/(TG) Gran sprite.png",
+  "verifiedPath": "tools/assets/verified/genesis-ie2/xavier-genesis-ie2/game-sprite/source-1/(TG) Gran sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/xavier-genesis-ie2.png",
+  "sha256": "809e4803b111ce6557a6a5688c23520c976c7831fb6675e0e036a1a8dfbae594"
+}

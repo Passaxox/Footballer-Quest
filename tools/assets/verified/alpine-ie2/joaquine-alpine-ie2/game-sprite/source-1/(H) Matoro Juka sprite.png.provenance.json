@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "alpine-ie2",
+  "versionId": "joaquine:alpine-ie2",
+  "displayName": "Joaquine Downtown",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(H) Matoro Juka sprite.png",
+  "sourceFilename": "(H) Matoro Juka sprite.png",
+  "sourceRef": "Matoro_Juka",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/alpine-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/alpine-ie2/originals/joaquine-alpine-ie2/game-sprite/(H) Matoro Juka sprite.png",
+  "verifiedPath": "tools/assets/verified/alpine-ie2/joaquine-alpine-ie2/game-sprite/source-1/(H) Matoro Juka sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/joaquine-alpine-ie2.png",
+  "sha256": "adb797aa1bc582abd3018e4d59f2027d4f2d7ec3161a02a7ccd59187ebd9fce1"
+}

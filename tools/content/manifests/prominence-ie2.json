@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "prominence-ie2",
+  "team": {
+    "teamId": "prominence",
+    "displayName": "Prominence",
+    "arcId": "alius",
+    "eraId": "original",
+    "gameOrigin": "ie2",
+    "tags": [
+      "prominence",
+      "alius",
+      "alius-prominence"
+    ]
+  },
+  "scenario": {
+    "id": "prominence-crater",
+    "displayName": "Cratere di Prominence",
+    "locationType": "special",
+    "minTier": 3,
+    "waveFrom": 18
+  },
+  "players": [
+    {
+      "canonicalCharacterId": "torch",
+      "aliases": [
+        "Torch",
+        "Burn",
+        "Haruya Nagumo"
+      ],
+      "expectedIdentity": "reuse",
+      "versionId": "torch:prominence-ie2",
+      "displayName": "Torch / Burn",
+      "role": "A",
+      "element": "fuoco",
+      "spriteTargetId": "torch-prominence-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 74,
+        "atk": 43,
+        "def": 27,
+        "spd": 36
+      },
+      "primaryMove": {
+        "name": "Fiammata Atomica",
+        "power": 85,
+        "effect": "burn"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Nagumo_Haruya",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Nagumo's Torch/Burn identity and Prominence IE2 captaincy."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "prominence-ie2"
+    },
+    {
+      "canonicalCharacterId": "grent",
+      "aliases": [
+        "Grent",
+        "Grant Cook",
+        "Kenichi Oogai"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "grent:prominence-ie2",
+      "displayName": "Grent",
+      "role": "P",
+      "element": "fuoco",
+      "spriteTargetId": "grent-prominence-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 96,
+        "atk": 30,
+        "def": 45,
+        "spd": 26
+      },
+      "primaryMove": {
+        "name": "Muro di Fiamme",
+        "power": 70,
+        "effect": "guard"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Ooiwa_Kurando",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Ooiwa's Grent identity and Prominence IE2 goalkeeper role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "prominence-ie2"
+    },
+    {
+      "canonicalCharacterId": "baller",
+      "aliases": [
+        "Baller",
+        "Bob Bobbins",
+        "Suguru Bachira"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "baller:prominence-ie2",
+      "displayName": "Baller",
+      "role": "D",
+      "element": "fuoco",
+      "spriteTargetId": "baller-prominence-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 84,
+        "atk": 26,
+        "def": 38,
+        "spd": 28
+      },
+      "primaryMove": {
+        "name": "Blocco Vulcanico",
+        "power": 60,
+        "effect": "shatter"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Barazono_Hana",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Barazono's Baller identity and Prominence IE2 defender role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "prominence-ie2"
+    },
+    {
+      "canonicalCharacterId": "bomber",
+      "aliases": [
+        "Bomber",
+        "Bones",
+        "Geki Honba"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "bomber:prominence-ie2",
+      "displayName": "Bomber",
+      "role": "D",
+      "element": "fuoco",
+      "spriteTargetId": "bomber-prominence-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 80,
+        "atk": 28,
+        "def": 36,
+        "spd": 32
+      },
+      "primaryMove": {
+        "name": "Contrasto Infuocato",
+        "power": 65,
+        "effect": null
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Honba_Geki",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Honba's Bomber identity and Prominence IE2 defender role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "prominence-ie2"
+    },
+    {
+      "canonicalCharacterId": "heat",
+      "aliases": [
+        "Heat",
+        "Haru Atsuishi",
+        "Shigeto Atsuishi"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "heat:prominence-ie2",
+      "displayName": "Heat",
+      "role": "C",
+      "element": "fuoco",
+      "spriteTargetId": "heat-prominence-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 75,
+        "atk": 36,
+        "def": 29,
+        "spd": 35
+      },
+      "primaryMove": {
+        "name": "Dribbling Fiamma",
+        "power": 65,
+        "effect": "weaken"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Atsuishi_Shigeto",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Atsuishi's Heat identity and Prominence IE2 midfielder role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "prominence-ie2"
+    },
+    {
+      "canonicalCharacterId": "neppten",
+      "aliases": [
+        "Neppten",
+        "Nepper",
+        "Natsuhiko Netsuha"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "neppten:prominence-ie2",
+      "displayName": "Neppten / Nepper",
+      "role": "A",
+      "element": "fuoco",
+      "spriteTargetId": "neppten-prominence-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 72,
+        "atk": 41,
+        "def": 25,
+        "spd": 38
+      },
+      "primaryMove": {
+        "name": "Tiro Radente",
+        "power": 75,
+        "effect": "burn"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Netsuha_Natsuhiko",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Netsuha's Neppten/Nepper identity and Prominence IE2 forward role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "prominence-ie2"
+    }
+  ]
+}

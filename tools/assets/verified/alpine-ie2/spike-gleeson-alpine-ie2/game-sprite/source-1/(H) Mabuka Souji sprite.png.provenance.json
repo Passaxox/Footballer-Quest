@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "alpine-ie2",
+  "versionId": "spike-gleeson:alpine-ie2",
+  "displayName": "Spike Gleeson",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(H) Mabuka Souji sprite.png",
+  "sourceFilename": "(H) Mabuka Souji sprite.png",
+  "sourceRef": "Mabuka_Souji",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/alpine-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/alpine-ie2/originals/spike-gleeson-alpine-ie2/game-sprite/(H) Mabuka Souji sprite.png",
+  "verifiedPath": "tools/assets/verified/alpine-ie2/spike-gleeson-alpine-ie2/game-sprite/source-1/(H) Mabuka Souji sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/spike-gleeson-alpine-ie2.png",
+  "sha256": "2fb85bd568e23137d8e0ec805856550a58e592c872bb4ae66f3b6d0c65eb3bf0"
+}

@@ -215,6 +215,86 @@ const authoredEvents = [
       choice("Accetta il fondo", [outcome("Ottieni 45 Prestigio e prometti una partita coraggiosa.", [{ type: "grantCurrency", amount: 45 }, { type: "incrementFlag", flag: "supporter-promises", amount: 1 }])]),
     ],
   },
+  {
+    eventId: "prominence-heatwave", title: "Ondata di Calore", body: "Un'ondata di calore anomalo proviene dal cratere della Prominence. L'aria brucia, ma forgia i cuori più ardenti.",
+    category: "training", rarity: "uncommon", weight: 6, scenarioIds: ["prominence-crater", "urban"], oncePerRun: true,
+    choices: [
+      choice("Affronta il caldo torrido", [outcome("La squadra sopporta il calore (+30 XP per tutti, -12% HP).", [{ type: "grantXp", amount: 30 }, { type: "damageTeam", percent: 12 }, { type: "setFlag", flag: "prominence-hardened", value: true }])]),
+      choice("Riparati con del ghiaccio", [outcome("Riposo al fresco con scorte di ghiaccio istantaneo.", [{ type: "healTeam", percent: 20 }, { type: "grantItem", itemId: "ghiaccio" }])]),
+    ],
+  },
+  {
+    eventId: "prominence-scout", title: "Scout della Fiamma", body: "Un emissario della Prominence osserva i vostri movimenti, curioso di misurare la determinazione della squadra.",
+    category: "recruitment", rarity: "rare", weight: 6, scenarioIds: ["prominence-crater"], requiresFlags: { "prominence-hardened": true }, oncePerRun: true,
+    choices: [
+      choice("Sfida l'attaccante della Prominence", [outcome("La prova del fuoco comincia.", [{ type: "startEncounter", count: 3, levelBonus: 2, rewardItem: "grinta" }, { type: "setFlag", flag: "prominence-scout-cleared", value: true }])]),
+      choice("Proponi un ingaggio sportivo", [outcome("Il talento ascolta la proposta.", [{ type: "offerRecruit", maxRarity: "rare", price: 65 }, { type: "setFlag", flag: "prominence-scout-cleared", value: true }])]),
+    ],
+  },
+  {
+    eventId: "genesis-simulation", title: "Simulatore della Genesi", body: "I terminali della cupola Alius sono attivi: un ologramma tattico della Genesis vi propone una simulazione virtuale.",
+    category: "risk-reward", rarity: "rare", weight: 6, scenarioIds: ["genesis-dome"], oncePerRun: true,
+    choices: [
+      choice("Avvia la simulazione estrema", [outcome("I dati virtuali prendono forma per un combattimento ad alta intensità.", [{ type: "startEncounter", count: 3, levelBonus: 3, rewardItem: "sigillo" }, { type: "setFlag", flag: "genesis-simulation-read", value: true }])]),
+      choice("Scarica i dati analitici", [outcome("I dati scaricati aumentano la comparsa di talenti rari per 4 ondate.", [{ type: "temporaryModifier", id: "genesis-analysis", remainingWaves: 4, rarityWeights: { rare: 1.8, special: 1.5 } }, { type: "setFlag", flag: "genesis-simulation-read", value: true }])]),
+    ],
+  },
+  {
+    eventId: "genesis-contact", title: "Incontro con Xavier", body: "Xavier Foster compare personalmente al centro della cupola: riconosce la crescita straordinaria del vostro capitano.",
+    category: "reward", rarity: "special", weight: 5, scenarioIds: ["genesis-dome"], requiresFlags: { "genesis-simulation-read": true }, oncePerRun: true,
+    choices: [
+      choice("Accetta il dono dell'Alius", [outcome("Xavier vi consegna un Pallone d'Oro e 60 Prestigio.", [{ type: "grantItem", itemId: "pallone" }, { type: "grantCurrency", amount: 60 }])]),
+      choice("Chiedi un reclutamento d'élite", [outcome("Un'opportunità unica per reclutare un campione speciale.", [{ type: "offerRecruit", maxRarity: "special", price: 80 }])]),
+    ],
+  },
+  {
+    eventId: "chaos-clash", title: "Tempesta Caotica", body: "Fuoco e ghiaccio si scontrano nello stadio: Torch e Gazelle hanno lasciato un'energia incontrollabile sul campo.",
+    category: "risk-reward", rarity: "rare", weight: 6, scenarioIds: ["chaos-stadium"], oncePerRun: true,
+    choices: [
+      choice("Canalizza il caos elementale", [outcome("Il ritmo caotico aumenta i guadagni (+30% Prestigio per 3 ondate).", [{ type: "temporaryModifier", id: "chaos-tempo", remainingWaves: 3, rewardMultiplier: 1.3 }, { type: "setFlag", flag: "chaos-witnessed", value: true }])]),
+      choice("Metti al sicuro la squadra", [outcome("La squadra recupera energie e trova un Talismano Elementale.", [{ type: "grantItem", itemId: "talismano" }, { type: "healTeam", percent: 25 }])]),
+    ],
+  },
+  {
+    eventId: "alpine-blizzard-trail", title: "Sentiero nella Tormenta", body: "Una bufera improvvisa si abbatte sul picco innevato. Le impronte di Shawn Frost indicano la via attraverso la neve.",
+    category: "training", rarity: "uncommon", weight: 7, scenarioIds: ["alpine-snow"], oncePerRun: true,
+    choices: [
+      choice("Scala il picco controvento", [outcome("La marcia nella bufera forgia la squadra (+28 XP, -10% HP).", [{ type: "grantXp", amount: 28 }, { type: "damageTeam", percent: 10 }, { type: "setFlag", flag: "blizzard-trail", value: true }])]),
+      choice("Trova rifugio allo chalet alpino", [outcome("Un caldo riposo ricarica le energie con una Borraccia.", [{ type: "healTeam", percent: 35 }, { type: "grantItem", itemId: "borraccia" }])]),
+    ],
+  },
+  {
+    eventId: "alpine-scout-hokkaido", title: "Talenti della Neve", body: "I difensori dell'Alpine offrono un allenamento congiunto sul campo ghiacciato prima della prossima sfida.",
+    category: "recruitment", rarity: "uncommon", weight: 6, scenarioIds: ["alpine-snow"], requiresFlags: { "blizzard-trail": true }, oncePerRun: true,
+    choices: [
+      choice("Allenamento difensivo sul ghiaccio", [outcome("La difesa del capitano aumenta e ottieni una Tenuta Difensiva.", [{ type: "adjustStat", stat: "def", amount: 4, target: "active" }, { type: "grantItem", itemId: "tenuta" }])]),
+      choice("Invita un talento dell'Alpine", [outcome("Un giocatore locale valuta l'ingresso in squadra.", [{ type: "offerRecruit", maxRarity: "uncommon", price: 45 }])]),
+    ],
+  },
+  {
+    eventId: "alius-shadow-prowler", title: "Ombre dell'Alius", body: "Figure misteriose in divisa Alius vi osservano ai margini del campo. Cercano rivali degni per un patto rischioso.",
+    category: "risk-reward", rarity: "uncommon", weight: 6, oncePerRun: false, cooldownWaves: 6,
+    choices: [
+      choice("Accetta la sfida proibita", [outcome("Gli emissari oscuri attaccano senza preavviso.", [{ type: "startEncounter", count: 3, levelBonus: 2, rewardItem: "azzardo" }])]),
+      choice("Respingi l'infiltrazione", [outcome("Le ombre si dileguano lasciando 40 Prestigio e uno Stendardo.", [{ type: "grantCurrency", amount: 40 }, { type: "grantItem", itemId: "stendardo" }])]),
+    ],
+  },
+  {
+    eventId: "regional-crossroad", title: "Crocevia Regionale", body: "Un cartello al bivio indica due percorsi: il circuito competitivo verso i boss d'élite o il ritiro montano.",
+    category: "narrative", rarity: "common", weight: 7, oncePerRun: true,
+    choices: [
+      choice("Scegli il circuito competitivo (Rotta Libera)", [outcome("Attivi la Rotta Libera: sfide boss dinamiche e maggiori incontri rari (+20% Prestigio).", [{ type: "temporaryModifier", id: "intense-circuit", remainingWaves: 4, rarityWeights: { rare: 2.0, special: 1.6 }, rewardMultiplier: 1.2 }, { type: "setFlag", flag: "route-freedom", value: true }])]),
+      choice("Scegli il ritiro montano bilanciato", [outcome("La squadra riposa e studia schemi sul Taccuino Tattico.", [{ type: "healTeam", percent: 40 }, { type: "grantItem", itemId: "taccuino" }])]),
+    ],
+  },
+  {
+    eventId: "tactical-masterclass", title: "Lezione Tattica del Maestro", body: "Un rinomato maestro di tattica osserva la vostra disposizione e propone una consulenza tecnica avanzata.",
+    category: "training", rarity: "uncommon", weight: 6, oncePerRun: true,
+    choices: [
+      choice("Schema offensivo d'assalto", [outcome("L'attacco del capitano aumenta (+3 ATK) con una Grinta in Bottiglia.", [{ type: "grantItem", itemId: "grinta" }, { type: "adjustStat", stat: "atk", amount: 3, target: "active" }])]),
+      choice("Schema difensivo bilanciato", [outcome("La difesa del capitano aumenta (+3 DIF) con una Lavagna Equilibrata.", [{ type: "grantItem", itemId: "equilibrio" }, { type: "adjustStat", stat: "def", amount: 3, target: "active" }])]),
+    ],
+  },
 ];
 
 const EVENT_PRESENTATION = {
@@ -231,15 +311,21 @@ export const RUN_EVENTS = authoredEvents.map(event => ({
   presentation: { ...(EVENT_PRESENTATION[event.category] || EVENT_PRESENTATION.narrative), ...(event.presentation || {}) },
 }));
 
-const GLOBAL_EVENT_IDS = ["video-analysis", "analyst-return", "youth-scout", "equipment-drive", "storm-warning", "supporters-bus"];
+const GLOBAL_EVENT_IDS = ["video-analysis", "analyst-return", "youth-scout", "equipment-drive", "storm-warning", "supporters-bus", "alius-shadow-prowler", "regional-crossroad", "tactical-masterclass"];
 export const SCENARIO_EVENT_POOLS = {
   "raimon-training": { include: ["sideline-clinic", "camelia-checkup", "iron-tower-drill", "honest-wallet", "trusted-coach-recruit", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
   urban: { include: ["sideline-clinic", "camelia-checkup", "iron-tower-drill", "street-tournament", "route-split", "honest-wallet", "trusted-coach-recruit", "captains-choice", ...GLOBAL_EVENT_IDS] },
   "royal-academy": { include: ["sideline-clinic", "camelia-checkup", "royal-tactics", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
   zeus: { include: ["sideline-clinic", "camelia-checkup", "zeus-altar", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
   "epsilon-lab": { include: ["sideline-clinic", "camelia-checkup", "epsilon-console", "epsilon-defector", "route-split", "captains-choice", "alius-whisper", "alius-contact", ...GLOBAL_EVENT_IDS] },
+  "epsilon-base": { include: ["sideline-clinic", "camelia-checkup", "epsilon-console", "epsilon-defector", "route-split", "captains-choice", "alius-whisper", "alius-contact", ...GLOBAL_EVENT_IDS] },
   "gemini-crash-site": { include: ["sideline-clinic", "camelia-checkup", "gemini-fragment", "gemini-rendezvous", "route-split", "captains-choice", "alius-whisper", "alius-contact", ...GLOBAL_EVENT_IDS] },
+  "gemini-field": { include: ["sideline-clinic", "camelia-checkup", "gemini-fragment", "gemini-rendezvous", "route-split", "captains-choice", "alius-whisper", "alius-contact", ...GLOBAL_EVENT_IDS] },
   "diamond-dust-glacier": { include: ["sideline-clinic", "camelia-checkup", "diamond-whiteout", "diamond-scout", "route-split", "captains-choice", "alius-whisper", "alius-contact", ...GLOBAL_EVENT_IDS] },
+  "prominence-crater": { include: ["sideline-clinic", "camelia-checkup", "prominence-heatwave", "prominence-scout", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
+  "genesis-dome": { include: ["sideline-clinic", "camelia-checkup", "genesis-simulation", "genesis-contact", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
+  "chaos-stadium": { include: ["sideline-clinic", "camelia-checkup", "chaos-clash", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
+  "alpine-snow": { include: ["sideline-clinic", "camelia-checkup", "alpine-blizzard-trail", "alpine-scout-hokkaido", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
   international: { include: ["sideline-clinic", "camelia-checkup", "international-sponsor", "route-split", "captains-choice", ...GLOBAL_EVENT_IDS] },
 };
 

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "chaos-ie2",
+  "versionId": "clara:chaos-ie2",
+  "displayName": "Clara",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(C) Kurakake Clara sprite.png",
+  "sourceFilename": "(C) Kurakake Clara sprite.png",
+  "sourceRef": "Kurakake_Clara",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/chaos-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/chaos-ie2/originals/clara-chaos-ie2/game-sprite/(C) Kurakake Clara sprite.png",
+  "verifiedPath": "tools/assets/verified/chaos-ie2/clara-chaos-ie2/game-sprite/source-1/(C) Kurakake Clara sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/clara-chaos-ie2.png",
+  "sha256": "3893c9907b431f14dfeac3b011c27cf52e49798452642ebd33993b72a7e1339d"
+}

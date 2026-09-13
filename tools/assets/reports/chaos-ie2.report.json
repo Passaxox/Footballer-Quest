@@ -1,0 +1,614 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "chaos-ie2",
+  "title": "Chaos IE2 verified game sprites",
+  "manifestPath": "tools/assets/manifests/chaos-ie2.json",
+  "approvalsPath": "tools/assets/approvals/chaos-ie2.approvals.json",
+  "stagingRoot": "tools/assets/staging/chaos-ie2",
+  "importsRoot": "tools/assets/imports",
+  "verifiedRoot": "tools/assets/verified",
+  "contactSheetPath": "tools/assets/reports/chaos-ie2.contact-sheet.html",
+  "markdownReportPath": "tools/assets/reports/chaos-ie2.report.md",
+  "runtimeSpritesPath": "frontend/public/sprites",
+  "status": "PASS",
+  "summary": {
+    "targetCount": 6,
+    "verifiedCount": 6,
+    "candidateCount": 0,
+    "reviewCount": 0,
+    "assetGapCount": 0,
+    "unassessedCount": 0,
+    "sourceBlockedCount": 0,
+    "sourceMissingCount": 0
+  },
+  "targets": [
+    {
+      "canonicalCharacterId": "torch",
+      "versionId": "torch:chaos-ie2",
+      "displayName": "Torch / Burn",
+      "runtimeSpriteId": "torch-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Nagumo_Haruya",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Nagumo_Haruya",
+          "sourceAssetId": "File:(C) Burn sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Chaos co-captain; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "ab7e63732e335c23d6f1fe7289c72f9cd2b7e21d419bde136e65ca215ff308b9",
+      "sourceAssetId": "File:(C) Burn sprite.png",
+      "sourceFilename": "(C) Burn sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Nagumo_Haruya",
+          "sourceAssetId": "File:(C) Burn sprite.png",
+          "sourceFilename": "(C) Burn sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/chaos-ie2/originals/torch-chaos-ie2/game-sprite/(C) Burn sprite.png",
+          "verifiedFile": "tools/assets/verified/chaos-ie2/torch-chaos-ie2/game-sprite/source-1/(C) Burn sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/torch-chaos-ie2/game-sprite/source-1/(C) Burn sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/chaos-ie2/torch-chaos-ie2/game-sprite/source-1/(C)%20Burn%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "ab7e63732e335c23d6f1fe7289c72f9cd2b7e21d419bde136e65ca215ff308b9",
+          "provenanceNote": "Original downloaded filename preserved as (C) Burn sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/chaos-ie2/(C) Burn sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/chaos-ie2/torch-chaos-ie2/source-1/(C) Burn sprite.png",
+          "importMatches": [
+            "tools/assets/imports/chaos-ie2/(C) Burn sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/chaos-ie2/originals/torch-chaos-ie2/game-sprite/(C) Burn sprite.png",
+      "verifiedFile": "tools/assets/verified/chaos-ie2/torch-chaos-ie2/game-sprite/source-1/(C) Burn sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/torch-chaos-ie2/game-sprite/source-1/(C) Burn sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/chaos-ie2/torch-chaos-ie2/game-sprite/source-1/(C)%20Burn%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/torch-chaos-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/chaos-ie2/originals/torch-chaos-ie2/game-sprite/(C) Burn sprite.png",
+        "sourceFilename": "(C) Burn sprite.png",
+        "sha256": "ab7e63732e335c23d6f1fe7289c72f9cd2b7e21d419bde136e65ca215ff308b9"
+      }
+    },
+    {
+      "canonicalCharacterId": "gazelle",
+      "versionId": "gazelle:chaos-ie2",
+      "displayName": "Gazelle / Gazel",
+      "runtimeSpriteId": "gazelle-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Suzuno_Fuusuke",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Suzuno_Fuusuke",
+          "sourceAssetId": "File:(C) Gazel sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Chaos co-captain; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "451d635be43e53cf04ffcd370f0bf687920d35388f9e7458fcd4805a06fc6128",
+      "sourceAssetId": "File:(C) Gazel sprite.png",
+      "sourceFilename": "(C) Gazel sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Suzuno_Fuusuke",
+          "sourceAssetId": "File:(C) Gazel sprite.png",
+          "sourceFilename": "(C) Gazel sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/chaos-ie2/originals/gazelle-chaos-ie2/game-sprite/(C) Gazel sprite.png",
+          "verifiedFile": "tools/assets/verified/chaos-ie2/gazelle-chaos-ie2/game-sprite/source-1/(C) Gazel sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/gazelle-chaos-ie2/game-sprite/source-1/(C) Gazel sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/chaos-ie2/gazelle-chaos-ie2/game-sprite/source-1/(C)%20Gazel%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "451d635be43e53cf04ffcd370f0bf687920d35388f9e7458fcd4805a06fc6128",
+          "provenanceNote": "Original downloaded filename preserved as (C) Gazel sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/chaos-ie2/(C) Gazel sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/chaos-ie2/gazelle-chaos-ie2/source-1/(C) Gazel sprite.png",
+          "importMatches": [
+            "tools/assets/imports/chaos-ie2/(C) Gazel sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/chaos-ie2/originals/gazelle-chaos-ie2/game-sprite/(C) Gazel sprite.png",
+      "verifiedFile": "tools/assets/verified/chaos-ie2/gazelle-chaos-ie2/game-sprite/source-1/(C) Gazel sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/gazelle-chaos-ie2/game-sprite/source-1/(C) Gazel sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/chaos-ie2/gazelle-chaos-ie2/game-sprite/source-1/(C)%20Gazel%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/gazelle-chaos-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/chaos-ie2/originals/gazelle-chaos-ie2/game-sprite/(C) Gazel sprite.png",
+        "sourceFilename": "(C) Gazel sprite.png",
+        "sha256": "451d635be43e53cf04ffcd370f0bf687920d35388f9e7458fcd4805a06fc6128"
+      }
+    },
+    {
+      "canonicalCharacterId": "grent",
+      "versionId": "grent:chaos-ie2",
+      "displayName": "Grent",
+      "runtimeSpriteId": "grent-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Ooiwa_Kurando",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Ooiwa_Kurando",
+          "sourceAssetId": "File:(C) Ooiwa Kurando sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Chaos goalkeeper; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "0acc19504a1a72ae6aaeb4fd0084300332c026470f89e3b0d638a6b5a7901b1a",
+      "sourceAssetId": "File:(C) Ooiwa Kurando sprite.png",
+      "sourceFilename": "(C) Ooiwa Kurando sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Ooiwa_Kurando",
+          "sourceAssetId": "File:(C) Ooiwa Kurando sprite.png",
+          "sourceFilename": "(C) Ooiwa Kurando sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/chaos-ie2/originals/grent-chaos-ie2/game-sprite/(C) Ooiwa Kurando sprite.png",
+          "verifiedFile": "tools/assets/verified/chaos-ie2/grent-chaos-ie2/game-sprite/source-1/(C) Ooiwa Kurando sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/grent-chaos-ie2/game-sprite/source-1/(C) Ooiwa Kurando sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/chaos-ie2/grent-chaos-ie2/game-sprite/source-1/(C)%20Ooiwa%20Kurando%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "0acc19504a1a72ae6aaeb4fd0084300332c026470f89e3b0d638a6b5a7901b1a",
+          "provenanceNote": "Original downloaded filename preserved as (C) Ooiwa Kurando sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/chaos-ie2/(C) Ooiwa Kurando sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/chaos-ie2/grent-chaos-ie2/source-1/(C) Ooiwa Kurando sprite.png",
+          "importMatches": [
+            "tools/assets/imports/chaos-ie2/(C) Ooiwa Kurando sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/chaos-ie2/originals/grent-chaos-ie2/game-sprite/(C) Ooiwa Kurando sprite.png",
+      "verifiedFile": "tools/assets/verified/chaos-ie2/grent-chaos-ie2/game-sprite/source-1/(C) Ooiwa Kurando sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/grent-chaos-ie2/game-sprite/source-1/(C) Ooiwa Kurando sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/chaos-ie2/grent-chaos-ie2/game-sprite/source-1/(C)%20Ooiwa%20Kurando%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/grent-chaos-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/chaos-ie2/originals/grent-chaos-ie2/game-sprite/(C) Ooiwa Kurando sprite.png",
+        "sourceFilename": "(C) Ooiwa Kurando sprite.png",
+        "sha256": "0acc19504a1a72ae6aaeb4fd0084300332c026470f89e3b0d638a6b5a7901b1a"
+      }
+    },
+    {
+      "canonicalCharacterId": "gokka",
+      "versionId": "gokka:chaos-ie2",
+      "displayName": "Gokka",
+      "runtimeSpriteId": "gokka-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Gokukawa_Kantarou",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Gokukawa_Kantarou",
+          "sourceAssetId": "File:(C) Gokukawa Kantarou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Chaos defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "80dc99502b2cb262700be939072d9ecdbc956704e485d786339c8cf01a189465",
+      "sourceAssetId": "File:(C) Gokukawa Kantarou sprite.png",
+      "sourceFilename": "(C) Gokukawa Kantarou sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Gokukawa_Kantarou",
+          "sourceAssetId": "File:(C) Gokukawa Kantarou sprite.png",
+          "sourceFilename": "(C) Gokukawa Kantarou sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/chaos-ie2/originals/gokka-chaos-ie2/game-sprite/(C) Gokukawa Kantarou sprite.png",
+          "verifiedFile": "tools/assets/verified/chaos-ie2/gokka-chaos-ie2/game-sprite/source-1/(C) Gokukawa Kantarou sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/gokka-chaos-ie2/game-sprite/source-1/(C) Gokukawa Kantarou sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/chaos-ie2/gokka-chaos-ie2/game-sprite/source-1/(C)%20Gokukawa%20Kantarou%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "80dc99502b2cb262700be939072d9ecdbc956704e485d786339c8cf01a189465",
+          "provenanceNote": "Original downloaded filename preserved as (C) Gokukawa Kantarou sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/chaos-ie2/(C) Gokukawa Kantarou sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/chaos-ie2/gokka-chaos-ie2/source-1/(C) Gokukawa Kantarou sprite.png",
+          "importMatches": [
+            "tools/assets/imports/chaos-ie2/(C) Gokukawa Kantarou sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/chaos-ie2/originals/gokka-chaos-ie2/game-sprite/(C) Gokukawa Kantarou sprite.png",
+      "verifiedFile": "tools/assets/verified/chaos-ie2/gokka-chaos-ie2/game-sprite/source-1/(C) Gokukawa Kantarou sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/gokka-chaos-ie2/game-sprite/source-1/(C) Gokukawa Kantarou sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/chaos-ie2/gokka-chaos-ie2/game-sprite/source-1/(C)%20Gokukawa%20Kantarou%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/gokka-chaos-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/chaos-ie2/originals/gokka-chaos-ie2/game-sprite/(C) Gokukawa Kantarou sprite.png",
+        "sourceFilename": "(C) Gokukawa Kantarou sprite.png",
+        "sha256": "80dc99502b2cb262700be939072d9ecdbc956704e485d786339c8cf01a189465"
+      }
+    },
+    {
+      "canonicalCharacterId": "clara",
+      "versionId": "clara:chaos-ie2",
+      "displayName": "Clara",
+      "runtimeSpriteId": "clara-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Kurakake_Clara",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Kurakake_Clara",
+          "sourceAssetId": "File:(C) Kurakake Clara sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Chaos defender; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "3893c9907b431f14dfeac3b011c27cf52e49798452642ebd33993b72a7e1339d",
+      "sourceAssetId": "File:(C) Kurakake Clara sprite.png",
+      "sourceFilename": "(C) Kurakake Clara sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Kurakake_Clara",
+          "sourceAssetId": "File:(C) Kurakake Clara sprite.png",
+          "sourceFilename": "(C) Kurakake Clara sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/chaos-ie2/originals/clara-chaos-ie2/game-sprite/(C) Kurakake Clara sprite.png",
+          "verifiedFile": "tools/assets/verified/chaos-ie2/clara-chaos-ie2/game-sprite/source-1/(C) Kurakake Clara sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/clara-chaos-ie2/game-sprite/source-1/(C) Kurakake Clara sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/chaos-ie2/clara-chaos-ie2/game-sprite/source-1/(C)%20Kurakake%20Clara%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "3893c9907b431f14dfeac3b011c27cf52e49798452642ebd33993b72a7e1339d",
+          "provenanceNote": "Original downloaded filename preserved as (C) Kurakake Clara sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/chaos-ie2/(C) Kurakake Clara sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/chaos-ie2/clara-chaos-ie2/source-1/(C) Kurakake Clara sprite.png",
+          "importMatches": [
+            "tools/assets/imports/chaos-ie2/(C) Kurakake Clara sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/chaos-ie2/originals/clara-chaos-ie2/game-sprite/(C) Kurakake Clara sprite.png",
+      "verifiedFile": "tools/assets/verified/chaos-ie2/clara-chaos-ie2/game-sprite/source-1/(C) Kurakake Clara sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/clara-chaos-ie2/game-sprite/source-1/(C) Kurakake Clara sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/chaos-ie2/clara-chaos-ie2/game-sprite/source-1/(C)%20Kurakake%20Clara%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/clara-chaos-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/chaos-ie2/originals/clara-chaos-ie2/game-sprite/(C) Kurakake Clara sprite.png",
+        "sourceFilename": "(C) Kurakake Clara sprite.png",
+        "sha256": "3893c9907b431f14dfeac3b011c27cf52e49798452642ebd33993b72a7e1339d"
+      }
+    },
+    {
+      "canonicalCharacterId": "neppten",
+      "versionId": "neppten:chaos-ie2",
+      "displayName": "Neppten",
+      "runtimeSpriteId": "neppten-chaos-ie2",
+      "teamId": "chaos",
+      "gameOrigin": "footballer-quest",
+      "sourceGame": "ie2",
+      "sourceType": "fandom-file",
+      "sourceRef": "Netsuha_Natsuhiko",
+      "requiredSourceSuitability": [
+        "GAME-SPRITE"
+      ],
+      "sourceCandidates": [
+        {
+          "sourceType": "fandom-file",
+          "sourceRef": "Netsuha_Natsuhiko",
+          "sourceAssetId": "File:(C) Netsuha Natsuhiko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "preserveAsEvidence": true
+        }
+      ],
+      "identityStatus": "VERSION-VERIFIED",
+      "sourceStatus": "SOURCE-VERIFIED",
+      "versionStatus": "VERSION-VERIFIED",
+      "assetStatus": "ASSET-VERIFIED",
+      "verificationEvidence": [
+        "chaos-roster",
+        "character-page",
+        "exact-file-title",
+        "binary-signature-validated",
+        "pre-materialized-import",
+        "existing-staged-original",
+        "human-approval"
+      ],
+      "provenanceNote": "Chaos midfielder; exact team-specific game sprite. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+      "validationWarnings": [
+        "IMMUTABLE_REUSE",
+        "IMPORTED_CANDIDATE"
+      ],
+      "sha256": "17e84c63c761684b2fad5ff73b509c2fcc2f58c7e8e7df56ea83ad47f0ed8a5e",
+      "sourceAssetId": "File:(C) Netsuha Natsuhiko sprite.png",
+      "sourceFilename": "(C) Netsuha Natsuhiko sprite.png",
+      "sources": [
+        {
+          "sourceKey": "source-1",
+          "sourceType": "fandom-file",
+          "sourceRef": "Netsuha_Natsuhiko",
+          "sourceAssetId": "File:(C) Netsuha Natsuhiko sprite.png",
+          "sourceFilename": "(C) Netsuha Natsuhiko sprite.png",
+          "sourceSuitability": "GAME-SPRITE",
+          "sourceStatus": "SOURCE-VERIFIED",
+          "assetStatus": "ASSET-VERIFIED",
+          "outputFile": "tools/assets/staging/chaos-ie2/originals/neppten-chaos-ie2/game-sprite/(C) Netsuha Natsuhiko sprite.png",
+          "verifiedFile": "tools/assets/verified/chaos-ie2/neppten-chaos-ie2/game-sprite/source-1/(C) Netsuha Natsuhiko sprite.png",
+          "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/neppten-chaos-ie2/game-sprite/source-1/(C) Netsuha Natsuhiko sprite.png.provenance.json",
+          "contactSheetImageUrl": "../verified/chaos-ie2/neppten-chaos-ie2/game-sprite/source-1/(C)%20Netsuha%20Natsuhiko%20sprite.png",
+          "width": 64,
+          "height": 64,
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
+          "hasAlpha": true,
+          "sha256": "17e84c63c761684b2fad5ff73b509c2fcc2f58c7e8e7df56ea83ad47f0ed8a5e",
+          "provenanceNote": "Original downloaded filename preserved as (C) Netsuha Natsuhiko sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Imported from tools/assets/imports/chaos-ie2/(C) Netsuha Natsuhiko sprite.png and retained as CANDIDATE pending explicit approval. Explicit human approval recorded in tools/assets/approvals/chaos-ie2.approvals.json.",
+          "validationWarnings": [
+            "IMMUTABLE_REUSE",
+            "IMPORTED_CANDIDATE"
+          ],
+          "verificationEvidence": [
+            "existing-staged-original",
+            "pre-materialized-import",
+            "human-approval"
+          ],
+          "importStatus": "MATCHED",
+          "plannedImportDestination": "tools/assets/imports/chaos-ie2/neppten-chaos-ie2/source-1/(C) Netsuha Natsuhiko sprite.png",
+          "importMatches": [
+            "tools/assets/imports/chaos-ie2/(C) Netsuha Natsuhiko sprite.png"
+          ]
+        }
+      ],
+      "sourceSuitability": "GAME-SPRITE",
+      "outputFile": "tools/assets/staging/chaos-ie2/originals/neppten-chaos-ie2/game-sprite/(C) Netsuha Natsuhiko sprite.png",
+      "verifiedFile": "tools/assets/verified/chaos-ie2/neppten-chaos-ie2/game-sprite/source-1/(C) Netsuha Natsuhiko sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/chaos-ie2/neppten-chaos-ie2/game-sprite/source-1/(C) Netsuha Natsuhiko sprite.png.provenance.json",
+      "contactSheetImageUrl": "../verified/chaos-ie2/neppten-chaos-ie2/game-sprite/source-1/(C)%20Netsuha%20Natsuhiko%20sprite.png",
+      "width": 64,
+      "height": 64,
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
+      "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/neppten-chaos-ie2.png",
+      "approval": {
+        "decision": "ASSET-VERIFIED",
+        "candidatePath": "tools/assets/staging/chaos-ie2/originals/neppten-chaos-ie2/game-sprite/(C) Netsuha Natsuhiko sprite.png",
+        "sourceFilename": "(C) Netsuha Natsuhiko sprite.png",
+        "sha256": "17e84c63c761684b2fad5ff73b509c2fcc2f58c7e8e7df56ea83ad47f0ed8a5e"
+      }
+    }
+  ]
+}

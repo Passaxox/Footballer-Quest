@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "genesis-ie2",
+  "versionId": "nero:genesis-ie2",
+  "displayName": "Nero",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(TG) Nemuro Kimiyuki sprite.png",
+  "sourceFilename": "(TG) Nemuro Kimiyuki sprite.png",
+  "sourceRef": "Nemuro_Kimiyuki",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/genesis-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/genesis-ie2/originals/nero-genesis-ie2/game-sprite/(TG) Nemuro Kimiyuki sprite.png",
+  "verifiedPath": "tools/assets/verified/genesis-ie2/nero-genesis-ie2/game-sprite/source-1/(TG) Nemuro Kimiyuki sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/nero-genesis-ie2.png",
+  "sha256": "19afc2eed672af48b6592bcb472be795475971cba87d6b3d20603825e0aebd6a"
+}

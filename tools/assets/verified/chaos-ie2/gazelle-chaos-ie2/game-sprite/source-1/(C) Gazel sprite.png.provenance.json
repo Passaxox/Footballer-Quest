@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "chaos-ie2",
+  "versionId": "gazelle:chaos-ie2",
+  "displayName": "Gazelle / Gazel",
+  "decision": "ASSET-VERIFIED",
+  "sourceGame": "ie2",
+  "sourceType": "fandom-file",
+  "sourceSuitability": "GAME-SPRITE",
+  "sourceKey": "source-1",
+  "sourceAssetId": "File:(C) Gazel sprite.png",
+  "sourceFilename": "(C) Gazel sprite.png",
+  "sourceRef": "Suzuno_Fuusuke",
+  "resolvedBinaryUrl": null,
+  "approvalsPath": "tools/assets/approvals/chaos-ie2.approvals.json",
+  "stagingPath": "tools/assets/staging/chaos-ie2/originals/gazelle-chaos-ie2/game-sprite/(C) Gazel sprite.png",
+  "verifiedPath": "tools/assets/verified/chaos-ie2/gazelle-chaos-ie2/game-sprite/source-1/(C) Gazel sprite.png",
+  "runtimeSpritePath": "frontend/public/sprites/gazelle-chaos-ie2.png",
+  "sha256": "451d635be43e53cf04ffcd370f0bf687920d35388f9e7458fcd4805a06fc6128"
+}

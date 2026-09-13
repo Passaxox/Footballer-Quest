@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "alpine-ie2",
+  "team": {
+    "teamId": "alpine",
+    "displayName": "Alpine",
+    "arcId": "alius",
+    "eraId": "original",
+    "gameOrigin": "ie2",
+    "tags": [
+      "alpine"
+    ]
+  },
+  "scenario": {
+    "id": "alpine-snow",
+    "displayName": "Picco Innevato di Alpine",
+    "locationType": "field",
+    "minTier": 3,
+    "waveFrom": 18
+  },
+  "players": [
+    {
+      "canonicalCharacterId": "shawn",
+      "aliases": [
+        "Shawn Froste",
+        "Shawn",
+        "Shirou Fubuki"
+      ],
+      "expectedIdentity": "reuse",
+      "versionId": "shawn:alpine-ie2",
+      "displayName": "Shawn Froste (Alpine)",
+      "role": "D",
+      "element": "aria",
+      "spriteTargetId": "shawn-alpine-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 82,
+        "atk": 38,
+        "def": 38,
+        "spd": 38
+      },
+      "primaryMove": {
+        "name": "Tormenta Glaciale",
+        "power": 80,
+        "effect": "shatter"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Fubuki_Shirou",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Fubuki's Shawn identity and Alpine captaincy."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "alpine-ie2"
+    },
+    {
+      "canonicalCharacterId": "adam-ropes",
+      "aliases": [
+        "Adam Ropes",
+        "Tetsu Hakoda"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "adam-ropes:alpine-ie2",
+      "displayName": "Adam Ropes",
+      "role": "P",
+      "element": "terra",
+      "spriteTargetId": "adam-ropes-alpine-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 92,
+        "atk": 25,
+        "def": 42,
+        "spd": 24
+      },
+      "primaryMove": {
+        "name": "Blocco di Neve",
+        "power": 65,
+        "effect": "guard"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Hakoda_Tetsu",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Hakoda's Adam Ropes identity and Alpine goalkeeper role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "alpine-ie2"
+    },
+    {
+      "canonicalCharacterId": "joaquine",
+      "aliases": [
+        "Joaquine Downtown",
+        "Joaquine",
+        "Juka Matoro"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "joaquine:alpine-ie2",
+      "displayName": "Joaquine Downtown",
+      "role": "D",
+      "element": "fuoco",
+      "spriteTargetId": "joaquine-alpine-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 82,
+        "atk": 30,
+        "def": 37,
+        "spd": 31
+      },
+      "primaryMove": {
+        "name": "Fiamma Polare",
+        "power": 62,
+        "effect": null
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Matoro_Juka",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Matoro's Joaquine identity and Alpine defender role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "alpine-ie2"
+    },
+    {
+      "canonicalCharacterId": "spike-gleeson",
+      "aliases": [
+        "Spike Gleeson",
+        "Souji Mabuka"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "spike-gleeson:alpine-ie2",
+      "displayName": "Spike Gleeson",
+      "role": "D",
+      "element": "natura",
+      "spriteTargetId": "spike-gleeson-alpine-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 84,
+        "atk": 27,
+        "def": 38,
+        "spd": 29
+      },
+      "primaryMove": {
+        "name": "Scivolata Innevata",
+        "power": 60,
+        "effect": "shatter"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Mabuka_Souji",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Mabuka's Spike Gleeson identity and Alpine defender role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "alpine-ie2"
+    },
+    {
+      "canonicalCharacterId": "kerry-bootgaiter",
+      "aliases": [
+        "Kerry Bootgaiter",
+        "Konko Araya"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "kerry-bootgaiter:alpine-ie2",
+      "displayName": "Kerry Bootgaiter",
+      "role": "C",
+      "element": "aria",
+      "spriteTargetId": "kerry-bootgaiter-alpine-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 76,
+        "atk": 33,
+        "def": 31,
+        "spd": 35
+      },
+      "primaryMove": {
+        "name": "Passaggio Gelido",
+        "power": 65,
+        "effect": "weaken"
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Araya_Konko",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Araya's Kerry Bootgaiter identity and Alpine midfielder role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "alpine-ie2"
+    },
+    {
+      "canonicalCharacterId": "quentin-rackner",
+      "aliases": [
+        "Quentin Rackner",
+        "Ryuu Kitami"
+      ],
+      "expectedIdentity": "new",
+      "versionId": "quentin-rackner:alpine-ie2",
+      "displayName": "Quentin Rackner",
+      "role": "A",
+      "element": "natura",
+      "spriteTargetId": "quentin-rackner-alpine-ie2",
+      "encounterTier": 3,
+      "baseStats": {
+        "hp": 75,
+        "atk": 39,
+        "def": 26,
+        "spd": 34
+      },
+      "primaryMove": {
+        "name": "Impatto Glaciale",
+        "power": 75,
+        "effect": null
+      },
+      "evidenceStatus": "VERIFIED",
+      "identityEvidence": [
+        {
+          "sourceType": "url",
+          "reference": "https://inazuma-eleven.fandom.com/wiki/Kitami_Ryuu",
+          "claims": [
+            "canonical-identity",
+            "aliases",
+            "team-membership",
+            "game-origin"
+          ],
+          "notes": "Character page identifies Kitami's Quentin Rackner identity and Alpine forward role."
+        }
+      ],
+      "assetStatus": "ASSET-VERIFIED",
+      "provenanceManifestId": "alpine-ie2"
+    }
+  ]
+}
