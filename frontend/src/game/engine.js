@@ -1,7 +1,7 @@
 import { getScenario, scenarioPool, selectEncounterVersion, scenarioForWave, normalizeScenarioState } from "./scenarios";
 import { CHARACTERS, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
-import { ROSTER, ELEMENTS, BOSSES, BOSS_POOLS, ITEMS, ITEM_CLASSES, REWARD_POOL, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
+import { ROSTER, ELEMENTS, BOSSES, BOSS_POOLS, ITEMS, ITEM_CLASSES, ITEM_FAMILIES, ITEM_FAMILY_PRESENTATION, isTargetItem, REWARD_POOL, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
 import { normalizeEventResult, resolveEventChoice, selectEvent, weightedPick } from "./events";
 import { createRunRandomCursor, createRunSeed, hashSeed, normalizeRandomState } from "./runRandom";
 import { RARITIES, rarityIdForVersion } from "./rarity";
@@ -410,17 +410,162 @@ export const generateShop = (wave, rng = Math.random) => {
   return ids.map((id) => ({ id, price: Math.round(ITEMS[id].price * (1 + wave * 0.01)) }));
 };
 
-export const generateRewards = (rng = Math.random) => {
+export const ITEM_QUALITY_SCORES = {
+  COMMON: 1,
+  UNCOMMON: 2,
+  RARE: 3,
+  EPIC: 4,
+};
+
+export const getItemQuality = (id) => {
+  const item = ITEMS[id];
+  return item ? (ITEM_QUALITY_SCORES[item.rarity] || 1) : 1;
+};
+
+const ITEMS_BY_RARITY = {
+  COMMON: ["barretta", "impacco", "ghiaccio", "borraccia", "cerotto", "balsamo"],
+  UNCOMMON: ["bibita", "fascia", "guanti", "scarpini", "proteine", "trofeo", "grinta", "tenuta", "buono", "pressing", "taccuino", "parastinchi", "cronometro", "pasto", "stendardo", "tessera"],
+  RARE: ["pallone", "fischietto", "talismano", "azzardo", "muro", "equilibrio", "defibrillatore", "cavigliera", "sigillo"],
+  EPIC: ["cuneo"],
+};
+
+const TIER_SLOT_DISTRIBUTIONS = {
+  boss: [
+    { COMMON: 0, UNCOMMON: 0, RARE: 0, EPIC: 1.0 },
+    { COMMON: 0, UNCOMMON: 0.15, RARE: 0.60, EPIC: 0.25 },
+    { COMMON: 0, UNCOMMON: 0.15, RARE: 0.60, EPIC: 0.25 },
+  ],
+  miniboss: [
+    { COMMON: 0, UNCOMMON: 0, RARE: 0.85, EPIC: 0.15 },
+    { COMMON: 0.05, UNCOMMON: 0.40, RARE: 0.45, EPIC: 0.10 },
+    { COMMON: 0.05, UNCOMMON: 0.40, RARE: 0.45, EPIC: 0.10 },
+  ],
+  elite: [
+    { COMMON: 0, UNCOMMON: 0.75, RARE: 0.25, EPIC: 0 },
+    { COMMON: 0.15, UNCOMMON: 0.60, RARE: 0.25, EPIC: 0 },
+    { COMMON: 0.15, UNCOMMON: 0.60, RARE: 0.25, EPIC: 0 },
+  ],
+  standard: [
+    { COMMON: 0.65, UNCOMMON: 0.30, RARE: 0.05, EPIC: 0 },
+    { COMMON: 0.60, UNCOMMON: 0.35, RARE: 0.05, EPIC: 0 },
+    { COMMON: 0.55, UNCOMMON: 0.40, RARE: 0.05, EPIC: 0 },
+  ],
+};
+
+export const generateRewards = (rng = Math.random, tier = "standard", run = null) => {
+  const normTier = ["boss", "miniboss", "elite"].includes(tier) ? tier : "standard";
+  const slotDist = TIER_SLOT_DISTRIBUTIONS[normTier] || TIER_SLOT_DISTRIBUTIONS.standard;
   const out = [];
-  const pool = [...REWARD_POOL];
-  while (out.length < 3 && pool.length) {
-    const total = pool.reduce((s, r) => s + r.w, 0);
-    let x = rng() * total;
-    const idx = pool.findIndex((r) => (x -= r.w) < 0);
-    out.push(pool[idx].id);
-    pool.splice(idx, 1);
+
+  const recentOffers = new Set(run?.telemetry?.itemsOffered?.slice(-6) || []);
+  const armedTriggers = run?.armedTriggers || {};
+
+  for (let slot = 0; slot < 3; slot++) {
+    const dist = slotDist[slot] || slotDist[0];
+    const rRoll = rng();
+    let cumulative = 0;
+    let targetRarity = "COMMON";
+    for (const [rarity, prob] of Object.entries(dist)) {
+      cumulative += prob;
+      if (rRoll <= cumulative) {
+        targetRarity = rarity;
+        break;
+      }
+    }
+
+    const rarityPriority = [targetRarity, "RARE", "UNCOMMON", "COMMON", "EPIC"].filter(
+      (r, idx, arr) => arr.indexOf(r) === idx
+    );
+
+    let chosenId = null;
+    for (const curRarity of rarityPriority) {
+      const candidates = (ITEMS_BY_RARITY[curRarity] || []).filter(id => !out.includes(id));
+      if (!candidates.length) continue;
+
+      const weightedCandidates = candidates.map(id => {
+        let w = ITEMS[id]?.rewardWeight || 1;
+        if (ITEMS[id]?.family === ITEM_FAMILIES.TRIGGER && (armedTriggers[id] || 0) >= 1) {
+          w *= 0.05;
+        }
+        if (recentOffers.has(id)) {
+          w *= 0.25;
+        }
+        return { id, w: Math.max(0.01, w) };
+      });
+
+      const totalWeight = weightedCandidates.reduce((s, c) => s + c.w, 0);
+      let roll = rng() * totalWeight;
+      for (const cand of weightedCandidates) {
+        roll -= cand.w;
+        if (roll <= 0) {
+          chosenId = cand.id;
+          break;
+        }
+      }
+      if (!chosenId) chosenId = weightedCandidates[weightedCandidates.length - 1].id;
+      break;
+    }
+
+    if (chosenId && !out.includes(chosenId)) {
+      out.push(chosenId);
+    }
   }
+
+  const allIds = Object.keys(ITEMS);
+  while (out.length < 3) {
+    const remaining = allIds.filter(id => !out.includes(id));
+    if (!remaining.length) break;
+    const pickIdx = Math.floor(rng() * remaining.length);
+    out.push(remaining[pickIdx]);
+  }
+
   return out;
+};
+
+export const getItemTargetPreview = (itemId, player) => {
+  const item = ITEMS[itemId];
+  if (!item || !player) return { valid: false, reason: "Invalido", diffs: [] };
+  const valid = canApplyItem(itemId, player);
+  if (!valid) {
+    let reason = "Non selezionabile";
+    if (player.hp === 0) {
+      reason = ["pallone", "defibrillatore"].includes(itemId) ? "Rianimabile" : "Giocatore KO";
+    } else {
+      if (["pallone", "defibrillatore"].includes(itemId)) {
+        reason = "Solo su giocatori KO";
+      } else if (item.tags?.includes("recovery") && player.hp >= player.maxHp && (player.status?.burn || 0) === 0) {
+        reason = "HP al massimo";
+      }
+    }
+    return { valid: false, reason, diffs: [] };
+  }
+
+  const next = applyItemTo(itemId, player);
+  const diffs = [];
+  if (next.maxHp !== player.maxHp) {
+    diffs.push({ stat: "maxHp", label: "HP MAX", before: player.maxHp, after: next.maxHp, diff: next.maxHp - player.maxHp });
+  }
+  if (next.hp !== player.hp) {
+    diffs.push({ stat: "hp", label: "HP", before: player.hp, after: next.hp, max: next.maxHp, diff: next.hp - player.hp });
+  }
+  if (next.atk !== player.atk) {
+    diffs.push({ stat: "atk", label: "ATK", before: player.atk, after: next.atk, diff: next.atk - player.atk });
+  }
+  if (next.def !== player.def) {
+    diffs.push({ stat: "def", label: "DIF", before: player.def, after: next.def, diff: next.def - player.def });
+  }
+  if (next.spd !== player.spd) {
+    diffs.push({ stat: "spd", label: "VEL", before: player.spd, after: next.spd, diff: next.spd - player.spd });
+  }
+  if ((player.status?.burn || 0) > 0 && (next.status?.burn || 0) === 0) {
+    diffs.push({ stat: "burn", label: "Bruciatura", before: "Attiva", after: "Curata", diff: null });
+  }
+  if (!player.status?.guard && next.status?.guard) {
+    diffs.push({ stat: "guard", label: "Parata", before: "No", after: "Attiva", diff: null });
+  }
+
+  const reason = player.hp === 0 ? "KO • Rianimabile" : "Target valido";
+  return { valid: true, reason, diffs, after: next };
 };
 
 export const enemiesForEffect = (eff, wave, run, rng = Math.random, uidFactory = null) => {
@@ -451,7 +596,8 @@ export const newRun = (starterIds, difficultyId = "normal", requestedSeed = crea
   const segmentState = createSegment({ wave: 1, segmentState: null }, initialRouteId, cursor.next);
   return normalizeRun({
     ...cursor.patch(), scenarioState, difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
-    wave: 1, team, items: { barretta: 2 }, money: 100, dynamicRoute, segmentState, pendingRouteChoices: null,
+    wave: 1, team, items: { barretta: 2 }, armedTriggers: {}, specialResources: { cuneo: 0 }, nextSegmentNodeItems: [],
+    money: 100, dynamicRoute, segmentState, pendingRouteChoices: null,
     chosenRoutes: [initialRouteId],
     stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], eventHistory: {}, storyFlags: {},
     temporaryModifiers: [], nodeModifiers: {}, activeNodeItems: [], routeHistory: [], telemetry: {
@@ -483,6 +629,17 @@ export const normalizeRun = (run) => {
     temporaryModifiers: Array.isArray(run.temporaryModifiers) ? run.temporaryModifiers.filter(modifier => modifier && modifier.remainingWaves > 0) : [],
     nodeModifiers: normalizeNodeModifiers(run.nodeModifiers),
     activeNodeItems: Array.isArray(run.activeNodeItems) ? run.activeNodeItems.filter(Boolean) : [],
+    nextSegmentNodeItems: Array.isArray(run.nextSegmentNodeItems) ? run.nextSegmentNodeItems.filter(Boolean) : [],
+    armedTriggers: run.armedTriggers && typeof run.armedTriggers === "object"
+      ? { ...run.armedTriggers }
+      : Object.fromEntries(
+          ["cerotto", "balsamo", "cavigliera", "stendardo"]
+            .filter(id => (run.items?.[id] || 0) > 0)
+            .map(id => [id, 1])
+        ),
+    specialResources: run.specialResources && typeof run.specialResources === "object"
+      ? { ...run.specialResources }
+      : { cuneo: run.items?.cuneo || 0 },
     routeHistory: Array.isArray(run.routeHistory) ? run.routeHistory.slice(-60) : [],
     telemetry: run.telemetry && typeof run.telemetry === "object" ? {
       itemsOffered: Array.isArray(run.telemetry.itemsOffered) ? run.telemetry.itemsOffered : [],
@@ -515,6 +672,17 @@ export const advanceRunWave = run => {
       pendingRouteChoices = generateRouteChoices({ ...run, wave: nextWave }, 3, cursor.next);
       const defaultRoute = pendingRouteChoices[0] || getRouteById("area-metropolitana");
       segmentState = createSegment({ ...run, wave: nextWave, segmentState }, defaultRoute, cursor.next);
+
+      // Activate any queued segment rewards for the next segment!
+      if (Array.isArray(run.nextSegmentNodeItems) && run.nextSegmentNodeItems.length > 0) {
+        for (const queuedId of run.nextSegmentNodeItems) {
+          activeNodeItems.push(queuedId);
+          const queuedItem = ITEMS[queuedId];
+          if (queuedItem?.effect?.type === "stages" && (queuedItem.effect.atk || queuedItem.effect.def)) {
+            nodeModifiers = addNodeStageModifier(nodeModifiers, "team", queuedItem.effect);
+          }
+        }
+      }
     } else {
       // Internal step within segment: PERSIST node modifiers and active node items!
       segmentState = {
@@ -535,6 +703,7 @@ export const advanceRunWave = run => {
     pending: null,
     nodeModifiers,
     activeNodeItems,
+    nextSegmentNodeItems: atCheckpoint ? [] : (run.nextSegmentNodeItems || []),
     segmentState,
     pendingRouteChoices,
     routeHistory: [...(run.routeHistory || []), routeEntry(run)].filter(Boolean).slice(-60),
@@ -661,7 +830,17 @@ export const fuseRunPlayers = (run, a, b, moveFrom) => {
   const activeUid = [run.team[a].uid, run.team[b].uid].includes(run.activeUid) ? fused.uid : run.activeUid;
   const team = run.team.filter((_, i) => i !== a && i !== b);
   team.splice(Math.min(a, b), 0, fused);
-  return normalizeRun({ ...run, team, activeUid, items: removeItem(run.items, "cuneo"), stats: { ...run.stats, fusions: run.stats.fusions + 1 } });
+  const nextResources = run.specialResources
+    ? { ...run.specialResources, cuneo: Math.max(0, (run.specialResources.cuneo || 0) - 1) }
+    : undefined;
+  return normalizeRun({
+    ...run,
+    team,
+    activeUid,
+    items: removeItem(run.items, "cuneo"),
+    ...(nextResources ? { specialResources: nextResources } : {}),
+    stats: { ...run.stats, fusions: run.stats.fusions + 1 },
+  });
 };
 
 export const applyEventDamage = (p, pct) => ({
@@ -760,24 +939,136 @@ export function applyRunEventOutcome(run, event, result) {
 
 export const addItem = (items, id, n = 1) => ({ ...items, [id]: (items[id] || 0) + n });
 export const removeItem = (items, id) => { const c = (items[id] || 0) - 1; const next = { ...items }; if (c <= 0) delete next[id]; else next[id] = c; return next; };
-export const grantRunItem = (run, id, quantity = 1) => {
+export const grantRunItem = (run, id, quantity = 1, options = {}) => {
   const item = ITEMS[id];
   if (!item) return { run, feedback: null };
+
+  // 1. Economy / money vouchers
   if (item.effect?.type === "money") {
-    const amount = item.effect.amount * quantity;
+    const amount = (item.effect.amount || 35) * quantity;
     return { run: { ...run, money: run.money + amount }, feedback: `${item.name} riscattato: +${amount} P` };
   }
-  if (item.itemClass === ITEM_CLASSES.NODE) {
+
+  // 2. Special Resource (Cuneo DNA)
+  if (item.family === ITEM_FAMILIES.RESOURCE || id === "cuneo") {
+    const currentRes = run.specialResources || {};
+    return {
+      run: {
+        ...run,
+        specialResources: { ...currentRes, cuneo: (currentRes.cuneo || 0) + quantity },
+        items: addItem(run.items, id, quantity),
+      },
+      feedback: `${item.name} ottenuto! Usalo per le fusioni nella schermata Squadra.`,
+    };
+  }
+
+  // 3. Combat Triggers (auto-armed)
+  if (item.family === ITEM_FAMILIES.TRIGGER || item.itemClass === ITEM_CLASSES.TRIGGER) {
+    const armed = run.armedTriggers || {};
+    return {
+      run: {
+        ...run,
+        armedTriggers: { ...armed, [id]: Math.min(1, (armed[id] || 0) + quantity) },
+        items: addItem(run.items, id, quantity),
+      },
+      feedback: `${item.name} armato per la lotta!`,
+    };
+  }
+
+  // 4. Node / Segment modifiers
+  if (item.family === ITEM_FAMILIES.SEGMENT || item.itemClass === ITEM_CLASSES.NODE) {
+    if (options.isNextSegment || options.atCheckpoint) {
+      return {
+        run: {
+          ...run,
+          nextSegmentNodeItems: [...(run.nextSegmentNodeItems || []), ...Array(quantity).fill(id)],
+        },
+        feedback: `${item.name} programmato: si attiverà all'inizio del prossimo segmento.`,
+      };
+    }
     let nextRun = {
       ...run,
-      activeNodeItems: [...(run.activeNodeItems || []), id],
+      activeNodeItems: [...(run.activeNodeItems || []), ...Array(quantity).fill(id)],
     };
     if (item.effect?.type === "stages" && (item.effect.atk || item.effect.def)) {
       nextRun.nodeModifiers = addNodeStageModifier(nextRun.nodeModifiers, "team", item.effect);
     }
     return { run: nextRun, feedback: `${item.name} attivato fino a fine nodo.` };
   }
+
+  // 5. Team-wide instant items
+  if (id === "borraccia") {
+    return {
+      run: {
+        ...run,
+        team: run.team.map(p => p.hp > 0 ? { ...p, hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * 0.35)) } : p),
+      },
+      feedback: `${item.name}: +35% HP a tutta la squadra!`,
+    };
+  }
+  if (id === "trofeo") {
+    return {
+      run: {
+        ...run,
+        team: run.team.map(p => gainXp(p, 40).player),
+      },
+      feedback: `${item.name}: +40 EXP a tutta la squadra!`,
+    };
+  }
+  if (id === "fischietto") {
+    return {
+      run: { ...run, fischietto: true },
+      feedback: `${item.name}: il prossimo avversario sconfitto sarà reclutato!`,
+    };
+  }
+
+  // 6. Target-specific instant items
+  if (options.targetUid) {
+    const target = run.team.find(p => p.uid === options.targetUid);
+    if (target && canApplyItem(id, target)) {
+      return {
+        run: {
+          ...run,
+          team: run.team.map(p => p.uid === target.uid ? applyItemTo(id, p) : p),
+        },
+        feedback: `${item.name} usato su ${target.name}!`,
+      };
+    }
+  }
+
+  // Default fallback to bag items inventory
   return { run: { ...run, items: addItem(run.items, id, quantity) }, feedback: `${item.name} aggiunto allo zaino` };
+};
+
+export const resolveRewardChoice = (run, rewardId, targetUid = null, bonusId = null) => {
+  let next = run;
+  const feedbacks = [];
+  const hasSegments = Boolean(next.segmentState);
+  const atCheckpoint = hasSegments && isSegmentCheckpoint(next.segmentState);
+  const encounterKind = run.pending?.context?.encounterKind || run.pending?.kind;
+  const isCheckpointEncounter = encounterKind === "boss" || encounterKind === "miniboss" || atCheckpoint;
+
+  for (const id of [rewardId, bonusId].filter(Boolean)) {
+    const granted = grantRunItem(next, id, 1, {
+      targetUid,
+      atCheckpoint: isCheckpointEncounter,
+      isNextSegment: isCheckpointEncounter,
+    });
+    next = granted.run;
+    if (granted.feedback) feedbacks.push(granted.feedback);
+  }
+
+  if (rewardId) {
+    next = {
+      ...next,
+      telemetry: {
+        ...next.telemetry,
+        itemsChosen: [...(next.telemetry?.itemsChosen || []), rewardId],
+      },
+    };
+  }
+
+  return { run: next, feedback: feedbacks.join(" · ") };
 };
 
 // New effects are data-driven; legacy handlers retain their historical semantics.

@@ -1,9 +1,9 @@
 import { discoverVersion, recruitVersion } from "@/game/collection";
 import { useCallback, useState } from "react";
 import "@/App.css";
-import { FINAL_WAVE } from "@/game/data";
+import { FINAL_WAVE, isTargetItem } from "@/game/data";
 import { getRunEvent } from "@/game/events";
-import { advanceRunWave, applyRunEventOutcome, chooseRunEvent, generateWave, recruitChallengePlayer, generateRewards, addItem, grantRunItem, createPlayer, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, completeNonCombatNode, reportXpChanges, mergeXpReports, applyRouteChoice, applyRecoveryOption } from "@/game/engine";
+import { advanceRunWave, applyRunEventOutcome, chooseRunEvent, generateWave, recruitChallengePlayer, generateRewards, addItem, grantRunItem, resolveRewardChoice, createPlayer, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, completeNonCombatNode, reportXpChanges, mergeXpReports, applyRouteChoice, applyRecoveryOption } from "@/game/engine";
 import { synergyRewardMultiplier, applyPostBattleSynergyHealing } from "@/game/synergies";
 import { createRunRandomCursor } from "@/game/runRandom";
 import { routeEntry } from "@/game/routeDeck";
@@ -60,7 +60,7 @@ function App() {
       setScreen("battle");
     }
     else if (p.type === "recruit") { setCtx({ mode: "encounter", offer: p.player, price: p.price, after: "advance", ...p.context }); setScreen("recruit"); }
-    else if (p.type === "reward") { setCtx(p.context); setScreen("reward"); }
+    else if (p.type === "reward" || p.type === "rewardTarget") { setCtx(p.context || {}); setScreen("reward"); }
     else if (p.type === "recovery") { setScreen("recovery"); }
     else setScreen(p.type);
   };
@@ -129,10 +129,11 @@ function App() {
       finishRun({ ...r, routeHistory: [...(r.routeHistory || []), routeEntry(r)].filter(Boolean).slice(-60) }, "win");
       return;
     }
+    const encounterTier = boss ? "boss" : miniboss ? "miniboss" : elite ? "elite" : "standard";
     const cursor = createRunRandomCursor(r);
-    const rewards = generateRewards(cursor.next);
+    const rewards = generateRewards(cursor.next, encounterTier, r);
     r = { ...r, telemetry: { ...r.telemetry, itemsOffered: [...(r.telemetry?.itemsOffered || []), ...rewards, ...(enc.rewardItem ? [enc.rewardItem] : [])] } };
-    const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport, encounterKind: enc.kind, teamName: enc.teamName };
+    const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport, encounterKind: enc.kind, teamName: enc.teamName, selectedRewardId: null };
     const recruitOffered = enc.kind === "wild" && (r.fischietto || enc.forceRecruit || cursor.next() * 100 < 40);
     r = { ...r, ...cursor.patch() };
     if (recruitOffered) {
@@ -152,17 +153,32 @@ function App() {
     setScreen("reward");
   };
 
-  const onPickReward = (id) => {
-    let next = run;
-    const feedbacks = [];
-    for (const rewardId of [id, ctx.bonus].filter(Boolean)) {
-      const granted = grantRunItem(next, rewardId);
-      next = granted.run;
-      if (granted.feedback) feedbacks.push(granted.feedback);
+  const onSelectReward = (id) => {
+    if (isTargetItem(id) && run?.team?.length > 0) {
+      const nextCtx = { ...ctx, selectedRewardId: id };
+      setCtx(nextCtx);
+      if (run?.pending) {
+        updateRun({ ...run, pending: { ...run.pending, type: "rewardTarget", context: nextCtx } });
+      }
+    } else {
+      onPickReward(id);
     }
-    next = { ...next, telemetry: { ...next.telemetry, itemsChosen: id ? [...(next.telemetry?.itemsChosen || []), id] : (next.telemetry?.itemsChosen || []) } };
-    if (feedbacks.some(message => message.includes("riscattato"))) setFeedback(feedbacks.find(message => message.includes("riscattato")));
-    advanceWave(next);
+  };
+
+  const onCancelRewardTarget = () => {
+    const nextCtx = { ...ctx, selectedRewardId: null };
+    setCtx(nextCtx);
+    if (run?.pending) {
+      updateRun({ ...run, pending: { ...run.pending, type: "reward", context: nextCtx } });
+    }
+  };
+
+  const onPickReward = (id, targetUid = null) => {
+    const resolved = resolveRewardChoice(run, id, targetUid, ctx.bonus);
+    if (resolved.feedback && resolved.feedback.includes("riscattato")) {
+      setFeedback(resolved.feedback);
+    }
+    advanceWave(resolved.run);
   };
 
   const continueAfterRecruit = (r) => {
@@ -214,7 +230,7 @@ function App() {
       case "team": return <TeamScreen run={run} onUpdate={(patch) => updateRun({ ...run, ...patch })} onFusion={() => setScreen("fusion")} onBack={() => setScreen("hub")} />;
       case "fusion": return <FusionScreen run={run} onFuse={onFuse} onBack={() => setScreen("team")} />;
       case "battle": return <BattleScreen onDiscover={onDiscover} key={`${run.wave}-${run.pending.enemies[0].uid}`} run={run} encounter={run.pending} onWin={onWin} onActiveChange={(activeUid) => updateRun({ ...run, activeUid })} onStateChange={(patch) => updateRun({ ...run, ...patch })} onLose={(team, items, activeUid, report, nodeModifiers, temporaryItemsUsed = []) => finishRun({ ...run, team, items, activeUid, nodeModifiers, telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] }, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } }, "lose")} onFlee={(team, items, activeUid, report, nodeModifiers, temporaryItemsUsed = []) => advanceWave({ ...run, team, items, activeUid, nodeModifiers, telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] }, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } })} />;
-      case "reward": return <RewardScreen rewards={ctx.rewards} bonus={ctx.bonus} money={ctx.money} xpReport={ctx.xpReport} encounterKind={ctx.encounterKind} teamName={ctx.teamName} onPick={onPickReward} />;
+      case "reward": return <RewardScreen rewards={ctx.rewards} bonus={ctx.bonus} money={ctx.money} xpReport={ctx.xpReport} encounterKind={ctx.encounterKind} teamName={ctx.teamName} team={run?.team} selectedRewardId={ctx.selectedRewardId} onPick={onPickReward} onSelectReward={onSelectReward} onCancelTarget={onCancelRewardTarget} />;
       case "event": {
         const event = getRunEvent(run.pending.eventId);
         return <EventScreen key={`${run.wave}-${event.eventId}`} run={run} event={event} onChoose={(choiceIndex) => updateRun(chooseRunEvent(run, event, choiceIndex))} onResolve={onEventResolve} />;

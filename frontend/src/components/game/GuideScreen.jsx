@@ -164,28 +164,34 @@ export default function GuideScreen({ onBack }) {
         {activeTab === "items" && (
           <Panel data-testid="guide-section-items" className="space-y-3">
             <h3 className="font-pixel text-[10px] text-amber-300 flex items-center gap-1.5">
-              <Package size={14} /> Le 3 Classi di Oggetti
+              <Package size={14} /> Le 4 Famiglie di Oggetti & Flusso Ricompense
             </h3>
             <p className="text-slate-300">
-              Gli oggetti sono suddivisi rigorosamente in 3 classi con funzionamento e permanenza distinti:
+              Al termine di ogni incontro, una schermata in stile roguelite vi permette di scegliere <strong>1 ricompensa su 3</strong>. Non esiste inventario manuale in battaglia ("Zaino"): gli oggetti appartengono a 4 famiglie funzionali con attivazione immediata o automatica:
             </p>
             <div className="space-y-3">
-              <div className="p-2.5 bg-slate-900 border-2 border-sky-600/60 rounded space-y-1">
-                <div className="font-pixel text-[9px] text-sky-300">1. CONSUMABILI MANUALI (Manual)</div>
+              <div className="p-2.5 bg-slate-900 border-2 border-emerald-600/60 rounded space-y-1">
+                <div className="font-pixel text-[9px] text-emerald-300">1. APPLICAZIONE IMMEDIATA (Immediato)</div>
                 <p className="text-sm text-slate-300">
-                  Conservati nello zaino e utilizzati manualmente su un singolo giocatore tra le ondate o in battaglia. Includono barrette energetiche, bibite inazuma, impacchi curativi, cuneo DNA e kit di allenamento permanente.
+                  Si applicano subito alla scelta. Se l'oggetto è mirato a un calciatore (es. Barrette energetiche, Bibite, Integratori, Pallone d'Oro), compare la selezione bersaglio con anteprima prima/dopo delle statistiche e condizioni. Include anche cure ed EXP a tutta la squadra (Borraccia, Trofeo) e il Fischietto da Reclutamento.
                 </p>
               </div>
               <div className="p-2.5 bg-slate-900 border-2 border-amber-600/60 rounded space-y-1">
-                <div className="font-pixel text-[9px] text-amber-300">2. BONUS NODO (Node) — PERSISTENZA DI SEGMENTO</div>
+                <div className="font-pixel text-[9px] text-amber-300">2. FINO AL CHECKPOINT (Fino al Checkpoint)</div>
                 <p className="text-sm text-slate-300">
-                  <strong>Non occupano spazio nello zaino!</strong> Si attivano istantaneamente all'ottenimento e applicano vantaggi tattici circoscritti alla squadra (es. Grinta +1 ATK, Slancio Spericolato, Tessera Scout, Sigillo dello Sfidante). Con la struttura Run 2.0, i bonus nodo <strong>persistono lungo tutti i passi interni del segmento</strong> e scadono esclusivamente al confine del checkpoint terminale!
+                  Si attivano istantaneamente e <strong>persistono per l'intero segmento fino al checkpoint terminale</strong> (es. Grinta +1 ATK, Slancio Spericolato, Tessera Scout, Sigillo dello Sfidante). Se ottenuti come ricompensa di un checkpoint (Boss o Miniboss), vengono programmati per attivarsi all'inizio del segmento successivo!
                 </p>
               </div>
-              <div className="p-2.5 bg-slate-900 border-2 border-emerald-600/60 rounded space-y-1">
-                <div className="font-pixel text-[9px] text-emerald-300">3. INNESCHI SITUAZIONALI (Trigger)</div>
+              <div className="p-2.5 bg-slate-900 border-2 border-rose-600/60 rounded space-y-1">
+                <div className="font-pixel text-[9px] text-rose-300">3. INNESCHI AUTOMATICI (Automatico)</div>
                 <p className="text-sm text-slate-300">
-                  Custoditi nello zaino, non si consumano con un'azione manuale, ma si <strong>innescano automaticamente</strong> al verificarsi di specifiche condizioni in battaglia (es. Cerotto sotto il 30% HP, Balsamo previene la prima bruciatura, Cavigliera salva dal KO una volta lasciando 1 HP, Stendardo potenzia il primo assalto).
+                  Si <strong>armano automaticamente</strong> per la lotta senza alcuna azione manuale (Cerotto sotto il 30% HP, Balsamo previene la prima bruciatura, Cavigliera salva dal KO lasciando 1 HP, Stendardo potenzia il primo assalto). In battaglia scattano da soli al verificarsi dell'innesco.
+                </p>
+              </div>
+              <div className="p-2.5 bg-slate-900 border-2 border-fuchsia-600/60 rounded space-y-1">
+                <div className="font-pixel text-[9px] text-fuchsia-300">4. RISORSE SPECIALI (Risorsa)</div>
+                <p className="text-sm text-slate-300">
+                  Valute di run persistenti e separate dagli strumenti tattici, come il <strong>Cuneo DNA</strong>. Vengono conservate fino al termine della run e impiegate per la <em>Fusione Genetica</em> tra due calciatori compatibili nella schermata Squadra.
                 </p>
               </div>
             </div>

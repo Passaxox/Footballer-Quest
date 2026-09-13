@@ -54,8 +54,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   if (!s.current) {
     s.current = {
       initialTeam: run.team.map(p => ({ ...p })), team: applyNodeModifiers(run.team, run.nodeModifiers), nodeModifiers: { ...run.nodeModifiers },
-      items: { ...run.items }, temporaryItemsUsed: [], active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
-      enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", cue: null, hit: null, menu: "main", itemSel: null, xpReport: null,
+      items: { ...run.items }, armedTriggers: { ...(run.armedTriggers || {}) }, temporaryItemsUsed: [], active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
+      enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", cue: null, hit: null, menu: "main", xpReport: null,
       triggerBanner: null, synergyCue: null, victoryHeadline: null,
     };
   }
@@ -116,17 +116,21 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       bossBonusAttacker: isPlayerAttacking && isBoss && hasSigillo,
       bossBonusDefender: !isPlayerAttacking && isBoss && hasSigillo,
       firstStrike: isPlayerAttacking && !st.firstStrikeUsed,
-      hasStendardo: isPlayerAttacking && (st.items.stendardo || 0) > 0,
-      hasCavigliera: !isPlayerAttacking && !st.caviglieraUsed && (st.items.cavigliera || 0) > 0,
-      hasBalsamo: !isPlayerAttacking && (st.items.balsamo || 0) > 0,
-      hasCerotto: !isPlayerAttacking && (st.items.cerotto || 0) > 0,
+      hasStendardo: isPlayerAttacking && ((st.armedTriggers?.stendardo || st.items?.stendardo || 0) > 0),
+      hasCavigliera: !isPlayerAttacking && !st.caviglieraUsed && ((st.armedTriggers?.cavigliera || st.items?.cavigliera || 0) > 0),
+      hasBalsamo: !isPlayerAttacking && ((st.armedTriggers?.balsamo || st.items?.balsamo || 0) > 0),
+      hasCerotto: !isPlayerAttacking && ((st.armedTriggers?.cerotto || st.items?.cerotto || 0) > 0),
       onTriggerUsed: (triggerId) => {
         if (triggerId === "stendardo") st.firstStrikeUsed = true;
         if (triggerId === "cavigliera") st.caviglieraUsed = true;
+        if (st.armedTriggers?.[triggerId] > 0) {
+          st.armedTriggers = { ...st.armedTriggers, [triggerId]: 0 };
+        }
         if ((st.items[triggerId] || 0) > 0) {
           st.items = removeItem(st.items, triggerId);
-          st.temporaryItemsUsed = [...(st.temporaryItemsUsed || []), triggerId];
         }
+        st.temporaryItemsUsed = [...(st.temporaryItemsUsed || []), triggerId];
+        onStateChange?.({ team: st.team, items: st.items, armedTriggers: st.armedTriggers, nodeModifiers: st.nodeModifiers });
         if (TRIGGER_ITEM_PRESENTATION[triggerId]) {
           st.triggerBanner = TRIGGER_ITEM_PRESENTATION[triggerId];
           sfx.triggerItem?.();
@@ -256,24 +260,6 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     await enemyFreeTurn();
   };
 
-  const consumeItem = async (itemId, idx) => {
-    st.triggerBanner = null;
-    st.synergyCue = null;
-    st.phase = "busy"; st.menu = "main"; st.itemSel = null;
-    const before = st.team[idx];
-    const after = applyItemTo(itemId, before);
-    st.team = st.team.map((q, j) => (j === idx ? after : q));
-    if (ITEMS[itemId].effect?.type === "stages") {
-      st.nodeModifiers = addNodeStageModifier(st.nodeModifiers, before.uid, ITEMS[itemId].effect);
-      st.temporaryItemsUsed.push({ itemId, playerUid: before.uid, wave: run.wave });
-    }
-    st.items = removeItem(st.items, itemId);
-    onStateChange?.({ team: st.team, items: st.items, nodeModifiers: st.nodeModifiers });
-    sfx.heal();
-    await say(`Usi ${ITEMS[itemId].name} su ${before.name}!`, 800);
-    await enemyFreeTurn();
-  };
-
   const flee = async () => {
     if (encounter.kind === "boss" || encounter.kind === "miniboss") { await say("Non puoi fuggire da questo scontro decisivo!", 700); return; }
     sfx.cancel();
@@ -288,7 +274,6 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
 
   const p = active();
   const e = enemy();
-  const battleItems = Object.entries(st.items).filter(([id, n]) => ITEMS[id].battle && n > 0);
   const synergies = activeSynergies(st.team);
   const tier = getEncounterTier(encounter);
   const teamAccent = resolveTeamAccent(encounter.teamName, encounter.teamTags);
@@ -429,8 +414,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
               <span className="text-[8px] opacity-70">POT {p.move.power}</span>
             </Btn>
             <Btn data-testid="switch-button" onClick={() => { sfx.select(); st.menu = "switch"; rr(); }}>Cambia</Btn>
-            <Btn data-testid="item-button" onClick={() => { sfx.select(); st.menu = "items"; rr(); }}>Zaino</Btn>
-            <Btn data-testid="flee-button" variant="ghost" onClick={flee} className="col-span-2" disabled={encounter.kind === "boss" || encounter.kind === "miniboss"}>Fuggi</Btn>
+            <Btn data-testid="flee-button" variant="ghost" onClick={flee} disabled={encounter.kind === "boss" || encounter.kind === "miniboss"}>Fuggi</Btn>
           </div>
         )}
         {(st.phase === "menu" || st.phase === "forcedSwitch" || st.phase === "preBattle") && st.menu === "switch" && (
@@ -441,30 +425,10 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
             {(st.phase === "menu" || st.phase === "preBattle") && <Btn data-testid="switch-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.menu = "main"; rr(); }}>Indietro</Btn>}
           </div>
         )}
-        {st.phase === "menu" && st.menu === "items" && !st.itemSel && (
-          <div className="space-y-2">
-            {battleItems.length === 0 && <div className="font-body text-slate-400 text-lg text-center">Nessun oggetto utilizzabile.</div>}
-            {battleItems.map(([id, n]) => (
-              <Btn key={id} data-testid={`use-item-${id}`} className="w-full flex justify-between items-center" onClick={() => { sfx.select(); st.itemSel = id; rr(); }}>
-                <span>{ITEMS[id].name}</span><span className="text-amber-300">x{n}</span>
-              </Btn>
-            ))}
-            <Btn data-testid="items-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.menu = "main"; rr(); }}>Indietro</Btn>
-          </div>
-        )}
-        {st.phase === "menu" && st.menu === "items" && st.itemSel && (
-          <div className="space-y-2">
-            <div className="font-body text-slate-300 text-lg">Su chi usare {ITEMS[st.itemSel].name}?</div>
-            {st.team.map((q, i) => (
-              <ItemTargetCard key={q.uid} p={q} itemId={st.itemSel} testId={`item-target-${i}`} onClick={() => consumeItem(st.itemSel, i)} />
-            ))}
-            <Btn data-testid="item-target-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.itemSel = null; rr(); }}>Indietro</Btn>
-          </div>
-        )}
         {(st.phase === "busy" || st.phase === "intro" || st.phase === "end") && (
           <div className="grid grid-cols-2 gap-2 opacity-40 pointer-events-none">
             <Btn variant="primary" className="col-span-2">...</Btn>
-            <Btn>Cambia</Btn><Btn>Zaino</Btn>
+            <Btn>Cambia</Btn><Btn>Fuggi</Btn>
           </div>
         )}
       </div>

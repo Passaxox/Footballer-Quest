@@ -16,8 +16,11 @@ const expansionUrl = moduleUrl(await source("catalogExpansion"));
 const teamContentUrl = moduleUrl(await source("teamContent.generated"));
 const metadataUrl = moduleUrl((await source("catalogMetadata")).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)));
 const catalogUrl = moduleUrl((await source("catalog")).replace("\"./catalogExpansion\"", JSON.stringify(expansionUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)));
+const routeChoicesUrl = moduleUrl(await source("routeChoices"));
+const segmentUrl = moduleUrl((await source("segment")).replace('"./routeChoices"', JSON.stringify(routeChoicesUrl)));
+const minibossesUrl = moduleUrl(await source("minibosses"));
 const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./events"', JSON.stringify(eventsUrl)));
-const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./events"', JSON.stringify(eventsUrl)).replace('"./runRandom"', JSON.stringify(runRandomUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./routeDeck"', JSON.stringify(routeDeckUrl)).replace('"./synergies"', JSON.stringify(synergiesUrl)));
+const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./events"', JSON.stringify(eventsUrl)).replace('"./runRandom"', JSON.stringify(runRandomUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./routeDeck"', JSON.stringify(routeDeckUrl)).replace('"./synergies"', JSON.stringify(synergiesUrl)).replace('"./segment"', JSON.stringify(segmentUrl)).replace('"./routeChoices"', JSON.stringify(routeChoicesUrl)).replace('"./minibosses"', JSON.stringify(minibossesUrl)));
 
 const synergies = await import(synergiesUrl);
 const engine = await import(engineUrl);
@@ -104,10 +107,14 @@ test("Terra synergy reduces combat damage taken", () => {
   const defender = mockPlayer("terra", 100, 100, 30);
   const terraTeam = [defender, mockPlayer("terra")];
 
-  const unmitigated = engine.calcDamage(attacker, defender, attacker.move);
-  const mitigated = engine.calcDamage(attacker, defender, attacker.move, { defenderTeam: terraTeam });
+  let unmitigatedSum = 0;
+  let mitigatedSum = 0;
+  for (let i = 0; i < 50; i++) {
+    unmitigatedSum += engine.calcDamage(attacker, defender, attacker.move).dmg;
+    mitigatedSum += engine.calcDamage(attacker, defender, attacker.move, { defenderTeam: terraTeam }).dmg;
+  }
 
-  assert.ok(mitigated.dmg <= unmitigated.dmg, "Terra synergy must reduce incoming damage");
+  assert.ok(mitigatedSum < unmitigatedSum, "Terra synergy must reduce incoming damage");
 });
 
 test("Aria synergy grants initiative speed bonus in turn order", () => {

@@ -61,18 +61,19 @@ test("discovery reports only the opponent actually displayed, not the hidden ben
   expect(callbacks.onWin).not.toHaveBeenCalled();
 });
 
-test("node item consumption publishes inventory and modifier state immediately", async () => {
+test("combat trigger auto-activation publishes inventory and armed state immediately on attack", async () => {
   const run = engine.newRun(STARTER_IDS.slice(0, 3));
-  run.items.grinta = 1;
+  run.items.stendardo = 1;
+  run.armedTriggers = { stendardo: 1 };
+  jest.spyOn(engine, "turnOrder").mockReturnValue("player");
   const callbacks = await setup(run);
   await click("pre-battle-keep");
   await settle();
-  await click("item-button");
-  await click("use-item-grinta");
-  await click("item-target-0");
+  await click("attack-button");
+  await settle();
   expect(callbacks.onStateChange).toHaveBeenCalledWith(expect.objectContaining({
-    items: expect.not.objectContaining({ grinta: expect.anything() }),
-    nodeModifiers: { [run.team[0].uid]: { atkMod: 1, defMod: 0 } },
+    items: expect.not.objectContaining({ stendardo: expect.anything() }),
+    armedTriggers: expect.objectContaining({ stendardo: 0 }),
   }));
 });
 
@@ -226,16 +227,23 @@ test.each(["team", "boss"])("partial enemy KO then %s loss removes provisional g
 });
 
 
-test("V2n Golden Ball battle selection clearly distinguishes KO from disabled living targets", async()=>{
- const run=engine.newRun(STARTER_IDS.slice(0,3));run.items.pallone=1;run.team[1].hp=0;
- await setup(run);await click("pre-battle-keep");await settle();
- await click("item-button");await click("use-item-pallone");
- expect(find("item-target-0").disabled).toBe(true);
- expect(find("item-target-1").disabled).toBe(false);
- expect(find("item-target-1").textContent).toContain("KO • RIANIMABILE");
- const attack=jest.spyOn(engine,"performAttack");
- await click("item-target-0");expect(attack).not.toHaveBeenCalled();
- expect(find("item-target-1")).not.toBeNull();
+test("manual item button is removed from battle and Golden Ball target preview distinguishes KO from living targets", async () => {
+ const run = engine.newRun(STARTER_IDS.slice(0, 3));
+ run.items.pallone = 1;
+ run.team[1].hp = 0;
+ await setup(run);
+ await click("pre-battle-keep");
+ await settle();
+ expect(find("item-button")).toBeNull();
+ expect(find("attack-button")).not.toBeNull();
+ expect(find("switch-button")).not.toBeNull();
+ expect(find("flee-button")).not.toBeNull();
+
+ const previewLiving = engine.getItemTargetPreview("pallone", run.team[0]);
+ expect(previewLiving.valid).toBe(false);
+ const previewKo = engine.getItemTargetPreview("pallone", run.team[1]);
+ expect(previewKo.valid).toBe(true);
+ expect(previewKo.diffs.some(d => d.label === "HP" && d.after > 0)).toBe(true);
 });
 
 test("compact battle active synergies panel renders when team has active synergies", async () => {

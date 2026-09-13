@@ -103,6 +103,40 @@ export const ITEM_CLASSES = {
   TRIGGER: "trigger",
 };
 
+export const ITEM_FAMILIES = {
+  INSTANT: "instant",
+  SEGMENT: "segment",
+  TRIGGER: "trigger",
+  RESOURCE: "resource",
+};
+
+export const ITEM_FAMILY_PRESENTATION = {
+  instant: {
+    family: "instant",
+    label: "IMMEDIATO",
+    badgeClass: "border-sky-500 bg-sky-950/80 text-sky-300",
+    description: "Effetto applicato subito alla squadra o a un calciatore.",
+  },
+  segment: {
+    family: "segment",
+    label: "FINO AL CHECKPOINT",
+    badgeClass: "border-amber-500 bg-amber-950/80 text-amber-300",
+    description: "Bonus attivo per l'intero segmento fino al checkpoint successivo.",
+  },
+  trigger: {
+    family: "trigger",
+    label: "AUTOMATICO",
+    badgeClass: "border-violet-500 bg-violet-950/80 text-violet-300",
+    description: "Si arma da solo e si attiva in lotta al verificarsi della condizione.",
+  },
+  resource: {
+    family: "resource",
+    label: "RISORSA",
+    badgeClass: "border-pink-500 bg-pink-950/80 text-pink-300",
+    description: "Risorsa persistente della run, utilizzabile fuori dal combattimento.",
+  },
+};
+
 // Item rarity is presentation/frequency, not a power multiplier or player rarity.
 export const ITEM_RARITIES = {
   COMMON: { label: "Comune", rewardWeight: 20, cardClass: "border-slate-500 bg-slate-900", accentClass: "text-slate-200" },
@@ -111,38 +145,38 @@ export const ITEM_RARITIES = {
   EPIC: { label: "Epico", rewardWeight: 2, cardClass: "border-pink-500 bg-pink-950/40", accentClass: "text-pink-300" },
 };
 const itemDefinitions = {
-  barretta: { id: "barretta", rarity: "COMMON", shopWeight: 2, category: ITEM_CLASSES.MANUAL, name: "Barretta Energetica", desc: "Recupera il 50% degli HP di un giocatore non KO.", price: 40, battle: true, tags: ["recovery"] },
-  bibita: { id: "bibita", rarity: "UNCOMMON", dropFactor: 10/9, category: ITEM_CLASSES.MANUAL, name: "Bibita Inazuma", desc: "Recupera tutti gli HP e cura le condizioni. Solo giocatori non KO.", price: 90, battle: true, tags: ["recovery"] },
-  pallone: { id: "pallone", rarity: "RARE", category: ITEM_CLASSES.MANUAL, name: "Pallone d'Oro", desc: "Rianima un giocatore KO con metà HP e conferisce lo stato parata.", price: 150, battle: true, tags: ["recovery", "revive"] },
-  cuneo: { id: "cuneo", rarity: "EPIC", category: ITEM_CLASSES.MANUAL, name: "Cuneo DNA", desc: "Fonde due giocatori in uno solo, più forte.", price: 300, battle: false },
-  fascia: { id: "fascia", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Fascia del Capitano", desc: "+5 ATK permanente a un giocatore.", price: 120, battle: false, effect: { type: "permanentStat", stat: "atk", amount: 5 }, tags: ["training"] },
-  guanti: { id: "guanti", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Guanti Rinforzati", desc: "+5 DIF permanente a un giocatore.", price: 120, battle: false, effect: { type: "permanentStat", stat: "def", amount: 5 }, tags: ["training"] },
-  scarpini: { id: "scarpini", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Scarpini Turbo", desc: "+6 VEL permanente a un giocatore.", price: 120, battle: false, effect: { type: "permanentStat", stat: "spd", amount: 6 }, tags: ["training"] },
-  proteine: { id: "proteine", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Proteine Kudo", desc: "+15 HP max permanente a un giocatore.", price: 120, battle: false, effect: { type: "permanentStat", stat: "hp", amount: 15 }, tags: ["training"] },
-  trofeo: { id: "trofeo", rarity: "UNCOMMON", dropFactor: 8/9, category: ITEM_CLASSES.MANUAL, name: "Mini Trofeo", desc: "Tutta la squadra guadagna esperienza.", price: 100, battle: false },
-  fischietto: { id: "fischietto", rarity: "RARE", dropFactor: 4/5, category: ITEM_CLASSES.MANUAL, name: "Fischietto d'Argento", desc: "Il prossimo avversario singolo si unirà a te se lo sconfiggi.", price: 200, battle: false },
-  talismano: { id: "talismano", rarity: "RARE", battleOnly: true, category: ITEM_CLASSES.MANUAL, name: "Talismano Elementale", desc: "In battaglia: la tua mossa colpisce sempre come superefficace per 1 turno.", price: 110, battle: true },
-  impacco: { id: "impacco", rarity: "COMMON", category: ITEM_CLASSES.MANUAL, name: "Impacco da Bordocampo", desc: "Ripristina il 25% degli HP, cura la bruciatura e prepara la parata. Solo giocatori non KO.", price: 35, battle: true, effect: { type: "recovery", hpShare: 0.25, cureBurn: true, guard: true }, tags: ["recovery"] },
-  grinta: { id: "grinta", rarity: "UNCOMMON", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Grinta in Bottiglia", desc: "Bonus Nodo: ATK +1 stadio (massimo +3) a tutta la squadra fino alla fine del nodo.", price: 55, battle: true, effect: { type: "stages", atk: 1, def: 0 }, tags: ["offense", "node"] },
-  tenuta: { id: "tenuta", rarity: "UNCOMMON", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Tenuta Difensiva", desc: "Bonus Nodo: DIF +1 stadio (massimo +3) a tutta la squadra fino alla fine del nodo.", price: 55, battle: true, effect: { type: "stages", atk: 0, def: 1 }, tags: ["defense", "node"] },
-  buono: { id: "buono", shopWeight: 0, rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Buono Sponsor", desc: "Si riscatta automaticamente quando viene ottenuto: +35 Prestigio. Non occupa spazio nello zaino.", price: 50, battle: false, effect: { type: "money", amount: 35 }, tags: ["economy", "auto-redeem"] },
-  azzardo: { id: "azzardo", rarity: "RARE", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Slancio Spericolato", desc: "Bonus Nodo: ATK +2 stadi e DIF -1 stadio (massimo +3, minimo -3) a tutta la squadra fino alla fine del nodo.", price: 70, battle: true, effect: { type: "stages", atk: 2, def: -1 }, tags: ["risk", "offense", "node"] },
-  muro: { id: "muro", rarity: "RARE", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Schema Catenaccio", desc: "Bonus Nodo: DIF +2 stadi e ATK -1 stadio (massimo +3, minimo -3) a tutta la squadra fino alla fine del nodo.", price: 75, battle: true, effect: { type: "stages", atk: -1, def: 2 }, tags: ["risk", "defense", "node"] },
-  equilibrio: { id: "equilibrio", rarity: "RARE", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Lavagna Equilibrata", desc: "Bonus Nodo: ATK +1 e DIF +1 stadio (massimo +3) a tutta la squadra fino alla fine del nodo.", price: 85, battle: true, effect: { type: "stages", atk: 1, def: 1 }, tags: ["offense", "defense", "node"] },
-  pressing: { id: "pressing", rarity: "UNCOMMON", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Pressing Coraggioso", desc: "Bonus Nodo: ATK +1 e DIF -1 stadio (massimo +3, minimo -3) a tutta la squadra fino alla fine del nodo.", price: 50, battle: true, effect: { type: "stages", atk: 1, def: -1 }, tags: ["risk", "node"] },
-  ghiaccio: { id: "ghiaccio", rarity: "COMMON", category: ITEM_CLASSES.MANUAL, name: "Ghiaccio Istantaneo", desc: "Rimedio rapido: recupera il 20% degli HP e cura la bruciatura. Solo su un giocatore non KO.", price: 30, battle: true, effect: { type: "recovery", hpShare: 0.2, cureBurn: true }, tags: ["recovery"] },
-  borraccia: { id: "borraccia", rarity: "COMMON", category: ITEM_CLASSES.MANUAL, name: "Borraccia Isotonica", desc: "Ristoro per tutta la squadra: recupera il 35% degli HP a tutti i compagni vivi non KO.", price: 38, battle: true, effect: { type: "recovery", hpShare: 0.35, team: true }, tags: ["recovery"] },
-  defibrillatore: { id: "defibrillatore", rarity: "RARE", category: ITEM_CLASSES.MANUAL, name: "Defibrillatore da Campo", desc: "Rianima un giocatore KO con il 25% degli HP.", price: 130, battle: true, effect: { type: "revive", hpShare: 0.25 }, tags: ["recovery", "revive"] },
-  taccuino: { id: "taccuino", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Taccuino Tattico", desc: "+3 ATK permanente a un giocatore non KO.", price: 90, battle: false, effect: { type: "permanentStat", stat: "atk", amount: 3 }, tags: ["training"] },
-  parastinchi: { id: "parastinchi", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Parastinchi Tecnici", desc: "+3 DIF permanente a un giocatore non KO.", price: 90, battle: false, effect: { type: "permanentStat", stat: "def", amount: 3 }, tags: ["training"] },
-  cronometro: { id: "cronometro", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Cronometro da Scatto", desc: "+4 VEL permanente a un giocatore non KO.", price: 95, battle: false, effect: { type: "permanentStat", stat: "spd", amount: 4 }, tags: ["training"] },
-  pasto: { id: "pasto", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Pasto del Ritiro", desc: "+10 HP massimi permanenti e +10 HP attuali a un giocatore non KO.", price: 95, battle: false, effect: { type: "permanentStat", stat: "hp", amount: 10 }, tags: ["training", "recovery"] },
-  cerotto: { id: "cerotto", rarity: "COMMON", category: ITEM_CLASSES.TRIGGER, name: "Cerotto d'Emergenza", desc: "Innesco automatico: se un compagno attivo scende sotto il 30% HP durante una lotta, si attiva ripristinando il 25% HP massimi.", price: 40, battle: true, effect: { type: "recovery", hpShare: 0.25, trigger: "lowHp" }, tags: ["trigger", "recovery"] },
-  balsamo: { id: "balsamo", rarity: "COMMON", category: ITEM_CLASSES.TRIGGER, name: "Balsamo Rinfrescante", desc: "Innesco automatico: rimuove istantaneamente la prima bruciatura subita da un compagno durante la lotta.", price: 35, battle: true, effect: { type: "recovery", hpShare: 0, cureBurn: true, trigger: "cleanse" }, tags: ["trigger", "recovery"] },
-  cavigliera: { id: "cavigliera", rarity: "RARE", category: ITEM_CLASSES.TRIGGER, name: "Cavigliera Protettiva", desc: "Innesco automatico: se un compagno subirebbe un colpo da KO, si attiva lasciandolo a 1 HP. Massimo una volta per lotta.", price: 110, battle: true, effect: { type: "revive", hpShare: 0, trigger: "endure" }, tags: ["trigger", "defense"] },
-  stendardo: { id: "stendardo", rarity: "UNCOMMON", category: ITEM_CLASSES.TRIGGER, name: "Stendardo Tattico", desc: "Innesco automatico: il primo attacco offensivo sferrato dalla squadra in ogni lotta ottiene +20% potenza.", price: 65, battle: true, effect: { type: "legacy", trigger: "firstStrike" }, tags: ["trigger", "offense"] },
-  tessera: { id: "tessera", rarity: "UNCOMMON", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Tessera Scout", desc: "Bonus Nodo: si attiva automaticamente fino alla fine del nodo. Favorisce l'incontro con calciatori rari o di alto livello.", price: 75, battle: false, effect: { type: "stages", scoutBias: true }, tags: ["node", "scout"] },
-  sigillo: { id: "sigillo", rarity: "RARE", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Sigillo dello Sfidante", desc: "Bonus Nodo: si attiva automaticamente fino alla fine del nodo. Contro i Boss, la squadra riceve +10% danni inflitti e -10% subiti.", price: 85, battle: false, effect: { type: "stages", bossBonus: true }, tags: ["node", "boss"] },
+  barretta: { id: "barretta", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "COMMON", shopWeight: 2, category: ITEM_CLASSES.MANUAL, name: "Barretta Energetica", desc: "Recupera il 50% degli HP di un giocatore non KO.", price: 40, battle: true, tags: ["recovery"] },
+  bibita: { id: "bibita", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "UNCOMMON", dropFactor: 10/9, category: ITEM_CLASSES.MANUAL, name: "Bibita Inazuma", desc: "Recupera tutti gli HP e cura le condizioni. Solo giocatori non KO.", price: 90, battle: true, tags: ["recovery"] },
+  pallone: { id: "pallone", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "RARE", category: ITEM_CLASSES.MANUAL, name: "Pallone d'Oro", desc: "Rianima un giocatore KO con metà HP e conferisce lo stato parata.", price: 150, battle: true, tags: ["recovery", "revive"] },
+  cuneo: { id: "cuneo", family: ITEM_FAMILIES.RESOURCE, targetType: "run", rarity: "EPIC", category: ITEM_CLASSES.MANUAL, name: "Cuneo DNA", desc: "Fonde due giocatori in uno solo, più forte.", price: 300, battle: false },
+  fascia: { id: "fascia", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Fascia del Capitano", desc: "+5 ATK permanente a un giocatore.", price: 120, battle: false, effect: { type: "permanentStat", stat: "atk", amount: 5 }, tags: ["training"] },
+  guanti: { id: "guanti", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Guanti Rinforzati", desc: "+5 DIF permanente a un giocatore.", price: 120, battle: false, effect: { type: "permanentStat", stat: "def", amount: 5 }, tags: ["training"] },
+  scarpini: { id: "scarpini", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Scarpini Turbo", desc: "+6 VEL permanente a un giocatore.", price: 120, battle: false, effect: { type: "permanentStat", stat: "spd", amount: 6 }, tags: ["training"] },
+  proteine: { id: "proteine", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Proteine Kudo", desc: "+15 HP max permanente a un giocatore.", price: 120, battle: false, effect: { type: "permanentStat", stat: "hp", amount: 15 }, tags: ["training"] },
+  trofeo: { id: "trofeo", family: ITEM_FAMILIES.INSTANT, targetType: "team", rarity: "UNCOMMON", dropFactor: 8/9, category: ITEM_CLASSES.MANUAL, name: "Mini Trofeo", desc: "Tutta la squadra guadagna esperienza.", price: 100, battle: false },
+  fischietto: { id: "fischietto", family: ITEM_FAMILIES.INSTANT, targetType: "run", rarity: "RARE", dropFactor: 4/5, category: ITEM_CLASSES.MANUAL, name: "Fischietto d'Argento", desc: "Il prossimo avversario singolo si unirà a te se lo sconfiggi.", price: 200, battle: false },
+  talismano: { id: "talismano", family: ITEM_FAMILIES.SEGMENT, targetType: "node", rarity: "RARE", battleOnly: true, category: ITEM_CLASSES.MANUAL, name: "Talismano Elementale", desc: "In battaglia: la tua mossa colpisce sempre come superefficace per 1 turno.", price: 110, battle: true },
+  impacco: { id: "impacco", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "COMMON", category: ITEM_CLASSES.MANUAL, name: "Impacco da Bordocampo", desc: "Ripristina il 25% degli HP, cura la bruciatura e prepara la parata. Solo giocatori non KO.", price: 35, battle: true, effect: { type: "recovery", hpShare: 0.25, cureBurn: true, guard: true }, tags: ["recovery"] },
+  grinta: { id: "grinta", family: ITEM_FAMILIES.SEGMENT, targetType: "node", rarity: "UNCOMMON", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Grinta in Bottiglia", desc: "Bonus Nodo: ATK +1 stadio (massimo +3) a tutta la squadra fino alla fine del nodo.", price: 55, battle: true, effect: { type: "stages", atk: 1, def: 0 }, tags: ["offense", "node"] },
+  tenuta: { id: "tenuta", family: ITEM_FAMILIES.SEGMENT, targetType: "node", rarity: "UNCOMMON", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Tenuta Difensiva", desc: "Bonus Nodo: DIF +1 stadio (massimo +3) a tutta la squadra fino alla fine del nodo.", price: 55, battle: true, effect: { type: "stages", atk: 0, def: 1 }, tags: ["defense", "node"] },
+  buono: { id: "buono", family: ITEM_FAMILIES.INSTANT, targetType: "run", shopWeight: 0, rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Buono Sponsor", desc: "Si riscatta automaticamente quando viene ottenuto: +35 Prestigio. Non occupa spazio nello zaino.", price: 50, battle: false, effect: { type: "money", amount: 35 }, tags: ["economy", "auto-redeem"] },
+  azzardo: { id: "azzardo", family: ITEM_FAMILIES.SEGMENT, targetType: "node", rarity: "RARE", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Slancio Spericolato", desc: "Bonus Nodo: ATK +2 stadi e DIF -1 stadio (massimo +3, minimo -3) a tutta la squadra fino alla fine del nodo.", price: 70, battle: true, effect: { type: "stages", atk: 2, def: -1 }, tags: ["risk", "offense", "node"] },
+  muro: { id: "muro", family: ITEM_FAMILIES.SEGMENT, targetType: "node", rarity: "RARE", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Schema Catenaccio", desc: "Bonus Nodo: DIF +2 stadi e ATK -1 stadio (massimo +3, minimo -3) a tutta la squadra fino alla fine del nodo.", price: 75, battle: true, effect: { type: "stages", atk: -1, def: 2 }, tags: ["risk", "defense", "node"] },
+  equilibrio: { id: "equilibrio", family: ITEM_FAMILIES.SEGMENT, targetType: "node", rarity: "RARE", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Lavagna Equilibrata", desc: "Bonus Nodo: ATK +1 e DIF +1 stadio (massimo +3) a tutta la squadra fino alla fine del nodo.", price: 85, battle: true, effect: { type: "stages", atk: 1, def: 1 }, tags: ["offense", "defense", "node"] },
+  pressing: { id: "pressing", family: ITEM_FAMILIES.SEGMENT, targetType: "node", rarity: "UNCOMMON", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Pressing Coraggioso", desc: "Bonus Nodo: ATK +1 e DIF -1 stadio (massimo +3, minimo -3) a tutta la squadra fino alla fine del nodo.", price: 50, battle: true, effect: { type: "stages", atk: 1, def: -1 }, tags: ["risk", "node"] },
+  ghiaccio: { id: "ghiaccio", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "COMMON", category: ITEM_CLASSES.MANUAL, name: "Ghiaccio Istantaneo", desc: "Rimedio rapido: recupera il 20% degli HP e cura la bruciatura. Solo su un giocatore non KO.", price: 30, battle: true, effect: { type: "recovery", hpShare: 0.2, cureBurn: true }, tags: ["recovery"] },
+  borraccia: { id: "borraccia", family: ITEM_FAMILIES.INSTANT, targetType: "team", rarity: "COMMON", category: ITEM_CLASSES.MANUAL, name: "Borraccia Isotonica", desc: "Ristoro per tutta la squadra: recupera il 35% degli HP a tutti i compagni vivi non KO.", price: 38, battle: true, effect: { type: "recovery", hpShare: 0.35, team: true }, tags: ["recovery"] },
+  defibrillatore: { id: "defibrillatore", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "RARE", category: ITEM_CLASSES.MANUAL, name: "Defibrillatore da Campo", desc: "Rianima un giocatore KO con il 25% degli HP.", price: 130, battle: true, effect: { type: "revive", hpShare: 0.25 }, tags: ["recovery", "revive"] },
+  taccuino: { id: "taccuino", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Taccuino Tattico", desc: "+3 ATK permanente a un giocatore non KO.", price: 90, battle: false, effect: { type: "permanentStat", stat: "atk", amount: 3 }, tags: ["training"] },
+  parastinchi: { id: "parastinchi", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Parastinchi Tecnici", desc: "+3 DIF permanente a un giocatore non KO.", price: 90, battle: false, effect: { type: "permanentStat", stat: "def", amount: 3 }, tags: ["training"] },
+  cronometro: { id: "cronometro", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Cronometro da Scatto", desc: "+4 VEL permanente a un giocatore non KO.", price: 95, battle: false, effect: { type: "permanentStat", stat: "spd", amount: 4 }, tags: ["training"] },
+  pasto: { id: "pasto", family: ITEM_FAMILIES.INSTANT, targetType: "player", rarity: "UNCOMMON", category: ITEM_CLASSES.MANUAL, name: "Pasto del Ritiro", desc: "+10 HP massimi permanenti e +10 HP attuali a un giocatore non KO.", price: 95, battle: false, effect: { type: "permanentStat", stat: "hp", amount: 10 }, tags: ["training", "recovery"] },
+  cerotto: { id: "cerotto", family: ITEM_FAMILIES.TRIGGER, targetType: "trigger", rarity: "COMMON", category: ITEM_CLASSES.TRIGGER, name: "Cerotto d'Emergenza", desc: "Innesco automatico: se un compagno attivo scende sotto il 30% HP durante una lotta, si attiva ripristinando il 25% HP massimi.", price: 40, battle: true, effect: { type: "recovery", hpShare: 0.25, trigger: "lowHp" }, tags: ["trigger", "recovery"] },
+  balsamo: { id: "balsamo", family: ITEM_FAMILIES.TRIGGER, targetType: "trigger", rarity: "COMMON", category: ITEM_CLASSES.TRIGGER, name: "Balsamo Rinfrescante", desc: "Innesco automatico: rimuove istantaneamente la prima bruciatura subita da un compagno durante la lotta.", price: 35, battle: true, effect: { type: "recovery", hpShare: 0, cureBurn: true, trigger: "cleanse" }, tags: ["trigger", "recovery"] },
+  cavigliera: { id: "cavigliera", family: ITEM_FAMILIES.TRIGGER, targetType: "trigger", rarity: "RARE", category: ITEM_CLASSES.TRIGGER, name: "Cavigliera Protettiva", desc: "Innesco automatico: se un compagno subirebbe un colpo da KO, si attiva lasciandolo a 1 HP. Massimo una volta per lotta.", price: 110, battle: true, effect: { type: "revive", hpShare: 0, trigger: "endure" }, tags: ["trigger", "defense"] },
+  stendardo: { id: "stendardo", family: ITEM_FAMILIES.TRIGGER, targetType: "trigger", rarity: "UNCOMMON", category: ITEM_CLASSES.TRIGGER, name: "Stendardo Tattico", desc: "Innesco automatico: il primo attacco offensivo sferrato dalla squadra in ogni lotta ottiene +20% potenza.", price: 65, battle: true, effect: { type: "legacy", trigger: "firstStrike" }, tags: ["trigger", "offense"] },
+  tessera: { id: "tessera", family: ITEM_FAMILIES.SEGMENT, targetType: "node", rarity: "UNCOMMON", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Tessera Scout", desc: "Bonus Nodo: si attiva automaticamente fino alla fine del nodo. Favorisce l'incontro con calciatori rari o di alto livello.", price: 75, battle: false, effect: { type: "stages", scoutBias: true }, tags: ["node", "scout"] },
+  sigillo: { id: "sigillo", family: ITEM_FAMILIES.SEGMENT, targetType: "node", rarity: "RARE", battleOnly: true, category: ITEM_CLASSES.NODE, name: "Sigillo dello Sfidante", desc: "Bonus Nodo: si attiva automaticamente fino alla fine del nodo. Contro i Boss, la squadra riceve +10% danni inflitti e -10% subiti.", price: 85, battle: false, effect: { type: "stages", bossBonus: true }, tags: ["node", "boss"] },
 };
 
 // Legacy desc and pool exports remain adapters; inventories save IDs/counts only.
@@ -164,6 +198,23 @@ export function validateItems(items = ITEMS) {
 }
 validateItems();
 export const itemPresentation = id => ITEM_RARITIES[ITEMS[id]?.rarity] || ITEM_RARITIES.COMMON;
+export const itemFamilyPresentation = id => {
+  const item = ITEMS[id];
+  const familyKey = item?.family || (
+    item?.itemClass === ITEM_CLASSES.NODE ? ITEM_FAMILIES.SEGMENT :
+    item?.itemClass === ITEM_CLASSES.TRIGGER ? ITEM_FAMILIES.TRIGGER :
+    id === "cuneo" ? ITEM_FAMILIES.RESOURCE :
+    ITEM_FAMILIES.INSTANT
+  );
+  return ITEM_FAMILY_PRESENTATION[familyKey] || ITEM_FAMILY_PRESENTATION.instant;
+};
+export const isTargetItem = id => {
+  const item = ITEMS[id];
+  if (!item) return false;
+  return item.targetType === "player" || (
+    item.family === ITEM_FAMILIES.INSTANT && !["borraccia", "trofeo", "buono", "fischietto"].includes(id)
+  );
+};
 export const SHOP_POOL = Object.values(ITEMS).flatMap(item => Array(item.shopWeight).fill(item.id));
 export const REWARD_POOL = Object.values(ITEMS).map(item => ({ id: item.id, w: item.rewardWeight }));
 
