@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { sfx } from "@/game/audio";
 import { Btn, Header, Panel } from "./ui";
 import { RARITIES } from "@/game/rarity";
 import { resolveTeamAccent } from "@/game/presentation";
 
 export default function EventScreen({ run, event, onChoose, onResolve }) {
+  const [isResolving, setIsResolving] = useState(false);
   const result = run?.pending?.result || null;
   const visual = event.presentation;
   const teamAccent = event.scenarioIds?.[0] ? resolveTeamAccent(event.title, [event.scenarioIds[0]]) : null;
@@ -65,7 +67,7 @@ export default function EventScreen({ run, event, onChoose, onResolve }) {
               </Btn>
             );
           })}
-          {result && <Btn data-testid="event-continue-btn" variant="primary" className="w-full min-h-[52px]" onClick={onResolve}>Continua</Btn>}
+          {result && <Btn data-testid="event-continue-btn" variant="primary" className="w-full min-h-[52px]" disabled={isResolving} onClick={() => { if (isResolving) return; setIsResolving(true); onResolve(); }}>Continua</Btn>}
         </div>
       </div>
     </div>

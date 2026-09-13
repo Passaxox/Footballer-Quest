@@ -9,6 +9,7 @@ export default function FusionScreen({ run, onFuse, onBack }) {
   const [a, setA] = useState(null);
   const [b, setB] = useState(null);
   const [moveFrom, setMoveFrom] = useState("a");
+  const [isFusing, setIsFusing] = useState(false);
   const tap = (i) => {
     if (run.team[i].fused) return;
     sfx.select();
@@ -52,7 +53,7 @@ export default function FusionScreen({ run, onFuse, onBack }) {
             </div>
             <PlayerCard p={preview} testId="fusion-preview-card" />
             <p className="font-body text-amber-200">Livello risultante: {preview.level} (il maggiore). EXP residua azzerata. HP ripristinati completamente, anche se un originale è KO. Ruolo da A: {ROLES[pa.role]}.</p>
-            <Btn data-testid="fusion-confirm-btn" variant="fusion" className="w-full" disabled={cuneoCount <= 0} onClick={() => { sfx.fusion(); onFuse(a, b, moveFrom); }}>Fondi il DNA!</Btn>
+            <Btn data-testid="fusion-confirm-btn" variant="fusion" className="w-full" disabled={cuneoCount <= 0 || isFusing} onClick={() => { if (isFusing) return; setIsFusing(true); sfx.fusion(); onFuse(a, b, moveFrom); }}>Fondi il DNA!</Btn>
           </div>
         )}
       </div>

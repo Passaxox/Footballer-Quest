@@ -201,7 +201,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         const tier = getEncounterTier(encounter);
         st.victoryHeadline = tier.winHeadline;
         if (synergies.some(syn => syn.element === "natura")) {
-          st.synergyCue = "INTESA NATURA · Recupero post-vittoria (+7% HP)";
+          st.synergyCue = "INTESA NATURA · Recupero post-vittoria (+8% HP)";
         }
         await say(encounter.kind === "boss" ? `${tier.winHeadline}: Avete sconfitto ${encounter.teamName}!` : encounter.kind === "miniboss" ? `${tier.winHeadline}: Avete superato ${encounter.teamName}!` : encounter.kind === "elite" ? `${tier.winHeadline}: Avete superato ${encounter.teamName}!` : `${tier.winHeadline}!`, 1100);
         st.phase = "end"; rr();
@@ -301,7 +301,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       <div className="flex items-center justify-between px-3 py-1.5 bg-[#111827] border-b-2 border-slate-800 text-[8px] font-pixel">
         <span data-testid="wave-counter-badge" className="text-amber-300">ONDATA {run.wave}</span>
         {segment ? (
-          <span data-testid="battle-segment-badge" className="text-slate-400">
+          <span data-testid="battle-segment-badge" className="text-slate-400 truncate max-w-[160px] sm:max-w-none">
             SEG {segment.segmentIndex} · PASSO {segment.step}/{segment.length} · <span className="text-sky-300">{segment.routeTitle || "Standard"}</span>
           </span>
         ) : (

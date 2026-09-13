@@ -17,6 +17,8 @@ export default function ShopScreen({
 }) {
   const [localTargetIndex, setLocalTargetIndex] = useState(null);
   const [selectedUid, setSelectedUid] = useState(null);
+  const [isBuying, setIsBuying] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
 
   const currentTargetIndex = activeTargetIndex ?? localTargetIndex;
   const bought = run?.pending?.bought || [];
@@ -137,9 +139,10 @@ export default function ShopScreen({
             data-testid="shop-confirm-target-btn"
             variant="primary"
             className="w-full min-h-[44px]"
-            disabled={!selectedUid}
+            disabled={!selectedUid || isBuying}
             onClick={() => {
-              if (!selectedUid) return;
+              if (!selectedUid || isBuying) return;
+              setIsBuying(true);
               sfx.confirm();
               if (onConfirmBuy) {
                 onConfirmBuy(currentTargetIndex, selectedUid);
@@ -148,6 +151,7 @@ export default function ShopScreen({
               }
               setLocalTargetIndex(null);
               setSelectedUid(null);
+              setIsBuying(false);
             }}
           >
             Conferma Acquisto ({s.price} P)
@@ -259,7 +263,10 @@ export default function ShopScreen({
         <Btn
           data-testid="shop-leave-btn"
           className="w-full min-h-[44px]"
+          disabled={isLeaving}
           onClick={() => {
+            if (isLeaving) return;
+            setIsLeaving(true);
             sfx.cancel();
             onLeave();
           }}

@@ -19,6 +19,7 @@ export default function RewardScreen({
   onCancelTarget,
 }) {
   const [localTargetItem, setLocalTargetItem] = useState(null);
+  const [isPicking, setIsPicking] = useState(false);
   const activeTargetId = selectedRewardId || localTargetItem;
 
   const isBoss = encounterKind === "boss";
@@ -42,6 +43,7 @@ export default function RewardScreen({
   const TierIcon = tierBadge?.icon;
 
   const handlePickOption = (id) => {
+    if (isPicking) return;
     sfx.confirm?.();
     if (isTargetItem(id) && team && team.length > 0) {
       if (onSelectReward) {
@@ -50,11 +52,14 @@ export default function RewardScreen({
         setLocalTargetItem(id);
       }
     } else {
+      setIsPicking(true);
       onPick(id);
     }
   };
 
   const handleConfirmTarget = (itemId, targetUid) => {
+    if (isPicking) return;
+    setIsPicking(true);
     sfx.heal?.();
     onPick(itemId, targetUid);
   };
@@ -267,7 +272,7 @@ export default function RewardScreen({
         </div>
       </div>
       <div className="p-3 bg-[#111827] border-t-2 border-slate-800">
-        <Btn data-testid="reward-skip" variant="ghost" className="w-full" onClick={() => onPick(null)}>
+        <Btn data-testid="reward-skip" variant="ghost" className="w-full" disabled={isPicking} onClick={() => { if (isPicking) return; setIsPicking(true); onPick(null); }}>
           Nessun premio
         </Btn>
       </div>

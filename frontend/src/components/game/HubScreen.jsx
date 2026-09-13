@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { getScenario } from "@/game/scenarios";
 import { BOSSES, FINAL_WAVE, ITEMS } from "@/game/data";
 import { glory } from "@/game/engine";
@@ -8,6 +9,7 @@ import { Coins, Backpack, Sparkles, BookOpen, ShieldAlert } from "lucide-react";
 import { activeSynergies } from "@/game/synergies";
 
 export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon, onGuide }) {
+  const [isProceeding, setIsProceeding] = useState(false);
   const nextBoss = Object.keys(BOSSES).map(Number).find((w) => w >= run.wave);
   const isBoss = !!BOSSES[run.wave];
   const segment = run.segmentState;
@@ -31,7 +33,7 @@ export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon, onG
                   {checkpointName}
                 </span>
               ) : (
-                <span className="text-slate-400">· {segment.routeTitle || "Standard"}</span>
+                <span className="text-slate-400 truncate max-w-[110px] inline-block align-bottom">· {segment.routeTitle || "Standard"}</span>
               )}
             </div>
           )}
@@ -238,7 +240,7 @@ export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon, onG
       </div>
       <div className="p-3 bg-[#111827] border-t-4 border-slate-800 grid grid-cols-3 gap-2">
         <Btn data-testid="team-btn" onClick={onTeam} className="flex items-center justify-center gap-1"><Backpack size={14} /> Squadra{itemCount > 0 ? ` (${itemCount})` : ""}</Btn>
-        <Btn data-testid="next-wave-btn" variant="primary" className="col-span-2" onClick={onNext}>{run.pendingRouteChoices?.length ? "Scegli Percorso" : run.pending ? "Riprendi" : isBoss ? "Affronta il Boss" : isCheckpoint ? "Affronta il Checkpoint" : "Avanti"}</Btn>
+        <Btn data-testid="next-wave-btn" variant="primary" className="col-span-2" disabled={isProceeding} onClick={() => { if (isProceeding) return; setIsProceeding(true); onNext(); }}>{run.pendingRouteChoices?.length ? "Scegli Percorso" : run.pending ? "Riprendi" : isBoss ? "Affronta il Boss" : isCheckpoint ? "Affronta il Checkpoint" : "Avanti"}</Btn>
         <Btn data-testid="pause-run-btn" className="col-span-3" onClick={onPause}>Salva e torna al menu</Btn>
         <Btn data-testid="abandon-btn" variant="ghost" className="col-span-3 min-h-[36px] py-1 text-[8px]" onClick={onAbandon}>Abbandona la run</Btn>
       </div>

@@ -5,6 +5,7 @@ import { sfx } from "@/game/audio";
 
 export default function RouteChoiceScreen({ run, choices = [], onSelect }) {
   const [confirmedRoute, setConfirmedRoute] = useState(null);
+  const [isProceeding, setIsProceeding] = useState(false);
 
   const riskConfig = {
     basso: {
@@ -25,12 +26,14 @@ export default function RouteChoiceScreen({ run, choices = [], onSelect }) {
   };
 
   const handleSelect = (route) => {
+    if (isProceeding || confirmedRoute) return;
     sfx.confirm?.();
     setConfirmedRoute(route);
   };
 
   const handleProceed = () => {
-    if (!confirmedRoute) return;
+    if (!confirmedRoute || isProceeding) return;
+    setIsProceeding(true);
     sfx.checkpoint?.();
     onSelect(confirmedRoute.id);
   };
@@ -147,6 +150,7 @@ export default function RouteChoiceScreen({ run, choices = [], onSelect }) {
             <Btn
               variant="primary"
               data-testid="route-confirm-proceed-btn"
+              disabled={isProceeding}
               onClick={handleProceed}
               className="w-full text-[10px] py-2 mt-2 flex items-center justify-center gap-1.5"
             >

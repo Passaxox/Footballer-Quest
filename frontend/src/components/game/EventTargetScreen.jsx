@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { ITEMS, itemPresentation, itemFamilyPresentation } from "@/game/data";
 import { getItemTargetPreview } from "@/game/engine";
 import { sfx } from "@/game/audio";
@@ -7,6 +7,7 @@ import { Check } from "lucide-react";
 
 export default function EventTargetScreen({ run, onApplyTarget, onSkip }) {
   const [selectedUid, setSelectedUid] = useState(null);
+  const [isApplying, setIsApplying] = useState(false);
   const pending = run?.pending;
   const itemId = pending?.itemId;
   const quantity = pending?.quantity || 1;
@@ -131,9 +132,10 @@ export default function EventTargetScreen({ run, onApplyTarget, onSkip }) {
           data-testid="event-confirm-target-btn"
           variant="primary"
           className="w-full min-h-[44px]"
-          disabled={!selectedUid}
+          disabled={!selectedUid || isApplying}
           onClick={() => {
-            if (!selectedUid) return;
+            if (!selectedUid || isApplying) return;
+            setIsApplying(true);
             sfx.confirm();
             onApplyTarget(selectedUid);
             setSelectedUid(null);
@@ -145,7 +147,10 @@ export default function EventTargetScreen({ run, onApplyTarget, onSkip }) {
           data-testid="event-skip-target-btn"
           variant="ghost"
           className="w-full min-h-[38px]"
+          disabled={isApplying}
           onClick={() => {
+            if (isApplying) return;
+            setIsApplying(true);
             sfx.cancel();
             setSelectedUid(null);
             onSkip();

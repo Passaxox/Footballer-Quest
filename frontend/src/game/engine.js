@@ -868,6 +868,9 @@ export const completeNonCombatNode = (run) => {
 export const fuseRunPlayers = (run, a, b, moveFrom) => {
   const cuneoCount = (run.specialResources?.cuneo || run.items?.cuneo) || 0;
   if (cuneoCount <= 0) throw new Error("Serve un Cuneo DNA.");
+  if (a === b || !run.team?.[a] || !run.team?.[b] || run.team[a].fused || run.team[b].fused) {
+    throw new Error("Giocatori non validi per la fusione.");
+  }
   const fused = fusePlayers(run.team[a], run.team[b], moveFrom);
   const activeUid = [run.team[a].uid, run.team[b].uid].includes(run.activeUid) ? fused.uid : run.activeUid;
   const team = run.team.filter((_, i) => i !== a && i !== b);
