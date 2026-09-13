@@ -6,7 +6,7 @@ import { normalizeEventResult, resolveEventChoice, selectEvent, weightedPick } f
 import { createRunRandomCursor, createRunSeed, hashSeed, normalizeRandomState } from "./runRandom";
 import { RARITIES, rarityIdForVersion } from "./rarity";
 import { routeEntry, selectNodeArchetype } from "./routeDeck";
-import { activeSynergies } from "./synergies";
+import { activeSynergies, synergyCritBonus, synergyDamageTakenMultiplier, synergySpeedBonus } from "./synergies";
 
 export const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 export const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -77,20 +77,25 @@ export const sustainHealing = (attacker, actualDamage) => attacker.hp <= 0 ? 0 :
   Math.floor(actualDamage * SUSTAIN_RULE.actualDamageShare),
 ));
 
-export const calcDamage = (att, def, move) => {
+export const calcDamage = (att, def, move, options = {}) => {
   const atk = att.atk * modMult(att.status.atkMod);
   const dfn = def.def * modMult(def.status.defMod);
   const mult = effectiveTypeMultiplier(att, def, move);
-  const crit = chance(move.effect === "crit" ? 30 : 8);
+  const critBase = move.effect === "crit" ? 30 : 8;
+  const critBonus = options?.attackerTeam ? synergyCritBonus(options.attackerTeam) : 0;
+  const crit = chance(critBase + critBonus);
   const stab = move.element === att.element ? 1.1 : 1;
   let dmg = (((2 * att.level) / 5 + 2) * move.power * atk / dfn) / 9 + 2;
   dmg *= mult * stab * (0.88 + Math.random() * 0.12) * (crit ? 1.5 : 1);
   if (def.status.guard) dmg *= 0.5;
+  if (options?.defenderTeam) {
+    dmg *= synergyDamageTakenMultiplier(options.defenderTeam);
+  }
   return { dmg: Math.max(1, Math.round(dmg)), mult, crit };
 };
 
 // Executes one attack; returns updated {att, def, messages}
-export const performAttack = (attacker, defender) => {
+export const performAttack = (attacker, defender, options = {}) => {
   const move = attacker.move;
   let att = { ...attacker, status: { ...attacker.status } };
   let def = { ...defender, status: { ...defender.status } };
@@ -98,7 +103,7 @@ export const performAttack = (attacker, defender) => {
   const hits = move.effect === "multi" ? rand(2, 3) : 1;
   let total = 0;
   for (let i = 0; i < hits; i++) {
-    const { dmg, mult, crit } = calcDamage(att, def, move);
+    const { dmg, mult, crit } = calcDamage(att, def, move, options);
     const real = Math.min(def.hp, Math.round(dmg / (hits > 1 ? 1.6 : 1)));
     def.hp -= real;
     total += real;
@@ -133,12 +138,13 @@ export const applyBurn = (p) => {
   return { p: q, msg: `${p.name} soffre per le fiamme (-${d})!${q.hp === 0 ? ` ${p.name} è KO!` : ""}` };
 };
 
-export const turnOrder = (a, b) => {
+export const turnOrder = (a, b, playerTeam = null) => {
   const pa = a.move.effect === "priority" ? 1 : 0;
   const pb = b.move.effect === "priority" ? 1 : 0;
   if (pa !== pb) return pa > pb ? "player" : "enemy";
-  if (a.spd === b.spd) return chance(50) ? "player" : "enemy";
-  return a.spd > b.spd ? "player" : "enemy";
+  const aSpd = a.spd + (playerTeam ? synergySpeedBonus(playerTeam) : 0);
+  if (aSpd === b.spd) return chance(50) ? "player" : "enemy";
+  return aSpd > b.spd ? "player" : "enemy";
 };
 
 export const resetBattleStatus = (team) => team.map((p) => ({ ...p, status: freshStatus() }));

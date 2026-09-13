@@ -4,7 +4,7 @@ import "@/App.css";
 import { FINAL_WAVE } from "@/game/data";
 import { getRunEvent } from "@/game/events";
 import { advanceRunWave, applyRunEventOutcome, chooseRunEvent, generateWave, recruitChallengePlayer, generateRewards, addItem, grantRunItem, createPlayer, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
-import { synergyRewardMultiplier } from "@/game/synergies";
+import { synergyRewardMultiplier, applyPostBattleSynergyHealing } from "@/game/synergies";
 import { createRunRandomCursor } from "@/game/runRandom";
 import { routeEntry } from "@/game/routeDeck";
 import { loadMeta, saveMeta, loadRun, saveRun, clearRun, recordFinishedRun } from "@/game/storage";
@@ -94,12 +94,13 @@ function App() {
   };
 
   const onWin = (team, items, activeUid, combatReport, nodeModifiers = run.nodeModifiers, temporaryItemsUsed = []) => {
+    const healedTeam = applyPostBattleSynergyHealing(team);
     const xpReport = mergeXpReports(run.pending.progression?.report, combatReport);
     const enc = run.pending;
     const boss = enc.kind === "boss";
-    const rewardMultiplier = (run.temporaryModifiers || []).reduce((multiplier, modifier) => multiplier * (modifier.rewardMultiplier || 1), synergyRewardMultiplier(team));
+    const rewardMultiplier = (run.temporaryModifiers || []).reduce((multiplier, modifier) => multiplier * (modifier.rewardMultiplier || 1), synergyRewardMultiplier(healedTeam));
     const gain = (20 + run.wave * 3) * (boss ? 3 : enc.kind === "team" ? 1.6 : 1) * rewardMultiplier;
-    let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? team.map((p) => ({ ...p, hp: p.maxHp })) : team, items, nodeModifiers, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : {}) },
+    let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? healedTeam.map((p) => ({ ...p, hp: p.maxHp })) : healedTeam, items, nodeModifiers, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : {}) },
       telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] } };
     // Final victory keeps earned growth/money, but has no next-node item phase.
     if (r.wave >= FINAL_WAVE) {

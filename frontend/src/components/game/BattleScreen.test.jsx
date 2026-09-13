@@ -237,3 +237,13 @@ test("V2n Golden Ball battle selection clearly distinguishes KO from disabled li
  await click("item-target-0");expect(attack).not.toHaveBeenCalled();
  expect(find("item-target-1")).not.toBeNull();
 });
+
+test("compact battle active synergies panel renders when team has active synergies", async () => {
+ const run = engine.newRun(["mark", "jack", "axel"]);
+ await setup(run);
+ const panel = find("battle-active-synergies");
+ expect(panel).not.toBeNull();
+ expect(panel.textContent).toContain("INTESE:");
+ expect(panel.textContent).toContain("Intesa di Terra");
+ expect(panel.textContent).toContain("-10% danni subiti");
+});

@@ -82,6 +82,8 @@ test("element synergies are visible, modest and capped", () => {
   const run = newRun(["mark", "jack", "axel", "steve", "jude", "nathan"]);
   const synergies = activeSynergies(run.team);
   expect(synergies).toHaveLength(2);
-  expect(synergyRewardMultiplier(run.team)).toBeCloseTo(1.1025);
-  expect(synergies.every(synergy => synergy.description.includes("+5%"))).toBe(true);
+  expect(synergies.map(s => s.id)).toEqual(["element-terra", "element-fuoco"]);
+  expect(synergies[0].description).toBe("-10% danni subiti in battaglia");
+  expect(synergies[1].description).toBe("+10% probabilità di colpo critico");
+  expect(synergyRewardMultiplier(run.team)).toBe(1);
 });

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { attackFeedback } from "@/game/battleFeedback";
 import { ITEMS, WILD_INTROS, ELEMENTS } from "@/game/data";
 import { performAttack, applyBurn, turnOrder, applyNodeModifiers, addNodeStageModifier, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, removeItem, pick, chance, resolveActiveUid, xpProgress } from "@/game/engine";
+import { activeSynergies } from "@/game/synergies";
 import { sfx } from "@/game/audio";
 import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, ItemTargetCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
@@ -94,7 +95,10 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const doAttack = async (attackerSide) => {
     const a = attackerSide === "player" ? active() : enemy();
     const d = attackerSide === "player" ? enemy() : active();
-    const { att, def, msgs } = performAttack(a, d);
+    const options = attackerSide === "player"
+      ? { attackerTeam: st.team, defenderTeam: st.enemies }
+      : { attackerTeam: st.enemies, defenderTeam: st.team };
+    const { att, def, msgs } = performAttack(a, d, options);
     st.cue = { ...attackFeedback(a, d, def), side: attackerSide, stage: "windup" };
     st.log = [...st.log.slice(-5), msgs[0]]; rr();
     await sleep(450);
@@ -165,7 +169,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     if (st.phase !== "menu") return;
     sfx.confirm();
     st.phase = "busy"; rr();
-    const first = turnOrder(active(), enemy());
+    const first = turnOrder(active(), enemy(), st.team);
     const second = first === "player" ? "enemy" : "player";
     await doAttack(first);
     const defender = first === "player" ? enemy() : active();
@@ -232,6 +236,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const p = active();
   const e = enemy();
   const battleItems = Object.entries(st.items).filter(([id, n]) => ITEMS[id].battle && n > 0);
+  const synergies = activeSynergies(st.team);
 
   return (
     <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1">
@@ -245,6 +250,20 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         <Fighter p={e} side="enemy" hit={st.hit === "enemy"} cue={st.cue} />
         <Fighter p={p} side="player" hit={st.hit === "player"} cue={st.cue} />
       </div>
+
+      {synergies.length > 0 && (
+        <div data-testid="battle-active-synergies" className="mx-3 mt-2 px-2 py-1 bg-[#0b101d]/90 border-2 border-violet-600 flex flex-wrap items-center justify-between gap-1">
+          <span className="font-pixel text-[8px] text-violet-300">INTESE:</span>
+          <div className="flex flex-wrap gap-2">
+            {synergies.map((syn) => (
+              <span key={syn.id} className="font-body text-xs text-slate-200 flex items-center gap-1">
+                <span className={ELEMENTS[syn.element]?.text || "text-white"}>● {syn.label}</span>
+                <span className="text-slate-400">({syn.shortDescription})</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div data-testid="battle-log" className="mx-3 mt-2 bg-[#0b101d] border-4 border-slate-600 p-2 min-h-[84px] font-body text-lg leading-tight text-white">
         {st.log.slice(-3).map((m, i, arr) => (
