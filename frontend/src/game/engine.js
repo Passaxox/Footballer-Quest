@@ -7,6 +7,9 @@ import { createRunRandomCursor, createRunSeed, hashSeed, normalizeRandomState } 
 import { RARITIES, rarityIdForVersion } from "./rarity";
 import { routeEntry, selectNodeArchetype } from "./routeDeck";
 import { activeSynergies, synergyCritBonus, synergyDamageTakenMultiplier, synergySpeedBonus } from "./synergies";
+import { createSegment, isSegmentCheckpoint, normalizeSegmentState } from "./segment";
+import { generateRouteChoices, getRouteById } from "./routeChoices";
+import { selectMiniboss } from "./minibosses";
 
 export const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 export const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -300,11 +303,65 @@ const generateWaveNode = (run, rng, cursor) => {
     });
     return { type: "battle", kind: "boss", teamName: boss.team, intro: boss.intro, enemies };
   }
+
+  // Miniboss Checkpoint: Segment terminal when not facing a major boss
+  if (run.segmentState && isSegmentCheckpoint(run.segmentState)) {
+    const miniboss = selectMiniboss(run, wave, rng);
+    const rawLevel = wave + 1;
+    const level = cappedEnemyLevel(rawLevel, run.team, run.rulesetId, "challenge");
+    const enemies = miniboss.ids.map((id, index) => {
+      const p = spawn(id, level);
+      if (miniboss.captainId ? (p.baseId === miniboss.captainId || p.versionId === miniboss.captainId || p.characterId === miniboss.captainId) : index === 0) {
+        p.isCaptain = true;
+      }
+      return p;
+    });
+    return {
+      type: "battle",
+      kind: "miniboss",
+      minibossId: miniboss.id,
+      teamName: miniboss.team,
+      intro: miniboss.intro,
+      rewardItem: miniboss.rewardItem,
+      bonusExpMultiplier: miniboss.bonusExpMultiplier || 1.25,
+      enemies,
+    };
+  }
+
   const cadenceOffset = hashSeed(run.seed) % 3;
-  const eventDue = wave > 1 && (wave + cadenceOffset) % 3 === 0 && wave - (run.lastEventWave || -10) >= 2;
+  const eventDue = wave > 1 && ((wave + cadenceOffset) % 3 === 0 || wave - (run.lastEventWave || -10) >= 3) && wave - (run.lastEventWave || -10) >= 2;
   const event = eventDue ? selectEvent(run, getScenario(run.scenarioState.id), rng) : null;
   if (event) return { type: "event", eventId: event.eventId };
   const archetype = selectNodeArchetype(run, rng);
+
+  if (archetype.kind === "recovery" || archetype.id === "recovery") {
+    return { type: "recovery", nodeArchetype: "recovery" };
+  }
+
+  if (archetype.kind === "elite" || archetype.id === "elite") {
+    const n = wave < 10 ? 2 : 3;
+    const ids = [];
+    while (ids.length < n) ids.push(pickOpponent(tierForWave(wave), ids));
+    const rawLvl = enemyLevel(wave, run.rulesetId, rng) + 1;
+    const enemyLvl = cappedEnemyLevel(rawLvl, run.team, run.rulesetId, "challenge");
+    const enemies = ids.map((id, index) => {
+      const p = spawn(id, enemyLvl);
+      if (index === 0) p.isCaptain = true;
+      return p;
+    });
+    const eliteRewardPool = ["grinta", "tenuta", "equilibrio", "sigillo", "tessera", "barretta", "impacco"];
+    const rewardItem = eliteRewardPool[Math.floor(rng() * eliteRewardPool.length)];
+    return {
+      type: "battle",
+      kind: "elite",
+      nodeArchetype: "elite",
+      teamName: `Élite ${TEAM_NAMES[Math.floor(rng() * TEAM_NAMES.length)]}`,
+      enemies,
+      rewardItem,
+      bonusExpMultiplier: 1.2,
+    };
+  }
+
   if (archetype.kind === "battle") {
     const solo = rng() * 100 < 60;
     if (solo) {
@@ -390,9 +447,12 @@ export const newRun = (starterIds, difficultyId = "normal", requestedSeed = crea
   const team = starterIds.map(id => createPlayer(id, 3, cursor.uid("starter")));
   const scenarioState = scenarioForWave(null, 1, tierForWave(1), cursor.next);
   const dynamicRoute = options?.dynamicRoute !== undefined ? Boolean(options.dynamicRoute) : (options?.flexibleRoute !== undefined ? Boolean(options.flexibleRoute) : true);
+  const initialRouteId = options?.routeId || "area-metropolitana";
+  const segmentState = createSegment({ wave: 1, segmentState: null }, initialRouteId, cursor.next);
   return normalizeRun({
     ...cursor.patch(), scenarioState, difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
-    wave: 1, team, items: { barretta: 2 }, money: 100, dynamicRoute,
+    wave: 1, team, items: { barretta: 2 }, money: 100, dynamicRoute, segmentState, pendingRouteChoices: null,
+    chosenRoutes: [initialRouteId],
     stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], eventHistory: {}, storyFlags: {},
     temporaryModifiers: [], nodeModifiers: {}, activeNodeItems: [], routeHistory: [], telemetry: {
       itemsOffered: [], itemsChosen: [], temporaryItemsUsed: [], recruitsOffered: [], recruitsAcquired: [], versionsEncountered: [],
@@ -410,8 +470,12 @@ export const normalizeRun = (run) => {
   const rules = getRules(rulesetId);
   const randomState = normalizeRandomState(run);
   const dynamicRoute = Boolean(run.dynamicRoute || run.flexibleRoute || run.storyFlags?.["route-freedom"]);
+  const segmentState = run.segmentState ? normalizeSegmentState(run.segmentState, run.wave) : null;
   return { ...run, ...randomState, scenarioState: normalizeScenarioState(run.scenarioState, run.wave), team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
     dynamicRoute,
+    segmentState,
+    pendingRouteChoices: Array.isArray(run.pendingRouteChoices) ? run.pendingRouteChoices : null,
+    chosenRoutes: Array.isArray(run.chosenRoutes) ? run.chosenRoutes : [],
     rulesetVersion: run.rulesetVersion ?? rules.version,
     seenEvents: Array.isArray(run.seenEvents) ? run.seenEvents : [],
     eventHistory: run.eventHistory && typeof run.eventHistory === "object" ? run.eventHistory : {},
@@ -432,17 +496,53 @@ export const normalizeRun = (run) => {
     activeUid: resolveActiveUid(run.team, run.activeUid) };
 };
 
-export const advanceRunWave = run => normalizeRun({
-  ...run,
-  wave: run.wave + 1,
-  pending: null,
-  nodeModifiers: {},
-  activeNodeItems: [],
-  routeHistory: [...(run.routeHistory || []), routeEntry(run)].filter(Boolean).slice(-60),
-  temporaryModifiers: (run.temporaryModifiers || []).map(modifier => modifier.appliedWave === run.wave
-    ? modifier
-    : { ...modifier, remainingWaves: modifier.remainingWaves - 1 }).filter(modifier => modifier.remainingWaves > 0),
-});
+export const advanceRunWave = run => {
+  const cursor = createRunRandomCursor(run);
+  const hasSegments = Boolean(run.segmentState);
+  const atCheckpoint = hasSegments && isSegmentCheckpoint(run.segmentState);
+
+  let nodeModifiers = run.nodeModifiers;
+  let activeNodeItems = run.activeNodeItems;
+  let segmentState = run.segmentState;
+  let pendingRouteChoices = null;
+
+  if (hasSegments) {
+    if (atCheckpoint) {
+      // Checkpoint reached: clear node modifiers and active node items at checkpoint boundary
+      nodeModifiers = {};
+      activeNodeItems = [];
+      const nextWave = run.wave + 1;
+      pendingRouteChoices = generateRouteChoices({ ...run, wave: nextWave }, 3, cursor.next);
+      const defaultRoute = pendingRouteChoices[0] || getRouteById("area-metropolitana");
+      segmentState = createSegment({ ...run, wave: nextWave, segmentState }, defaultRoute, cursor.next);
+    } else {
+      // Internal step within segment: PERSIST node modifiers and active node items!
+      segmentState = {
+        ...segmentState,
+        step: segmentState.step + 1,
+      };
+    }
+  } else {
+    // Backward compatibility for legacy tests without segmentState
+    nodeModifiers = {};
+    activeNodeItems = [];
+  }
+
+  return normalizeRun({
+    ...run,
+    ...cursor.patch(),
+    wave: run.wave + 1,
+    pending: null,
+    nodeModifiers,
+    activeNodeItems,
+    segmentState,
+    pendingRouteChoices,
+    routeHistory: [...(run.routeHistory || []), routeEntry(run)].filter(Boolean).slice(-60),
+    temporaryModifiers: (run.temporaryModifiers || []).map(modifier => modifier.appliedWave === run.wave
+      ? modifier
+      : { ...modifier, remainingWaves: modifier.remainingWaves - 1 }).filter(modifier => modifier.remainingWaves > 0),
+  });
+};
 
 export const playtestSummary = (run) => ({
   seed: run.seed,
@@ -544,7 +644,7 @@ export const finishCombatReport = (team, report) => {
 // Call only on resolution. Save the result atomically with the wave advance.
 export const completeNonCombatNode = (run) => {
   const pending = run.pending;
-  if (!pending || !["shop", "event", "training", "recruit"].includes(pending.type)
+  if (!pending || !["shop", "event", "training", "recruit", "recovery"].includes(pending.type)
       || pending.context?.after === "rewards" || pending.progression?.hadCombat
       || run.lastProgression?.wave === run.wave) return run;
   const hadOwnXp = pending.progression?.hadOwnXp
@@ -753,3 +853,64 @@ export const canApplyItem = (item, p) => {
 export const glory = (run) => run.stats.wins * 10 + (run.wave - 1) * 15 + run.stats.recruits * 20 + run.stats.fusions * 40;
 
 export const isFinalWave = (wave) => wave >= FINAL_WAVE;
+
+export const applyRouteChoice = (run, routeId, rngOverride = null) => {
+  const cursor = createRunRandomCursor(run);
+  const rng = rngOverride || cursor.next;
+  const route = getRouteById(routeId);
+  const nextSegment = createSegment(run, route, rng);
+  return normalizeRun({
+    ...run,
+    ...cursor.patch(),
+    segmentState: nextSegment,
+    pendingRouteChoices: null,
+    chosenRoutes: [...(run.chosenRoutes || []), route.id],
+  });
+};
+
+export const applyRecoveryOption = (run, optionId) => {
+  let cost = 0;
+  let team = run.team;
+  if (optionId === "rest") {
+    team = team.map(p => {
+      if (p.hp <= 0) return p;
+      return { ...p, hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * 0.35)) };
+    });
+  } else if (optionId === "physio") {
+    cost = 35;
+    if (run.money < cost) throw new Error("Prestigio insufficiente per la fisioterapia.");
+    team = team.map(p => {
+      if (p.hp <= 0) return p;
+      return {
+        ...p,
+        hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * 0.7)),
+        status: { ...p.status, burn: 0 },
+      };
+    });
+  } else if (optionId === "medical") {
+    cost = 60;
+    if (run.money < cost) throw new Error("Prestigio insufficiente per l'intervento medico.");
+    team = team.map(p => {
+      if (p.hp <= 0) {
+        return {
+          ...p,
+          hp: Math.max(1, Math.round(p.maxHp * 0.5)),
+          status: { ...p.status, burn: 0, guard: true },
+        };
+      }
+      return {
+        ...p,
+        hp: p.maxHp,
+        status: { ...p.status, burn: 0 },
+      };
+    });
+  } else {
+    throw new Error(`Opzione recupero non riconosciuta: ${optionId}`);
+  }
+
+  return normalizeRun({
+    ...run,
+    team,
+    money: Math.max(0, run.money - cost),
+  });
+};

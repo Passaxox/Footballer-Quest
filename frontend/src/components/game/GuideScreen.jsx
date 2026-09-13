@@ -136,26 +136,26 @@ export default function GuideScreen({ onBack }) {
         {activeTab === "nodes" && (
           <Panel data-testid="guide-section-nodes" className="space-y-3">
             <h3 className="font-pixel text-[10px] text-amber-300 flex items-center gap-1.5">
-              <MapPin size={14} /> Nodi, Rotte & Progressione
+              <MapPin size={14} /> Struttura Run 2.0: Segmenti, Percorsi & Miniboss
             </h3>
             <p className="text-slate-300">
-              Ogni run si snoda lungo <strong>{FINAL_WAVE} ondate</strong> progressive attraverso scenari e bivi del Football Frontier e dell'Alius Academy.
+              Ogni run si snoda lungo <strong>{FINAL_WAVE} ondate</strong> organizzate in <strong>segmenti multi-passo (2–5 passi)</strong> culminanti in un <em>checkpoint terminale</em>.
             </p>
             <div className="space-y-2 text-sm text-slate-300">
               <div className="p-2 bg-slate-900 border border-slate-700 rounded">
-                <strong className="text-white font-pixel text-[8px]">BATTAGLIE & COMPOSIZIONE:</strong> Incontri singoli (duello 1v1) o contro squadre nemiche (1-3 calciatori standard, formazioni rare da 4 calciatori e assalti d'élite da 5 calciatori a onda avanzata). Il capitano avversario è segnalato dal badge dorato <span className="font-pixel text-[7px] text-amber-300 bg-amber-950/70 border border-amber-500/70 px-1">CAP</span>.
+                <strong className="text-white font-pixel text-[8px]">SEGMENTI & BIVIO STRATEGICO:</strong> Al termine di ogni segmento, una schermata di <em>Scelta Percorso</em> vi permette di pianificare la rotta successiva. Ciascun tragitto (Sentiero Alpino, Zona Alius, Distretto Commerciale, Campi Federali, Circuito Grandi Stadi, Linea Diretta, Zona Costiera) presenta tendenze marcate di apparizione nodi, durata del segmento e livello di rischio.
               </div>
               <div className="p-2 bg-slate-900 border border-slate-700 rounded">
-                <strong className="text-amber-300 font-pixel text-[8px]">CHECKPOINT BOSS DINAMICI:</strong> Alle ondate 10, 20, 30, 40 e 50 vi attendono le formazioni più temibili. Con la <em>Rotta Libera</em>, i boss attingono a pool data-driven in base al seed e allo scenario: Royal Academy, Alpine Jr. High o Gemini Storm (Onda 10); Zeus, Prominence, Diamond Dust o Epsilon (Onda 20); Chaos, Prominence Inferno o Diamond Dust Elite (Onda 30); Genesis, Chaos Prime, Zeus Divina o All-Stars (Onda 40); Little Gigant o Genesis Supreme (Onda 50).
+                <strong className="text-amber-300 font-pixel text-[8px]">CHECKPOINT MINIBOSS & BOSS:</strong> Ogni segmento termina obbligatoriamente con uno scontro decisivo. I checkpoint intermedi schierano <em>Miniboss</em> tematici regionali (Pattuglia Royal, Avanguardia Gemini, Muro Alpine, Stelle Regionali, Pattuglia d'Assalto Epsilon, Avanguardia dei Ghiacci, Fronte Prominence, Rappresentativa Mondiale, Ricognizione Genesis). Alle ondate 10, 20, 30, 40 e 50 vi attendono invece i maestosi <em>Boss Principali</em> con guarigione totale successiva della squadra.
               </div>
               <div className="p-2 bg-slate-900 border border-slate-700 rounded">
-                <strong className="text-emerald-300 font-pixel text-[8px]">INCONTRO / RECLUTAMENTO:</strong> Opportunità di reclutare nuovi calciatori o sfidarli per convincerli a unirsi alla squadra.
+                <strong className="text-rose-300 font-pixel text-[8px]">BATTAGLIE STANDARD ED ÉLITE:</strong> Le battaglie standard variano tra duelli 1v1 e formazioni a squadre (1-3 calciatori standard, 4 rari, 5-6 con sblocco progressivo). Le <em>Battaglie d'Élite</em> schierano avversari potenziati con capitani d'esperienza e ricompense garantite di alto livello.
               </div>
               <div className="p-2 bg-slate-900 border border-slate-700 rounded">
-                <strong className="text-sky-300 font-pixel text-[8px]">MERCANTE / SHOP:</strong> Spendi il Prestigio accumulato per rifornirti di consumabili, bonus nodo e inneschi.
+                <strong className="text-emerald-300 font-pixel text-[8px]">AREA DI RECUPERO:</strong> Nodi di ristoro dedicati che offrono tre opzioni di pronto soccorso: Riposo gratuito (+35% HP), Fisioterapia con rimozione bruciature (35 P) e Intervento Medico Completo con rianimazione compagni KO (60 P).
               </div>
               <div className="p-2 bg-slate-900 border border-slate-700 rounded">
-                <strong className="text-violet-300 font-pixel text-[8px]">ALLENAMENTO & FUSIONE:</strong> Potenzia le statistiche dei compagni o unisci due calciatori tramite il Cuneo DNA per creare un fuoriclasse ibrido.
+                <strong className="text-sky-300 font-pixel text-[8px]">MERCANTE, RECLUTE & ALLENAMENTO:</strong> Nodi interattivi in cui acquistare scorte, accogliere nuovi calciatori tramite reclutamento o sfida, e perfezionare le statistiche con gli allenamenti federali.
               </div>
             </div>
           </Panel>
@@ -177,9 +177,9 @@ export default function GuideScreen({ onBack }) {
                 </p>
               </div>
               <div className="p-2.5 bg-slate-900 border-2 border-amber-600/60 rounded space-y-1">
-                <div className="font-pixel text-[9px] text-amber-300">2. BONUS NODO (Node)</div>
+                <div className="font-pixel text-[9px] text-amber-300">2. BONUS NODO (Node) — PERSISTENZA DI SEGMENTO</div>
                 <p className="text-sm text-slate-300">
-                  <strong>Non occupano spazio nello zaino!</strong> Si attivano istantaneamente all'ottenimento e applicano vantaggi tattici circoscritti alla squadra per la durata del nodo corrente (es. Grinta +1 ATK, Slancio Spericolato, Tessera Scout, Sigillo dello Sfidante). Scadono automaticamente all'avanzare dell'ondata.
+                  <strong>Non occupano spazio nello zaino!</strong> Si attivano istantaneamente all'ottenimento e applicano vantaggi tattici circoscritti alla squadra (es. Grinta +1 ATK, Slancio Spericolato, Tessera Scout, Sigillo dello Sfidante). Con la struttura Run 2.0, i bonus nodo <strong>persistono lungo tutti i passi interni del segmento</strong> e scadono esclusivamente al confine del checkpoint terminale!
                 </p>
               </div>
               <div className="p-2.5 bg-slate-900 border-2 border-emerald-600/60 rounded space-y-1">

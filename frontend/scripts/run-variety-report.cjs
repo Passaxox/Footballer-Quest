@@ -20,7 +20,15 @@ Module._extensions[".js"] = (module, filename) => {
 };
 
 const { simulateRunVariety } = require("../src/game/varietySimulation");
-const seeds = process.argv.slice(2).length ? process.argv.slice(2) : ["beta-01", "beta-02", "beta-03", "beta-04", "beta-05", "beta-06", "beta-07", "beta-08"];
+const defaultSeeds = [
+  "seed-01-alps", "seed-02-alius", "seed-03-raimon", "seed-04-royal",
+  "seed-05-zeus", "seed-06-snow", "seed-07-flame", "seed-08-gemini",
+  "seed-09-chaos", "seed-10-genesis", "seed-11-ocean", "seed-12-storm",
+  "seed-13-glacier", "seed-14-crater", "seed-15-lab", "seed-16-stadium",
+  "seed-17-metropolis", "seed-18-frontier", "seed-19-wild", "seed-20-trio",
+  "seed-21-epsilon", "seed-22-prominence", "seed-23-diamond", "seed-24-champion",
+];
+const seeds = process.argv.slice(2).length ? process.argv.slice(2) : defaultSeeds;
 const reports = simulateRunVariety(seeds);
 const summary = reports.map(report => ({
   seed: report.seed,
@@ -31,10 +39,12 @@ const summary = reports.map(report => ({
   scenarioSequence: report.scenarioSequence,
   nodeSequence: report.nodeSequence,
   bosses: report.bosses,
+  minibosses: report.minibosses,
+  routes: report.routes,
   rarity: report.rarity,
   versions: report.versions,
   recruitOpportunities: report.recruitOpportunities,
   repeatedEvents: report.repeatedEvents,
 }));
 
-console.log(JSON.stringify({ schemaVersion: 1, wavesPerSeed: 30, runs: summary }, null, 2));
+console.log(JSON.stringify({ schemaVersion: 2, wavesPerSeed: 30, seedsSimulated: seeds.length, runs: summary }, null, 2));

@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import "@/App.css";
 import { FINAL_WAVE } from "@/game/data";
 import { getRunEvent } from "@/game/events";
-import { advanceRunWave, applyRunEventOutcome, chooseRunEvent, generateWave, recruitChallengePlayer, generateRewards, addItem, grantRunItem, createPlayer, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
+import { advanceRunWave, applyRunEventOutcome, chooseRunEvent, generateWave, recruitChallengePlayer, generateRewards, addItem, grantRunItem, createPlayer, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, completeNonCombatNode, reportXpChanges, mergeXpReports, applyRouteChoice, applyRecoveryOption } from "@/game/engine";
 import { synergyRewardMultiplier, applyPostBattleSynergyHealing } from "@/game/synergies";
 import { createRunRandomCursor } from "@/game/runRandom";
 import { routeEntry } from "@/game/routeDeck";
@@ -18,6 +18,8 @@ import EventScreen from "@/components/game/EventScreen";
 import ShopScreen from "@/components/game/ShopScreen";
 import RecruitScreen from "@/components/game/RecruitScreen";
 import TrainingScreen from "@/components/game/TrainingScreen";
+import RecoveryScreen from "@/components/game/RecoveryScreen";
+import RouteChoiceScreen from "@/components/game/RouteChoiceScreen";
 import FusionScreen from "@/components/game/FusionScreen";
 import TeamScreen from "@/components/game/TeamScreen";
 import EndScreen from "@/components/game/EndScreen";
@@ -59,11 +61,16 @@ function App() {
     }
     else if (p.type === "recruit") { setCtx({ mode: "encounter", offer: p.player, price: p.price, after: "advance", ...p.context }); setScreen("recruit"); }
     else if (p.type === "reward") { setCtx(p.context); setScreen("reward"); }
+    else if (p.type === "recovery") { setScreen("recovery"); }
     else setScreen(p.type);
   };
 
   const next = () => {
     let r = run;
+    if (r.pendingRouteChoices && r.pendingRouteChoices.length > 0) {
+      setScreen("routeChoice");
+      return;
+    }
     if (!r.pending) {
       const generated = generateWave(r);
       const { scenarioState, seed, rngState, rngCounter, ...pending } = generated;
@@ -91,8 +98,13 @@ function App() {
       finishRun({ ...r, routeHistory: [...(r.routeHistory || []), routeEntry(r)].filter(Boolean).slice(-60) }, "win");
       return;
     }
-    updateRun(advanceRunWave(r));
-    setScreen("hub");
+    const nextRun = advanceRunWave(r);
+    updateRun(nextRun);
+    if (nextRun.pendingRouteChoices && nextRun.pendingRouteChoices.length > 0) {
+      setScreen("routeChoice");
+    } else {
+      setScreen("hub");
+    }
   };
 
   const onWin = (team, items, activeUid, combatReport, nodeModifiers = run.nodeModifiers, temporaryItemsUsed = []) => {
@@ -100,9 +112,12 @@ function App() {
     const xpReport = mergeXpReports(run.pending.progression?.report, combatReport);
     const enc = run.pending;
     const boss = enc.kind === "boss";
+    const miniboss = enc.kind === "miniboss";
+    const elite = enc.kind === "elite";
     const rewardMultiplier = (run.temporaryModifiers || []).reduce((multiplier, modifier) => multiplier * (modifier.rewardMultiplier || 1), synergyRewardMultiplier(healedTeam));
-    const gain = (20 + run.wave * 3) * (boss ? 3 : enc.kind === "team" ? 1.6 : 1) * rewardMultiplier;
-    let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? healedTeam.map((p) => ({ ...p, hp: p.maxHp })) : healedTeam, items, nodeModifiers, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : {}) },
+    const routePrestigeMult = run.segmentState?.prestigeMultiplier || 1;
+    const gain = (20 + run.wave * 3) * (boss ? 3 : miniboss ? 2.2 : elite ? 1.8 : enc.kind === "team" ? 1.6 : 1) * rewardMultiplier * routePrestigeMult;
+    let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? healedTeam.map((p) => ({ ...p, hp: p.maxHp })) : healedTeam, items, nodeModifiers, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : miniboss ? { lastMinibossDefeated: enc.teamName } : {}) },
       telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] } };
     // Final victory keeps earned growth/money, but has no next-node item phase.
     if (r.wave >= FINAL_WAVE) {
@@ -207,6 +222,8 @@ function App() {
         updateRun({ ...granted.run, pending: { ...pending, bought: [...(pending.bought || []), index] } });
       }} onLeave={() => advanceWave(run, true)} />;
       case "training": return <TrainingScreen run={run} onDone={(team, hadOwnXp = false) => advanceWave({ ...run, team, pending: { ...run.pending, progression: { hadOwnXp, report: reportXpChanges(run.team, team, "node") } } }, true)} />;
+      case "recovery": return <RecoveryScreen run={run} onApplyOption={(optId) => { const nextRun = applyRecoveryOption(run, optId); updateRun(nextRun); }} onLeave={() => advanceWave(run, true)} />;
+      case "routeChoice": return <RouteChoiceScreen run={run} choices={run.pendingRouteChoices || []} onSelect={(routeId) => { const nextRun = applyRouteChoice(run, routeId); updateRun(nextRun); setScreen("hub"); }} />;
       case "recruit": return <RecruitScreen onDiscover={onDiscover} run={run} player={ctx.offer} price={ctx.price} mode={ctx.mode} xpReport={ctx.xpReport} onChallenge={challengeRecruit} onJoin={joinTeam} onSkip={() => continueAfterRecruit(run)} />;
       case "end": return <EndScreen run={ctx.finalRun} result={ctx.result} onRetry={() => { setCtx({}); setScreen("select"); }} onHome={() => setScreen("title")} />;
       default: return null;

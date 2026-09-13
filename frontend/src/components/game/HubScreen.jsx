@@ -9,15 +9,32 @@ import { activeSynergies } from "@/game/synergies";
 export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon, onGuide }) {
   const nextBoss = Object.keys(BOSSES).map(Number).find((w) => w >= run.wave);
   const isBoss = !!BOSSES[run.wave];
+  const segment = run.segmentState;
+  const isCheckpoint = isBoss || (segment && segment.step >= segment.length);
+  const checkpointName = isBoss ? "BOSS" : (segment?.checkpointType === "boss" ? "BOSS" : "MINIBOSS");
   const itemCount = Object.values(run.items).reduce((a, b) => a + b, 0);
-  const pendingLabel = run.pending ? ({ battle: "Battaglia in corso", recruit: "Incontro", shop: "Mercante", training: "Allenamento", reward: "Ricompensa", event: "Evento" })[run.pending.type] : null;
+  const pendingLabel = run.pending ? ({ battle: "Battaglia in corso", recruit: "Incontro", shop: "Mercante", training: "Allenamento", recovery: "Area di Recupero", reward: "Ricompensa", event: "Evento" })[run.pending.type] : null;
   const synergies = activeSynergies(run.team);
   return (
     <div data-testid="hub-screen" className="flex flex-col flex-1">
-      <Header title={`Ondata ${run.wave} / ${FINAL_WAVE}`} sub={isBoss ? `BOSS: ${BOSSES[run.wave].team}` : nextBoss ? `Prossimo boss all'ondata ${nextBoss}` : "Finale!"}
+      <Header title={`Ondata ${run.wave} / ${FINAL_WAVE}`} sub={isBoss ? `BOSS: ${BOSSES[run.wave].team}` : isCheckpoint ? `CHECKPOINT: ${checkpointName}` : nextBoss ? `Prossimo boss all'ondata ${nextBoss}` : "Finale!"}
         right={<div className="flex items-center gap-1 font-pixel text-[9px] text-amber-300" data-testid="money-display"><Coins size={12} /> {run.money}</div>} />
       <div className="p-3 space-y-3 flex-1 overflow-y-auto">
-        <div data-testid="run-difficulty" className="font-pixel text-[9px] text-sky-300">{DIFFICULTIES[getRules(run.rulesetId).difficultyId].label}</div>
+        <div className="flex items-center justify-between gap-2">
+          <div data-testid="run-difficulty" className="font-pixel text-[9px] text-sky-300">{DIFFICULTIES[getRules(run.rulesetId).difficultyId].label}</div>
+          {segment && (
+            <div data-testid="segment-status-badge" className="font-pixel text-[8px] bg-slate-900 border border-slate-700 px-2 py-0.5 rounded flex items-center gap-1.5">
+              <span className="text-amber-300">SEG {segment.segmentIndex} · PASSO {segment.step}/{segment.length}</span>
+              {isCheckpoint ? (
+                <span className="text-rose-400 font-bold border border-rose-600/50 px-1 rounded bg-rose-950/40">
+                  {checkpointName}
+                </span>
+              ) : (
+                <span className="text-slate-400">· {segment.routeTitle || "Standard"}</span>
+              )}
+            </div>
+          )}
+        </div>
         <div data-testid="run-seed" className="font-pixel text-[8px] text-slate-400 break-all">Seed: {run.seed}</div>
         <Panel className="font-body text-lg leading-tight text-slate-200">
           <div data-testid="run-scenario" className="text-amber-200 mb-2">{getScenario(run.scenarioState?.id).displayName}</div>
@@ -81,7 +98,7 @@ export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon, onG
                       <span className="text-slate-300 ml-1">· {item.desc}</span>
                     </div>
                     <span className="font-pixel text-[7px] text-amber-300 shrink-0 border border-amber-600/60 px-1 py-0.5 rounded">
-                      Fino a fine nodo
+                      Fino a fine nodo{segment ? ` · Checkpoint (${segment.step}/${segment.length})` : ""}
                     </span>
                   </div>
                 );
@@ -120,7 +137,7 @@ export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon, onG
       </div>
       <div className="p-3 bg-[#111827] border-t-4 border-slate-800 grid grid-cols-3 gap-2">
         <Btn data-testid="team-btn" onClick={onTeam} className="flex items-center justify-center gap-1"><Backpack size={14} /> Squadra ({itemCount})</Btn>
-        <Btn data-testid="next-wave-btn" variant="primary" className="col-span-2" onClick={onNext}>{run.pending ? "Riprendi" : isBoss ? "Affronta il Boss" : "Avanti"}</Btn>
+        <Btn data-testid="next-wave-btn" variant="primary" className="col-span-2" onClick={onNext}>{run.pendingRouteChoices?.length ? "Scegli Percorso" : run.pending ? "Riprendi" : isBoss ? "Affronta il Boss" : isCheckpoint ? "Affronta il Checkpoint" : "Avanti"}</Btn>
         <Btn data-testid="pause-run-btn" className="col-span-3" onClick={onPause}>Salva e torna al menu</Btn>
         <Btn data-testid="abandon-btn" variant="ghost" className="col-span-3 min-h-[36px] py-1 text-[8px]" onClick={onAbandon}>Abbandona la run</Btn>
       </div>

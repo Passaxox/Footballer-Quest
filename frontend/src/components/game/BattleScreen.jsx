@@ -179,7 +179,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         await say(`${encounter.teamName || "L'avversario"} manda in campo ${enemy().name}!`, 900);
       } else {
         sfx.win();
-        await say(encounter.kind === "boss" ? `Avete sconfitto ${encounter.teamName}!` : "Vittoria!", 1100);
+        await say(encounter.kind === "boss" ? `Avete sconfitto ${encounter.teamName}!` : encounter.kind === "miniboss" ? `Avete superato ${encounter.teamName}!` : "Vittoria!", 1100);
         st.phase = "end"; rr();
         onWin(st.team.map((p) => ({ ...p, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false } })), st.items, resolveActiveUid(st.team, active()?.uid), finishCombatReport(st.team, st.xpReport), st.nodeModifiers, st.temporaryItemsUsed);
         return;
@@ -250,7 +250,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   };
 
   const flee = async () => {
-    if (encounter.kind === "boss") { await say("Non puoi fuggire da un boss!", 700); return; }
+    if (encounter.kind === "boss" || encounter.kind === "miniboss") { await say("Non puoi fuggire da questo scontro decisivo!", 700); return; }
     sfx.cancel();
     st.phase = "busy"; rr();
     const ok = chance(45 + Math.max(-30, Math.min(30, (active().spd - enemy().spd) * 2)));
@@ -270,11 +270,13 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1">
       <div className="flex items-center justify-between px-3 py-2 bg-[#111827] border-b-4 border-slate-800">
         <span data-testid="wave-counter-badge" className="font-pixel text-[9px] text-amber-300">ONDATA {run.wave}</span>
-        <span className="font-pixel text-[8px] text-slate-400 uppercase truncate mx-2">{encounter.kind === "boss" ? `BOSS: ${encounter.teamName}` : encounter.teamName || "Sfida"}</span>
+        <span className="font-pixel text-[8px] text-slate-400 uppercase truncate mx-2">
+          {encounter.kind === "boss" ? `BOSS: ${encounter.teamName}` : encounter.kind === "miniboss" ? `MINIBOSS: ${encounter.teamName}` : encounter.kind === "elite" ? `ÉLITE: ${encounter.teamName}` : encounter.teamName || "Sfida"}
+        </span>
         <Dots team={st.enemies} active={st.eIdx} />
       </div>
 
-      <div className={`relative flex flex-col justify-between gap-3 p-3 battle-bg ${encounter.kind === "boss" ? "boss-glow" : ""}`}>
+      <div className={`relative flex flex-col justify-between gap-3 p-3 battle-bg ${encounter.kind === "boss" || encounter.kind === "miniboss" ? "boss-glow" : ""}`}>
         <Fighter p={e} side="enemy" hit={st.hit === "enemy"} cue={st.cue} />
         <Fighter p={p} side="player" hit={st.hit === "player"} cue={st.cue} />
       </div>

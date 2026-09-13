@@ -48,7 +48,12 @@ test("node stage modifiers persist between battles, clamp safely, survive saves 
   expect(applyNodeModifiers(run.team, modifiers)[0].status).toMatchObject({ atkMod: 3, defMod: -2 });
   const loaded = normalizeRun({ ...run, nodeModifiers: modifiers });
   expect(applyNodeModifiers(loaded.team, loaded.nodeModifiers)[0].status.atkMod).toBe(3);
-  expect(advanceRunWave({ ...loaded, pending: { type: "battle", kind: "wild" } }).nodeModifiers).toEqual({});
+  // Node stage modifiers persist across internal segment steps (steps 1..3)
+  const advancedStep = advanceRunWave({ ...loaded, pending: { type: "battle", kind: "wild" } });
+  expect(advancedStep.nodeModifiers).toEqual(modifiers);
+  // And reset at the segment checkpoint boundary
+  const atCheckpoint = { ...loaded, segmentState: { ...loaded.segmentState, step: loaded.segmentState.length } };
+  expect(advanceRunWave({ ...atCheckpoint, pending: { type: "battle", kind: "wild" } }).nodeModifiers).toEqual({});
   expect(normalizeRun({ ...run, nodeModifiers: { [uid]: { atkMod: 99, defMod: -99 } } }).nodeModifiers[uid]).toEqual({ atkMod: 3, defMod: -3 });
 });
 

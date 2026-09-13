@@ -17,7 +17,10 @@ const teamContentUrl = moduleUrl(await source("teamContent.generated"));
 const metadataUrl = moduleUrl((await source("catalogMetadata")).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)));
 const catalogUrl = moduleUrl((await source("catalog")).replace("\"./catalogExpansion\"", JSON.stringify(expansionUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)));
 const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)).replace('"./teamContent.generated"', JSON.stringify(teamContentUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./events"', JSON.stringify(eventsUrl)));
-const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./events"', JSON.stringify(eventsUrl)).replace('"./runRandom"', JSON.stringify(runRandomUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./routeDeck"', JSON.stringify(routeDeckUrl)).replace('"./synergies"', JSON.stringify(synergiesUrl)));
+const routeChoicesUrl = moduleUrl(await source("routeChoices"));
+const segmentUrl = moduleUrl((await source("segment")).replace('"./routeChoices"', JSON.stringify(routeChoicesUrl)));
+const minibossesUrl = moduleUrl(await source("minibosses"));
+const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./events"', JSON.stringify(eventsUrl)).replace('"./runRandom"', JSON.stringify(runRandomUrl)).replace('"./rarity"', JSON.stringify(rarityUrl)).replace('"./routeDeck"', JSON.stringify(routeDeckUrl)).replace('"./synergies"', JSON.stringify(synergiesUrl)).replace('"./segment"', JSON.stringify(segmentUrl)).replace('"./routeChoices"', JSON.stringify(routeChoicesUrl)).replace('"./minibosses"', JSON.stringify(minibossesUrl)));
 
 const data = await import(dataUrl);
 const catalog = await import(catalogUrl);
@@ -110,10 +113,16 @@ test("grantRunItem auto-activates node items, applies stages to nodeModifiers, a
   assert.ok(runWithGrinta.activeNodeItems.includes("grinta"), "activeNodeItems should record grinta");
   assert.equal(runWithGrinta.nodeModifiers.team.atkMod, 1, "Team ATK stage should be incremented to +1");
 
-  // Advance wave: node modifiers and activeNodeItems reset
-  const nextWaveRun = engine.advanceRunWave(runWithGrinta);
-  assert.deepEqual(nextWaveRun.activeNodeItems, [], "activeNodeItems should be empty on next wave");
-  assert.deepEqual(nextWaveRun.nodeModifiers, {}, "nodeModifiers should be empty on next wave");
+  // Advance wave on internal step: node modifiers and activeNodeItems persist throughout segment
+  const nextStepRun = engine.advanceRunWave(runWithGrinta);
+  assert.deepEqual(nextStepRun.activeNodeItems, ["grinta"], "activeNodeItems should persist on internal segment step");
+  assert.equal(nextStepRun.nodeModifiers.team.atkMod, 1, "nodeModifiers should persist on internal segment step");
+
+  // Advance wave at segment checkpoint boundary: node modifiers and activeNodeItems reset
+  const checkpointRun = { ...nextStepRun, segmentState: { ...nextStepRun.segmentState, step: nextStepRun.segmentState.length } };
+  const nextSegmentRun = engine.advanceRunWave(checkpointRun);
+  assert.deepEqual(nextSegmentRun.activeNodeItems, [], "activeNodeItems should be empty at checkpoint boundary");
+  assert.deepEqual(nextSegmentRun.nodeModifiers, {}, "nodeModifiers should be empty at checkpoint boundary");
 });
 
 test("performAttack handles trigger items: firstStrike, lethal endure, burn cleanse, and low-HP recovery", () => {

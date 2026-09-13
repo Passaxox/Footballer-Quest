@@ -6,7 +6,7 @@ import { resolveVersion } from "./catalog";
 export function simulateRunVariety(seeds, waves = 30, starterIds = ["mark", "axel", "jude"]) {
   return seeds.map(seed => {
     let run = newRun(starterIds, "normal", seed);
-    const report = { seed, events: [], eventRarity: {}, scenarios: {}, scenarioSequence: [], nodeSequence: [], bosses: [], rarity: {}, versions: {}, recruitOpportunities: 0, repeatedEvents: [] };
+    const report = { seed, events: [], eventRarity: {}, scenarios: {}, scenarioSequence: [], nodeSequence: [], bosses: [], minibosses: [], routes: [], rarity: {}, versions: {}, recruitOpportunities: 0, repeatedEvents: [] };
     for (let wave = 1; wave <= waves; wave += 1) {
       run = { ...run, wave, pending: null };
       const generated = generateWave(run);
@@ -16,6 +16,7 @@ export function simulateRunVariety(seeds, waves = 30, starterIds = ["mark", "axe
       report.scenarioSequence.push(scenarioState.id);
       report.nodeSequence.push(pending.nodeArchetype || pending.kind || pending.type);
       if (pending.kind === "boss") report.bosses.push({ wave, team: pending.teamName });
+      if (pending.kind === "miniboss") report.minibosses.push({ wave, team: pending.teamName, id: pending.minibossId });
       if (pending.type === "event") {
         report.events.push(pending.eventId);
         const event = RUN_EVENTS.find(candidate => candidate.eventId === pending.eventId);
@@ -32,6 +33,10 @@ export function simulateRunVariety(seeds, waves = 30, starterIds = ["mark", "axe
         report.versions[enemy.versionId] = (report.versions[enemy.versionId] || 0) + 1;
       }
       run = advanceRunWave({ ...run, pending: null });
+      if (run.pendingRouteChoices && run.pendingRouteChoices.length > 0) {
+        const chosen = run.pendingRouteChoices[(wave * 7) % run.pendingRouteChoices.length];
+        report.routes.push({ wave: run.wave, routeId: chosen.id, name: chosen.name });
+      }
     }
     report.repeatedEvents = [...new Set(report.events.filter((id, index) => report.events.indexOf(id) !== index))];
     return report;
