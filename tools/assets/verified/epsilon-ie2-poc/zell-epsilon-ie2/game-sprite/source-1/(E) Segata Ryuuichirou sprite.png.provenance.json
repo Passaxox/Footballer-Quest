@@ -15,5 +15,6 @@
   "approvalsPath": "tools/assets/approvals/epsilon-ie2-poc.approvals.json",
   "stagingPath": "tools/assets/staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E) Segata Ryuuichirou sprite.png",
   "verifiedPath": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png",
-  "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead"
+  "runtimeSpritePath": "frontend/public/sprites/zell-epsilon-ie2.png",
+  "sha256": "2b87d7f8f6a766046995c37cde4e5143767e08c06d452f65b59b4a8efb9b6209"
 }

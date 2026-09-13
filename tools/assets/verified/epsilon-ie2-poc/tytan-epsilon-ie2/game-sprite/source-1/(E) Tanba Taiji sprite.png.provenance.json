@@ -15,5 +15,6 @@
   "approvalsPath": "tools/assets/approvals/epsilon-ie2-poc.approvals.json",
   "stagingPath": "tools/assets/staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E) Tanba Taiji sprite.png",
   "verifiedPath": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png",
-  "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745"
+  "runtimeSpritePath": "frontend/public/sprites/tytan-epsilon-ie2.png",
+  "sha256": "b68f67b1025a2c3085ebb6e8bbfd36979a7ccd10837a76f6c8acb76ff6b793b6"
 }

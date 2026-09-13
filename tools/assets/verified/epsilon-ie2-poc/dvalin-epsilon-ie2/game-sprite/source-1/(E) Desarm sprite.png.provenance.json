@@ -15,5 +15,6 @@
   "approvalsPath": "tools/assets/approvals/epsilon-ie2-poc.approvals.json",
   "stagingPath": "tools/assets/staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E) Desarm sprite.png",
   "verifiedPath": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png",
-  "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca"
+  "runtimeSpritePath": "frontend/public/sprites/dvalin-epsilon-ie2.png",
+  "sha256": "47041533a126fd6d8fd14b0d2f0860a11c04407c7ae8639d89bf09dcf0bbf413"
 }

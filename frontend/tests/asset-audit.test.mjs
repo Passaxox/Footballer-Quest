@@ -78,34 +78,46 @@ test("current catalog audit preserves all 44 legacy files and surfaces existing 
  for(const entry of fixture.entries) assert.equal(report.files.find(f=>f.filename===entry.spriteId+".png").sha256,entry.spriteSha256);
  for(const id of ["jonas:base","austin:base","joseph:base"]) assert.ok(report.versions.find(v=>v.versionId===id).issues.some(i=>i.code==="KNOWN_IDENTITY_WARNING"));
  const image=await readFile(new URL("../public/sprites/mark.png",import.meta.url));
- assert.deepEqual(webpDimensions(image),{width:64,height:64,aspectRatio:1});
- assert.throws(()=>webpDimensions(image.subarray(0,image.length-1)),/RIFF/);
- assert.equal(report.files.find(f=>f.filename==="mark.png").validPng,false);
- assert.ok(report.files.find(f=>f.filename==="mark.png").issues.some(i=>i.code==="EXTENSION_FORMAT_MISMATCH"));
+ assert.deepEqual(inspectPng(image),{width:64,height:64,aspectRatio:1});
+ assert.equal(report.files.find(f=>f.filename==="mark.png").validPng,true);
+ assert.equal(report.files.find(f=>f.filename==="mark.png").sourceFormat,"PNG");
+ assert.equal(report.files.find(f=>f.filename==="mark.png").issues.some(i=>i.code==="EXTENSION_FORMAT_MISMATCH"),false);
 });
 
-test("legacy WebP payloads are warnings and the actual audit CLI exits zero",async()=>{
+test("WebP payload named .png is rejected as a hard error while valid runtime assets pass",async()=>{
  const report=await auditAssets();
  assert.equal(auditExitCode(report),0);
  assert.equal(report.summary.invalidPng,0);
  assert.equal(report.summary.invalidAssets,0);
- const webpFiles=report.files.filter(f=>f.sourceFormat==="WEBP");
- assert.equal(report.summary.extensionFormatMismatches,webpFiles.length);
+ assert.equal(report.summary.extensionFormatMismatches,0);
+ assert.equal(report.files.filter(f=>f.sourceFormat==="PNG").length,report.summary.assetCount);
+ assert.equal(report.files.filter(f=>f.validPng).length,report.summary.assetCount);
  assert.equal(Object.values(report.summary.dimensionBuckets).reduce((sum,count)=>sum+count,0),report.summary.assetCount);
  assert.equal(report.summary.dimensionBuckets["256x256"],2);
- for(const file of webpFiles) {
-  assert.equal(file.validAsset,true);
-  assert.deepEqual(file.issues.find(i=>i.code==="EXTENSION_FORMAT_MISMATCH"),{
-   code:"EXTENSION_FORMAT_MISMATCH",severity:"warning",filename:file.filename,
-   declaredExtension:".png",detectedFormat:"WEBP",width:file.width,height:file.height
-  });
-  assert.ok(!file.issues.some(i=>i.severity==="error"));
- }
+
  const cli=spawnSync(process.execPath,[fileURLToPath(new URL("../scripts/asset-audit.mjs",import.meta.url))],{encoding:"utf8"});
  assert.equal(cli.status,0,cli.stderr);
  const cliSummary=JSON.parse(cli.stdout).summary;
  for(const key of ["assetCount","versionCount","missing","orphans","invalidPng","invalidAssets","extensionFormatMismatches"]) {
   assert.equal(cliSummary[key],report.summary[key],key);
+ }
+
+ const directory=await mkdtemp(path.join(tmpdir(),"footballer-webp-reject-"));
+ try {
+  const vp8lData = Buffer.from([0x2f, 0x00, 0x00, 0x00, 0x00, 0x00]);
+  const vp8lChunk = Buffer.concat([Buffer.from("VP8L"), Buffer.alloc(4), vp8lData]);
+  vp8lChunk.writeUInt32LE(6, 4);
+  const webpBuffer = Buffer.concat([Buffer.from("RIFF"), Buffer.alloc(4), Buffer.from("WEBP"), vp8lChunk]);
+  webpBuffer.writeUInt32LE(webpBuffer.length - 8, 4);
+  await writeFile(path.join(directory, "fake.png"), webpBuffer);
+  const mismatchReport = await auditAssets({ directory, versions: [{ versionId: "fake:base", spriteId: "fake" }] });
+  assert.equal(mismatchReport.summary.extensionFormatMismatches, 1);
+  const mismatchIssue = mismatchReport.files[0].issues.find(i => i.code === "EXTENSION_FORMAT_MISMATCH");
+  assert.ok(mismatchIssue);
+  assert.equal(mismatchIssue.severity, "error");
+  assert.equal(auditExitCode(mismatchReport), 1);
+ } finally {
+  await rm(directory, { recursive: true, force: true });
  }
 });
 

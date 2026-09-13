@@ -10,6 +10,7 @@ import {
   createFetchPlan,
   detectDuplicateCandidates,
   detectImageSignature,
+  ensurePngBuffer,
   ensureSafeImports,
   ensureSafeStaging,
   ensureSafeVerified,
@@ -1120,4 +1121,33 @@ test('verified root must not overlap runtime assets', async () => {
   } finally {
     await rm(verifiedRoot, { recursive: true, force: true });
   }
+});
+
+test('writeImmutableFile rejects non-PNG payloads when target extension is .png', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'fq-png-reject-'));
+  const target = path.join(directory, 'test-sprite.png');
+  try {
+    const fakeWebp = Buffer.from('RIFF....WEBPVP8L');
+    await assert.rejects(
+      () => writeImmutableFile(target, fakeWebp),
+      /Invalid PNG format:.*has extension \.png but does not match PNG signature/
+    );
+    const validPng = png(16, 16);
+    const result = await writeImmutableFile(target, validPng);
+    assert.equal(result.reused, false);
+    assert.equal(result.file, target);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('ensurePngBuffer retains PNG bytes and rejects corrupt payloads', async () => {
+  const validPng = png(8, 8);
+  const retained = await ensurePngBuffer(validPng);
+  assert.equal(retained, validPng);
+
+  await assert.rejects(
+    () => ensurePngBuffer(Buffer.from('not an image at all'), 'corrupt'),
+    /Non-PNG payload detected for PNG target/
+  );
 });

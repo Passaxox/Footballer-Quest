@@ -4,27 +4,27 @@
   "assets": [
     {
       "versionId": "dvalin:epsilon-ie2",
-      "runtimeSpritePath": "frontend/public/sprites/dvalin-epsilon-ie2.png",
       "verifiedSourcePath": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png",
-      "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca"
+      "runtimeSpritePath": "frontend/public/sprites/dvalin-epsilon-ie2.png",
+      "sha256": "47041533a126fd6d8fd14b0d2f0860a11c04407c7ae8639d89bf09dcf0bbf413"
     },
     {
       "versionId": "tytan:epsilon-ie2",
-      "runtimeSpritePath": "frontend/public/sprites/tytan-epsilon-ie2.png",
       "verifiedSourcePath": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png",
-      "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745"
+      "runtimeSpritePath": "frontend/public/sprites/tytan-epsilon-ie2.png",
+      "sha256": "b68f67b1025a2c3085ebb6e8bbfd36979a7ccd10837a76f6c8acb76ff6b793b6"
     },
     {
       "versionId": "krypto:epsilon-ie2",
-      "runtimeSpritePath": "frontend/public/sprites/krypto-epsilon-ie2.png",
       "verifiedSourcePath": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png",
-      "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88"
+      "runtimeSpritePath": "frontend/public/sprites/krypto-epsilon-ie2.png",
+      "sha256": "2b0e0ec93e810da856a613b72f151a8c7729dc3e3aca2f2638fcabf7f5f8d1d0"
     },
     {
       "versionId": "zell:epsilon-ie2",
-      "runtimeSpritePath": "frontend/public/sprites/zell-epsilon-ie2.png",
       "verifiedSourcePath": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png",
-      "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead"
+      "runtimeSpritePath": "frontend/public/sprites/zell-epsilon-ie2.png",
+      "sha256": "2b87d7f8f6a766046995c37cde4e5143767e08c06d452f65b59b4a8efb9b6209"
     }
   ]
 }

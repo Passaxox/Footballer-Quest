@@ -114,7 +114,7 @@ export async function auditAssets({directory=path.join(frontend,"public/sprites"
       file.issues.push({code:file.sourceFormat==="PNG"?"INVALID_PNG":file.sourceFormat==="WEBP"?"INVALID_WEBP":"UNSUPPORTED_FORMAT",severity:"error",message:error.message});
     }
     if(file.validAsset && file.extension!==`.${file.sourceFormat.toLowerCase()}`) {
-      file.issues.push({code:"EXTENSION_FORMAT_MISMATCH",severity:"warning",filename:file.filename,declaredExtension:file.extension,detectedFormat:file.sourceFormat,width:file.width,height:file.height});
+      file.issues.push({code:"EXTENSION_FORMAT_MISMATCH",severity:"error",filename:file.filename,declaredExtension:file.extension,detectedFormat:file.sourceFormat,width:file.width,height:file.height});
     }
     if(file.width && file.width!==file.height) file.issues.push({code:"NON_SQUARE_SOURCE",severity:"warning"});
     files.push(file);
@@ -134,8 +134,8 @@ export async function auditAssets({directory=path.join(frontend,"public/sprites"
   for(const file of files) {
     if(!file.versionIds.length) file.issues.push({code:"ORPHAN_ASSET",severity:"warning"});
     if(file.versionIds.length>1) file.issues.push({code:"MULTIPLE_VERSION_REFERENCE",severity:"warning"});
-    file.status=!file.versionIds.length?"ORPHAN":file.issues.length?"WARNING":"READY";
-    for(const reference of references.filter(r=>r.filename===file.filename)) if(file.issues.length) reference.status="WARNING";
+    file.status=!file.versionIds.length?"ORPHAN":file.issues.some(i=>i.severity==="error")?"ERROR":file.issues.length?"WARNING":"READY";
+    for(const reference of references.filter(r=>r.filename===file.filename)) if(file.issues.length) reference.status=file.issues.some(i=>i.severity==="error")?"ERROR":"WARNING";
   }
   const dimensionBuckets={};
   for(const f of files.filter(f=>f.width && f.height)) {const key=`${f.width}x${f.height}`;dimensionBuckets[key]=(dimensionBuckets[key]||0)+1;}

@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "manifestId": "epsilon-ie2-poc",
   "title": "Footballer Quest Asset Factory proof-of-concept — IE2 Epsilon",
-  "generatedAt": "2026-09-10T17:02:00.268Z",
   "manifestPath": "tools/assets/manifests/epsilon-ie2-poc.json",
   "approvalsPath": "tools/assets/approvals/epsilon-ie2-poc.approvals.json",
   "stagingRoot": "tools/assets/staging/epsilon-ie2-poc",
+  "importsRoot": "tools/assets/imports",
   "verifiedRoot": "tools/assets/verified",
   "contactSheetPath": "tools/assets/reports/epsilon-ie2-poc.contact-sheet.html",
   "markdownReportPath": "tools/assets/reports/epsilon-ie2-poc.report.md",
@@ -26,6 +26,7 @@
       "canonicalCharacterId": "dvalin",
       "versionId": "dvalin:epsilon-ie2",
       "displayName": "Dvalin / Desarm",
+      "runtimeSpriteId": "dvalin-epsilon-ie2",
       "teamId": "epsilon",
       "gameOrigin": "footballer-quest",
       "sourceGame": "ie2",
@@ -77,8 +78,10 @@
         "IMMUTABLE_REUSE",
         "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
       ],
-      "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca",
+      "sha256": "47041533a126fd6d8fd14b0d2f0860a11c04407c7ae8639d89bf09dcf0bbf413",
       "sourceFilename": "(E) Desarm sprite.png",
+      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png.provenance.json",
       "sources": [
         {
           "sourceKey": "source-1",
@@ -92,21 +95,24 @@
           "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E) Desarm sprite.png",
           "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png",
           "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png.provenance.json",
-          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E)%20Desarm%20sprite.png",
+          "contactSheetImageUrl": "../verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E)%20Desarm%20sprite.png",
           "width": 64,
           "height": 64,
-          "mimeType": "image/webp",
-          "detectedFormat": "WEBP",
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
           "hasAlpha": true,
-          "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca",
-          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Desarm sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+          "sha256": "47041533a126fd6d8fd14b0d2f0860a11c04407c7ae8639d89bf09dcf0bbf413",
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Desarm sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
           "validationWarnings": [
             "IMMUTABLE_REUSE"
           ],
           "verificationEvidence": [
             "existing-staged-original",
             "human-approval"
-          ]
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
         },
         {
           "sourceKey": "source-2",
@@ -123,38 +129,41 @@
           "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/Saginuma_Osamu.png",
           "width": 612,
           "height": 612,
-          "mimeType": "image/webp",
-          "detectedFormat": "WEBP",
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
           "hasAlpha": false,
-          "sha256": "7da352a64eb450df96dd66248556cf31b5ff17a3758d71b2b52aaa71ac03c1b3",
-          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Saginuma_Osamu.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 612x612; alpha=false.",
+          "sha256": "e4c1eafb4235691bc28ca872eed2177f2632db8068cc487a3e57caf6ef50633c",
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Saginuma_Osamu.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 612x612; alpha=false.",
           "validationWarnings": [
             "IMMUTABLE_REUSE",
             "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
           ],
           "verificationEvidence": [
             "existing-staged-original"
-          ]
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
         }
       ],
       "sourceSuitability": "GAME-SPRITE",
-      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png",
-      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E) Desarm sprite.png.provenance.json",
-      "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E)%20Desarm%20sprite.png",
-      "mimeType": "image/webp",
-      "detectedFormat": "WEBP",
+      "contactSheetImageUrl": "../verified/epsilon-ie2-poc/dvalin-epsilon-ie2/game-sprite/source-1/(E)%20Desarm%20sprite.png",
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
       "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/dvalin-epsilon-ie2.png",
       "approval": {
         "decision": "ASSET-VERIFIED",
         "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/dvalin-epsilon-ie2/game-sprite/(E) Desarm sprite.png",
         "sourceFilename": "(E) Desarm sprite.png",
-        "sha256": "60d626bfc83bffcb2e0cc5539a10eb15c1f080c10aff47d91c2a0565a5eb32ca"
+        "sha256": "47041533a126fd6d8fd14b0d2f0860a11c04407c7ae8639d89bf09dcf0bbf413"
       }
     },
     {
       "canonicalCharacterId": "tytan",
       "versionId": "tytan:epsilon-ie2",
       "displayName": "Tytan / Titan",
+      "runtimeSpriteId": "tytan-epsilon-ie2",
       "teamId": "epsilon",
       "gameOrigin": "footballer-quest",
       "sourceGame": "ie2",
@@ -206,8 +215,10 @@
         "IMMUTABLE_REUSE",
         "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
       ],
-      "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745",
+      "sha256": "b68f67b1025a2c3085ebb6e8bbfd36979a7ccd10837a76f6c8acb76ff6b793b6",
       "sourceFilename": "(E) Tanba Taiji sprite.png",
+      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png.provenance.json",
       "sources": [
         {
           "sourceKey": "source-1",
@@ -221,21 +232,24 @@
           "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E) Tanba Taiji sprite.png",
           "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png",
           "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png.provenance.json",
-          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E)%20Tanba%20Taiji%20sprite.png",
+          "contactSheetImageUrl": "../verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E)%20Tanba%20Taiji%20sprite.png",
           "width": 64,
           "height": 64,
-          "mimeType": "image/webp",
-          "detectedFormat": "WEBP",
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
           "hasAlpha": true,
-          "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745",
-          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Tanba Taiji sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+          "sha256": "b68f67b1025a2c3085ebb6e8bbfd36979a7ccd10837a76f6c8acb76ff6b793b6",
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Tanba Taiji sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
           "validationWarnings": [
             "IMMUTABLE_REUSE"
           ],
           "verificationEvidence": [
             "existing-staged-original",
             "human-approval"
-          ]
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
         },
         {
           "sourceKey": "source-2",
@@ -252,38 +266,41 @@
           "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/Tanba_Taiji.png",
           "width": 666,
           "height": 830,
-          "mimeType": "image/webp",
-          "detectedFormat": "WEBP",
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
           "hasAlpha": false,
-          "sha256": "6b407aacfb350713294601616c2a6eab8edc54829235637aba7bf3f51964f960",
-          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Tanba_Taiji.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 666x830; alpha=false.",
+          "sha256": "224fc551dcc47a08f37a1ce2e5af6b768a8379c4a115dffb13c8d5ffa6838d11",
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Tanba_Taiji.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 666x830; alpha=false.",
           "validationWarnings": [
             "IMMUTABLE_REUSE",
             "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
           ],
           "verificationEvidence": [
             "existing-staged-original"
-          ]
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
         }
       ],
       "sourceSuitability": "GAME-SPRITE",
-      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png",
-      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E) Tanba Taiji sprite.png.provenance.json",
-      "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E)%20Tanba%20Taiji%20sprite.png",
-      "mimeType": "image/webp",
-      "detectedFormat": "WEBP",
+      "contactSheetImageUrl": "../verified/epsilon-ie2-poc/tytan-epsilon-ie2/game-sprite/source-1/(E)%20Tanba%20Taiji%20sprite.png",
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
       "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/tytan-epsilon-ie2.png",
       "approval": {
         "decision": "ASSET-VERIFIED",
         "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/tytan-epsilon-ie2/game-sprite/(E) Tanba Taiji sprite.png",
         "sourceFilename": "(E) Tanba Taiji sprite.png",
-        "sha256": "4ff2195e2deb061e47ccfcff96442ce5281d6c6723fdf443030ed3c368d6b745"
+        "sha256": "b68f67b1025a2c3085ebb6e8bbfd36979a7ccd10837a76f6c8acb76ff6b793b6"
       }
     },
     {
       "canonicalCharacterId": "krypto",
       "versionId": "krypto:epsilon-ie2",
       "displayName": "Krypto",
+      "runtimeSpriteId": "krypto-epsilon-ie2",
       "teamId": "epsilon",
       "gameOrigin": "footballer-quest",
       "sourceGame": "ie2",
@@ -335,8 +352,10 @@
         "IMMUTABLE_REUSE",
         "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
       ],
-      "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88",
+      "sha256": "2b0e0ec93e810da856a613b72f151a8c7729dc3e3aca2f2638fcabf7f5f8d1d0",
       "sourceFilename": "(E) Kuri Fuuko sprite.png",
+      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png.provenance.json",
       "sources": [
         {
           "sourceKey": "source-1",
@@ -350,21 +369,24 @@
           "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E) Kuri Fuuko sprite.png",
           "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png",
           "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png.provenance.json",
-          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E)%20Kuri%20Fuuko%20sprite.png",
+          "contactSheetImageUrl": "../verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E)%20Kuri%20Fuuko%20sprite.png",
           "width": 64,
           "height": 64,
-          "mimeType": "image/webp",
-          "detectedFormat": "WEBP",
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
           "hasAlpha": true,
-          "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88",
-          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Kuri Fuuko sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+          "sha256": "2b0e0ec93e810da856a613b72f151a8c7729dc3e3aca2f2638fcabf7f5f8d1d0",
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Kuri Fuuko sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
           "validationWarnings": [
             "IMMUTABLE_REUSE"
           ],
           "verificationEvidence": [
             "existing-staged-original",
             "human-approval"
-          ]
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
         },
         {
           "sourceKey": "source-2",
@@ -381,38 +403,41 @@
           "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/Kuri_Fuuko.png",
           "width": 508,
           "height": 642,
-          "mimeType": "image/webp",
-          "detectedFormat": "WEBP",
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
           "hasAlpha": false,
-          "sha256": "97be41b833dddc9f7504d30351c08f68fad7773af11ab6d0049b00424a44249d",
-          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Kuri_Fuuko.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 508x642; alpha=false.",
+          "sha256": "baea471427a3f474d41501977d8b2651f641866d316f1a7375acc22fae22b491",
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Kuri_Fuuko.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 508x642; alpha=false.",
           "validationWarnings": [
             "IMMUTABLE_REUSE",
             "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
           ],
           "verificationEvidence": [
             "existing-staged-original"
-          ]
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
         }
       ],
       "sourceSuitability": "GAME-SPRITE",
-      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png",
-      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png.provenance.json",
-      "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E)%20Kuri%20Fuuko%20sprite.png",
-      "mimeType": "image/webp",
-      "detectedFormat": "WEBP",
+      "contactSheetImageUrl": "../verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E)%20Kuri%20Fuuko%20sprite.png",
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
       "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/krypto-epsilon-ie2.png",
       "approval": {
         "decision": "ASSET-VERIFIED",
         "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E) Kuri Fuuko sprite.png",
         "sourceFilename": "(E) Kuri Fuuko sprite.png",
-        "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88"
+        "sha256": "2b0e0ec93e810da856a613b72f151a8c7729dc3e3aca2f2638fcabf7f5f8d1d0"
       }
     },
     {
       "canonicalCharacterId": "zell",
       "versionId": "zell:epsilon-ie2",
       "displayName": "Zell / Zel",
+      "runtimeSpriteId": "zell-epsilon-ie2",
       "teamId": "epsilon",
       "gameOrigin": "footballer-quest",
       "sourceGame": "ie2",
@@ -464,8 +489,10 @@
         "IMMUTABLE_REUSE",
         "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
       ],
-      "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead",
+      "sha256": "2b87d7f8f6a766046995c37cde4e5143767e08c06d452f65b59b4a8efb9b6209",
       "sourceFilename": "(E) Segata Ryuuichirou sprite.png",
+      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png",
+      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png.provenance.json",
       "sources": [
         {
           "sourceKey": "source-1",
@@ -479,21 +506,24 @@
           "outputFile": "tools/assets/staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E) Segata Ryuuichirou sprite.png",
           "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png",
           "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png.provenance.json",
-          "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E)%20Segata%20Ryuuichirou%20sprite.png",
+          "contactSheetImageUrl": "../verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E)%20Segata%20Ryuuichirou%20sprite.png",
           "width": 64,
           "height": 64,
-          "mimeType": "image/webp",
-          "detectedFormat": "WEBP",
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
           "hasAlpha": true,
-          "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead",
-          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Segata Ryuuichirou sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
+          "sha256": "2b87d7f8f6a766046995c37cde4e5143767e08c06d452f65b59b4a8efb9b6209",
+          "provenanceNote": "Verified exact standard Epsilon IE2 sprite source. Original downloaded filename preserved as (E) Segata Ryuuichirou sprite.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 64x64; alpha=true. Explicit human approval recorded in tools/assets/approvals/epsilon-ie2-poc.approvals.json.",
           "validationWarnings": [
             "IMMUTABLE_REUSE"
           ],
           "verificationEvidence": [
             "existing-staged-original",
             "human-approval"
-          ]
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
         },
         {
           "sourceKey": "source-2",
@@ -510,32 +540,34 @@
           "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/Segata_Ryuuichirou.png",
           "width": 720,
           "height": 720,
-          "mimeType": "image/webp",
-          "detectedFormat": "WEBP",
+          "mimeType": "image/png",
+          "detectedFormat": "PNG",
           "hasAlpha": false,
-          "sha256": "b3a7d54ec5523043d385cfb30b6713c79abb56e913827438e8364a9551ae9cd0",
-          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Segata_Ryuuichirou.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/webp 720x720; alpha=false.",
+          "sha256": "3adfe8ed7635074dc6c76330ec264a17702ebdecf4b99a391c18370bf483657a",
+          "provenanceNote": "Fallback generic character-page image kept only as review evidence when no exact IE2 sprite/headshot mapping is available. Original downloaded filename preserved as Segata_Ryuuichirou.png. Regenerated report/contact sheet from existing staged original without redownload. Detected image/png 720x720; alpha=false.",
           "validationWarnings": [
             "IMMUTABLE_REUSE",
             "SOURCE_UNSUITABLE:GENERIC-CHARACTER-IMAGE"
           ],
           "verificationEvidence": [
             "existing-staged-original"
-          ]
+          ],
+          "importStatus": null,
+          "plannedImportDestination": null,
+          "importMatches": []
         }
       ],
       "sourceSuitability": "GAME-SPRITE",
-      "verifiedFile": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png",
-      "verifiedProvenanceFile": "tools/assets/verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E) Segata Ryuuichirou sprite.png.provenance.json",
-      "contactSheetImageUrl": "../staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E)%20Segata%20Ryuuichirou%20sprite.png",
-      "mimeType": "image/webp",
-      "detectedFormat": "WEBP",
+      "contactSheetImageUrl": "../verified/epsilon-ie2-poc/zell-epsilon-ie2/game-sprite/source-1/(E)%20Segata%20Ryuuichirou%20sprite.png",
+      "mimeType": "image/png",
+      "detectedFormat": "PNG",
       "hasAlpha": true,
+      "runtimeSpritePath": "frontend/public/sprites/zell-epsilon-ie2.png",
       "approval": {
         "decision": "ASSET-VERIFIED",
         "candidatePath": "tools/assets/staging/epsilon-ie2-poc/originals/zell-epsilon-ie2/game-sprite/(E) Segata Ryuuichirou sprite.png",
         "sourceFilename": "(E) Segata Ryuuichirou sprite.png",
-        "sha256": "aa302babb59fe21ab2983eead80ac9884c10fdedef0b30cf323b174c14211ead"
+        "sha256": "2b87d7f8f6a766046995c37cde4e5143767e08c06d452f65b59b4a8efb9b6209"
       }
     }
   ]

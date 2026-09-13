@@ -15,5 +15,6 @@
   "approvalsPath": "tools/assets/approvals/epsilon-ie2-poc.approvals.json",
   "stagingPath": "tools/assets/staging/epsilon-ie2-poc/originals/krypto-epsilon-ie2/game-sprite/(E) Kuri Fuuko sprite.png",
   "verifiedPath": "tools/assets/verified/epsilon-ie2-poc/krypto-epsilon-ie2/game-sprite/source-1/(E) Kuri Fuuko sprite.png",
-  "sha256": "cd39ffffc4adba943370cf7ca451e335c50162d564af0e0a1e4cb30e9ccb7b88"
+  "runtimeSpritePath": "frontend/public/sprites/krypto-epsilon-ie2.png",
+  "sha256": "2b0e0ec93e810da856a613b72f151a8c7729dc3e3aca2f2638fcabf7f5f8d1d0"
 }

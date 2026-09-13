@@ -222,7 +222,23 @@ export async function hashDirectory(directory) {
   return entries;
 }
 
+export async function ensurePngBuffer(buffer, context = '') {
+  if (buffer.subarray(0, 8).equals(pngSignature)) {
+    return buffer;
+  }
+  try {
+    const sharpModule = await import('sharp');
+    const sharp = sharpModule.default || sharpModule;
+    return await sharp(buffer).png({ compressionLevel: 9 }).toBuffer();
+  } catch (error) {
+    throw new Error(`Non-PNG payload detected for PNG target${context ? ` (${context})` : ''}: ${error.message}`);
+  }
+}
+
 export async function writeImmutableFile(file, buffer) {
+  if (file.toLowerCase().endsWith('.png') && !buffer.subarray(0, 8).equals(pngSignature)) {
+    throw new Error(`Invalid PNG format: ${relativeFromRoot(file)} has extension .png but does not match PNG signature`);
+  }
   try {
     await writeFile(file, buffer, { flag: 'wx' });
     return { reused: false, file };
@@ -753,8 +769,11 @@ function verifiedDirectory(verifiedRoot, manifestId, target, source) {
 
 async function promoteApprovedSource({ manifestId, approvalsPath, verifiedRoot, target, source, actualHash }) {
   const stagingFile = path.resolve(root, source.outputFile);
-  const buffer = await readFile(stagingFile);
+  let buffer = await readFile(stagingFile);
   const fileName = source.sourceFilename ?? path.basename(source.outputFile);
+  if (fileName.toLowerCase().endsWith('.png') && !buffer.subarray(0, 8).equals(pngSignature)) {
+    buffer = await ensurePngBuffer(buffer, fileName);
+  }
   const destinationDir = verifiedDirectory(verifiedRoot, manifestId, target, source);
   const verifiedBinaryPath = path.join(destinationDir, fileName);
   const provenancePath = path.join(destinationDir, `${fileName}.provenance.json`);
@@ -763,6 +782,9 @@ async function promoteApprovedSource({ manifestId, approvalsPath, verifiedRoot, 
   let runtimeSpritePath = null;
   if (target.runtimeSpriteId) {
     runtimeSpritePath = path.join(runtimeSpritesDir, `${target.runtimeSpriteId}.png`);
+    if (!buffer.subarray(0, 8).equals(pngSignature)) {
+      buffer = await ensurePngBuffer(buffer, `${target.runtimeSpriteId}.png`);
+    }
     await writeImmutableFile(runtimeSpritePath, buffer);
   }
   const provenance = {
@@ -1039,17 +1061,21 @@ export async function runAssetFactory({
             target.sources.push(sourceRecord);
             continue;
           }
-          const signature = detectImageSignature(imported.file.buffer);
+          let candidateBuffer = imported.file.buffer;
+          if (imported.file.filename.toLowerCase().endsWith('.png') && !candidateBuffer.subarray(0, 8).equals(pngSignature)) {
+            candidateBuffer = await ensurePngBuffer(candidateBuffer, imported.file.filename);
+          }
+          const signature = detectImageSignature(candidateBuffer);
           const destination = path.join(sourceDirectory(originalsDir, target, sourceRecord), imported.file.filename);
           if (!isSubpath(stagingDir, destination) || isSubpath(runtimeSpritesDir, destination)) throw new Error('Unsafe staging destination');
           await mkdir(path.dirname(destination), { recursive: true });
-          const staged = await writeImmutableFile(destination, imported.file.buffer);
+          const staged = await writeImmutableFile(destination, candidateBuffer);
           applyResolvedSourceRecord({
             record: sourceRecord,
             reportPath,
             stagedPath: destination,
             fileName: imported.file.filename,
-            buffer: imported.file.buffer,
+            buffer: candidateBuffer,
             signature,
             reused: staged.reused
           });
@@ -1087,9 +1113,13 @@ export async function runAssetFactory({
           target.sources.push(sourceRecord);
           continue;
         }
-        const buffer = await adapter.downloadBinary(resolved.binaryUrl, resolved.alternateBinaryUrls);
-        const signature = detectImageSignature(buffer);
+        let buffer = await adapter.downloadBinary(resolved.binaryUrl, resolved.alternateBinaryUrls);
+        let signature = detectImageSignature(buffer);
         const fileName = filenameFromFileTitle(resolved.fileTitle) ?? `${safeName(target.versionId)}${mimeExtension(signature.mime)}`;
+        if (fileName.toLowerCase().endsWith('.png') && !buffer.subarray(0, 8).equals(pngSignature)) {
+          buffer = await ensurePngBuffer(buffer, fileName);
+          signature = detectImageSignature(buffer);
+        }
         const destination = path.join(sourceDirectory(originalsDir, target, sourceRecord), fileName);
         if (!isSubpath(stagingDir, destination) || isSubpath(runtimeSpritesDir, destination)) throw new Error('Unsafe staging destination');
         await mkdir(path.dirname(destination), { recursive: true });
