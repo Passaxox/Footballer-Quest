@@ -1,12 +1,12 @@
 import { getScenario } from "@/game/scenarios";
-import { BOSSES, FINAL_WAVE } from "@/game/data";
+import { BOSSES, FINAL_WAVE, ITEMS } from "@/game/data";
 import { glory } from "@/game/engine";
 import { DIFFICULTIES, getRules } from "@/game/rules";
 import { Btn, Header, Panel, PlayerCard, XpReport } from "./ui";
-import { Coins, Backpack } from "lucide-react";
+import { Coins, Backpack, Sparkles, BookOpen } from "lucide-react";
 import { activeSynergies } from "@/game/synergies";
 
-export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon }) {
+export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon, onGuide }) {
   const nextBoss = Object.keys(BOSSES).map(Number).find((w) => w >= run.wave);
   const isBoss = !!BOSSES[run.wave];
   const itemCount = Object.values(run.items).reduce((a, b) => a + b, 0);
@@ -32,10 +32,87 @@ export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon }) {
           <span>Vittorie {run.stats.wins} · Reclutati {run.stats.recruits} · Fusioni {run.stats.fusions}</span>
           <span className="text-purple-300">Gloria {glory(run)}</span>
         </div>
-        {synergies.length > 0 && <Panel data-testid="active-synergies" className="font-body text-base border-violet-600">
-          <div className="font-pixel text-[8px] text-violet-300 mb-1">INTESE ATTIVE {synergies.length}/2</div>
-          {synergies.map(synergy => <div key={synergy.id}>{synergy.label} ({synergy.members}) · {synergy.description}</div>)}
-        </Panel>}
+        {/* Unified BONUS NODO Section */}
+        <Panel data-testid="bonus-nodo" className="font-body text-base border-violet-600 space-y-2">
+          <div className="flex items-center justify-between border-b border-violet-800/60 pb-1">
+            <div className="font-pixel text-[8px] text-violet-300 flex items-center gap-1">
+              <Sparkles size={12} /> BONUS NODO & INTESE
+            </div>
+            {onGuide && (
+              <button
+                type="button"
+                data-testid="hub-guide-btn"
+                onClick={onGuide}
+                className="font-pixel text-[8px] text-amber-300 hover:text-amber-200 underline flex items-center gap-1"
+              >
+                <BookOpen size={10} /> Guida rapida
+              </button>
+            )}
+          </div>
+
+          {/* Elemental Synergies */}
+          {synergies.length > 0 && (
+            <div data-testid="active-synergies" className="space-y-1">
+              <div className="font-pixel text-[7px] text-slate-400 uppercase">Intese Elementali ({synergies.length}/2):</div>
+              {synergies.map(synergy => (
+                <div key={synergy.id} className="flex items-start justify-between gap-1 text-sm bg-violet-950/30 p-1.5 rounded border border-violet-800/40">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-pixel text-[8px] text-white">{synergy.label} ({synergy.members})</span>
+                    <span className="text-slate-300">· {synergy.description}</span>
+                  </div>
+                  <span className="font-pixel text-[7px] text-violet-300 shrink-0 border border-violet-600/60 px-1 py-0.5 rounded">
+                    Permanente nella run
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Auto-activated Node Items */}
+          {(run.activeNodeItems || []).length > 0 && (
+            <div data-testid="active-node-items" className="space-y-1">
+              <div className="font-pixel text-[7px] text-slate-400 uppercase">Oggetti Nodo Attivi:</div>
+              {(run.activeNodeItems || []).map((itemId, idx) => {
+                const item = ITEMS[itemId] || { name: itemId, desc: "Bonus attivo per questo nodo." };
+                return (
+                  <div key={`${itemId}-${idx}`} className="flex items-start justify-between gap-1 text-sm bg-amber-950/30 p-1.5 rounded border border-amber-800/40">
+                    <div>
+                      <strong className="text-amber-200">{item.name}</strong>
+                      <span className="text-slate-300 ml-1">· {item.desc}</span>
+                    </div>
+                    <span className="font-pixel text-[7px] text-amber-300 shrink-0 border border-amber-600/60 px-1 py-0.5 rounded">
+                      Fino a fine nodo
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Temporary Event / Scenario Modifiers */}
+          {(run.temporaryModifiers || []).length > 0 && (
+            <div data-testid="active-temporary-modifiers" className="space-y-1">
+              <div className="font-pixel text-[7px] text-slate-400 uppercase">Modificatori Evento:</div>
+              {(run.temporaryModifiers || []).map((mod, idx) => (
+                <div key={idx} className="flex items-start justify-between gap-1 text-sm bg-sky-950/30 p-1.5 rounded border border-sky-800/40">
+                  <div>
+                    <strong className="text-sky-200">{mod.label || "Modificatore"}</strong>
+                    <span className="text-slate-300 ml-1">· {mod.description || JSON.stringify(mod.effect)}</span>
+                  </div>
+                  <span className="font-pixel text-[7px] text-sky-300 shrink-0 border border-sky-600/60 px-1 py-0.5 rounded">
+                    {mod.remainingWaves} {mod.remainingWaves === 1 ? "nodo rimanente" : "nodi rimanenti"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {synergies.length === 0 && (run.activeNodeItems || []).length === 0 && (run.temporaryModifiers || []).length === 0 && (
+            <div className="text-sm text-slate-400 italic py-1">
+              Nessun bonus attivo al momento. Schiera 2+ compagni dello stesso elemento o ottieni oggetti nodo per attivare vantaggi tattici.
+            </div>
+          )}
+        </Panel>
         <XpReport report={!run.pending ? run.lastProgression?.report : null} />
         <div className="space-y-2">
           {run.team.map((p, i) => <PlayerCard key={p.uid} p={p} compact testId={`hub-player-${i}`} right={i === 0 ? <span className="font-pixel text-[7px] text-amber-300 border border-amber-400 px-1">CAP</span> : null} />)}

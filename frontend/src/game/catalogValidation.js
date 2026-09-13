@@ -108,3 +108,49 @@ export function validateIdentityAudit(catalog, audit, { spriteHashes } = {}) {
   if (errors.length) throw new Error("Invalid identity audit:\n" + errors.join("\n"));
   return { technicalValid: true, counts, verifiedLegacyIds, reviewRequiredLegacyIds: pending };
 }
+
+// Detects suspicious CharacterVersion clones belonging to the same canonical Character.
+export function auditCharacterVersionClones({ versions = [], moves = [] } = {}, { allowedExceptions = [] } = {}) {
+  const moveMap = new Map((moves || []).map(m => [m.moveId, m]));
+  const byCharacter = new Map();
+  for (const v of versions) {
+    if (!v?.characterId) continue;
+    if (!byCharacter.has(v.characterId)) byCharacter.set(v.characterId, []);
+    byCharacter.get(v.characterId).push(v);
+  }
+  const warnings = [];
+  const suspiciousClones = [];
+  for (const [charId, list] of byCharacter.entries()) {
+    if (list.length <= 1) continue;
+    for (let i = 0; i < list.length; i++) {
+      for (let j = i + 1; j < list.length; j++) {
+        const a = list[i], b = list[j];
+        const moveA = moveMap.get(a.primaryMoveId) || {};
+        const moveB = moveMap.get(b.primaryMoveId) || {};
+        const sameStats = a.baseStats && b.baseStats &&
+          a.baseStats.hp === b.baseStats.hp &&
+          a.baseStats.atk === b.baseStats.atk &&
+          a.baseStats.def === b.baseStats.def &&
+          a.baseStats.spd === b.baseStats.spd;
+        const sameMove = (a.primaryMoveId === b.primaryMoveId) ||
+          (moveA.name === moveB.name && moveA.power === moveB.power && moveA.effect === moveB.effect);
+        const sameRole = a.role === b.role;
+        const sameElement = a.element === b.element;
+        if (sameStats && sameMove && sameRole && sameElement) {
+          const pairKey = `${a.versionId}<->${b.versionId}`;
+          if (allowedExceptions.includes(pairKey) || allowedExceptions.includes(a.versionId) || allowedExceptions.includes(b.versionId)) {
+            warnings.push(`Allowed clone exception: ${pairKey}`);
+          } else {
+            suspiciousClones.push({ characterId: charId, versionA: a.versionId, versionB: b.versionId, sameStats, sameMove, sameRole, sameElement });
+          }
+        }
+      }
+    }
+  }
+  return {
+    status: suspiciousClones.length === 0 ? "PASS" : "WARN",
+    clonesCount: suspiciousClones.length,
+    clones: suspiciousClones,
+    warnings,
+  };
+}

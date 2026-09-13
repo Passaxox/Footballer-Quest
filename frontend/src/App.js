@@ -23,9 +23,11 @@ import TeamScreen from "@/components/game/TeamScreen";
 import EndScreen from "@/components/game/EndScreen";
 import CollectionScreen from "@/components/game/CollectionScreen";
 import RecordsScreen from "@/components/game/RecordsScreen";
+import GuideScreen from "@/components/game/GuideScreen";
 
 function App() {
   const [screen, setScreen] = useState("title");
+  const [guideFrom, setGuideFrom] = useState("title");
   const [run, setRun] = useState(() => loadRun());
   const [meta, setMeta] = useState(() => { const saved = loadMeta(); setSoundEnabled(saved.sound); return saved; });
   const [ctx, setCtx] = useState({});
@@ -183,11 +185,12 @@ function App() {
 
   const render = () => {
     switch (screen) {
-      case "title": return <TitleScreen hasRun={!!run} meta={meta} onNew={() => { if (!run || window.confirm("Esiste una run in corso. Iniziando una nuova run perderai quei progressi. Continuare?")) setScreen("select"); }} onContinue={() => setScreen("hub")} onRecords={() => setScreen("records")} onCollection={() => setScreen("collection")} onToggleSound={toggleSound} />;
+      case "title": return <TitleScreen hasRun={!!run} meta={meta} onNew={() => { if (!run || window.confirm("Esiste una run in corso. Iniziando una nuova run perderai quei progressi. Continuare?")) setScreen("select"); }} onContinue={() => setScreen("hub")} onRecords={() => setScreen("records")} onCollection={() => setScreen("collection")} onGuide={() => { setGuideFrom("title"); setScreen("guide"); }} onToggleSound={toggleSound} />;
+      case "guide": return <GuideScreen onBack={() => setScreen(guideFrom || "title")} />;
       case "select": return <TeamSelect meta={meta} onStart={startRun} onBack={() => setScreen("title")} />;
       case "records": return <RecordsScreen meta={meta} onBack={() => setScreen("title")} />;
       case "collection": return <CollectionScreen meta={meta} onBack={() => setScreen("title")} />;
-      case "hub": return <HubScreen run={run} onPause={() => { saveRun(run); setCtx({}); setScreen("title"); }} onNext={next} onTeam={() => setScreen("team")} onAbandon={() => { if (window.confirm("Abbandonare la run? Il progresso andrà perso.")) finishRun(run, "lose"); }} />;
+      case "hub": return <HubScreen run={run} onPause={() => { saveRun(run); setCtx({}); setScreen("title"); }} onNext={next} onTeam={() => setScreen("team")} onGuide={() => { setGuideFrom("hub"); setScreen("guide"); }} onAbandon={() => { if (window.confirm("Abbandonare la run? Il progresso andrà perso.")) finishRun(run, "lose"); }} />;
       case "team": return <TeamScreen run={run} onUpdate={(patch) => updateRun({ ...run, ...patch })} onFusion={() => setScreen("fusion")} onBack={() => setScreen("hub")} />;
       case "fusion": return <FusionScreen run={run} onFuse={onFuse} onBack={() => setScreen("team")} />;
       case "battle": return <BattleScreen onDiscover={onDiscover} key={`${run.wave}-${run.pending.enemies[0].uid}`} run={run} encounter={run.pending} onWin={onWin} onActiveChange={(activeUid) => updateRun({ ...run, activeUid })} onStateChange={(patch) => updateRun({ ...run, ...patch })} onLose={(team, items, activeUid, report, nodeModifiers, temporaryItemsUsed = []) => finishRun({ ...run, team, items, activeUid, nodeModifiers, telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] }, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } }, "lose")} onFlee={(team, items, activeUid, report, nodeModifiers, temporaryItemsUsed = []) => advanceWave({ ...run, team, items, activeUid, nodeModifiers, telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] }, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } })} />;
@@ -200,7 +203,8 @@ function App() {
         const pending = run.pending;
         const entry = pending.stock[index];
         if (!entry || (pending.bought || []).includes(index) || run.money < entry.price) return;
-        updateRun({ ...run, money: run.money - entry.price, items: addItem(run.items, entry.id), pending: { ...pending, bought: [...(pending.bought || []), index] } });
+        const granted = grantRunItem({ ...run, money: run.money - entry.price }, entry.id);
+        updateRun({ ...granted.run, pending: { ...pending, bought: [...(pending.bought || []), index] } });
       }} onLeave={() => advanceWave(run, true)} />;
       case "training": return <TrainingScreen run={run} onDone={(team, hadOwnXp = false) => advanceWave({ ...run, team, pending: { ...run.pending, progression: { hadOwnXp, report: reportXpChanges(run.team, team, "node") } } }, true)} />;
       case "recruit": return <RecruitScreen onDiscover={onDiscover} run={run} player={ctx.offer} price={ctx.price} mode={ctx.mode} xpReport={ctx.xpReport} onChallenge={challengeRecruit} onJoin={joinTeam} onSkip={() => continueAfterRecruit(run)} />;

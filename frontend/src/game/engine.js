@@ -1,7 +1,7 @@
 import { getScenario, scenarioPool, selectEncounterVersion, scenarioForWave, normalizeScenarioState } from "./scenarios";
 import { CHARACTERS, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
-import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
+import { ROSTER, ELEMENTS, BOSSES, ITEMS, ITEM_CLASSES, REWARD_POOL, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
 import { normalizeEventResult, resolveEventChoice, selectEvent, weightedPick } from "./events";
 import { createRunRandomCursor, createRunSeed, hashSeed, normalizeRandomState } from "./runRandom";
 import { RARITIES, rarityIdForVersion } from "./rarity";
@@ -87,6 +87,11 @@ export const calcDamage = (att, def, move, options = {}) => {
   const stab = move.element === att.element ? 1.1 : 1;
   let dmg = (((2 * att.level) / 5 + 2) * move.power * atk / dfn) / 9 + 2;
   dmg *= mult * stab * (0.88 + Math.random() * 0.12) * (crit ? 1.5 : 1);
+  if (options?.firstStrike && options?.hasStendardo) dmg *= 1.2;
+  if (options?.isBoss) {
+    if (options?.bossBonusAttacker) dmg *= 1.1;
+    if (options?.bossBonusDefender) dmg *= 0.9;
+  }
   if (def.status.guard) dmg *= 0.5;
   if (options?.defenderTeam) {
     dmg *= synergyDamageTakenMultiplier(options.defenderTeam);
@@ -100,11 +105,20 @@ export const performAttack = (attacker, defender, options = {}) => {
   let att = { ...attacker, status: { ...attacker.status } };
   let def = { ...defender, status: { ...defender.status } };
   const msgs = [`${att.name} usa ${move.name}!`];
+  if (options?.firstStrike && options?.hasStendardo) {
+    msgs.push("Stendardo Tattico potenzia il primo assalto (+20% potenza)!");
+    options.onTriggerUsed?.("stendardo");
+  }
   const hits = move.effect === "multi" ? rand(2, 3) : 1;
   let total = 0;
   for (let i = 0; i < hits; i++) {
     const { dmg, mult, crit } = calcDamage(att, def, move, options);
-    const real = Math.min(def.hp, Math.round(dmg / (hits > 1 ? 1.6 : 1)));
+    let real = Math.min(def.hp, Math.round(dmg / (hits > 1 ? 1.6 : 1)));
+    if (def.hp - real <= 0 && options?.hasCavigliera) {
+      real = Math.max(0, def.hp - 1);
+      options.onTriggerUsed?.("cavigliera");
+      msgs.push(`Cavigliera Protettiva salva ${def.name} dal KO (1 HP rimasto)!`);
+    }
     def.hp -= real;
     total += real;
     if (i === 0) {
@@ -119,13 +133,31 @@ export const performAttack = (attacker, defender, options = {}) => {
   switch (move.effect) {
     case "drain":
     case "heal": { const h = sustainHealing(att, total); att.hp += h; msgs.push(`${move.name} recupera ${h} HP per ${att.name}!`); break; }
-    case "burn": if (def.hp > 0 && !def.status.burn && chance(70)) { def.status.burn = 3; msgs.push(`${def.name} sta bruciando!`); } break;
+    case "burn":
+      if (def.hp > 0 && !def.status.burn && chance(70)) {
+        if (options?.hasBalsamo) {
+          options.onTriggerUsed?.("balsamo");
+          msgs.push(`Balsamo Rinfrescante previene la bruciatura di ${def.name}!`);
+        } else {
+          def.status.burn = 3;
+          msgs.push(`${def.name} sta bruciando!`);
+        }
+      }
+      break;
     case "weaken": if (def.hp > 0 && def.status.atkMod > -3) { def.status.atkMod -= 1; msgs.push(`L'ATK di ${def.name} diminuisce!`); } break;
     case "shatter": if (def.hp > 0 && def.status.defMod > -3) { def.status.defMod -= 1; msgs.push(`La DIF di ${def.name} diminuisce!`); } break;
     case "charge": if (att.status.atkMod < 3) { att.status.atkMod += 1; msgs.push(`L'ATK di ${att.name} aumenta!`); } break;
     case "guard": att.status.guard = true; msgs.push(`${att.name} si prepara a parare!`); break;
     case "recoil": { const r = Math.min(att.hp - 1, Math.round(total * 0.2)); if (r > 0) { att.hp -= r; msgs.push(`${att.name} subisce ${r} danni di contraccolpo!`); } break; }
     default: break;
+  }
+  if (def.hp > 0 && def.hp < def.maxHp * 0.3 && options?.hasCerotto) {
+    const healAmt = Math.min(def.maxHp - def.hp, Math.round(def.maxHp * 0.25));
+    if (healAmt > 0) {
+      def.hp += healAmt;
+      options.onTriggerUsed?.("cerotto");
+      msgs.push(`Cerotto d'Emergenza soccorre ${def.name} (+${healAmt} HP)!`);
+    }
   }
   if (def.hp <= 0) { def.hp = 0; msgs.push(`${def.name} è KO!`); }
   return { att, def, msgs };
@@ -153,10 +185,16 @@ export const normalizeNodeModifiers = modifiers => Object.fromEntries(Object.ent
   .filter(([, value]) => value && typeof value === "object")
   .map(([uid, value]) => [uid, { atkMod: clampStage(value.atkMod), defMod: clampStage(value.defMod) }])
   .filter(([, value]) => value.atkMod || value.defMod));
-export const applyNodeModifiers = (team, modifiers = {}) => resetBattleStatus(team).map(player => {
-  const modifier = normalizeNodeModifiers(modifiers)[player.uid];
-  return modifier ? { ...player, status: { ...player.status, ...modifier } } : player;
-});
+export const applyNodeModifiers = (team, modifiers = {}) => {
+  const norm = normalizeNodeModifiers(modifiers);
+  const teamMod = norm.team || { atkMod: 0, defMod: 0 };
+  return resetBattleStatus(team).map(player => {
+    const playerMod = norm[player.uid] || { atkMod: 0, defMod: 0 };
+    const atkMod = clampStage(teamMod.atkMod + playerMod.atkMod);
+    const defMod = clampStage(teamMod.defMod + playerMod.defMod);
+    return (atkMod || defMod) ? { ...player, status: { ...player.status, atkMod, defMod } } : player;
+  });
+};
 export const addNodeStageModifier = (modifiers, uid, effect) => {
   const normalized = normalizeNodeModifiers(modifiers);
   const current = normalized[uid] || { atkMod: 0, defMod: 0 };
@@ -306,7 +344,7 @@ export const newRun = (starterIds, difficultyId = "normal", requestedSeed = crea
     ...cursor.patch(), scenarioState, difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
     wave: 1, team, items: { barretta: 2 }, money: 100,
     stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], eventHistory: {}, storyFlags: {},
-    temporaryModifiers: [], nodeModifiers: {}, routeHistory: [], telemetry: {
+    temporaryModifiers: [], nodeModifiers: {}, activeNodeItems: [], routeHistory: [], telemetry: {
       itemsOffered: [], itemsChosen: [], temporaryItemsUsed: [], recruitsOffered: [], recruitsAcquired: [], versionsEncountered: [],
     },
     lastEventWave: null, pending: null, fischietto: false, startedAt,
@@ -328,6 +366,7 @@ export const normalizeRun = (run) => {
     storyFlags: run.storyFlags && typeof run.storyFlags === "object" ? run.storyFlags : {},
     temporaryModifiers: Array.isArray(run.temporaryModifiers) ? run.temporaryModifiers.filter(modifier => modifier && modifier.remainingWaves > 0) : [],
     nodeModifiers: normalizeNodeModifiers(run.nodeModifiers),
+    activeNodeItems: Array.isArray(run.activeNodeItems) ? run.activeNodeItems.filter(Boolean) : [],
     routeHistory: Array.isArray(run.routeHistory) ? run.routeHistory.slice(-60) : [],
     telemetry: run.telemetry && typeof run.telemetry === "object" ? {
       itemsOffered: Array.isArray(run.telemetry.itemsOffered) ? run.telemetry.itemsOffered : [],
@@ -346,6 +385,7 @@ export const advanceRunWave = run => normalizeRun({
   wave: run.wave + 1,
   pending: null,
   nodeModifiers: {},
+  activeNodeItems: [],
   routeHistory: [...(run.routeHistory || []), routeEntry(run)].filter(Boolean).slice(-60),
   temporaryModifiers: (run.temporaryModifiers || []).map(modifier => modifier.appliedWave === run.wave
     ? modifier
@@ -575,6 +615,16 @@ export const grantRunItem = (run, id, quantity = 1) => {
     const amount = item.effect.amount * quantity;
     return { run: { ...run, money: run.money + amount }, feedback: `${item.name} riscattato: +${amount} P` };
   }
+  if (item.itemClass === ITEM_CLASSES.NODE) {
+    let nextRun = {
+      ...run,
+      activeNodeItems: [...(run.activeNodeItems || []), id],
+    };
+    if (item.effect?.type === "stages" && (item.effect.atk || item.effect.def)) {
+      nextRun.nodeModifiers = addNodeStageModifier(nextRun.nodeModifiers, "team", item.effect);
+    }
+    return { run: nextRun, feedback: `${item.name} attivato fino a fine nodo.` };
+  }
   return { run: { ...run, items: addItem(run.items, id, quantity) }, feedback: `${item.name} aggiunto allo zaino` };
 };
 
@@ -588,8 +638,23 @@ export const applyItemTo = (item, p) => {
   const effect = ITEMS[item]?.effect;
   if (effect && effect.type !== "legacy") {
     if (!canApplyItem(item, p)) return p;
-    if (effect.type === "recovery") return { ...p, hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * effect.hpShare)), status: { ...p.status, burn: effect.cureBurn ? 0 : p.status.burn } };
-    if (effect.type === "revive") return { ...p, hp: Math.max(1, Math.round(p.maxHp * effect.hpShare)) };
+    if (effect.type === "recovery") return {
+      ...p,
+      hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * effect.hpShare)),
+      status: {
+        ...p.status,
+        burn: effect.cureBurn ? 0 : p.status.burn,
+        guard: effect.guard ? true : p.status.guard,
+      },
+    };
+    if (effect.type === "revive") return {
+      ...p,
+      hp: Math.max(1, Math.round(p.maxHp * effect.hpShare)),
+      status: {
+        ...p.status,
+        guard: effect.guard ? true : p.status.guard,
+      },
+    };
     if (effect.type === "stages") return { ...p, status: { ...p.status, atkMod: Math.max(-3, Math.min(3, p.status.atkMod + effect.atk)), defMod: Math.max(-3, Math.min(3, p.status.defMod + effect.def)) } };
     if (effect.type === "permanentStat") {
       const updated = recalcStats({ ...p, bonus: { ...p.bonus, [effect.stat]: p.bonus[effect.stat] + effect.amount } });
@@ -600,7 +665,7 @@ export const applyItemTo = (item, p) => {
   switch (item) {
     case "barretta": return { ...p, hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * 0.5)) };
     case "bibita": return { ...p, hp: p.maxHp, status: { ...p.status, burn: 0 } };
-    case "pallone": return p.hp === 0 ? { ...p, hp: Math.round(p.maxHp * 0.5) } : p;
+    case "pallone": return p.hp === 0 ? { ...p, hp: Math.round(p.maxHp * 0.5), status: { ...p.status, guard: true } } : p;
     case "fascia": return recalcStats({ ...p, bonus: { ...p.bonus, atk: p.bonus.atk + 5 } });
     case "guanti": return recalcStats({ ...p, bonus: { ...p.bonus, def: p.bonus.def + 5 } });
     case "scarpini": return recalcStats({ ...p, bonus: { ...p.bonus, spd: p.bonus.spd + 6 } });
@@ -611,14 +676,19 @@ export const applyItemTo = (item, p) => {
 };
 
 export const canApplyItem = (item, p) => {
-  const effect = ITEMS[item]?.effect;
-  if (!effect || !p) return false;
-  if (effect.type !== "legacy") {
+  const def = ITEMS[item];
+  if (!def || !p) return false;
+  if (def.itemClass === ITEM_CLASSES.TRIGGER) return false;
+  const effect = def.effect;
+  if (effect && effect.type !== "legacy") {
     if (effect.type === "revive") return p.hp <= 0;
     if (p.hp <= 0) return false;
     if (effect.type === "recovery") return p.hp < p.maxHp || (effect.cureBurn && p.status.burn > 0);
-    if (effect.type === "stages") return (!effect.atk || (effect.atk > 0 ? p.status.atkMod < 3 : p.status.atkMod > -3))
-      && (!effect.def || (effect.def > 0 ? p.status.defMod < 3 : p.status.defMod > -3));
+    if (effect.type === "stages") {
+      if (effect.atk === undefined && effect.def === undefined) return false;
+      return (!effect.atk || (effect.atk > 0 ? p.status.atkMod < 3 : p.status.atkMod > -3))
+        && (!effect.def || (effect.def > 0 ? p.status.defMod < 3 : p.status.defMod > -3));
+    }
     if (effect.type === "permanentStat") return true;
     return false; // Run-target effects cannot be consumed on a player.
   }

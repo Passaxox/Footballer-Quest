@@ -92,12 +92,33 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const isBoss = encounter.kind === "boss";
+  const hasSigillo = (run.activeNodeItems || []).includes("sigillo");
+
   const doAttack = async (attackerSide) => {
     const a = attackerSide === "player" ? active() : enemy();
     const d = attackerSide === "player" ? enemy() : active();
-    const options = attackerSide === "player"
-      ? { attackerTeam: st.team, defenderTeam: st.enemies }
-      : { attackerTeam: st.enemies, defenderTeam: st.team };
+    const isPlayerAttacking = attackerSide === "player";
+    const options = {
+      attackerTeam: isPlayerAttacking ? st.team : st.enemies,
+      defenderTeam: isPlayerAttacking ? st.enemies : st.team,
+      isBoss,
+      bossBonusAttacker: isPlayerAttacking && isBoss && hasSigillo,
+      bossBonusDefender: !isPlayerAttacking && isBoss && hasSigillo,
+      firstStrike: isPlayerAttacking && !st.firstStrikeUsed,
+      hasStendardo: isPlayerAttacking && (st.items.stendardo || 0) > 0,
+      hasCavigliera: !isPlayerAttacking && !st.caviglieraUsed && (st.items.cavigliera || 0) > 0,
+      hasBalsamo: !isPlayerAttacking && (st.items.balsamo || 0) > 0,
+      hasCerotto: !isPlayerAttacking && (st.items.cerotto || 0) > 0,
+      onTriggerUsed: (triggerId) => {
+        if (triggerId === "stendardo") st.firstStrikeUsed = true;
+        if (triggerId === "cavigliera") st.caviglieraUsed = true;
+        if ((st.items[triggerId] || 0) > 0) {
+          st.items = removeItem(st.items, triggerId);
+          st.temporaryItemsUsed = [...(st.temporaryItemsUsed || []), triggerId];
+        }
+      },
+    };
     const { att, def, msgs } = performAttack(a, d, options);
     st.cue = { ...attackFeedback(a, d, def), side: attackerSide, stage: "windup" };
     st.log = [...st.log.slice(-5), msgs[0]]; rr();

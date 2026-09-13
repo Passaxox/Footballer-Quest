@@ -243,6 +243,7 @@ const moveProfiles = {
   C: { name: "Passaggio tattico", power: 65, effect: "weaken" },
   A: { name: "Tiro potente", power: 85, effect: null },
 };
+const judeRoyalStats = { hp: 74, atk: 32, def: 36, spd: 30 };
 export const EXPANSION_CHARACTERS = rows.filter(r => !["jude", "jonas"].includes(r.characterId))
   .map(r => ({ characterId: r.characterId, displayName: r.displayName }));
 export const EXPANSION_VERSIONS = [
@@ -250,15 +251,18 @@ export const EXPANSION_VERSIONS = [
     versionId: r.versionId, characterId: r.characterId, legacyRosterId: null,
     displayName: r.displayName, kind: "player", role: r.role, gender: null,
     spriteId: r.spriteId, teamTags: [r.team], element: r.element, types: [r.element],
-    baseStats: { ...profiles[r.role] },
-    primaryMoveId: r.characterId === "jude" ? "jude:primary" : r.versionId + ":primary",
+    baseStats: r.versionId === "jude:royal" ? { ...judeRoyalStats } : { ...profiles[r.role] },
+    primaryMoveId: r.versionId + ":primary",
     secondaryMoveId: null, rarityId: null, variantId: r.team === "zeus" ? "zeus" : "royal",
     categoryId: null, arcId: "football-frontier", eraId: "original", gameOrigin: "ie1",
     encounterTier: r.team === "zeus" ? 3 : 2,
   })),
 ];
 export const EXPANSION_MOVES = [
-  ...rows.filter(r => r.characterId !== "jude").map(r => ({
-    moveId: r.versionId + ":primary", element: r.element, ...moveProfiles[r.role],
+  ...rows.map(r => ({
+    moveId: r.versionId + ":primary", element: r.element,
+    ...(r.versionId === "jude:royal"
+      ? { name: "Illusione Ottica", power: 70, effect: "charge" }
+      : moveProfiles[r.role]),
   })),
 ];

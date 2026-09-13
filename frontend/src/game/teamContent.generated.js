@@ -527,10 +527,10 @@ export const GENERATED_VERSIONS = [
       "aria"
     ],
     "baseStats": {
-      "hp": 80,
-      "atk": 49,
-      "def": 29,
-      "spd": 51
+      "hp": 74,
+      "atk": 46,
+      "def": 26,
+      "spd": 54
     },
     "primaryMoveId": "gazelle:diamond-dust-ie2:primary",
     "secondaryMoveId": null,
@@ -591,10 +591,10 @@ export const GENERATED_VERSIONS = [
       "aria"
     ],
     "baseStats": {
-      "hp": 96,
-      "atk": 34,
-      "def": 44,
-      "spd": 30
+      "hp": 98,
+      "atk": 32,
+      "def": 46,
+      "spd": 28
     },
     "primaryMoveId": "dvalin:epsilon-ie2:primary",
     "secondaryMoveId": null,
@@ -1007,10 +1007,10 @@ export const GENERATED_VERSIONS = [
       "aria"
     ],
     "baseStats": {
-      "hp": 78,
-      "atk": 41,
-      "def": 31,
-      "spd": 44
+      "hp": 74,
+      "atk": 43,
+      "def": 28,
+      "spd": 45
     },
     "primaryMoveId": "jordan:gemini-ie2:primary",
     "secondaryMoveId": null,
@@ -1123,8 +1123,8 @@ export const GENERATED_MOVES = [
     "moveId": "gazelle:diamond-dust-ie2:primary",
     "element": "aria",
     "name": "Impatto del Nord",
-    "power": 102,
-    "effect": "priority"
+    "power": 98,
+    "effect": "crit"
   },
   {
     "moveId": "frost:diamond-dust-ie2:primary",
@@ -1136,8 +1136,8 @@ export const GENERATED_MOVES = [
   {
     "moveId": "dvalin:epsilon-ie2:primary",
     "element": "aria",
-    "name": "Guanto Rotante",
-    "power": 70,
+    "name": "Trivella Spaziale",
+    "power": 75,
     "effect": "guard"
   },
   {
@@ -1227,9 +1227,9 @@ export const GENERATED_MOVES = [
   {
     "moveId": "jordan:gemini-ie2:primary",
     "element": "aria",
-    "name": "Cerchio Astrale",
-    "power": 88,
-    "effect": "weaken"
+    "name": "Cometa Astrale",
+    "power": 90,
+    "effect": "shatter"
   },
   {
     "moveId": "dylan-bluemoon:gemini-ie2:primary",

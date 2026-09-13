@@ -2,7 +2,7 @@ import { Btn, Panel } from "./ui";
 import { Volume2, VolumeX } from "lucide-react";
 import { sfx } from "@/game/audio";
 
-export default function TitleScreen({ hasRun, meta, onNew, onContinue, onRecords, onCollection, onToggleSound }) {
+export default function TitleScreen({ hasRun, meta, onNew, onContinue, onRecords, onCollection, onGuide, onToggleSound }) {
   return (
     <div data-testid="title-screen-container" className="flex flex-col flex-1 p-5 title-bg">
       <div className="flex justify-end">
@@ -22,9 +22,10 @@ export default function TitleScreen({ hasRun, meta, onNew, onContinue, onRecords
       <div className="grid gap-3 animate-fade-3">
         {hasRun && <Btn data-testid="continue-run-btn" variant="primary" onClick={() => { sfx.confirm(); onContinue(); }}>Continua la Run</Btn>}
         <Btn data-testid="new-run-btn" variant={hasRun ? "default" : "primary"} onClick={() => { sfx.confirm(); onNew(); }}>{hasRun ? "Nuova Run (cancella quella in corso)" : "Nuova Run"}</Btn>
-        <div className="grid grid-cols-2 gap-3">
-          <Btn data-testid="records-btn" onClick={() => { sfx.select(); onRecords(); }}>Albo d'Oro</Btn>
+        <div className="grid grid-cols-3 gap-2">
+          <Btn data-testid="records-btn" onClick={() => { sfx.select(); onRecords(); }}>Albo</Btn>
           <Btn data-testid="collection-btn" onClick={() => { sfx.select(); onCollection(); }}>Collezione</Btn>
+          <Btn data-testid="guide-btn" onClick={() => { sfx.select(); onGuide?.(); }}>Guida</Btn>
         </div>
       </div>
       <Panel className="mt-auto font-body text-slate-400 text-base leading-tight">

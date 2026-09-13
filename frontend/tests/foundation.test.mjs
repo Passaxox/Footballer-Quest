@@ -914,11 +914,11 @@ test("V2c metadata registries reject broken references and inconsistent eras", (
 
 test("V2c passive metadata preserves validated V2b gameplay fixture and runtime serialization", async () => {
   const baseline = JSON.parse(await readFile(new URL("./fixtures/v2b-gameplay.json", import.meta.url), "utf8"));
-  // Only authorized GAME_DATA_FIX: new Joseph instances are goalkeepers. V2b fixture stays historical.
-  const expectedRoster = baseline.roster.map(r => r.id === "joseph" ? { ...r, role: "P" } : r);
+  // Authorized GAME_DATA_FIX: new Joseph instances are goalkeepers, and Byron rebalanced from statistical outlier. V2b fixture stays historical.
+  const expectedRoster = baseline.roster.map(r => r.id === "joseph" ? { ...r, role: "P" } : r.id === "byron" ? { ...r, hp: 78, atk: 48, def: 28, spd: 46, move: { ...r.move, power: 96 } } : r);
   assert.deepEqual(data.ROSTER, expectedRoster);
   assert.deepEqual(data.STARTER_IDS, baseline.starters);
-  for (const row of baseline.roster) {
+  for (const row of expectedRoster) {
     const v = catalog.resolveVersion(row.id);
     assert.equal(v.versionId, row.id + ":base");
     assert.equal(v.characterId, row.id);
@@ -1334,21 +1334,21 @@ test("V2l Camelia explains non-KO healing without changing price or effects", ()
 test("V2m items have unique legacy-compatible metadata, presentation and weighted pools", () => {
  const legacy=["barretta","bibita","pallone","cuneo","fascia","guanti","scarpini","proteine","trofeo","fischietto","talismano"];
  const items=Object.values(data.ITEMS);
- assert.equal(items.length,26); assert.equal(new Set(items.map(i=>i.id)).size,26);
- for(const id of legacy) assert.ok(data.ITEMS[id]);
- for(const [key,item] of Object.entries(data.ITEMS)) {
-  assert.equal(item.id,key);assert.ok(item.name && item.description);assert.equal(item.desc,item.description);
-  assert.ok(Array.isArray(item.tags));assert.equal(new Set(item.tags).size,item.tags.length);
-  assert.ok(["legacy","recovery","stages","money","revive","permanentStat"].includes(item.effect.type));
-  const rarity=data.ITEM_RARITIES[item.rarity]; assert.ok(rarity);
-  assert.ok(rarity.label && rarity.cardClass && rarity.accentClass);
-  assert.equal(data.itemPresentation(item.id),rarity);
-  assert.ok(Number.isFinite(item.price) && item.price>0);
-  assert.ok(Number.isFinite(item.rewardWeight) && item.rewardWeight>0);
-  assert.ok(Number.isInteger(item.shopWeight) && item.shopWeight>=0);
- }
- assert.equal(data.REWARD_POOL.length,26);
- assert.equal(new Set(data.REWARD_POOL.map(r=>r.id)).size,26);
+  assert.equal(items.length,32); assert.equal(new Set(items.map(i=>i.id)).size,32);
+  for(const id of legacy) assert.ok(data.ITEMS[id]);
+  for(const [key,item] of Object.entries(data.ITEMS)) {
+   assert.equal(item.id,key);assert.ok(item.name && item.description);assert.equal(item.desc,item.description);
+   assert.ok(Array.isArray(item.tags));assert.equal(new Set(item.tags).size,item.tags.length);
+   assert.ok(["legacy","recovery","stages","money","revive","permanentStat"].includes(item.effect.type));
+   const rarity=data.ITEM_RARITIES[item.rarity]; assert.ok(rarity);
+   assert.ok(rarity.label && rarity.cardClass && rarity.accentClass);
+   assert.equal(data.itemPresentation(item.id),rarity);
+   assert.ok(Number.isFinite(item.price) && item.price>0);
+   assert.ok(Number.isFinite(item.rewardWeight) && item.rewardWeight>0);
+   assert.ok(Number.isInteger(item.shopWeight) && item.shopWeight>=0);
+  }
+  assert.equal(data.REWARD_POOL.length,32);
+  assert.equal(new Set(data.REWARD_POOL.map(r=>r.id)).size,32);
  for(const row of data.REWARD_POOL) assert.equal(row.w,data.ITEMS[row.id].rewardWeight);
  for(const id of data.SHOP_POOL) assert.ok(data.ITEMS[id]);
  const weights=r=>items.filter(i=>i.rarity===r).map(i=>i.rewardWeight);

@@ -1021,14 +1021,14 @@
         "move": {
           "name": "Piuma Celeste",
           "element": "aria",
-          "power": 105,
+          "power": 96,
           "effect": "drain"
         },
         "baseStats": {
-          "hp": 82,
-          "atk": 50,
-          "def": 30,
-          "spd": 44
+          "hp": 78,
+          "atk": 48,
+          "def": 28,
+          "spd": 46
         }
       },
       "remediationCategories": []
