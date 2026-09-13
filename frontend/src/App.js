@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import "@/App.css";
 import { FINAL_WAVE, isTargetItem } from "@/game/data";
 import { getRunEvent } from "@/game/events";
-import { advanceRunWave, applyRunEventOutcome, chooseRunEvent, generateWave, recruitChallengePlayer, generateRewards, addItem, grantRunItem, resolveRewardChoice, createPlayer, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, completeNonCombatNode, reportXpChanges, mergeXpReports, applyRouteChoice, applyRecoveryOption } from "@/game/engine";
+import { advanceRunWave, applyRunEventOutcome, resolveEventTarget, chooseRunEvent, generateWave, recruitChallengePlayer, generateRewards, addItem, grantRunItem, resolveRewardChoice, createPlayer, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, completeNonCombatNode, reportXpChanges, mergeXpReports, applyRouteChoice, applyRecoveryOption } from "@/game/engine";
 import { synergyRewardMultiplier, applyPostBattleSynergyHealing } from "@/game/synergies";
 import { createRunRandomCursor } from "@/game/runRandom";
 import { routeEntry } from "@/game/routeDeck";
@@ -15,6 +15,7 @@ import HubScreen from "@/components/game/HubScreen";
 import BattleScreen from "@/components/game/BattleScreen";
 import RewardScreen from "@/components/game/RewardScreen";
 import EventScreen from "@/components/game/EventScreen";
+import EventTargetScreen from "@/components/game/EventTargetScreen";
 import ShopScreen from "@/components/game/ShopScreen";
 import RecruitScreen from "@/components/game/RecruitScreen";
 import TrainingScreen from "@/components/game/TrainingScreen";
@@ -62,6 +63,8 @@ function App() {
     else if (p.type === "recruit") { setCtx({ mode: "encounter", offer: p.player, price: p.price, after: "advance", ...p.context }); setScreen("recruit"); }
     else if (p.type === "reward" || p.type === "rewardTarget") { setCtx(p.context || {}); setScreen("reward"); }
     else if (p.type === "recovery") { setScreen("recovery"); }
+    else if (p.type === "shop" || p.type === "shopTarget") { setScreen("shop"); }
+    else if (p.type === "eventTarget") { setScreen("eventTarget"); }
     else setScreen(p.type);
   };
 
@@ -203,7 +206,7 @@ function App() {
   const onEventResolve = () => {
     const event = getRunEvent(run.pending.eventId);
     const nextRun = applyRunEventOutcome(run, event, run.pending.result);
-    if (nextRun.pending.type === "battle" || nextRun.pending.type === "recruit") {
+    if (nextRun.pending?.type === "battle" || nextRun.pending?.type === "recruit" || nextRun.pending?.type === "eventTarget") {
       updateRun(nextRun);
       gotoPending(nextRun);
     } else {
@@ -212,7 +215,8 @@ function App() {
   };
 
   const onFuse = (a, b, moveFrom) => {
-    if (!(run.items.cuneo > 0) || a === b || !run.team[a] || !run.team[b] || run.team[a].fused || run.team[b].fused || !["a", "b"].includes(moveFrom)) return;
+    const cuneoCount = (run.specialResources?.cuneo ?? run.items?.cuneo) || 0;
+    if (cuneoCount <= 0 || a === b || !run.team[a] || !run.team[b] || run.team[a].fused || run.team[b].fused || !["a", "b"].includes(moveFrom)) return;
     updateRun(fuseRunPlayers(run, a, b, moveFrom));
     setScreen("team");
   };
@@ -235,13 +239,80 @@ function App() {
         const event = getRunEvent(run.pending.eventId);
         return <EventScreen key={`${run.wave}-${event.eventId}`} run={run} event={event} onChoose={(choiceIndex) => updateRun(chooseRunEvent(run, event, choiceIndex))} onResolve={onEventResolve} />;
       }
-      case "shop": return <ShopScreen run={run} stock={run.pending.stock} onBuy={(index) => {
-        const pending = run.pending;
-        const entry = pending.stock[index];
-        if (!entry || (pending.bought || []).includes(index) || run.money < entry.price) return;
-        const granted = grantRunItem({ ...run, money: run.money - entry.price }, entry.id);
-        updateRun({ ...granted.run, pending: { ...pending, bought: [...(pending.bought || []), index] } });
-      }} onLeave={() => advanceWave(run, true)} />;
+      case "eventTarget": return (
+        <EventTargetScreen
+          run={run}
+          onApplyTarget={(targetUid) => {
+            const updated = resolveEventTarget(run, targetUid);
+            updateRun(updated);
+            if (updated.pending?.type === "eventTarget") {
+              setScreen("eventTarget");
+            } else if (updated.pending?.type === "battle" || updated.pending?.type === "recruit") {
+              gotoPending(updated);
+            } else {
+              advanceWave(updated, true);
+            }
+          }}
+          onSkip={() => {
+            const updated = resolveEventTarget(run, null);
+            updateRun(updated);
+            if (updated.pending?.type === "eventTarget") {
+              setScreen("eventTarget");
+            } else if (updated.pending?.type === "battle" || updated.pending?.type === "recruit") {
+              gotoPending(updated);
+            } else {
+              advanceWave(updated, true);
+            }
+          }}
+        />
+      );
+      case "shop": return (
+        <ShopScreen
+          run={run}
+          stock={run.pending?.stock || []}
+          activeTargetIndex={run.pending?.type === "shopTarget" ? run.pending?.activeTargetIndex : null}
+          onStartBuy={(index) => {
+            const pending = run.pending;
+            const entry = pending?.stock?.[index];
+            if (!entry || (pending.bought || []).includes(index) || run.money < entry.price) return;
+            if (isTargetItem(entry.id) && run.team?.length > 0) {
+              updateRun({ ...run, pending: { ...pending, type: "shopTarget", activeTargetIndex: index } });
+            } else {
+              const granted = grantRunItem({ ...run, money: run.money - entry.price }, entry.id);
+              if (granted.feedback) setFeedback(granted.feedback);
+              updateRun({ ...granted.run, pending: { ...pending, bought: [...(pending.bought || []), index] } });
+            }
+          }}
+          onConfirmBuy={(index, targetUid) => {
+            const pending = run.pending;
+            const entry = pending?.stock?.[index];
+            if (!entry || (pending.bought || []).includes(index) || run.money < entry.price) return;
+            const chargedRun = { ...run, money: run.money - entry.price };
+            const granted = grantRunItem(chargedRun, entry.id, 1, { targetUid });
+            if (granted.feedback) setFeedback(granted.feedback);
+            updateRun({
+              ...granted.run,
+              pending: { ...pending, type: "shop", activeTargetIndex: null, bought: [...(pending.bought || []), index] },
+            });
+          }}
+          onCancelTarget={() => {
+            updateRun({ ...run, pending: { ...run.pending, type: "shop", activeTargetIndex: null } });
+          }}
+          onBuy={(index, targetUid = null) => {
+            const pending = run.pending;
+            const entry = pending?.stock?.[index];
+            if (!entry || (pending.bought || []).includes(index) || run.money < entry.price) return;
+            const chargedRun = { ...run, money: run.money - entry.price };
+            const granted = grantRunItem(chargedRun, entry.id, 1, { targetUid });
+            if (granted.feedback) setFeedback(granted.feedback);
+            updateRun({
+              ...granted.run,
+              pending: { ...pending, type: "shop", activeTargetIndex: null, bought: [...(pending.bought || []), index] },
+            });
+          }}
+          onLeave={() => advanceWave(run, true)}
+        />
+      );
       case "training": return <TrainingScreen run={run} onDone={(team, hadOwnXp = false) => advanceWave({ ...run, team, pending: { ...run.pending, progression: { hadOwnXp, report: reportXpChanges(run.team, team, "node") } } }, true)} />;
       case "recovery": return <RecoveryScreen run={run} onApplyOption={(optId) => { const nextRun = applyRecoveryOption(run, optId); updateRun(nextRun); }} onLeave={() => advanceWave(run, true)} />;
       case "routeChoice": return <RouteChoiceScreen run={run} choices={run.pendingRouteChoices || []} onSelect={(routeId) => { const nextRun = applyRouteChoice(run, routeId); updateRun(nextRun); setScreen("hub"); }} />;

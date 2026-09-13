@@ -170,49 +170,53 @@ export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon, onG
             </div>
           )}
 
-          {/* Armed Combat Triggers */}
-          {run.armedTriggers && Object.entries(run.armedTriggers).some(([_, qty]) => qty > 0) && (
-            <div data-testid="active-armed-triggers" className="space-y-1">
-              <div className="font-pixel text-[7px] text-slate-400 uppercase">Oggetti Reattivi Armati:</div>
-              {Object.entries(run.armedTriggers).filter(([_, qty]) => qty > 0).map(([itemId]) => {
-                const item = ITEMS[itemId] || { name: itemId, description: "Attivazione automatica in lotta." };
-                return (
-                  <div key={itemId} className="flex items-start justify-between gap-1 text-sm bg-rose-950/30 p-1.5 rounded border border-rose-800/40">
-                    <div>
-                      <strong className="text-rose-200">{item.name}</strong>
-                      <span className="text-slate-300 ml-1">· {item.description || item.desc}</span>
-                    </div>
-                    <span className="font-pixel text-[7px] text-rose-300 shrink-0 border border-rose-600/60 px-1 py-0.5 rounded">
-                      Pronto alla lotta
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Special Resources (Cuneo DNA) */}
-          {((run.specialResources?.cuneo > 0) || (run.items?.cuneo > 0)) && (
-            <div data-testid="special-resources-hub" className="space-y-1">
-              <div className="font-pixel text-[7px] text-slate-400 uppercase">Risorse Speciali:</div>
-              <div className="flex items-start justify-between gap-1 text-sm bg-fuchsia-950/30 p-1.5 rounded border border-fuchsia-800/40">
-                <div>
-                  <strong className="text-fuchsia-200">Cuneo DNA (x{run.specialResources?.cuneo || run.items?.cuneo || 0})</strong>
-                  <span className="text-slate-300 ml-1">· Valuta per la fusione genetica nella schermata Squadra.</span>
-                </div>
-                <span className="font-pixel text-[7px] text-fuchsia-300 shrink-0 border border-fuchsia-600/60 px-1 py-0.5 rounded">
-                  Risorsa
-                </span>
-              </div>
-            </div>
-          )}
-
-          {synergies.length === 0 && (run.activeNodeItems || []).length === 0 && (run.temporaryModifiers || []).length === 0 && !(segment?.prestigeMultiplier > 1) && !(run.armedTriggers && Object.values(run.armedTriggers).some(q => q > 0)) && !(run.specialResources?.cuneo > 0 || run.items?.cuneo > 0) && (
+          {synergies.length === 0 && (run.activeNodeItems || []).length === 0 && (run.temporaryModifiers || []).length === 0 && !(segment?.prestigeMultiplier > 1) && (
             <div className="text-sm text-slate-400 italic py-1">
-              Nessun bonus attivo al momento. Schiera 2+ compagni dello stesso elemento o ottieni oggetti nodo per attivare vantaggi tattici.
+              Nessun modificatore attivo per questo nodo. Schiera 2+ compagni dello stesso elemento o ottieni oggetti nodo per attivare vantaggi tattici.
             </div>
           )}
         </Panel>
+
+        {/* Armed Combat Triggers */}
+        {run.armedTriggers && Object.entries(run.armedTriggers).some(([_, qty]) => qty > 0) && (
+          <Panel data-testid="active-armed-triggers" className="font-body text-base border-rose-800/80 bg-rose-950/20 space-y-1.5">
+            <div className="font-pixel text-[8px] text-rose-300 uppercase flex items-center gap-1 border-b border-rose-900/60 pb-1">
+              Oggetti Reattivi Armati
+            </div>
+            {Object.entries(run.armedTriggers).filter(([_, qty]) => qty > 0).map(([itemId]) => {
+              const item = ITEMS[itemId] || { name: itemId, description: "Attivazione automatica in lotta." };
+              return (
+                <div key={itemId} className="flex items-start justify-between gap-1 text-sm bg-rose-950/40 p-1.5 rounded border border-rose-800/40">
+                  <div>
+                    <strong className="text-rose-200">{item.name}</strong>
+                    <span className="text-slate-300 ml-1">· {item.description || item.desc}</span>
+                  </div>
+                  <span className="font-pixel text-[7px] text-rose-300 shrink-0 border border-rose-600/60 px-1 py-0.5 rounded bg-rose-900/30">
+                    Pronto alla lotta
+                  </span>
+                </div>
+              );
+            })}
+          </Panel>
+        )}
+
+        {/* Special Resources (Cuneo DNA) */}
+        {((run.specialResources?.cuneo > 0) || (run.items?.cuneo > 0)) && (
+          <Panel data-testid="special-resources-hub" className="font-body text-base border-fuchsia-800/80 bg-fuchsia-950/20 space-y-1.5">
+            <div className="font-pixel text-[8px] text-fuchsia-300 uppercase flex items-center gap-1 border-b border-fuchsia-900/60 pb-1">
+              Risorse Speciali
+            </div>
+            <div className="flex items-start justify-between gap-1 text-sm bg-fuchsia-950/40 p-1.5 rounded border border-fuchsia-800/40">
+              <div>
+                <strong className="text-fuchsia-200">Cuneo DNA (x{run.specialResources?.cuneo || run.items?.cuneo || 0})</strong>
+                <span className="text-slate-300 ml-1">· Valuta per la fusione genetica nella schermata Squadra.</span>
+              </div>
+              <span className="font-pixel text-[7px] text-fuchsia-300 shrink-0 border border-fuchsia-600/60 px-1 py-0.5 rounded bg-fuchsia-900/30">
+                Risorsa
+              </span>
+            </div>
+          </Panel>
+        )}
         <XpReport report={!run.pending ? run.lastProgression?.report : null} />
         <div className="space-y-2">
           {run.team.map((p, i) => (
@@ -233,7 +237,7 @@ export default function HubScreen({ run, onNext, onTeam, onPause, onAbandon, onG
         </div>
       </div>
       <div className="p-3 bg-[#111827] border-t-4 border-slate-800 grid grid-cols-3 gap-2">
-        <Btn data-testid="team-btn" onClick={onTeam} className="flex items-center justify-center gap-1"><Backpack size={14} /> Squadra ({itemCount})</Btn>
+        <Btn data-testid="team-btn" onClick={onTeam} className="flex items-center justify-center gap-1"><Backpack size={14} /> Squadra{itemCount > 0 ? ` (${itemCount})` : ""}</Btn>
         <Btn data-testid="next-wave-btn" variant="primary" className="col-span-2" onClick={onNext}>{run.pendingRouteChoices?.length ? "Scegli Percorso" : run.pending ? "Riprendi" : isBoss ? "Affronta il Boss" : isCheckpoint ? "Affronta il Checkpoint" : "Avanti"}</Btn>
         <Btn data-testid="pause-run-btn" className="col-span-3" onClick={onPause}>Salva e torna al menu</Btn>
         <Btn data-testid="abandon-btn" variant="ghost" className="col-span-3 min-h-[36px] py-1 text-[8px]" onClick={onAbandon}>Abbandona la run</Btn>

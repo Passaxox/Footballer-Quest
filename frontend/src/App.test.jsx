@@ -130,12 +130,12 @@ test("purchased shop entries remain unavailable after reload and cannot charge t
   await mountAndContinue();
   await call(ShopScreen, "onBuy", 0);
   expect(loadRun().money).toBe(80);
-  expect(loadRun().items.barretta).toBe(3);
+  expect(loadRun().items.barretta).toBe(1);
   await reload();
   expect(props(ShopScreen).run.pending.bought).toEqual([0]);
   await call(ShopScreen, "onBuy", 0);
   expect(loadRun().money).toBe(80);
-  expect(loadRun().items.barretta).toBe(3);
+  expect(loadRun().items.barretta).toBe(1);
 });
 
 test("event outcome and generated offer persist without repeating its effects", async () => {

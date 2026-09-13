@@ -176,7 +176,7 @@ test("TRIGGER items auto-arm, fire automatically in combat without bag interacti
   const run = newRun(data.STARTER_IDS.slice(0, 3));
   const granted = grantRunItem(run, "stendardo");
   assert.equal(granted.run.armedTriggers.stendardo, 1);
-  assert.equal(granted.run.items.stendardo, 1);
+  assert.equal(granted.run.items.stendardo, undefined);
 
   // Perform attack with armed stendardo
   let triggerUsed = null;
@@ -196,7 +196,7 @@ test("Special resources (Cuneo DNA) isolate to specialResources and preserve fus
   const run = newRun(data.STARTER_IDS.slice(0, 3));
   const res = resolveRewardChoice(run, "cuneo");
   assert.equal(res.run.specialResources.cuneo, 1);
-  assert.equal(res.run.items.cuneo, 1);
+  assert.equal(res.run.items.cuneo, undefined);
 
   // Fusion uses cuneo and decrements
   const fusedRun = fuseRunPlayers(res.run, 0, 1, "a");

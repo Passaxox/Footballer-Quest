@@ -69,6 +69,7 @@
     "test:foundation": "node --test tests/foundation.test.mjs",
     "test:identity": "node --test tests/identity-items-guide.test.mjs",
     "test:rewards": "node --test tests/reward-flow-simulation.test.mjs",
+    "test:authoritative-rewards": "node --test tests/authoritative-rewards-shop.test.mjs",
     "asset:audit": "node scripts/asset-audit.mjs",
     "test:assets": "node --test tests/asset-audit.test.mjs",
     "variety:report": "node scripts/run-variety-report.cjs",

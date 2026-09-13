@@ -2,7 +2,7 @@ import { getScenario, scenarioPool, selectEncounterVersion, scenarioForWave, nor
 import { CHARACTERS, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, BOSS_POOLS, ITEMS, ITEM_CLASSES, ITEM_FAMILIES, ITEM_FAMILY_PRESENTATION, isTargetItem, REWARD_POOL, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
-import { normalizeEventResult, resolveEventChoice, selectEvent, weightedPick } from "./events";
+import { getRunEvent, normalizeEventResult, resolveEventChoice, selectEvent, weightedPick } from "./events";
 import { createRunRandomCursor, createRunSeed, hashSeed, normalizeRandomState } from "./runRandom";
 import { RARITIES, rarityIdForVersion } from "./rarity";
 import { routeEntry, selectNodeArchetype } from "./routeDeck";
@@ -459,6 +459,10 @@ export const generateRewards = (rng = Math.random, tier = "standard", run = null
 
   const recentOffers = new Set(run?.telemetry?.itemsOffered?.slice(-6) || []);
   const armedTriggers = run?.armedTriggers || {};
+  const activeSegments = new Set([...(run?.activeNodeItems || []), ...(run?.nextSegmentNodeItems || [])]);
+  const hasKo = Boolean(run?.team?.some(p => p.hp <= 0));
+  const hasLowHp = Boolean(run?.team?.some(p => p.hp > 0 && p.hp / p.maxHp < 0.5));
+  const currentRouteId = run?.segmentState?.routeId || run?.chosenRoutes?.slice(-1)[0] || "";
 
   for (let slot = 0; slot < 3; slot++) {
     const dist = slotDist[slot] || slotDist[0];
@@ -483,13 +487,49 @@ export const generateRewards = (rng = Math.random, tier = "standard", run = null
       if (!candidates.length) continue;
 
       const weightedCandidates = candidates.map(id => {
-        let w = ITEMS[id]?.rewardWeight || 1;
-        if (ITEMS[id]?.family === ITEM_FAMILIES.TRIGGER && (armedTriggers[id] || 0) >= 1) {
-          w *= 0.05;
+        const itemDef = ITEMS[id];
+        let w = itemDef?.rewardWeight || 1;
+
+        // 1. Trigger duplicate suppression: heavily suppress duplicate armed triggers
+        if (itemDef?.family === ITEM_FAMILIES.TRIGGER && (armedTriggers[id] || 0) >= 1) {
+          w *= 0.02;
         }
+
+        // 2. Active segment duplicate suppression
+        if (activeSegments.has(id)) {
+          w *= 0.15;
+        }
+
+        // 3. Need-aware weighting: KO revives
+        const isRevive = itemDef?.effect?.type === "revive" || id === "pallone" || id === "defibrillatore";
+        if (isRevive) {
+          w *= hasKo ? 2.5 : 0.2;
+        }
+
+        // 4. Need-aware weighting: Low HP recovery
+        const isRecovery = itemDef?.tags?.includes("recovery") || itemDef?.effect?.type === "recovery";
+        if (isRecovery && hasLowHp) {
+          w *= 1.8;
+        }
+
+        // 5. Route bias
+        if (currentRouteId.includes("commerciale") && (id === "cuneo" || id === "buono")) {
+          w *= 2.0;
+        } else if ((currentRouteId.includes("parco") || currentRouteId.includes("centro-sportivo")) && isRecovery) {
+          w *= 1.6;
+        } else if ((currentRouteId.includes("torre") || currentRouteId.includes("palestra")) && itemDef?.effect?.type === "permanentStat") {
+          w *= 1.7;
+        } else if (currentRouteId.includes("notturno") || currentRouteId.includes("alius")) {
+          if (itemDef?.family === ITEM_FAMILIES.TRIGGER || itemDef?.family === ITEM_FAMILIES.SEGMENT) {
+            w *= 1.5;
+          }
+        }
+
+        // 6. Recent offers suppression
         if (recentOffers.has(id)) {
           w *= 0.25;
         }
+
         return { id, w: Math.max(0.01, w) };
       });
 
@@ -596,7 +636,7 @@ export const newRun = (starterIds, difficultyId = "normal", requestedSeed = crea
   const segmentState = createSegment({ wave: 1, segmentState: null }, initialRouteId, cursor.next);
   return normalizeRun({
     ...cursor.patch(), scenarioState, difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
-    wave: 1, team, items: { barretta: 2 }, armedTriggers: {}, specialResources: { cuneo: 0 }, nextSegmentNodeItems: [],
+    wave: 1, team, items: {}, armedTriggers: { cerotto: 1 }, specialResources: { cuneo: 0 }, nextSegmentNodeItems: [],
     money: 100, dynamicRoute, segmentState, pendingRouteChoices: null,
     chosenRoutes: [initialRouteId],
     stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], eventHistory: {}, storyFlags: {},
@@ -630,6 +670,7 @@ export const normalizeRun = (run) => {
     nodeModifiers: normalizeNodeModifiers(run.nodeModifiers),
     activeNodeItems: Array.isArray(run.activeNodeItems) ? run.activeNodeItems.filter(Boolean) : [],
     nextSegmentNodeItems: Array.isArray(run.nextSegmentNodeItems) ? run.nextSegmentNodeItems.filter(Boolean) : [],
+    items: run.items && typeof run.items === "object" ? { ...run.items } : {},
     armedTriggers: run.armedTriggers && typeof run.armedTriggers === "object"
       ? { ...run.armedTriggers }
       : Object.fromEntries(
@@ -825,19 +866,21 @@ export const completeNonCombatNode = (run) => {
 };
 
 export const fuseRunPlayers = (run, a, b, moveFrom) => {
-  if (!(run.items.cuneo > 0)) throw new Error("Serve un Cuneo DNA.");
+  const cuneoCount = (run.specialResources?.cuneo || run.items?.cuneo) || 0;
+  if (cuneoCount <= 0) throw new Error("Serve un Cuneo DNA.");
   const fused = fusePlayers(run.team[a], run.team[b], moveFrom);
   const activeUid = [run.team[a].uid, run.team[b].uid].includes(run.activeUid) ? fused.uid : run.activeUid;
   const team = run.team.filter((_, i) => i !== a && i !== b);
   team.splice(Math.min(a, b), 0, fused);
-  const nextResources = run.specialResources
-    ? { ...run.specialResources, cuneo: Math.max(0, (run.specialResources.cuneo || 0) - 1) }
-    : undefined;
+  const nextResources = run.specialResources ? {
+    ...run.specialResources,
+    cuneo: Math.max(0, ((run.specialResources.cuneo || run.items?.cuneo) || 0) - 1),
+  } : undefined;
   return normalizeRun({
     ...run,
     team,
     activeUid,
-    items: removeItem(run.items, "cuneo"),
+    items: run.items?.cuneo ? removeItem(run.items, "cuneo") : (run.items || {}),
     ...(nextResources ? { specialResources: nextResources } : {}),
     stats: { ...run.stats, fusions: run.stats.fusions + 1 },
   });
@@ -868,6 +911,7 @@ export function applyRunEventOutcome(run, event, result) {
   const cursor = createRunRandomCursor(run);
   let next = { ...run, items: { ...run.items }, storyFlags: { ...run.storyFlags }, eventHistory: { ...run.eventHistory } };
   let transition = null;
+  let targetItemPending = null;
   for (const effect of result.effects) {
     switch (effect.type) {
       case "healTeam":
@@ -879,9 +923,15 @@ export function applyRunEventOutcome(run, event, result) {
       case "grantCurrency":
         next.money = Math.max(0, next.money + effect.amount);
         break;
-      case "grantItem":
-        next = grantRunItem(next, effect.itemId, effect.quantity || 1).run;
+      case "grantItem": {
+        const item = ITEMS[effect.itemId];
+        if (item && isTargetItem(effect.itemId) && next.team && next.team.length > 0) {
+          targetItemPending = { itemId: effect.itemId, quantity: effect.quantity || 1 };
+        } else {
+          next = grantRunItem(next, effect.itemId, effect.quantity || 1).run;
+        }
         break;
+      }
       case "grantXp":
         next.team = eventTargets(next, effect, player => gainXp(player, effect.amount).player);
         break;
@@ -917,7 +967,17 @@ export function applyRunEventOutcome(run, event, result) {
   next.seenEvents = next.seenEvents.includes(event.eventId) ? next.seenEvents : [...next.seenEvents, event.eventId];
   next.lastEventWave = run.wave;
   const progression = { hadOwnXp: result.effects.some(effect => effect.type === "grantXp" && effect.amount > 0), hadCombat: transition?.type === "battle", report: reportXpChanges(run.team, next.team, "node") };
-  if (transition?.type === "battle") {
+
+  if (targetItemPending) {
+    next.pending = {
+      type: "eventTarget",
+      itemId: targetItemPending.itemId,
+      quantity: targetItemPending.quantity,
+      eventId: event.eventId,
+      afterTransition: transition,
+      progression,
+    };
+  } else if (transition?.type === "battle") {
     const enemies = enemiesForEffect(transition.effect, run.wave, next, cursor.next, prefix => cursor.uid(prefix));
     next.pending = { type: "battle", kind: enemies.length === 1 ? "wild" : "team", teamName: event.title, enemies, progression, rewardItem: transition.effect.rewardItem };
     next.telemetry = { ...next.telemetry, versionsEncountered: [...(next.telemetry?.versionsEncountered || []), ...enemies.map(player => player.versionId)] };
@@ -936,6 +996,59 @@ export function applyRunEventOutcome(run, event, result) {
   }
   return normalizeRun({ ...next, ...cursor.patch() });
 }
+
+export const resolveEventTarget = (run, targetUid = null) => {
+  const pending = run?.pending;
+  if (!pending || pending.type !== "eventTarget") return run;
+  const cursor = createRunRandomCursor(run);
+  let next = run;
+  if (targetUid) {
+    next = grantRunItem(next, pending.itemId, 1, { targetUid }).run;
+  } else {
+    const autoTarget = (next.team || []).find(p => canApplyItem(pending.itemId, p));
+    if (autoTarget) {
+      next = grantRunItem(next, pending.itemId, 1, { targetUid: autoTarget.uid }).run;
+    }
+  }
+  const remainingQuantity = (pending.quantity || 1) - 1;
+  if (remainingQuantity > 0) {
+    return normalizeRun({
+      ...next,
+      ...cursor.patch(),
+      pending: { ...pending, quantity: remainingQuantity },
+    });
+  }
+  if (pending.afterTransition?.type === "battle") {
+    const enemies = enemiesForEffect(pending.afterTransition.effect, next.wave, next, cursor.next, prefix => cursor.uid(prefix));
+    const event = getRunEvent(pending.eventId);
+    return normalizeRun({
+      ...next,
+      ...cursor.patch(),
+      pending: { type: "battle", kind: enemies.length === 1 ? "wild" : "team", teamName: event?.title || "Sfida", enemies, progression: pending.progression, rewardItem: pending.afterTransition.effect.rewardItem },
+      telemetry: { ...next.telemetry, versionsEncountered: [...(next.telemetry?.versionsEncountered || []), ...enemies.map(player => player.versionId)] },
+    });
+  }
+  if (pending.afterTransition?.type === "recruit") {
+    const ranks = { common: 0, uncommon: 1, rare: 2, special: 3 };
+    const candidates = scenarioPool(next.scenarioState.id, next.wave, 4, [], next.temporaryModifiers)
+      .filter(row => !pending.afterTransition.effect.teamTags?.length || row.version.teamTags.some(tag => pending.afterTransition.effect.teamTags.includes(tag)))
+      .filter(row => !pending.afterTransition.effect.maxRarity || ranks[row.rarityId] <= ranks[pending.afterTransition.effect.maxRarity]);
+    const selected = weightedPick(candidates, cursor.next);
+    if (!selected) throw new Error(`Nessun reclutamento valido per ${pending.eventId}`);
+    const offer = createPlayer(selected.version.versionId, Math.max(1, next.wave), cursor.uid("recruit"));
+    return normalizeRun({
+      ...next,
+      ...cursor.patch(),
+      pending: { type: "recruit", context: { mode: "offer", offer, price: pending.afterTransition.effect.price ?? 0, after: "advance" }, progression: pending.progression },
+      telemetry: { ...next.telemetry, recruitsOffered: [...(next.telemetry?.recruitsOffered || []), offer.versionId] },
+    });
+  }
+  return normalizeRun({
+    ...next,
+    ...cursor.patch(),
+    pending: { progression: pending.progression },
+  });
+};
 
 export const addItem = (items, id, n = 1) => ({ ...items, [id]: (items[id] || 0) + n });
 export const removeItem = (items, id) => { const c = (items[id] || 0) - 1; const next = { ...items }; if (c <= 0) delete next[id]; else next[id] = c; return next; };
@@ -956,7 +1069,6 @@ export const grantRunItem = (run, id, quantity = 1, options = {}) => {
       run: {
         ...run,
         specialResources: { ...currentRes, cuneo: (currentRes.cuneo || 0) + quantity },
-        items: addItem(run.items, id, quantity),
       },
       feedback: `${item.name} ottenuto! Usalo per le fusioni nella schermata Squadra.`,
     };
@@ -968,8 +1080,7 @@ export const grantRunItem = (run, id, quantity = 1, options = {}) => {
     return {
       run: {
         ...run,
-        armedTriggers: { ...armed, [id]: Math.min(1, (armed[id] || 0) + quantity) },
-        items: addItem(run.items, id, quantity),
+        armedTriggers: { ...armed, [id]: 1 },
       },
       feedback: `${item.name} armato per la lotta!`,
     };
@@ -1036,7 +1147,19 @@ export const grantRunItem = (run, id, quantity = 1, options = {}) => {
     }
   }
 
-  // Default fallback to bag items inventory
+  // Fallback for target items when targetUid is not specified:
+  const autoTarget = (run.team || []).find(p => canApplyItem(id, p));
+  if (autoTarget) {
+    return {
+      run: {
+        ...run,
+        team: run.team.map(p => p.uid === autoTarget.uid ? applyItemTo(id, p) : p),
+      },
+      feedback: `${item.name} usato su ${autoTarget.name}!`,
+    };
+  }
+
+  // Unusable fallback: only if no teammate can receive or unrecognized item
   return { run: { ...run, items: addItem(run.items, id, quantity) }, feedback: `${item.name} aggiunto allo zaino` };
 };
 

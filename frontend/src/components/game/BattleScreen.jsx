@@ -56,7 +56,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       initialTeam: run.team.map(p => ({ ...p })), team: applyNodeModifiers(run.team, run.nodeModifiers), nodeModifiers: { ...run.nodeModifiers },
       items: { ...run.items }, armedTriggers: { ...(run.armedTriggers || {}) }, temporaryItemsUsed: [], active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
       enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", cue: null, hit: null, menu: "main", xpReport: null,
-      triggerBanner: null, synergyCue: null, victoryHeadline: null,
+      triggerBanner: null, triggerBanners: [], synergyCue: null, victoryHeadline: null,
     };
   }
   const st = s.current;
@@ -90,11 +90,11 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       return;
     }
     (async () => {
-      if (encounter.kind === "boss") await say(encounter.intro, 1600);
-      else if (encounter.kind === "team") await say(`La squadra ${encounter.teamName} vi sfida!`, 1000);
-      else await say(pick(WILD_INTROS), 1000);
+      if (encounter.kind === "boss") await say(encounter.intro, 1200);
+      else if (encounter.kind === "team") await say(`La squadra ${encounter.teamName} vi sfida!`, 600);
+      else await say(pick(WILD_INTROS), 500);
       if (cancelled) return;
-      await say(`${enemy().name} scende in campo!`, 700);
+      await say(`${enemy().name} scende in campo!`, 500);
       if (cancelled) return;
       st.phase = "preBattle"; rr();
     })();
@@ -133,6 +133,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         onStateChange?.({ team: st.team, items: st.items, armedTriggers: st.armedTriggers, nodeModifiers: st.nodeModifiers });
         if (TRIGGER_ITEM_PRESENTATION[triggerId]) {
           st.triggerBanner = TRIGGER_ITEM_PRESENTATION[triggerId];
+          st.triggerBanners = [...(st.triggerBanners || []), TRIGGER_ITEM_PRESENTATION[triggerId]];
           sfx.triggerItem?.();
           rr();
         }
@@ -220,6 +221,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     if (st.phase !== "menu") return;
     sfx.confirm();
     st.triggerBanner = null;
+    st.triggerBanners = [];
     st.synergyCue = null;
     st.phase = "busy"; rr();
     const first = turnOrder(active(), enemy(), st.team);
@@ -240,7 +242,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     st.active = idx;
     st.phase = "busy"; st.menu = "main";
     onActiveChange(st.team[idx].uid);
-    await say(`Forza ${active().name}!`, 600);
+    await say(`Forza ${active().name}!`, 450);
     if (!mounted.current) return;
     st.phase = "menu"; rr();
   };
@@ -252,6 +254,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     const forced = st.phase === "forcedSwitch";
     sfx.confirm();
     st.triggerBanner = null;
+    st.triggerBanners = [];
     st.synergyCue = null;
     st.phase = "busy"; st.menu = "main";
     st.active = idx;
@@ -330,14 +333,40 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         <Fighter p={p} side="player" hit={st.hit === "player"} cue={st.cue} />
       </div>
 
-      {/* Trigger item feedback banner */}
-      {st.triggerBanner && (
-        <div data-testid="battle-trigger-banner" className={`mx-3 mt-2 p-2 rounded border-2 shadow-lg flex items-center gap-2 battle-trigger-banner ${st.triggerBanner.color}`}>
-          <span className="text-lg shrink-0">{st.triggerBanner.icon}</span>
-          <div className="min-w-0">
-            <div className="font-pixel text-[8px] font-bold">{st.triggerBanner.title}</div>
-            <div className="font-body text-xs opacity-90">{st.triggerBanner.subtitle}</div>
-          </div>
+      {/* Trigger item feedback banner queue */}
+      {(st.triggerBanner || (st.triggerBanners && st.triggerBanners.length > 0)) && (
+        <div
+          data-testid="battle-trigger-banner"
+          className={`mx-3 mt-2 space-y-1 ${
+            (st.triggerBanners?.length || 0) <= 1
+              ? `p-2 rounded border-2 shadow-lg flex items-center gap-2 battle-trigger-banner ${(st.triggerBanners?.[0] || st.triggerBanner)?.color}`
+              : ""
+          }`}
+        >
+          {(st.triggerBanners?.length || 0) <= 1 ? (
+            (() => {
+              const banner = st.triggerBanners?.[0] || st.triggerBanner;
+              return (
+                <>
+                  <span className="text-lg shrink-0">{banner.icon}</span>
+                  <div className="min-w-0">
+                    <div className="font-pixel text-[8px] font-bold">{banner.title}</div>
+                    <div className="font-body text-xs opacity-90">{banner.subtitle}</div>
+                  </div>
+                </>
+              );
+            })()
+          ) : (
+            st.triggerBanners.map((banner, bIdx) => (
+              <div key={`${banner.title}-${bIdx}`} className={`p-2 rounded border-2 shadow-lg flex items-center gap-2 battle-trigger-banner ${banner.color}`}>
+                <span className="text-lg shrink-0">{banner.icon}</span>
+                <div className="min-w-0">
+                  <div className="font-pixel text-[8px] font-bold">{banner.title}</div>
+                  <div className="font-body text-xs opacity-90">{banner.subtitle}</div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
 
