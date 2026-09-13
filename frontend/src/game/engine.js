@@ -389,7 +389,7 @@ export const newRun = (starterIds, difficultyId = "normal", requestedSeed = crea
   const cursor = createRunRandomCursor({ seed: requestedSeed, startedAt });
   const team = starterIds.map(id => createPlayer(id, 3, cursor.uid("starter")));
   const scenarioState = scenarioForWave(null, 1, tierForWave(1), cursor.next);
-  const dynamicRoute = Boolean(options?.dynamicRoute ?? options?.flexibleRoute);
+  const dynamicRoute = options?.dynamicRoute !== undefined ? Boolean(options.dynamicRoute) : (options?.flexibleRoute !== undefined ? Boolean(options.flexibleRoute) : true);
   return normalizeRun({
     ...cursor.patch(), scenarioState, difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
     wave: 1, team, items: { barretta: 2 }, money: 100, dynamicRoute,

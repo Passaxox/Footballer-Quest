@@ -729,7 +729,7 @@ test("combat, rewards, post-battle recruitment and unresolved hub never grant tr
 
 test("checkpoint 10 uses level 11 independently of boss roster; later checkpoint unchanged", () => {
   for (const [wave, expected] of [[10, 11], [20, 23]]) {
-    const encounter = engine.generateWave({ ...newRun(starters), team: [createPlayer(starters[0], 50)], wave });
+    const encounter = engine.generateWave({ ...newRun(starters, "normal", undefined, { dynamicRoute: false }), team: [createPlayer(starters[0], 50)], wave });
     assert.deepEqual(encounter.enemies.map((p) => p.baseId), data.BOSSES[wave].ids);
     assert.ok(encounter.enemies.every((p) => p.level === expected));
   }
@@ -787,7 +787,7 @@ test("ordinary enemy offsets preserve Normal and lower Easy by one with level fl
 
 test("checkpoint levels belong to the profile, not the boss team", () => {
   for (const [difficulty, level] of [["normal", 11], ["easy", 10]]) {
-    const encounter = engine.generateWave({ ...newRun(starters, difficulty), team: [createPlayer(starters[0], 50)], wave: 10 });
+    const encounter = engine.generateWave({ ...newRun(starters, difficulty, undefined, { dynamicRoute: false }), team: [createPlayer(starters[0], 50)], wave: 10 });
     assert.ok(encounter.enemies.every((p) => p.level === level));
     assert.deepEqual(encounter.enemies.map((p) => p.baseId), data.BOSSES[10].ids);
   }
@@ -1211,7 +1211,7 @@ test("V2i generated ordinary groups use the selected pool and bosses remain scri
   const rng = Math.random;
   try {
     Math.random = () => 0.7;
-    const run = newRun(starters);
+    const run = newRun(starters, "normal", undefined, { dynamicRoute: false });
     const node = engine.generateWave(run); // wave 1 is a battle, 0.7 selects a group
     const allowed = scenarios.scenarioPool(node.scenarioState.id, 1, engine.tierForWave(1)).map(r => r.version.legacyRosterId);
     assert.ok(node.enemies.every(p => allowed.includes(p.baseId)));
@@ -1247,7 +1247,7 @@ test("V2k median ceiling ignores KO, floors fractional ceiling and never raises 
 test("V2k caps only newly generated enemies, preserving identity, pools and pending saves", () => {
  const run=newRun(starters);run.wave=20;
  for(const difficulty of ["normal","easy"]) {
-  const r={...newRun(starters,difficulty),wave:20};
+  const r={...newRun(starters,difficulty, undefined, { dynamicRoute: false }),wave:20};
   const result=engine.generateWave(r);
   assert.deepEqual(result.enemies.map(p=>p.baseId),data.BOSSES[20].ids);
   assert.ok(result.enemies.every(p=>p.level===(difficulty==="easy"?6:8)));

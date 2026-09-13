@@ -174,9 +174,15 @@ test("BOSS_POOLS contains structured checkpoints with valid CharacterVersion ref
 });
 
 test("getBossForWave defaults to canonical boss without dynamicRoute and selects seeded boss with dynamicRoute", () => {
-  const baseRun = newRun(starters, "normal", "static-boss-test");
-  expect(getBossForWave(baseRun, 10)).toBe(BOSSES[10]);
-  expect(getBossForWave(baseRun, 20)).toBe(BOSSES[20]);
+  // Legacy run without dynamicRoute uses canonical fallback
+  const legacyRun = newRun(starters, "normal", "static-boss-test", { dynamicRoute: false });
+  expect(legacyRun.dynamicRoute).toBe(false);
+  expect(getBossForWave(legacyRun, 10)).toBe(BOSSES[10]);
+  expect(getBossForWave(legacyRun, 20)).toBe(BOSSES[20]);
+
+  // Ordinary production new runs have dynamicRoute enabled by default
+  const defaultRun = newRun(starters, "normal", "default-run");
+  expect(defaultRun.dynamicRoute).toBe(true);
 
   // With dynamicRoute enabled, selection uses seed and scenario bias
   const dynamicRun = newRun(starters, "normal", "seed-a", { dynamicRoute: true });
