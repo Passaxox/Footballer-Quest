@@ -1,8 +1,11 @@
+import { useState, useEffect } from "react";
 import { Header, Panel, Btn } from "./ui";
-import { Compass, MapPin, AlertTriangle, ShieldCheck, Flame, ArrowRight } from "lucide-react";
+import { Compass, MapPin, AlertTriangle, ShieldCheck, Flame, ArrowRight, CheckCircle2 } from "lucide-react";
 import { sfx } from "@/game/audio";
 
 export default function RouteChoiceScreen({ run, choices = [], onSelect }) {
+  const [confirmedRoute, setConfirmedRoute] = useState(null);
+
   const riskConfig = {
     basso: {
       label: "Rischio Basso",
@@ -21,10 +24,25 @@ export default function RouteChoiceScreen({ run, choices = [], onSelect }) {
     },
   };
 
-  const handleSelect = (routeId) => {
+  const handleSelect = (route) => {
     sfx.confirm?.();
-    onSelect(routeId);
+    setConfirmedRoute(route);
   };
+
+  const handleProceed = () => {
+    if (!confirmedRoute) return;
+    sfx.checkpoint?.();
+    onSelect(confirmedRoute.id);
+  };
+
+  useEffect(() => {
+    if (!confirmedRoute) return;
+    const timer = setTimeout(() => {
+      handleProceed();
+    }, 1100);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [confirmedRoute]);
 
   return (
     <div data-testid="route-choice-screen" className="flex flex-col flex-1">
@@ -88,7 +106,7 @@ export default function RouteChoiceScreen({ run, choices = [], onSelect }) {
                 <Btn
                   variant={route.risk === "alto" ? "primary" : "secondary"}
                   data-testid={`route-choice-btn-${route.id}`}
-                  onClick={() => handleSelect(route.id)}
+                  onClick={() => handleSelect(route)}
                   className="w-full text-[9px] py-1.5 mt-1 flex items-center justify-center gap-1"
                 >
                   Scegli Questo Percorso <ArrowRight size={12} />
@@ -98,6 +116,45 @@ export default function RouteChoiceScreen({ run, choices = [], onSelect }) {
           })}
         </div>
       </div>
+
+      {confirmedRoute && (
+        <div data-testid="route-confirmation-card" className="absolute inset-0 z-40 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center animate-fade-1">
+          <div className="w-full max-w-sm p-4 rounded-lg border-2 border-amber-400 bg-[#0b101d] space-y-3 shadow-2xl text-center">
+            <div className="flex items-center justify-center gap-1.5 text-amber-300 font-pixel text-[8px] uppercase tracking-wider">
+              <CheckCircle2 size={13} className="text-emerald-400" />
+              Rotta Confermata
+            </div>
+            <h2 className="font-pixel text-sm text-white drop-shadow-[1px_1px_0_#000]">
+              {confirmedRoute.name}
+            </h2>
+            <p className="font-body text-xs text-slate-300 leading-snug">
+              {confirmedRoute.description}
+            </p>
+            <div className="bg-slate-950 p-2.5 rounded border border-slate-700 text-xs text-left space-y-1.5">
+              <div className="flex justify-between text-slate-400">
+                <span>Tendenze:</span>
+                <strong className="text-amber-200">{confirmedRoute.tendency}</strong>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Rischio:</span>
+                <strong className="text-slate-200 capitalize">{confirmedRoute.risk}</strong>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Effetto:</span>
+                <strong className="text-sky-300">{confirmedRoute.modifierDesc}</strong>
+              </div>
+            </div>
+            <Btn
+              variant="primary"
+              data-testid="route-confirm-proceed-btn"
+              onClick={handleProceed}
+              className="w-full text-[10px] py-2 mt-2 flex items-center justify-center gap-1.5"
+            >
+              Inizia il Tragitto <ArrowRight size={13} />
+            </Btn>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

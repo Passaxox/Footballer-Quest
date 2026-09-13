@@ -38,4 +38,7 @@ export const sfx = {
   lose: () => { [400, 350, 300, 200].forEach((f, i) => tone(f, 0.25, "sawtooth", 0.06, i * 0.2)); },
   levelup: () => { [660, 880, 1100].forEach((f, i) => tone(f, 0.1, "triangle", 0.08, i * 0.08)); },
   fusion: () => { [200, 300, 450, 600, 900, 1200].forEach((f, i) => tone(f, 0.12, "triangle", 0.08, i * 0.07)); },
+  bossIntro: () => { [130, 110, 98, 82].forEach((f, i) => tone(f, 0.28, "sawtooth", 0.09, i * 0.18)); },
+  triggerItem: () => { [880, 1175, 1397].forEach((f, i) => tone(f, 0.09, "triangle", 0.08, i * 0.06)); },
+  checkpoint: () => { [440, 554, 659, 880].forEach((f, i) => tone(f, 0.12, "square", 0.07, i * 0.08)); },
 };

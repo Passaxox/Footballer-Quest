@@ -98,7 +98,12 @@ function App() {
       finishRun({ ...r, routeHistory: [...(r.routeHistory || []), routeEntry(r)].filter(Boolean).slice(-60) }, "win");
       return;
     }
+    const hadNodeItems = (r.activeNodeItems || []).length > 0;
+    const isAtCheckpoint = r.segmentState && r.segmentState.step >= r.segmentState.length;
     const nextRun = advanceRunWave(r);
+    if (hadNodeItems && isAtCheckpoint) {
+      setFeedback("CHECKPOINT RAGGIUNTO · BONUS NODO TERMINATI");
+    }
     updateRun(nextRun);
     if (nextRun.pendingRouteChoices && nextRun.pendingRouteChoices.length > 0) {
       setScreen("routeChoice");
@@ -127,7 +132,7 @@ function App() {
     const cursor = createRunRandomCursor(r);
     const rewards = generateRewards(cursor.next);
     r = { ...r, telemetry: { ...r.telemetry, itemsOffered: [...(r.telemetry?.itemsOffered || []), ...rewards, ...(enc.rewardItem ? [enc.rewardItem] : [])] } };
-    const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport };
+    const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport, encounterKind: enc.kind, teamName: enc.teamName };
     const recruitOffered = enc.kind === "wild" && (r.fischietto || enc.forceRecruit || cursor.next() * 100 < 40);
     r = { ...r, ...cursor.patch() };
     if (recruitOffered) {
@@ -209,7 +214,7 @@ function App() {
       case "team": return <TeamScreen run={run} onUpdate={(patch) => updateRun({ ...run, ...patch })} onFusion={() => setScreen("fusion")} onBack={() => setScreen("hub")} />;
       case "fusion": return <FusionScreen run={run} onFuse={onFuse} onBack={() => setScreen("team")} />;
       case "battle": return <BattleScreen onDiscover={onDiscover} key={`${run.wave}-${run.pending.enemies[0].uid}`} run={run} encounter={run.pending} onWin={onWin} onActiveChange={(activeUid) => updateRun({ ...run, activeUid })} onStateChange={(patch) => updateRun({ ...run, ...patch })} onLose={(team, items, activeUid, report, nodeModifiers, temporaryItemsUsed = []) => finishRun({ ...run, team, items, activeUid, nodeModifiers, telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] }, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } }, "lose")} onFlee={(team, items, activeUid, report, nodeModifiers, temporaryItemsUsed = []) => advanceWave({ ...run, team, items, activeUid, nodeModifiers, telemetry: { ...run.telemetry, temporaryItemsUsed: [...(run.telemetry?.temporaryItemsUsed || []), ...temporaryItemsUsed] }, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } })} />;
-      case "reward": return <RewardScreen rewards={ctx.rewards} bonus={ctx.bonus} money={ctx.money} xpReport={ctx.xpReport} onPick={onPickReward} />;
+      case "reward": return <RewardScreen rewards={ctx.rewards} bonus={ctx.bonus} money={ctx.money} xpReport={ctx.xpReport} encounterKind={ctx.encounterKind} teamName={ctx.teamName} onPick={onPickReward} />;
       case "event": {
         const event = getRunEvent(run.pending.eventId);
         return <EventScreen key={`${run.wave}-${event.eventId}`} run={run} event={event} onChoose={(choiceIndex) => updateRun(chooseRunEvent(run, event, choiceIndex))} onResolve={onEventResolve} />;

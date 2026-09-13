@@ -121,6 +121,13 @@ export default function RecoveryScreen({ run, onApplyOption, onLeave }) {
           })}
         </div>
 
+        {chosen && (
+          <div data-testid="recovery-confirmed-feedback" className="p-2 rounded bg-emerald-950/80 border border-emerald-500 text-emerald-300 font-pixel text-[8px] flex items-center gap-2 animate-fade-1">
+            <Sparkles size={14} className="shrink-0 text-emerald-400" />
+            <span>Trattamento completato con successo! La squadra ha recuperato le forze.</span>
+          </div>
+        )}
+
         {/* Team Preview */}
         <div className="space-y-1.5 pt-2 border-t border-slate-800">
           <div className="font-pixel text-[8px] text-slate-400 uppercase">Stato Squadra:</div>

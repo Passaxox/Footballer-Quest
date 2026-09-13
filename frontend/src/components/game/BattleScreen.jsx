@@ -4,6 +4,8 @@ import { ITEMS, WILD_INTROS, ELEMENTS } from "@/game/data";
 import { performAttack, applyBurn, turnOrder, applyNodeModifiers, addNodeStageModifier, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, removeItem, pick, chance, resolveActiveUid, xpProgress } from "@/game/engine";
 import { activeSynergies } from "@/game/synergies";
 import { sfx } from "@/game/audio";
+import { getEncounterTier, resolveTeamAccent, resolveScenarioTheme, TRIGGER_ITEM_PRESENTATION } from "@/game/presentation";
+import EncounterIntroModal from "./EncounterIntroModal";
 import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, ItemTargetCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -12,16 +14,16 @@ const Fighter = ({ p, side, hit, cue }) => (
   <div className={`flex ${side === "enemy" ? "flex-row-reverse" : "flex-row"} items-end gap-2 ${hit ? "animate-shake" : ""}`}>
     <div className={`battle-portrait ${cue?.side === side && cue.stage === "windup" ? "battle-lunge" : ""}`} style={{ "--lunge-x": side === "player" ? "12px" : "-12px", "--impact-color": ELEMENTS[cue?.element]?.color || "#fff" }}>
       {hit && cue && <div className={`battle-impact battle-impact-${cue.effectiveness}`} aria-hidden="true"><b>-{cue.damage} HP</b><span>{cue.label}</span></div>}
-      <div className={`${p.hp === 0 ? "animate-ko" : "animate-idle"} ${hit ? "battle-flash" : ""}`}>
+      <div className={`${p.hp === 0 ? "animate-ko" : "animate-idle"} ${hit ? "battle-flash" : ""} ${p.isCaptain ? "captain-aura rounded" : ""}`}>
         <Avatar p={p} size={side === "enemy" ? 100 : 120} ko={p.hp === 0} />
       </div>
     </div>
-    <div className={`flex-1 min-w-0 bg-[#0b101d]/90 border-2 border-slate-600 p-2 ${side === "enemy" ? "text-left" : ""}`}>
+    <div className={`flex-1 min-w-0 bg-[#0b101d]/90 border-2 ${p.isCaptain ? "border-amber-400" : "border-slate-600"} p-2 ${side === "enemy" ? "text-left" : ""}`}>
       <div className="flex items-center justify-between gap-1">
         <div className="flex items-center gap-1 min-w-0">
           {p.isCaptain && (
-            <span className="font-pixel text-[7px] text-amber-300 bg-amber-950/70 border border-amber-500/70 px-1" data-testid={`${side}-captain-badge`}>
-              CAP
+            <span className="font-pixel text-[7px] text-amber-300 bg-amber-950/90 border border-amber-400 px-1 py-0.2 rounded-sm shadow-sm" data-testid={`${side}-captain-badge`}>
+              ★ CAP
             </span>
           )}
           <span className="font-pixel text-[9px] text-white break-words min-w-0 leading-relaxed" data-testid={`${side}-name`}>{p.name}</span>
@@ -54,6 +56,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       initialTeam: run.team.map(p => ({ ...p })), team: applyNodeModifiers(run.team, run.nodeModifiers), nodeModifiers: { ...run.nodeModifiers },
       items: { ...run.items }, temporaryItemsUsed: [], active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
       enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", cue: null, hit: null, menu: "main", itemSel: null, xpReport: null,
+      triggerBanner: null, synergyCue: null, victoryHeadline: null,
     };
   }
   const st = s.current;
@@ -124,9 +127,20 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
           st.items = removeItem(st.items, triggerId);
           st.temporaryItemsUsed = [...(st.temporaryItemsUsed || []), triggerId];
         }
+        if (TRIGGER_ITEM_PRESENTATION[triggerId]) {
+          st.triggerBanner = TRIGGER_ITEM_PRESENTATION[triggerId];
+          sfx.triggerItem?.();
+          rr();
+        }
       },
     };
     const { att, def, msgs } = performAttack(a, d, options);
+    if (isPlayerAttacking && msgs.includes("Colpo critico!") && synergies.some(syn => syn.element === "fuoco")) {
+      st.synergyCue = "INTESA FUOCO · Colpo critico devastante (+10%)";
+    }
+    if (!isPlayerAttacking && synergies.some(syn => syn.element === "terra")) {
+      st.synergyCue = "INTESA TERRA · Danno ridotto dalla roccia (-10%)";
+    }
     st.cue = { ...attackFeedback(a, d, def), side: attackerSide, stage: "windup" };
     st.log = [...st.log.slice(-5), msgs[0]]; rr();
     await sleep(450);
@@ -179,7 +193,12 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         await say(`${encounter.teamName || "L'avversario"} manda in campo ${enemy().name}!`, 900);
       } else {
         sfx.win();
-        await say(encounter.kind === "boss" ? `Avete sconfitto ${encounter.teamName}!` : encounter.kind === "miniboss" ? `Avete superato ${encounter.teamName}!` : "Vittoria!", 1100);
+        const tier = getEncounterTier(encounter);
+        st.victoryHeadline = tier.winHeadline;
+        if (synergies.some(syn => syn.element === "natura")) {
+          st.synergyCue = "INTESA NATURA · Recupero post-vittoria (+7% HP)";
+        }
+        await say(encounter.kind === "boss" ? `${tier.winHeadline}: Avete sconfitto ${encounter.teamName}!` : encounter.kind === "miniboss" ? `${tier.winHeadline}: Avete superato ${encounter.teamName}!` : encounter.kind === "elite" ? `${tier.winHeadline}: Avete superato ${encounter.teamName}!` : `${tier.winHeadline}!`, 1100);
         st.phase = "end"; rr();
         onWin(st.team.map((p) => ({ ...p, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false } })), st.items, resolveActiveUid(st.team, active()?.uid), finishCombatReport(st.team, st.xpReport), st.nodeModifiers, st.temporaryItemsUsed);
         return;
@@ -196,6 +215,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const attack = async () => {
     if (st.phase !== "menu") return;
     sfx.confirm();
+    st.triggerBanner = null;
+    st.synergyCue = null;
     st.phase = "busy"; rr();
     const first = turnOrder(active(), enemy(), st.team);
     const second = first === "player" ? "enemy" : "player";
@@ -226,6 +247,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     if (idx === st.active || st.team[idx].hp === 0) return;
     const forced = st.phase === "forcedSwitch";
     sfx.confirm();
+    st.triggerBanner = null;
+    st.synergyCue = null;
     st.phase = "busy"; st.menu = "main";
     st.active = idx;
     await say(`Entra in campo ${active().name}!`, 700);
@@ -234,6 +257,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   };
 
   const consumeItem = async (itemId, idx) => {
+    st.triggerBanner = null;
+    st.synergyCue = null;
     st.phase = "busy"; st.menu = "main"; st.itemSel = null;
     const before = st.team[idx];
     const after = applyItemTo(itemId, before);
@@ -265,21 +290,85 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const e = enemy();
   const battleItems = Object.entries(st.items).filter(([id, n]) => ITEMS[id].battle && n > 0);
   const synergies = activeSynergies(st.team);
+  const tier = getEncounterTier(encounter);
+  const teamAccent = resolveTeamAccent(encounter.teamName, encounter.teamTags);
+  const theme = resolveScenarioTheme(run.scenarioState?.id, run.segmentState?.routeTheme);
+  const segment = run.segmentState;
+  const enemyCaptain = encounter.enemies.find((q) => q.isCaptain);
+
+  const endIntro = () => {
+    if (st.phase === "intro") {
+      st.phase = "preBattle";
+      rr();
+    }
+  };
 
   return (
-    <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1">
-      <div className="flex items-center justify-between px-3 py-2 bg-[#111827] border-b-4 border-slate-800">
-        <span data-testid="wave-counter-badge" className="font-pixel text-[9px] text-amber-300">ONDATA {run.wave}</span>
-        <span className="font-pixel text-[8px] text-slate-400 uppercase truncate mx-2">
-          {encounter.kind === "boss" ? `BOSS: ${encounter.teamName}` : encounter.kind === "miniboss" ? `MINIBOSS: ${encounter.teamName}` : encounter.kind === "elite" ? `ÉLITE: ${encounter.teamName}` : encounter.teamName || "Sfida"}
-        </span>
+    <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1 relative">
+      {st.phase === "intro" && (
+        <EncounterIntroModal encounter={encounter} run={run} onProceed={endIntro} />
+      )}
+
+      {/* Row 1: Wave, Segment progress, Opponent dots */}
+      <div className="flex items-center justify-between px-3 py-1.5 bg-[#111827] border-b-2 border-slate-800 text-[8px] font-pixel">
+        <span data-testid="wave-counter-badge" className="text-amber-300">ONDATA {run.wave}</span>
+        {segment ? (
+          <span data-testid="battle-segment-badge" className="text-slate-400">
+            SEG {segment.segmentIndex} · PASSO {segment.step}/{segment.length} · <span className="text-sky-300">{segment.routeTitle || "Standard"}</span>
+          </span>
+        ) : (
+          <span data-testid="battle-segment-badge" className="text-slate-400">FASE NORMALE</span>
+        )}
         <Dots team={st.enemies} active={st.eIdx} />
       </div>
 
-      <div className={`relative flex flex-col justify-between gap-3 p-3 battle-bg ${encounter.kind === "boss" || encounter.kind === "miniboss" ? "boss-glow" : ""}`}>
+      {/* Row 2: Encounter Tier badge, Team Name, Captain badge */}
+      <div className={`flex items-center justify-between px-3 py-1.5 border-b-4 ${tier.borderClass} ${tier.headerBg}`}>
+        <div className="flex items-center gap-2 min-w-0">
+          <span data-testid="encounter-tier-badge" className={`font-pixel text-[8px] px-1.5 py-0.5 rounded border ${tier.badgeClass}`}>
+            {tier.shortLabel}
+          </span>
+          <span data-testid="battle-team-name" className="font-pixel text-[9px] text-white uppercase truncate">
+            {encounter.teamName || teamAccent.displayName}
+          </span>
+        </div>
+        {enemyCaptain && (
+          <span data-testid="battle-captain-badge" className="font-pixel text-[7px] text-amber-300 bg-amber-950/80 border border-amber-400 px-1 py-0.5 rounded shrink-0">
+            CAP: {enemyCaptain.name}
+          </span>
+        )}
+      </div>
+
+      {/* Battle Arena */}
+      <div className={`relative flex flex-col justify-between gap-3 p-3 battle-bg battle-theme-${theme} ${tier.glowClass}`}>
         <Fighter p={e} side="enemy" hit={st.hit === "enemy"} cue={st.cue} />
         <Fighter p={p} side="player" hit={st.hit === "player"} cue={st.cue} />
       </div>
+
+      {/* Trigger item feedback banner */}
+      {st.triggerBanner && (
+        <div data-testid="battle-trigger-banner" className={`mx-3 mt-2 p-2 rounded border-2 shadow-lg flex items-center gap-2 battle-trigger-banner ${st.triggerBanner.color}`}>
+          <span className="text-lg shrink-0">{st.triggerBanner.icon}</span>
+          <div className="min-w-0">
+            <div className="font-pixel text-[8px] font-bold">{st.triggerBanner.title}</div>
+            <div className="font-body text-xs opacity-90">{st.triggerBanner.subtitle}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Synergy feedback cue */}
+      {st.synergyCue && (
+        <div data-testid="battle-synergy-cue" className="mx-3 mt-1 px-2 py-1 bg-violet-950/90 border border-violet-500 rounded font-pixel text-[8px] text-violet-200 flex items-center justify-between animate-fade-1">
+          <span>★ {st.synergyCue}</span>
+        </div>
+      )}
+
+      {/* Victory headline banner */}
+      {st.victoryHeadline && st.phase === "end" && (
+        <div data-testid="battle-victory-headline" className="mx-3 mt-2 p-2 rounded border-2 border-amber-400 bg-amber-950/90 text-amber-200 font-pixel text-[10px] text-center shadow-lg">
+          🏆 {st.victoryHeadline} 🏆
+        </div>
+      )}
 
       {synergies.length > 0 && (
         <div data-testid="battle-active-synergies" className="mx-3 mt-2 px-2 py-1 bg-[#0b101d]/90 border-2 border-violet-600 flex flex-wrap items-center justify-between gap-1">
@@ -341,7 +430,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
             </Btn>
             <Btn data-testid="switch-button" onClick={() => { sfx.select(); st.menu = "switch"; rr(); }}>Cambia</Btn>
             <Btn data-testid="item-button" onClick={() => { sfx.select(); st.menu = "items"; rr(); }}>Zaino</Btn>
-            <Btn data-testid="flee-button" variant="ghost" onClick={flee} className="col-span-2" disabled={encounter.kind === "boss"}>Fuggi</Btn>
+            <Btn data-testid="flee-button" variant="ghost" onClick={flee} className="col-span-2" disabled={encounter.kind === "boss" || encounter.kind === "miniboss"}>Fuggi</Btn>
           </div>
         )}
         {(st.phase === "menu" || st.phase === "forcedSwitch" || st.phase === "preBattle") && st.menu === "switch" && (

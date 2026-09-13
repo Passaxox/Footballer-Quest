@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { RECRUIT_LINES } from "@/game/data";
 import { pick } from "@/game/engine";
 import { sfx } from "@/game/audio";
+import { resolveVersion, CHARACTERS } from "@/game/catalog";
+import { rarityForVersion } from "@/game/rarity";
+import { formatVersionSubtitle } from "@/game/presentation";
 import { Btn, Header, Panel, PlayerCard, StatLine, Avatar, XpReport } from "./ui";
 
 // mode: "offer" (free join) | "encounter" (challenge / pay / skip)
@@ -14,13 +17,34 @@ export default function RecruitScreen({ run, player, price, mode, xpReport, onCh
   const join = (replaceIdx = null, isPaid = paid) => { sfx.win(); onJoin(replaceIdx, isPaid); };
   const tryJoin = (isPaid = false) => { setPaid(isPaid); if (full) setReplacing(true); else join(null, isPaid); };
 
+  const version = resolveVersion(player?.versionId || player?.baseId);
+  const canonical = CHARACTERS[player?.characterId || player?.baseId];
+  const rarity = rarityForVersion(version);
+  const versionSubtitle = formatVersionSubtitle(player);
+  const contextTeam = run.pending?.teamName;
+
   return (
     <div data-testid="recruit-screen" className="flex flex-col flex-1">
       <Header title={mode === "offer" ? "Vuole unirsi!" : "Incontro"} sub={`Ondata ${run.wave}`} />
-      <div className="p-3 flex-1 flex flex-col gap-3">
+      <div className="p-3 flex-1 flex flex-col gap-3 overflow-y-auto">
         <div className="flex items-center gap-3">
           <Avatar p={player} size={80} />
-          <Panel className="flex-1 font-body text-lg leading-tight text-white">{line}</Panel>
+          <Panel className="flex-1 font-body text-lg leading-tight text-white space-y-1">
+            <div className="flex items-center justify-between gap-1 flex-wrap">
+              <span data-testid="recruit-version-subtitle" className="font-pixel text-[8px] text-amber-300">
+                {versionSubtitle}
+              </span>
+              <span data-testid="recruit-rarity-badge" className={`font-pixel text-[7px] px-1.5 py-0.2 rounded border ${rarity.accentClass} border-current/50 bg-slate-950/60`}>
+                {rarity.label.toUpperCase()}
+              </span>
+            </div>
+            <p className="text-base text-slate-200">{line}</p>
+            {contextTeam && (
+              <div className="font-body text-xs text-slate-400">
+                Incontro da: <strong className="text-sky-300">{contextTeam}</strong>
+              </div>
+            )}
+          </Panel>
         </div>
         <PlayerCard p={player} testId="recruit-player-card" />
         <StatLine p={player} />
