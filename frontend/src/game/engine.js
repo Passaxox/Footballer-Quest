@@ -1,8 +1,8 @@
-import { selectEncounterVersion, scenarioForWave, normalizeScenarioState, isFreshPlayerVersion } from "./scenarios";
+import { selectEncounterVersion, selectEncounterLineup, scenarioForWave, normalizeScenarioState, isFreshPlayerVersion } from "./scenarios";
 import { initialOverworld, selectableOverworldNode, nodeRandom } from "./overworld";
-import { CHARACTERS, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
+import { CHARACTERS, canonicalCharacterId, ownedCharacterIds, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
-import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
+import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, SHOP_POOL } from "./data";
 
 export const rand = (a, b, random = Math.random) => a + Math.floor(random() * (b - a + 1));
 export const pick = (arr, random = Math.random) => arr[Math.floor(random() * arr.length)];
@@ -187,10 +187,10 @@ export const enemyLevel = (wave, rulesetId, random = Math.random) => {
 // Only fresh event generation uses this substitution; never normalize saved players with it.
 const freshEventId = id => resolveVersion(id)?.versionId === "jonas:base" ? "jonas:zeus" : id;
 export const randomRosterId = (maxTier, exclude = []) => {
-  const excluded = new Set(exclude.map(id => resolveVersion(freshEventId(id))?.versionId));
+  const excluded = new Set(exclude.map(id => canonicalCharacterId(freshEventId(id))));
   const pool = ROSTER.map(r => freshEventId(r.id)).filter(id => {
     const v = resolveVersion(id);
-    return isFreshPlayerVersion(v) && v.encounterTier <= maxTier && !excluded.has(v.versionId);
+    return isFreshPlayerVersion(v) && v.encounterTier <= maxTier && !excluded.has(canonicalCharacterId(v.versionId));
   });
   return pick(pool);
 };
@@ -205,18 +205,20 @@ const generateWaveNode = (run, forcedType = null, random = Math.random) => {
     const rules = getRules(run.rulesetId);
     const rawLevel = wave + (rules.checkpoints[wave]?.levelOffset ?? rules.defaultBossLevelOffset);
     const level = cappedEnemyLevel(rawLevel, run.team, run.rulesetId, "boss");
-    return { type: "battle", kind: "boss", teamName: boss.team, intro: boss.intro, enemies: boss.ids.map((id) => createPlayer(id, level, random)) };
+    return { type: "battle", kind: "boss", encounterType: boss.encounterType, teamId: boss.teamId, teamName: boss.team, intro: boss.intro, enemies: boss.ids.map((id) => createPlayer(id, level, random)) };
   }
   const roll = forcedType ? null : random() * 100;
   if (forcedType === "battle" || (!forcedType && (wave === 1 || roll < 50))) {
     const solo = chance(60, random);
-    if (solo) return { type: "battle", kind: "wild", enemies: [createPlayer(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId, random), run.team, run.rulesetId), random)] };
+    if (solo) return { type: "battle", kind: "wild", encounterType: "solo", enemies: [createPlayer(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId, random), run.team, run.rulesetId), random)] };
     const n = wave < 5 ? 2 : rand(2, 3, random);
-    const ids = [];
-    while (ids.length < n) ids.push(pickOpponent(tierForWave(wave), ids));
-    return { type: "battle", kind: "team", teamName: pick(TEAM_NAMES, random), enemies: ids.map((id) => createPlayer(id, cappedEnemyLevel(enemyLevel(wave, run.rulesetId, random), run.team, run.rulesetId), random)) };
+    const { versions, ...identity } = selectEncounterLineup(run.scenarioState.id, wave, tierForWave(wave), n, random);
+    return { type: "battle", kind: "team", ...identity, enemies: versions.map(v => createPlayer(v.versionId, cappedEnemyLevel(enemyLevel(wave, run.rulesetId, random), run.team, run.rulesetId), random)) };
   }
-  if (forcedType === "recruit" || (!forcedType && roll < 62)) return { type: "recruit", player: createPlayer(pickOpponent(tierForWave(wave) + (chance(20, random) ? 1 : 0)), Math.max(1, wave - 1), random), price: 60 + wave * 4 };
+  if (forcedType === "recruit" || (!forcedType && roll < 62)) {
+    const id = pickOpponent(tierForWave(wave) + (chance(20, random) ? 1 : 0), [...ownedCharacterIds(run.team)]);
+    return { type: "recruit", player: id ? createPlayer(id, Math.max(1, wave - 1), random) : null, price: 60 + wave * 4 };
+  }
   if (forcedType === "shop" || (!forcedType && roll < 74)) return { type: "shop", stock: generateShop(wave, random) };
   if (forcedType === "training" || (!forcedType && roll < 84)) return { type: "training" };
   const ev = pick(EVENTS.filter((e) => !(run.seenEvents || []).includes(e.id)) .length ? EVENTS.filter((e) => !(run.seenEvents || []).includes(e.id)) : EVENTS, random);
@@ -224,10 +226,10 @@ const generateWaveNode = (run, forcedType = null, random = Math.random) => {
 };
 
 // Scenario is selected once per segment and returned for atomic persistence with the pending node.
-export const generateWave = (run) => {
+export const generateWave = (run, random = Math.random) => {
   if (run.pending) return run.pending; // Never reroll an already persisted encounter.
-  const scenarioState = scenarioForWave(normalizeScenarioState(run.scenarioState, run.wave), run.wave, tierForWave(run.wave));
-  return { ...generateWaveNode({ ...run, scenarioState }), scenarioState };
+  const scenarioState = scenarioForWave(normalizeScenarioState(run.scenarioState, run.wave), run.wave, tierForWave(run.wave), random);
+  return { ...generateWaveNode({ ...run, scenarioState }, null, random), scenarioState };
 };
 
 // Selecting a tile commits path + location + generated content in one saved run.
@@ -265,7 +267,14 @@ export const enemiesForEffect = (eff, wave, run) => {
   const adjustment = run ? ENEMY_GUARDRAILS[getRules(run.rulesetId).difficultyId].challengeOffset : 0;
   const raw = Math.max(1, wave + (eff.levelBonus || 0) + adjustment);
   const level = run ? cappedEnemyLevel(raw, run.team, run.rulesetId, "challenge") : raw;
-  if (eff.ids) return eff.ids.map((id) => createPlayer(freshEventId(id), level));
+  if (eff.ids) {
+    const seen = new Set();
+    return eff.ids.map(freshEventId).filter(id => {
+      const identity = canonicalCharacterId(id);
+      if (seen.has(identity)) return false;
+      seen.add(identity); return true;
+    }).map(id => createPlayer(id, level));
+  }
   const ids = [];
   while (ids.length < (eff.count || 1)) ids.push(randomRosterId(tierForWave(wave), ids));
   return ids.map((id) => createPlayer(id, level));
@@ -273,6 +282,7 @@ export const enemiesForEffect = (eff, wave, run) => {
 
 // ---------- Run helpers ----------
 export const newRun = (starterIds, difficultyId = "normal") => {
+  if (new Set(starterIds.map(canonicalCharacterId)).size !== starterIds.length) throw new Error("Scegli personaggi diversi, non versioni della stessa persona.");
   if (starterIds.some(id => !isFreshPlayerVersion(resolveVersion(id)))) throw new Error("Versione non disponibile per una nuova run.");
   return normalizeRun({
   overworld: initialOverworld(),

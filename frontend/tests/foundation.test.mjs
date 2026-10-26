@@ -150,13 +150,13 @@ test("Jonas compatibility snapshots survive load; fresh boss/events/draft use ca
     const boss = engine.generateWave({ ...original, pending: null });
     assert.deepEqual(boss.enemies.map(p => p.versionId), ["poseidon:zeus", "byron:base"]);
     const excluded = [], generated = [];
-    for (let i = 0; i < data.ROSTER.length; i++) {
+    for (let i = 0; i < new Set(data.ROSTER.map(r => catalog.canonicalCharacterId(r.id))).size; i++) {
       const id = engine.randomRosterId(4, excluded);
       assert.ok(id);
       generated.push(catalog.resolveVersion(id).versionId);
       excluded.push(id);
     }
-    assert.equal(new Set(generated).size, data.ROSTER.length);
+    assert.equal(new Set(generated).size, new Set(data.ROSTER.map(r => catalog.canonicalCharacterId(r.id))).size);
     assert.ok(!generated.includes("jonas:base"));
     assert.ok(generated.includes("jonas:zeus"));
     assert.equal(engine.enemiesForEffect({ ids: ["jonas:base"] }, 20)[0].versionId, "jonas:zeus");
@@ -247,7 +247,7 @@ test("encounters and recruitment support versions without legacy IDs and preserv
   const scenario = { ...scenarios.SCENARIOS[0], id: "test-royal", allowedTeamTags: [], allowedVersionIds: ids };
   try {
     for (const versionId of ids) catalog.CHARACTER_VERSIONS[versionId] = {
-      ...template, versionId, legacyRosterId: null, encounterTier: 1,
+      ...template, versionId, characterId: versionId, legacyRosterId: null, encounterTier: 1,
     };
     scenarios.SCENARIOS.push(scenario);
     Math.random = () => 0.7;
@@ -257,7 +257,7 @@ test("encounters and recruitment support versions without legacy IDs and preserv
     assert.equal(new Set(battle.enemies.map(p => p.versionId)).size, 2);
     for (const p of battle.enemies) {
       assert.ok(ids.includes(p.versionId));
-      assert.equal(p.characterId, "jude");
+      assert.equal(p.characterId, p.versionId);
       assert.equal(p.baseId, p.versionId);
     }
     Math.random = () => 0.55;
@@ -1135,7 +1135,7 @@ test("V2i pools differ, preserve tier gates, and select without duplicates or ra
       assert.ok(pool.every(r => r.version.encounterTier <= tier && r.version.rarityId === null));
       assert.equal(new Set(pool.map(r => r.version.versionId)).size, pool.length);
       const excluded = [];
-      for (let i = 0; i < pool.length; i++) {
+      for (let i = 0; i < new Set(pool.map(r => catalog.canonicalCharacterId(r.version.versionId))).size; i++) {
         const v = scenarios.selectEncounterVersion(id, 19, tier, excluded, () => 0);
         assert.ok(v); excluded.push(i % 2 ? v.versionId : v.legacyRosterId);
       }
@@ -1394,4 +1394,114 @@ test("V2m legacy inventories and persisted rewards/shop offers are not regenerat
   storage.saveRun(run);assert.deepEqual(storage.loadRun(),run);
   assert.deepEqual(engine.generateWave(storage.loadRun()),pending);
  }
+});
+
+
+test("integrity: 1800 seeded canonical lineups and mixed/incomplete teams never lie", () => {
+  const rng = seed => () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+  let canonical = 0;
+  for (let seed = 1; seed <= 600; seed++) {
+    for (const [id, wave, tier] of [["raimon-training", 6, 1], ["royal-academy", 9, 2], ["zeus", 19, 3]]) {
+      const a = scenarios.selectEncounterLineup(id, wave, tier, 3, rng(seed));
+      assert.deepEqual(a, scenarios.selectEncounterLineup(id, wave, tier, 3, rng(seed)));
+      assert.equal(a.encounterType, "canonical-team");
+      assert.equal(a.versions.length, 3);
+      assert.ok(a.versions.every(v => v.primaryTeamId === a.teamId && scenarios.isFreshPlayerVersion(v)));
+      assert.equal(new Set(a.versions.map(v => catalog.canonicalCharacterId(v.versionId))).size, 3);
+      canonical++;
+    }
+    const mixed = scenarios.selectEncounterLineup("international", 19, 3, 3, rng(seed));
+    assert.equal(mixed.encounterType, "mixed");
+    assert.equal(mixed.teamId, null);
+    assert.equal(mixed.versions.length, 3);
+    assert.ok(!catalog.CATALOG_SOURCE.teams.some(t => t.displayName === mixed.teamName));
+    const unicorn = scenarios.selectEncounterLineup("international", 19, 3, 2, rng(seed));
+    assert.equal(unicorn.teamId, "unicorn");
+    assert.ok(unicorn.versions.every(v => v.primaryTeamId === "unicorn"));
+    const urban = scenarios.selectEncounterLineup("urban", 19, 3, 19, rng(seed));
+    assert.equal(new Set(urban.versions.map(v => catalog.canonicalCharacterId(v.versionId))).size, urban.versions.length);
+  }
+  assert.equal(canonical, 1800);
+});
+
+test("integrity: production wave generation preserves canonical identity and seeded content", () => {
+  let total = 0;
+  const base = newRun(starters);
+  for (let seed = 1; seed <= 400; seed++) for (const [id, wave] of [["raimon-training", 6], ["royal-academy", 9], ["zeus", 19]]) {
+    const run = { ...base, wave, scenarioState: { id, revision: 1, segmentStart: wave, segmentEnd: wave } };
+    const random = () => { const draws = [0.1, 0.9, 0.9]; const next = overworld.nodeRandom(seed, id); return () => draws.length ? draws.shift() : next(); };
+    const a = engine.generateWave(run, random());
+    assert.deepEqual(a, engine.generateWave(run, random()));
+    assert.equal(a.encounterType, "canonical-team");
+    assert.equal(a.enemies.length, 3);
+    assert.ok(a.enemies.every(p => catalog.resolveVersion(p.versionId).primaryTeamId === a.teamId));
+    assert.equal(new Set(a.enemies.map(catalog.canonicalCharacterId)).size, 3);
+    total++;
+  }
+  assert.equal(total, 1200);
+});
+
+test("integrity: registry validation detects broken references, readiness and legacy leakage", () => {
+  const ready = scenarios.validateTeamIntegrity({ bosses: data.BOSSES });
+  for (const id of ["raimon", "royal-academy", "zeus"]) assert.equal(ready.find(t => t.teamId === id).ready, true);
+  assert.equal(ready.find(t => t.teamId === "unicorn").ready, false);
+  assert.equal(scenarios.teamReadiness(undefined, 2).find(t => t.teamId === "unicorn").ready, true);
+  assert.equal(ready.find(t => t.teamId === "alius-academy").count, 0);
+  const versions = () => structuredClone(catalog.CATALOG_SOURCE.versions);
+  let v = versions(); v[0].characterId = "missing";
+  assert.throws(() => scenarios.validateTeamIntegrity({ versions: v }), /Missing character/);
+  v = versions(); v[0].primaryTeamId = "missing";
+  assert.throws(() => scenarios.validateTeamIntegrity({ versions: v }), /Missing team/);
+  v = versions().filter(v => v.primaryTeamId !== "royal-academy");
+  assert.throws(() => scenarios.validateTeamIntegrity({ versions: v }), /Incomplete canonical/);
+  const badScenario = structuredClone(scenarios.SCENARIOS); badScenario[1].allowedVersionIds.push("jonas:base");
+  assert.throws(() => scenarios.validateTeamIntegrity({ scenarios: badScenario }), /Invalid fresh pool/);
+  const bosses = structuredClone(data.BOSSES); bosses[10].ids[0] = "jude";
+  assert.throws(() => scenarios.validateTeamIntegrity({ bosses }), /Off-team boss/);
+  bosses[10] = { ...data.BOSSES[10], encounterType: "mixed" };
+  assert.throws(() => scenarios.validateTeamIntegrity({ bosses }), /Mixed canonical banner/);
+});
+
+test("integrity: canonical ownership guards versions, aliases and fusion parents without rewriting saves", () => {
+  for (const pair of [["jude", "jude:royal"], ["paolo", "fidio"], ["mark", "mark:base"]]) {
+    assert.throws(() => newRun([...pair, "axel"]), /personaggi diversi/);
+    assert.equal(catalog.canRecruitPlayer([createPlayer(pair[0])], createPlayer(pair[1])), false);
+  }
+  const fused = fusePlayers(createPlayer("jude"), createPlayer("axel"), "a");
+  assert.equal(catalog.canRecruitPlayer([fused], createPlayer("jude:royal")), false);
+  const run = newRun(starters);
+  run.team.push(createPlayer("jude:royal"));
+  run.pending = { type: "battle", kind: "boss", teamName: "Royal Academy", enemies: [createPlayer("jude"), createPlayer("jonas")] };
+  delete run.overworld;
+  storage.saveRun(run);
+  const loaded = storage.loadRun();
+  assert.deepEqual(loaded.team, run.team);
+  assert.deepEqual(loaded.pending, run.pending);
+  assert.equal(loaded.saveVersion, 2);
+  assert.equal(engine.generateWave(loaded, () => { throw Error("reroll"); }), loaded.pending);
+  assert.equal(engine.enemiesForEffect({ ids: ["paolo", "fidio", "jude", "jude:royal"] }, 8).length, 2);
+  assert.ok(scenarios.scenarioPool("royal-academy", 9, 3, ["jude:base"]).every(r => r.version.characterId !== "jude"));
+});
+
+
+test("integrity: exhausted recruit pool is skippable, never substitutes extra training or an owned player", () => {
+  const base = newRun(starters);
+  const team = scenarios.scenarioPool("urban", 2, 1).map(r => createPlayer(r.version.versionId));
+  const run = { ...base, wave: 2, team, scenarioState: { id: "urban", revision: 1, segmentStart: 1, segmentEnd: 6 } };
+  const pending = engine.generateWave(run, () => 0.55);
+  assert.equal(pending.type, "recruit"); assert.equal(pending.player, null);
+  storage.saveRun({ ...run, pending });
+  assert.deepEqual(engine.generateWave(storage.loadRun()), pending);
+  assert.equal(catalog.canRecruitPlayer(team, null), false);
+  assert.equal(catalog.canRecruitPlayer([], createPlayer("jonas")), false);
+});
+
+test("integrity: checked-in verified localization duplicates have an explicit compatibility alias", async () => {
+  const audit = JSON.parse(await readFile(new URL("./fixtures/catalog-identity-audit.json", import.meta.url), "utf8"));
+  const people = new Map();
+  for (const row of audit.entries.filter(r => r.canonicalCharacter && ["verified", "legacy-weird-but-verified"].includes(r.identityStatus))) {
+    const key = catalog.canonicalCharacterId(row.versionId);
+    if (people.has(row.canonicalCharacter)) assert.equal(key, people.get(row.canonicalCharacter));
+    people.set(row.canonicalCharacter, key);
+  }
 });

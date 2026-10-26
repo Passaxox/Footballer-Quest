@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { RECRUIT_LINES } from "@/game/data";
 import { pick } from "@/game/engine";
+import { canRecruitPlayer } from "@/game/catalog";
 import { sfx } from "@/game/audio";
 import { Btn, Header, Panel, PlayerCard, StatLine, Avatar, XpReport } from "./ui";
 
@@ -11,8 +12,15 @@ export default function RecruitScreen({ run, player, price, mode, xpReport, onCh
   const [paid, setPaid] = useState(false);
   const [line] = useState(() => pick(RECRUIT_LINES));
   const full = run.team.length >= 6;
+  const duplicate = !canRecruitPlayer(run.team, player);
   const join = (replaceIdx = null, isPaid = paid) => { sfx.win(); onJoin(replaceIdx, isPaid); };
   const tryJoin = (isPaid = false) => { setPaid(isPaid); if (full) setReplacing(true); else join(null, isPaid); };
+
+  if (!player) return <div data-testid="recruit-screen" className="p-3 space-y-3">
+    <Header title="Reclutamento" sub={`Ondata ${run.wave}`} />
+    <Panel>Conosci già tutte le promesse disponibili qui.</Panel>
+    <Btn data-testid="recruit-skip-btn" onClick={onSkip}>Prosegui</Btn>
+  </div>;
 
   return (
     <div data-testid="recruit-screen" className="flex flex-col flex-1">
@@ -33,7 +41,7 @@ export default function RecruitScreen({ run, player, price, mode, xpReport, onCh
           </div>
         ) : (
           <div className="mt-auto grid gap-2">
-            {mode === "offer" ? (
+            {duplicate ? <p className="font-body text-amber-200">Questo personaggio è già nella squadra, anche in un'altra versione.</p> : mode === "offer" ? (
               <Btn data-testid="recruit-accept-btn" variant="primary" onClick={() => tryJoin(false)}>Benvenuto in squadra!</Btn>
             ) : (
               <>

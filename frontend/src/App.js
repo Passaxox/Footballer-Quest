@@ -1,4 +1,5 @@
 import { discoverVersion, recruitVersion } from "@/game/collection";
+import { canRecruitPlayer, ownedCharacterIds } from "@/game/catalog";
 import { useCallback, useRef, useState } from "react";
 import { hasOverworld, completeOverworldNode } from "@/game/overworld";
 import { beginOverworldNode } from "@/game/engine";
@@ -104,7 +105,7 @@ function App() {
     if (r.wave >= FINAL_WAVE) { finishRun(r, "win"); return; }
     const rewards = generateRewards();
     const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport };
-    if (enc.kind === "wild" && (r.fischietto || enc.forceRecruit || chance(40))) {
+    if (enc.kind === "wild" && canRecruitPlayer(r.team, enc.enemies[0]) && (r.fischietto || enc.forceRecruit || chance(40))) {
       const e = enc.enemies[0];
       const fresh = { ...createPlayer(e.versionId || e.baseId, e.level), uid: e.uid };
       r = { ...r, fischietto: false };
@@ -134,6 +135,7 @@ function App() {
 
   const joinTeam = (replaceIdx, paid) => {
     if (!isCurrentAction() || run.pending?.type !== "recruit") return;
+    if (!canRecruitPlayer(run.team, ctx.offer)) return;
     const p = { ...ctx.offer, hp: ctx.offer.maxHp };
     const team = replaceIdx === null ? [...run.team, p] : run.team.map((q, i) => (i === replaceIdx ? p : q));
     const r = { ...run, team, money: paid ? run.money - ctx.price : run.money, stats: { ...run.stats, recruits: run.stats.recruits + 1 } };
@@ -143,6 +145,7 @@ function App() {
 
   const challengeRecruit = () => {
     if (!isCurrentAction() || run.pending?.type !== "recruit") return;
+    if (!canRecruitPlayer(run.team, ctx.offer)) return;
     const r = updateRun({ ...run, pending: { type: "battle", kind: "wild", enemies: [recruitChallengePlayer(ctx.offer, run)], forceRecruit: true } });
     gotoPending(r);
   };
@@ -177,12 +180,14 @@ function App() {
     r.seenEvents = [...(run.seenEvents || []), ev.id];
     if (battle) {
       const enemies = enemiesForEffect(battle, run.wave, r);
-      const nextRun = updateRun({ ...r, pending: { type: "battle", kind: enemies.length === 1 ? "wild" : "team", teamName: "Sfidanti", enemies, progression, rewardItem: battle.reward } });
+      const nextRun = updateRun({ ...r, pending: { type: "battle", kind: enemies.length === 1 ? "wild" : "team", encounterType: enemies.length === 1 ? "solo" : "mixed", teamId: null, teamName: "Sfidanti", enemies, progression, rewardItem: battle.reward } });
       gotoPending(nextRun);
       return;
     }
     if (recruitTier) {
-      const context = { mode: "offer", offer: createPlayer(randomRosterId(recruitTier), Math.max(1, run.wave)), after: "advance" };
+      const recruitId = randomRosterId(recruitTier, [...ownedCharacterIds(r.team)]);
+      if (!recruitId) { advanceWave(r, true); return; }
+      const context = { mode: "offer", offer: createPlayer(recruitId, Math.max(1, run.wave)), after: "advance" };
       updateRun({ ...r, pending: { type: "recruit", context, progression } });
       setCtx(context);
       setScreen("recruit");

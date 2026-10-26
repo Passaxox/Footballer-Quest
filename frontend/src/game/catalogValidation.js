@@ -39,6 +39,7 @@ export function validateCatalog({ characters, versions, moves, legacyMappings, r
     if (v.gender != null && !GENDERS.includes(v.gender)) errors.push(`Invalid gender: ${label}`);
     if (!Array.isArray(v.teamTags) || v.teamTags.some(tag => !validId(tag)) || new Set(v.teamTags).size !== v.teamTags.length) errors.push(`Invalid teamTags: ${label}`);
     if (Array.isArray(v.teamTags) && v.teamTags.some(tag => !teamIndex.has(tag))) errors.push(`Unknown teamTag: ${label}`);
+    if (v.primaryTeamId != null && !teamIndex.has(v.primaryTeamId)) errors.push(`Unknown primaryTeamId: ${label}`);
     for (const [key, registry] of [["arcId", arcIndex], ["eraId", eraIndex], ["gameOrigin", originIndex]]) {
       if (v[key] != null && !registry.has(v[key])) errors.push(`Unknown ${key}: ${label}`);
     }

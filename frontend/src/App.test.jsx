@@ -51,7 +51,7 @@ const runWith = (pending) => {
   delete run.overworld;
   return run;
 };
-const encounter = (kind = "team") => ({ type: "battle", kind, forceRecruit: true, enemies: [createPlayer(STARTER_IDS[0], 2)] });
+const encounter = (kind = "team") => ({ type: "battle", kind, forceRecruit: true, enemies: [createPlayer("darren", 2)] });
 
 test("Game Over retry opens a fresh draft and preserves one history entry across new runs", async () => {
   saveMeta({ ...loadMeta(), unlocked: [...STARTER_IDS, "darren"] });
@@ -187,7 +187,7 @@ test("flee persists a surviving active UID and falls back when it is KO", async 
 });
 
 test("recruit replacement resolves an active UID removed from the team", async () => {
-  const run = runWith({ type: "recruit", player: createPlayer(STARTER_IDS[0], 2), price: 10 });
+  const run = runWith({ type: "recruit", player: createPlayer("darren", 2), price: 10 });
   run.activeUid = run.team[1].uid;
   saveRun(run);
   await mountAndContinue();
@@ -513,4 +513,38 @@ test("map Game Over records defeat without awarding travel or completing its til
   expect(props(EndScreen).run.overworld.completedWave).toBe(0);
   expect(props(EndScreen).run.team.map(p => [p.level, p.xp])).toEqual(selected.team.map(p => [p.level, p.xp]));
   expect(loadMeta().records).toHaveLength(1);
+});
+
+
+test.each(["jude:royal", "paolo:base"])("persisted duplicate offer %s cannot join, charge or challenge", async id => {
+  const run = runWith({ type: "recruit", player: createPlayer(id, 5), price: 10 });
+  if (id === "paolo:base") run.team[2] = createPlayer("fidio");
+  saveRun(run);
+  await mountAndContinue();
+  const before = loadRun();
+  await call(RecruitScreen, "onJoin", null, true);
+  await call(RecruitScreen, "onJoin", 0, false);
+  await call(RecruitScreen, "onChallenge");
+  expect(loadRun()).toEqual(before);
+  await call(RecruitScreen, "onSkip");
+  expect(loadRun().wave).toBe(run.wave + 1);
+});
+
+test("defeated owned alternate version does not create a post-match offer", async () => {
+  const run = runWith({ type: "battle", kind: "wild", forceRecruit: true, enemies: [createPlayer("jude:royal")] });
+  saveRun(run); await mountAndContinue();
+  await call(BattleScreen, "onWin", run.team, run.items, run.activeUid);
+  expect(loadRun().pending.type).toBe("reward");
+  expect(loadRun().team).toHaveLength(3);
+});
+
+
+test("exhausted recruitment survives reload and consumes only one wave on skip", async () => {
+  const run = runWith({ type: "recruit", player: null, price: 60 });
+  saveRun(run); await mountAndContinue(); await reload();
+  const skip = props(RecruitScreen).onSkip;
+  await act(async () => { skip(); skip(); });
+  expect(loadRun().wave).toBe(run.wave + 1);
+  expect(loadRun().stats.recruits).toBe(0);
+  expect(loadRun().money).toBe(run.money);
 });

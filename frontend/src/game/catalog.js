@@ -6,12 +6,19 @@ import { EXPANSION_CHARACTERS, EXPANSION_VERSIONS, EXPANSION_MOVES } from "./cat
 // Character = person; CharacterVersion = authored incarnation; PlayerInstance = mutable run state.
 // Legacy roster is the technical 1:1 source, not proof of canonical identity.
 // See the opt-in identity audit for verified and disputed mappings.
+const activeTeam = tags => {
+  const teams = (tags || []).filter(t => t !== "alius-academy");
+  // Only unambiguous authored membership; never select the first historical tag.
+  return teams.length === 1 ? teams[0] : null;
+};
 export const CATALOG_SOURCE = {
   characters: [...ROSTER.map(r => ({ characterId: r.id, displayName: r.name })), ...EXPANSION_CHARACTERS],
   versions: [...ROSTER.map(r => ({
     versionId: `${r.id}:base`, characterId: r.id, legacyRosterId: r.id, displayName: r.name, kind: "player",
     role: r.role, gender: VERSION_METADATA[`${r.id}:base`]?.gender ?? null, spriteId: r.id,
     teamTags: [...(VERSION_METADATA[`${r.id}:base`]?.teamTags ?? [])], element: r.element, types: [r.element],
+    primaryTeamId: activeTeam(VERSION_METADATA[`${r.id}:base`]?.teamTags),
+    legacyOnly: r.id === "jonas",
     baseStats: { hp: r.hp, atk: r.atk, def: r.def, spd: r.spd },
     primaryMoveId: `${r.id}:primary`, secondaryMoveId: null,
     rarityId: null, variantId: null, categoryId: null,
@@ -35,6 +42,20 @@ export const PRIMARY_MOVES = Object.fromEntries(CATALOG_SOURCE.moves.map(({ move
 
 export const resolveVersion = id => Object.hasOwn(CHARACTER_VERSIONS, id) ? CHARACTER_VERSIONS[id]
   : Object.hasOwn(LEGACY_VERSION_IDS, id) ? CHARACTER_VERSIONS[LEGACY_VERSION_IDS[id]] : null;
+
+// Verified localization alias; technical IDs and collection/save history remain intact.
+export const CHARACTER_ALIASES = { paolo: "fidio" };
+export const canonicalCharacterId = value => {
+  const v = typeof value === "string" ? resolveVersion(value) : resolveVersion(value?.versionId || value?.baseId);
+  const id = v?.characterId ?? (typeof value === "string" ? value : value?.characterId);
+  return CHARACTER_ALIASES[id] || id || null;
+};
+export const ownedCharacterIds = (team = []) => new Set(team.flatMap(p => p.fused
+  ? (p.parentVersionIds || String(p.baseId).split("+")).map(canonicalCharacterId)
+  : [canonicalCharacterId(p)]).filter(Boolean));
+export const canRecruitPlayer = (team, player) => !!canonicalCharacterId(player)
+  && !resolveVersion(player?.versionId || player?.baseId)?.legacyOnly
+  && !ownedCharacterIds(team).has(canonicalCharacterId(player));
 
 // Add identity only. Never rebuild saved stats, moves, HP, XP, UID or legacy fusion data.
 export const withPlayerIdentity = player => {

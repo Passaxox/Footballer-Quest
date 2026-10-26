@@ -1,5 +1,5 @@
 import { getCollectionProgress } from "@/game/collection";
-import { CHARACTER_VERSIONS } from "@/game/catalog";
+import { CHARACTER_VERSIONS, canonicalCharacterId } from "@/game/catalog";
 import { isFreshPlayerVersion } from "@/game/scenarios";
 import { useState } from "react";
 import { ELEMENTS } from "@/game/data";
@@ -14,7 +14,8 @@ export default function TeamSelect({ meta, onStart, onBack }) {
   const roster = Object.values(CHARACTER_VERSIONS).filter(v => isFreshPlayerVersion(v) && getCollectionProgress(meta, v.versionId).starterUnlocked);
   const toggle = (id) => {
     sfx.select();
-    setSel((s) => (s.includes(id) ? s.filter((x) => x !== id) : s.length < 3 ? [...s, id] : s));
+    setSel((s) => (s.includes(id) ? s.filter((x) => x !== id) : s.some(x => canonicalCharacterId(x) === canonicalCharacterId(id))
+      ? s.map(x => canonicalCharacterId(x) === canonicalCharacterId(id) ? id : x) : s.length < 3 ? [...s, id] : s));
   };
   return (
     <div data-testid="team-selection-screen" className="flex flex-col flex-1">

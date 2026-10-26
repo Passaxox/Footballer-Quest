@@ -249,6 +249,7 @@ export const EXPANSION_VERSIONS = rows.map(r => ({
   versionId: r.versionId, characterId: r.characterId, legacyRosterId: null,
   displayName: r.displayName, kind: "player", role: r.role, gender: null,
   spriteId: r.spriteId, teamTags: [r.team], element: r.element, types: [r.element],
+  primaryTeamId: r.team, legacyOnly: false,
   baseStats: { ...profiles[r.role] },
   primaryMoveId: r.characterId === "jude" ? "jude:primary" : r.versionId + ":primary",
   secondaryMoveId: null, rarityId: null, variantId: r.team === "zeus" ? "zeus" : "royal",

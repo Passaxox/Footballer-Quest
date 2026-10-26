@@ -1,5 +1,7 @@
 import { act } from "react";
 import { createRoot } from "react-dom/client";
+import RecruitScreen from "./RecruitScreen";
+import { createPlayer } from "@/game/engine";
 import RewardScreen from "./RewardScreen";
 import ShopScreen from "./ShopScreen";
 import TeamSelect from "./TeamSelect";
@@ -171,4 +173,22 @@ test("V2n Golden Ball highlights KO targets and disables living players in the b
  await click("team-item-target-1");
  expect(update.mock.calls[0][0].team[1].hp).toBe(Math.round(run.team[1].maxHp*.5));
  expect(update.mock.calls[0][0].team[0]).toEqual(run.team[0]);
+});
+
+
+test("starter selection replaces an alternate version rather than duplicating its person", async () => {
+  const onStart = jest.fn();
+  await act(async () => root.render(<TeamSelect meta={{ unlocked: ["jude", "mark", "axel", "paolo", "fidio"], collection: { "jude:royal": { starterUnlocked: true } } }} onStart={onStart} />));
+  await click("starter-jude"); await click("starter-jude:royal");
+  expect(find("start-run-btn").disabled).toBe(true);
+  await click("starter-mark"); await click("starter-axel"); await click("start-run-btn");
+  expect(onStart.mock.calls[0][0]).toEqual(["jude:royal", "mark:base", "axel:base"]);
+});
+
+test("legacy duplicate recruitment offer remains skippable and has no join or challenge controls", async () => {
+  await act(async () => root.render(<RecruitScreen run={newRun(["jude", "mark", "axel"])} player={createPlayer("jude:royal")} mode="encounter" price={10} />));
+  expect(find("recruit-pay-btn")).toBeNull();
+  expect(find("recruit-challenge-btn")).toBeNull();
+  expect(find("recruit-skip-btn")).not.toBeNull();
+  expect(host.textContent).toContain("già nella squadra");
 });

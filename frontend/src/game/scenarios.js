@@ -1,4 +1,4 @@
-import { CHARACTER_VERSIONS } from "./catalog";
+import { CHARACTER_VERSIONS, CHARACTERS, CHARACTER_ALIASES, canonicalCharacterId } from "./catalog";
 import { TEAMS, ARCS, ERAS } from "./catalogMetadata";
 
 // Foundation travel policy; future checkpoints/events may supply a different segmentEnd.
@@ -46,14 +46,16 @@ validateScenarios();
 export const getScenario = id => SCENARIOS.find(s => s.id === id) || SCENARIOS.find(s => s.id === "urban");
 const eligible = (s, wave) => s.availability && wave >= s.waveRange.from && (s.waveRange.to == null || wave <= s.waveRange.to);
 // Compatibility records stay resolvable, but must never enter a new encounter or draft.
-export const isFreshPlayerVersion = v => v?.kind === "player" && v.versionId !== "jonas:base";
+export const isFreshPlayerVersion = v => v?.kind === "player" && !v.legacyOnly && v.versionId !== "jonas:base";
 export function scenarioPool(scenarioId, wave, maxTier, exclude = []) {
   const s = getScenario(scenarioId);
+  const excludedCharacters = new Set(exclude.map(canonicalCharacterId));
   if (!eligible(s, wave) || maxTier < s.minTier) return [];
   return Object.values(CHARACTER_VERSIONS).filter(v => isFreshPlayerVersion(v) && v.encounterTier <= maxTier
     && !exclude.includes(v.versionId) && !exclude.includes(v.legacyRosterId)
+    && !excludedCharacters.has(canonicalCharacterId(v.versionId))
     && (!s.allowedVersionIds || s.allowedVersionIds.includes(v.versionId))
-    && (!s.allowedTeamTags.length || v.teamTags.some(t => s.allowedTeamTags.includes(t)))
+    && (!s.allowedTeamTags.length || s.allowedTeamTags.includes(v.primaryTeamId))
     && !v.teamTags.some(t => s.excludedTeamTags.includes(t)))
     .map(v => ({ version: v, weight: s.encounterPool.versionWeights[v.versionId] ?? (v.teamTags.some(t => s.preferredTeamTags.includes(t)) ? s.encounterPool.preferredWeight : s.encounterPool.baseWeight) }));
 }
@@ -63,6 +65,63 @@ function weighted(rows, rng) {
   return rows.find(row => (n -= row.weight) < 0) || rows.at(-1);
 }
 export const selectEncounterVersion = (scenarioId, wave, maxTier, exclude = [], rng = Math.random) => weighted(scenarioPool(scenarioId, wave, maxTier, exclude), rng)?.version ?? null;
+
+export const teamReadiness = (versions = Object.values(CHARACTER_VERSIONS), size = 3) => TEAMS.map(team => {
+  const members = versions.filter(v => isFreshPlayerVersion(v) && v.primaryTeamId === team.teamId);
+  const count = new Set(members.map(v => canonicalCharacterId(v.versionId))).size;
+  return { ...team, count, requiredSize: size, ready: count >= size };
+});
+
+// Team choice precedes member choice. No positional rules exist in sequential combat.
+export function selectEncounterLineup(scenarioId, wave, maxTier, size, rng = Math.random) {
+  const rows = scenarioPool(scenarioId, wave, maxTier);
+  const ready = teamReadiness(rows.map(r => r.version), size).filter(t => t.ready);
+  const team = weighted(ready.map(t => ({ ...t, weight: rows.filter(r => r.version.primaryTeamId === t.teamId).reduce((sum, r) => sum + r.weight, 0) })), rng);
+  let candidates = team ? rows.filter(r => r.version.primaryTeamId === team.teamId) : rows;
+  const versions = [];
+  while (versions.length < size && candidates.length) {
+    const v = weighted(candidates, rng).version;
+    versions.push(v);
+    candidates = candidates.filter(r => canonicalCharacterId(r.version.versionId) !== canonicalCharacterId(v.versionId));
+  }
+  return { encounterType: team ? "canonical-team" : "mixed", teamId: team?.teamId ?? null,
+    teamName: team?.displayName ?? "Selezione degli sfidanti", versions };
+}
+
+// Tooling validation: no save mutation and no player-facing startup exception.
+export function validateTeamIntegrity({ versions = Object.values(CHARACTER_VERSIONS), characters = Object.values(CHARACTERS), bosses = {}, scenarios = SCENARIOS } = {}) {
+  const errors = [];
+  const byId = new Map(versions.map(v => [v.versionId, v]));
+  const characterIds = new Set(characters.map(c => c.characterId));
+  if (byId.size !== versions.length || characterIds.size !== characters.length) errors.push("Duplicate catalog identity");
+  const names = new Map();
+  for (const c of characters) {
+    const name = c.displayName.trim().toLowerCase();
+    if (names.has(name) && canonicalCharacterId(names.get(name)) !== canonicalCharacterId(c.characterId)) errors.push(`Duplicate character name: ${name}`);
+    names.set(name, c.characterId);
+  }
+  for (const [alias, target] of Object.entries(CHARACTER_ALIASES)) if (!characterIds.has(alias) || !characterIds.has(target)) errors.push("Invalid character alias");
+  for (const v of versions) {
+    if (!characterIds.has(v.characterId)) errors.push(`Missing character: ${v.versionId}`);
+    if (v.primaryTeamId != null && !TEAMS.some(t => t.teamId === v.primaryTeamId)) errors.push(`Missing team: ${v.versionId}`);
+  }
+  for (const s of scenarios) {
+    for (const id of s.allowedVersionIds || []) {
+      if (!byId.has(id) || !isFreshPlayerVersion(byId.get(id))) errors.push(`Invalid fresh pool version: ${id}`);
+    }
+    if (s.allowedTeamTags.length === 1 && !teamReadiness(versions).find(t => t.teamId === s.allowedTeamTags[0])?.ready) errors.push(`Incomplete canonical scenario: ${s.id}`);
+  }
+  for (const [wave, boss] of Object.entries(bosses)) {
+    const members = boss.ids.map(id => versions.find(v => v.versionId === id || v.legacyRosterId === id));
+    if (members.some(v => !isFreshPlayerVersion(v))) errors.push(`Invalid boss member: ${wave}`);
+    if (new Set(members.map(v => canonicalCharacterId(v?.versionId))).size !== members.length) errors.push(`Duplicate boss identity: ${wave}`);
+    if (boss.encounterType === "canonical-team" && (!TEAMS.some(t => t.teamId === boss.teamId && t.displayName === boss.team)
+      || members.some(v => v?.primaryTeamId !== boss.teamId))) errors.push(`Off-team boss: ${wave}`);
+    if (boss.encounterType !== "canonical-team" && (boss.teamId || TEAMS.some(t => t.displayName === boss.team))) errors.push(`Mixed canonical banner: ${wave}`);
+  }
+  if (errors.length) throw Error(errors.join("; "));
+  return teamReadiness(versions);
+}
 const segmentStart = wave => Math.floor((wave - 1) / SCENARIO_SEGMENT_LENGTH) * SCENARIO_SEGMENT_LENGTH + 1;
 export function normalizeScenarioState(state, wave) {
   if (state?.revision === 1 && SCENARIOS.some(s => s.id === state.id) && Number.isInteger(state.segmentStart) && state.segmentStart >= 1 && state.segmentStart <= wave) return { ...state, segmentEnd: Number.isInteger(state.segmentEnd) && state.segmentEnd >= state.segmentStart ? state.segmentEnd : state.segmentStart + SCENARIO_SEGMENT_LENGTH - 1 };
