@@ -31,6 +31,35 @@ const starters = data.STARTER_IDS.slice(0, 3);
 const player = () => createPlayer(starters[0], 3);
 const ko = () => ({ ...player(), hp: 0 });
 
+test("overworld node content is seed-local and identical across reloads and repeated decisions", () => {
+  const originalRandom = Math.random;
+  const original = newRun(starters);
+  original.overworld.contentSeed = 20261026;
+  try {
+    Math.random = () => { throw Error("Seeded nodes must not use global RNG"); };
+    for (const route of overworld.OVERWORLD_ROUTES) {
+      let run = structuredClone(original);
+      for (const node of [...overworld.routeNodes(route), overworld.ROYAL_CHECKPOINT]) {
+        storage.saveRun(run);
+        const a = engine.beginOverworldNode(run, node.nodeId);
+        const b = engine.beginOverworldNode(storage.loadRun(), node.nodeId);
+        assert.deepEqual(a, b);
+        assert.equal(a.pending.environmentId, node.environmentId);
+        assert.equal(a.overworld.contentSeed, 20261026);
+        assert.equal(engine.beginOverworldNode(a, node.nodeId), a);
+        run = { ...overworld.completeOverworldNode(a), wave: run.wave + 1, pending: null };
+      }
+    }
+    const oldMap = structuredClone(original);
+    delete oldMap.overworld.contentSeed;
+    const node = overworld.routeNodes(overworld.OVERWORLD_ROUTES[0])[0];
+    const selected = engine.beginOverworldNode(oldMap, node.nodeId);
+    storage.saveRun(selected);
+    assert.deepEqual(storage.loadRun(), selected);
+    assert.equal(engine.generateWave(selected), selected.pending);
+  } finally { Math.random = originalRandom; }
+});
+
 test("W1-W10 paths have equal finite budgets, valid pools and monotonic persisted progress", () => {
   const originalRandom = Math.random;
   let seed = 42;

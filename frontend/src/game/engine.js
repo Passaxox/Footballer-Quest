@@ -1,13 +1,13 @@
 import { selectEncounterVersion, scenarioForWave, normalizeScenarioState, isFreshPlayerVersion } from "./scenarios";
-import { initialOverworld, selectableOverworldNode } from "./overworld";
+import { initialOverworld, selectableOverworldNode, nodeRandom } from "./overworld";
 import { CHARACTERS, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
 
-export const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
-export const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-export const chance = (pct) => Math.random() * 100 < pct;
-export const uid = () => Math.random().toString(36).slice(2, 10);
+export const rand = (a, b, random = Math.random) => a + Math.floor(random() * (b - a + 1));
+export const pick = (arr, random = Math.random) => arr[Math.floor(random() * arr.length)];
+export const chance = (pct, random = Math.random) => random() * 100 < pct;
+export const uid = (random = Math.random) => random().toString(36).slice(2, 10);
 
 export const byId = (id) => ROSTER.find((p) => p.id === (resolveVersion(id)?.legacyRosterId || id));
 
@@ -31,11 +31,11 @@ export const recalcStats = (p) => {
   return { ...p, maxHp, hp: p.hp === 0 ? 0 : Math.max(1, Math.min(maxHp, Math.round(maxHp * ratio))), atk: scale(b.atk, p.level) + p.bonus.atk, def: scale(b.def, p.level) + p.bonus.def, spd: scale(b.spd, p.level) + p.bonus.spd };
 };
 
-export const createPlayer = (id, level = 1) => {
+export const createPlayer = (id, level = 1, random = Math.random) => {
   const version = resolveVersion(id);
   if (!version || version.kind !== "player") throw new Error("Versione giocatore non disponibile.");
   const p = {
-    uid: uid(), baseId: version.legacyRosterId || version.versionId, characterId: version.characterId, versionId: version.versionId,
+    uid: uid(random), baseId: version.legacyRosterId || version.versionId, characterId: version.characterId, versionId: version.versionId,
     name: version.displayName || CHARACTERS[version.characterId]?.displayName || "Sconosciuto", element: version.element, role: version.role,
     tier: version.encounterTier, move: { ...PRIMARY_MOVES[version.primaryMoveId] },
     level, xp: 0, base: { ...version.baseStats }, bonus: { hp: 0, atk: 0, def: 0, spd: 0 },
@@ -178,10 +178,10 @@ export const recruitChallengePlayer = (offer, run) => {
   const level = cappedEnemyLevel(offer.level, run.team, run.rulesetId, "challenge");
   return level === offer.level ? offer : recalcStats({ ...offer, level });
 };
-export const enemyLevel = (wave, rulesetId) => {
+export const enemyLevel = (wave, rulesetId, random = Math.random) => {
   const rules = getRules(rulesetId);
   const segment = rules.ordinaryEnemyLevelSegments?.filter(s => wave >= s.fromWave).at(-1);
-  return Math.max(1, wave + rand(-1, 2) + (segment?.offset ?? rules.ordinaryEnemyLevelOffset));
+  return Math.max(1, wave + rand(-1, 2, random) + (segment?.offset ?? rules.ordinaryEnemyLevelOffset));
 };
 
 // Only fresh event generation uses this substitution; never normalize saved players with it.
@@ -197,29 +197,29 @@ export const randomRosterId = (maxTier, exclude = []) => {
 
 const tierForWave = (wave) => (wave < 8 ? 1 : wave < 18 ? 2 : 3);
 
-const generateWaveNode = (run, forcedType = null) => {
+const generateWaveNode = (run, forcedType = null, random = Math.random) => {
   const wave = run.wave;
-  const pickOpponent = (tier, exclude = []) => selectEncounterVersion(run.scenarioState.id, wave, tier, exclude)?.versionId;
+  const pickOpponent = (tier, exclude = []) => selectEncounterVersion(run.scenarioState.id, wave, tier, exclude, random)?.versionId;
   const boss = BOSSES[wave];
   if (boss) {
     const rules = getRules(run.rulesetId);
     const rawLevel = wave + (rules.checkpoints[wave]?.levelOffset ?? rules.defaultBossLevelOffset);
     const level = cappedEnemyLevel(rawLevel, run.team, run.rulesetId, "boss");
-    return { type: "battle", kind: "boss", teamName: boss.team, intro: boss.intro, enemies: boss.ids.map((id) => createPlayer(id, level)) };
+    return { type: "battle", kind: "boss", teamName: boss.team, intro: boss.intro, enemies: boss.ids.map((id) => createPlayer(id, level, random)) };
   }
-  const roll = forcedType ? null : Math.random() * 100;
+  const roll = forcedType ? null : random() * 100;
   if (forcedType === "battle" || (!forcedType && (wave === 1 || roll < 50))) {
-    const solo = chance(60);
-    if (solo) return { type: "battle", kind: "wild", enemies: [createPlayer(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId), run.team, run.rulesetId))] };
-    const n = wave < 5 ? 2 : rand(2, 3);
+    const solo = chance(60, random);
+    if (solo) return { type: "battle", kind: "wild", enemies: [createPlayer(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId, random), run.team, run.rulesetId), random)] };
+    const n = wave < 5 ? 2 : rand(2, 3, random);
     const ids = [];
     while (ids.length < n) ids.push(pickOpponent(tierForWave(wave), ids));
-    return { type: "battle", kind: "team", teamName: pick(TEAM_NAMES), enemies: ids.map((id) => createPlayer(id, cappedEnemyLevel(enemyLevel(wave, run.rulesetId), run.team, run.rulesetId))) };
+    return { type: "battle", kind: "team", teamName: pick(TEAM_NAMES, random), enemies: ids.map((id) => createPlayer(id, cappedEnemyLevel(enemyLevel(wave, run.rulesetId, random), run.team, run.rulesetId), random)) };
   }
-  if (forcedType === "recruit" || (!forcedType && roll < 62)) return { type: "recruit", player: createPlayer(pickOpponent(tierForWave(wave) + (chance(20) ? 1 : 0)), Math.max(1, wave - 1)), price: 60 + wave * 4 };
-  if (forcedType === "shop" || (!forcedType && roll < 74)) return { type: "shop", stock: generateShop(wave) };
+  if (forcedType === "recruit" || (!forcedType && roll < 62)) return { type: "recruit", player: createPlayer(pickOpponent(tierForWave(wave) + (chance(20, random) ? 1 : 0)), Math.max(1, wave - 1), random), price: 60 + wave * 4 };
+  if (forcedType === "shop" || (!forcedType && roll < 74)) return { type: "shop", stock: generateShop(wave, random) };
   if (forcedType === "training" || (!forcedType && roll < 84)) return { type: "training" };
-  const ev = pick(EVENTS.filter((e) => !(run.seenEvents || []).includes(e.id)) .length ? EVENTS.filter((e) => !(run.seenEvents || []).includes(e.id)) : EVENTS);
+  const ev = pick(EVENTS.filter((e) => !(run.seenEvents || []).includes(e.id)) .length ? EVENTS.filter((e) => !(run.seenEvents || []).includes(e.id)) : EVENTS, random);
   return { type: "event", eventId: ev.id };
 };
 
@@ -235,14 +235,16 @@ export const beginOverworldNode = (run, nodeId) => {
   const node = selectableOverworldNode(run, nodeId);
   if (!node) return run;
   const scenarioState = { id: node.locationId, revision: 1, segmentStart: run.wave, segmentEnd: run.wave };
-  const pending = { ...generateWaveNode({ ...run, scenarioState }, node.type), scenarioState, overworldNodeId: node.nodeId };
+  const contentSeed = run.overworld.contentSeed ?? (Number(run.startedAt) >>> 0);
+  const pending = { ...generateWaveNode({ ...run, scenarioState }, node.type, nodeRandom(contentSeed, node.nodeId)),
+    scenarioState, overworldNodeId: node.nodeId, environmentId: node.environmentId };
   return { ...run, scenarioState, pending, overworld: { ...run.overworld,
-    routeId: run.overworld.routeId || node.routeId, selectedNodeId: node.nodeId } };
+    contentSeed, environmentId: node.environmentId, routeId: run.overworld.routeId || node.routeId, selectedNodeId: node.nodeId } };
 };
 
-export const generateShop = (wave) => {
+export const generateShop = (wave, random = Math.random) => {
   const ids = [];
-  while (ids.length < 4) { const id = pick(SHOP_POOL); if (!ids.includes(id)) ids.push(id); }
+  while (ids.length < 4) { const id = pick(SHOP_POOL, random); if (!ids.includes(id)) ids.push(id); }
   return ids.map((id) => ({ id, price: Math.round(ITEMS[id].price * (1 + wave * 0.01)) }));
 };
 

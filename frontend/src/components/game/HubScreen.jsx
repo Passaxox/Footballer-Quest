@@ -5,9 +5,10 @@ import { DIFFICULTIES, getRules } from "@/game/rules";
 import { Btn, Header, Panel, PlayerCard, XpReport } from "./ui";
 import { Coins, Backpack } from "lucide-react";
 import { hasOverworld } from "@/game/overworld";
-import OverworldMap from "./OverworldMap";
+import OverworldHub from "./OverworldHub";
 
 export default function HubScreen({ run, onNext, onSelectNode, onTeam, onPause, onAbandon }) {
+  if (hasOverworld(run)) return <OverworldHub {...{ run, onNext, onSelectNode, onTeam, onPause, onAbandon }} />;
   const nextBoss = Object.keys(BOSSES).map(Number).find((w) => w >= run.wave);
   const isBoss = !!BOSSES[run.wave];
   const itemCount = Object.values(run.items).reduce((a, b) => a + b, 0);
@@ -32,7 +33,6 @@ export default function HubScreen({ run, onNext, onSelectNode, onTeam, onPause, 
           <span className="text-purple-300">Gloria {glory(run)}</span>
         </div>
         <XpReport report={!run.pending ? run.lastProgression?.report : null} />
-        {hasOverworld(run) && <OverworldMap run={run} onSelect={onSelectNode} />}
         <div className="space-y-2">
           {run.team.map((p, i) => <PlayerCard key={p.uid} p={p} compact testId={`hub-player-${i}`} right={i === 0 ? <span className="font-pixel text-[7px] text-amber-300 border border-amber-400 px-1">CAP</span> : null} />)}
         </div>
