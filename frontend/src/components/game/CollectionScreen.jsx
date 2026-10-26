@@ -1,11 +1,12 @@
 import { ROLES } from "@/game/data";
 import { CHARACTERS, CHARACTER_VERSIONS, PRIMARY_MOVES } from "@/game/catalog";
 import { getCollectionState, getCollectionProgress } from "@/game/collection";
+import { isFreshPlayerVersion } from "@/game/scenarios";
 import { Btn, Header, Avatar, ElementBadge, MoveInfo } from "./ui";
 
 export default function CollectionScreen({ meta, onBack }) {
   const versions = Object.values(CHARACTER_VERSIONS);
-  const unlocked = versions.filter(v => getCollectionProgress(meta, v.versionId).starterUnlocked).length;
+  const unlocked = versions.filter(v => isFreshPlayerVersion(v) && getCollectionProgress(meta, v.versionId).starterUnlocked).length;
   return (
     <div data-testid="collection-screen" className="flex flex-col flex-1">
       <Header title="Collezione" sub={`${unlocked}/${versions.length} starter disponibili`} right={<Btn variant="ghost" data-testid="collection-back-btn" onClick={onBack}>Menu</Btn>} />
@@ -30,7 +31,7 @@ export default function CollectionScreen({ meta, onBack }) {
                   <MoveInfo move={PRIMARY_MOVES[v.primaryMoveId]} />
                 </>}
               </>}
-              {progress.starterUnlocked && <div className="font-body text-sm text-amber-300">Disponibile nel draft</div>}
+              {progress.starterUnlocked && <div className="font-body text-sm text-amber-300">{isFreshPlayerVersion(v) ? "Disponibile nel draft" : "Archivio · solo run esistenti"}</div>}
             </div>
           );
         })}

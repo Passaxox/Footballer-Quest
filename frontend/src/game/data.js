@@ -63,7 +63,7 @@ export const STARTER_IDS = ["mark", "axel", "jude", "nathan", "shawn", "jack", "
 
 export const BOSSES = {
   10: { team: "Royal Academy", intro: "La Royal Academy vi sbarra la strada. Il Preside Ray Dark osserva dalla tribuna...", ids: ["jude", "david", "joseph"] },
-  20: { team: "Zeus", intro: "Gli dèi dello stadio scendono in campo. Byron Love sorride con aria di superiorità.", ids: ["jonas", "byron"] },
+  20: { team: "Zeus", intro: "Gli dèi dello stadio scendono in campo. Byron Love sorride con aria di superiorità.", ids: ["poseidon:zeus", "byron"] },
   30: { team: "Chaos", intro: "Fuoco e ghiaccio: Torch e Gazelle uniscono le forze contro di voi!", ids: ["dvalin", "torch", "gazelle"] },
   40: { team: "Genesis", intro: "L'Alius Academy schiera la sua squadra definitiva. Xavier Foster vi attende.", ids: ["jordan", "dvalin", "xavier"] },
   50: { team: "Little Gigant", intro: "La finale del Football Frontier International! Rococo Urupa para tutto... o quasi.", ids: ["fidio", "kruger", "rococo"] },

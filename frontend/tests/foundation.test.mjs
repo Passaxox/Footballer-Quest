@@ -18,7 +18,9 @@ const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
 const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
 const scenarios = await import(scenariosUrl);
-const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
+const overworldUrl = moduleUrl(await source("overworld"));
+const overworld = await import(overworldUrl);
+const engineUrl = moduleUrl((await source("engine")).replace("\"./overworld\"", JSON.stringify(overworldUrl)).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const engine = await import(engineUrl);
 const data = await import(dataUrl);
 const storage = await import(moduleUrl((await source("storage"))
@@ -28,6 +30,110 @@ const { createPlayer, recalcStats, gainXp, xpForLevel, applyItemTo, applyEventDa
 const starters = data.STARTER_IDS.slice(0, 3);
 const player = () => createPlayer(starters[0], 3);
 const ko = () => ({ ...player(), hp: 0 });
+
+test("W1-W10 paths have equal finite budgets, valid pools and monotonic persisted progress", () => {
+  const originalRandom = Math.random;
+  let seed = 42;
+  Math.random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+  try {
+    for (const route of overworld.OVERWORLD_ROUTES) {
+      let run = newRun(starters);
+      const nodes = [...overworld.routeNodes(route), overworld.ROYAL_CHECKPOINT];
+      assert.deepEqual(nodes.reduce((counts, n) => ({ ...counts, [n.type]: (counts[n.type] || 0) + 1 }), {}),
+        { battle: 6, recruit: 1, shop: 1, event: 1, training: 1 });
+      for (const node of nodes) {
+        const before = structuredClone(run);
+        assert.equal(engine.beginOverworldNode(run, "missing"), run);
+        assert.equal(engine.beginOverworldNode(run, nodes[(node.wave % 10)].nodeId), run);
+        assert.ok(scenarios.scenarioPool(node.locationId, node.wave, node.wave < 8 ? 1 : 2).length >= 3);
+        assert.equal(node.macroScenarioId, "football-frontier");
+        assert.equal(node.areaId, "road-to-royal");
+        run = engine.beginOverworldNode(run, node.nodeId);
+        assert.notDeepEqual(run, before);
+        assert.equal(run.overworld.routeId, route.id);
+        assert.equal(run.pending.type, node.type);
+        assert.equal(run.pending.overworldNodeId, node.nodeId);
+        assert.equal(run.scenarioState.id, node.locationId);
+        assert.deepEqual(run.team, before.team); assert.equal(run.money, before.money);
+        storage.saveRun(run);
+        const random = Math.random;
+        Math.random = () => { throw Error("No reroll on resume or repeated tap"); };
+        const loaded = storage.loadRun();
+        assert.deepEqual(loaded, run);
+        assert.equal(engine.generateWave(loaded), loaded.pending);
+        for (const candidate of overworld.OVERWORLD_NODES) assert.equal(engine.beginOverworldNode(loaded, candidate.nodeId), loaded);
+        Math.random = random;
+        if (run.wave === 10) {
+          assert.equal(run.pending.kind, "boss"); assert.equal(run.pending.teamName, "Royal Academy");
+          assert.deepEqual(run.pending.enemies.map(p => p.baseId), data.BOSSES[10].ids);
+        }
+        const done = overworld.completeOverworldNode(run);
+        assert.equal(done.overworld.completedWave, node.wave);
+        assert.equal(engine.beginOverworldNode({ ...done, pending: null }, node.nodeId).pending, null);
+        assert.throws(() => overworld.completeOverworldNode(done), /non valida/);
+        run = { ...done, wave: run.wave + 1, pending: null };
+        if (run.wave < 10) {
+          for (const other of overworld.OVERWORLD_ROUTES.filter(r => r.id !== route.id)) {
+            assert.equal(engine.beginOverworldNode(run, overworld.routeNodes(other)[run.wave - 1].nodeId), run);
+          }
+        }
+      }
+      assert.equal(overworld.hasOverworld(run), false);
+      assert.equal(run.overworld.completedWave, 10);
+      assert.ok(engine.generateWave(run).type);
+      const final = engine.generateWave({ ...run, wave: 50 });
+      assert.equal(final.teamName, data.BOSSES[50].team);
+      assert.deepEqual(final.enemies.map(p => p.baseId), data.BOSSES[50].ids);
+    }
+  } finally { Math.random = originalRandom; }
+});
+
+test("legacy run without overworld never acquires a map on load", () => {
+  const legacy = newRun(starters);
+  delete legacy.overworld;
+  storage.saveRun(legacy);
+  const random = Math.random;
+  try {
+    Math.random = () => { throw Error("No migration RNG"); };
+    assert.deepEqual(storage.loadRun(), legacy);
+    assert.equal(overworld.hasOverworld(storage.loadRun()), false);
+    assert.equal(overworld.completeOverworldNode(legacy), legacy);
+  } finally { Math.random = random; }
+});
+
+test("Jonas compatibility snapshots survive load; fresh boss/events/draft use canonical versions", () => {
+  const legacy = { ...createPlayer("jonas", 20), hp: 7, xp: 19 };
+  const original = { ...newRun(starters), wave: 20, team: [legacy], pending: {
+    type: "battle", kind: "boss", teamName: "Zeus", enemies: [{ ...legacy, uid: "old-enemy", hp: 3 }],
+  } };
+  storage.saveRun(original);
+  const rng = Math.random;
+  try {
+    Math.random = () => { throw Error("Legacy load must not generate content"); };
+    const loaded = storage.loadRun();
+    assert.deepEqual(loaded.team, original.team);
+    assert.deepEqual(loaded.pending, original.pending);
+    assert.equal(engine.generateWave(loaded), loaded.pending);
+    assert.equal(catalog.resolveVersion("jonas").versionId, "jonas:base");
+    assert.throws(() => newRun(["jonas", ...starters.slice(1)]), /non disponibile/);
+    assert.throws(() => newRun(["jonas:base", ...starters.slice(1)]), /non disponibile/);
+    Math.random = () => 0;
+    const boss = engine.generateWave({ ...original, pending: null });
+    assert.deepEqual(boss.enemies.map(p => p.versionId), ["poseidon:zeus", "byron:base"]);
+    const excluded = [], generated = [];
+    for (let i = 0; i < data.ROSTER.length; i++) {
+      const id = engine.randomRosterId(4, excluded);
+      assert.ok(id);
+      generated.push(catalog.resolveVersion(id).versionId);
+      excluded.push(id);
+    }
+    assert.equal(new Set(generated).size, data.ROSTER.length);
+    assert.ok(!generated.includes("jonas:base"));
+    assert.ok(generated.includes("jonas:zeus"));
+    assert.equal(engine.enemiesForEffect({ ids: ["jonas:base"] }, 20)[0].versionId, "jonas:zeus");
+    assert.ok(engine.enemiesForEffect({ count: 3 }, 20).every(p => p.versionId !== "jonas:base"));
+  } finally { Math.random = rng; }
+});
 
 test("Royal/Zeus expansion keeps identities, legacy aliases and collection progress distinct", async () => {
   const manifest = JSON.parse(await readFile(new URL("../../docs/royal-zeus-assets.json", import.meta.url), "utf8"));

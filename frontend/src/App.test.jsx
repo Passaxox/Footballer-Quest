@@ -16,6 +16,7 @@ import EndScreen from "./components/game/EndScreen";
 import TeamScreen from "./components/game/TeamScreen";
 import TrainingScreen from "./components/game/TrainingScreen";
 import TeamSelect from "./components/game/TeamSelect";
+import { OVERWORLD_ROUTES, routeNodes, ROYAL_CHECKPOINT, hasOverworld } from "./game/overworld";
 
 jest.mock("./game/audio", () => ({ setSoundEnabled: jest.fn() }));
 jest.mock("./components/game/TitleScreen", () => jest.fn(() => null));
@@ -44,7 +45,12 @@ const reload = async () => {
   jest.clearAllMocks();
   await mountAndContinue();
 };
-const runWith = (pending) => ({ ...newRun(STARTER_IDS.slice(0, 3)), pending });
+// Existing persistence regressions model pre-map saves, without opt-in overworld state.
+const runWith = (pending) => {
+  const run = { ...newRun(STARTER_IDS.slice(0, 3)), pending };
+  delete run.overworld;
+  return run;
+};
 const encounter = (kind = "team") => ({ type: "battle", kind, forceRecruit: true, enemies: [createPlayer(STARTER_IDS[0], 2)] });
 
 test("Game Over retry opens a fresh draft and preserves one history entry across new runs", async () => {
@@ -415,4 +421,96 @@ test("abandon remains destructive and records loss separately from pause", async
  await call(HubScreen,"onAbandon");
  expect(loadRun()).toBeNull();expect(props(EndScreen).result).toBe("lose");expect(loadMeta().records).toHaveLength(1);
  confirm.mockRestore();
+});
+
+test("map selection is atomic; repeated taps, reload and pause cannot reroll a pending encounter", async () => {
+  const run = newRun(STARTER_IDS.slice(0, 3)); saveRun(run);
+  await act(async () => root.render(<App />)); await call(TitleScreen, "onContinue");
+  await call(HubScreen, "onNext");
+  expect(BattleScreen).not.toHaveBeenCalled(); expect(loadRun()).toEqual(run);
+  const choose = props(HubScreen).onSelectNode;
+  const first = routeNodes(OVERWORLD_ROUTES[0])[0].nodeId;
+  const other = routeNodes(OVERWORLD_ROUTES[1])[0].nodeId;
+  await act(async () => { choose(first); choose(other); });
+  const selected = loadRun();
+  expect(selected.overworld.routeId).toBe("riverside");
+  expect(selected.pending.overworldNodeId).toBe(first);
+  await act(async () => root.unmount()); root = createRoot(host);
+  await act(async () => root.render(<App />)); await call(TitleScreen, "onContinue");
+  expect(props(HubScreen).run).toEqual(selected);
+  await call(HubScreen, "onPause"); expect(loadRun()).toEqual(selected);
+  await call(TitleScreen, "onContinue"); await call(HubScreen, "onSelectNode", other);
+  expect(loadRun()).toEqual(selected);
+  await call(HubScreen, "onNext");
+  expect(props(BattleScreen).encounter).toEqual(selected.pending);
+});
+
+test("one whole map path spends each node once, keeps reward phases, and hands off after Royal W10", async () => {
+  saveRun(newRun(STARTER_IDS.slice(0, 3)));
+  await act(async () => root.render(<App />)); await call(TitleScreen, "onContinue");
+  const nodes = [...routeNodes(OVERWORLD_ROUTES[2]), ROYAL_CHECKPOINT];
+  for (const node of nodes) {
+    const initial = loadRun();
+    await call(HubScreen, "onSelectNode", node.nodeId);
+    const selected = loadRun();
+    expect(selected.pending.type).toBe(node.type);
+    if (node.type === "battle") {
+      const win = props(BattleScreen).onWin;
+      await act(async () => { win(selected.team, selected.items, selected.activeUid); win(selected.team, selected.items, selected.activeUid); });
+      expect(loadRun().stats.wins).toBe(selected.stats.wins + 1);
+      expect(loadRun().overworld.completedWave).toBe(node.wave - 1);
+      if (loadRun().pending.type === "recruit") await call(RecruitScreen, "onSkip");
+      expect(loadRun().pending.type).toBe("reward");
+      await reload();
+      const pickReward = props(RewardScreen).onPick;
+      const beforeReward = loadRun();
+      const id = beforeReward.pending.context.rewards[0];
+      await act(async () => { pickReward(id); pickReward(id); });
+      expect(loadRun().items[id]).toBe((beforeReward.items[id] || 0) + 1);
+    } else if (node.type === "shop") {
+      const buy = props(ShopScreen).onBuy;
+      await act(async () => { buy(0); buy(0); });
+      const afterBuy = loadRun();
+      await reload(); await call(ShopScreen, "onBuy", 0);
+      expect(loadRun()).toEqual(afterBuy);
+      await call(ShopScreen, "onLeave");
+    } else if (node.type === "training") {
+      const done = props(TrainingScreen).onDone;
+      const trained = selected.team.map(p => gainXp(p, 30).player);
+      await act(async () => { done(trained, true); done(trained, true); });
+      expect(loadRun().team).toEqual(trained); // no second training or travel EXP
+    } else if (node.type === "event") {
+      const outcome = { text: "Tappa conclusa", effects: [{ type: "money", amt: 10 }] };
+      await call(EventScreen, "onChoose", outcome); await reload();
+      const resolve = props(EventScreen).onResolve;
+      await act(async () => { resolve(outcome); resolve(outcome); });
+      expect(loadRun().money).toBe(selected.money + 10);
+    } else await call(RecruitScreen, "onSkip");
+    const done = loadRun();
+    expect(done.wave).toBe(initial.wave + 1);
+    expect(done.pending).toBeNull();
+    expect(done.overworld.completedWave).toBe(node.wave);
+    expect(done.overworld.selectedNodeId).toBeNull();
+    await call(HubScreen, "onSelectNode", node.nodeId);
+    expect(loadRun()).toEqual(done); // completed tile cannot be farmed
+  }
+  expect(loadRun().wave).toBe(11);
+  expect(hasOverworld(loadRun())).toBe(false);
+  expect(loadRun().stats.lastBossDefeated).toBe("Royal Academy");
+  await call(HubScreen, "onNext");
+  expect(loadRun().pending).not.toBeNull();
+  expect(loadRun().pending.overworldNodeId).toBeUndefined();
+});
+
+test("map Game Over records defeat without awarding travel or completing its tile", async () => {
+  saveRun(newRun(STARTER_IDS.slice(0, 3)));
+  await act(async () => root.render(<App />)); await call(TitleScreen, "onContinue");
+  await call(HubScreen, "onSelectNode", routeNodes(OVERWORLD_ROUTES[0])[0].nodeId);
+  const selected = loadRun();
+  await call(BattleScreen, "onLose", selected.team.map(p => ({ ...p, hp: 0 })), selected.items, null);
+  expect(loadRun()).toBeNull();
+  expect(props(EndScreen).result).toBe("lose");
+  expect(props(EndScreen).run.overworld.completedWave).toBe(0);
+  expect(props(EndScreen).run.team.map(p => [p.level, p.xp])).toEqual(selected.team.map(p => [p.level, p.xp]));
+  expect(loadMeta().records).toHaveLength(1);
 });

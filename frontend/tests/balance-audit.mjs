@@ -18,7 +18,9 @@ const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
 const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
 const scenarios = await import(scenariosUrl);
-const engineUrl = moduleUrl((await source("engine")).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
+const overworldUrl = moduleUrl(await source("overworld"));
+const overworld = await import(overworldUrl);
+const engineUrl = moduleUrl((await source("engine")).replace("\"./overworld\"", JSON.stringify(overworldUrl)).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const engine = await import(engineUrl);
 const data = await import(dataUrl);
 const storage = await import(moduleUrl((await source("storage"))
@@ -50,7 +52,7 @@ try {
     const reference=engine.teamReferenceLevel(run.team);
     const enemy=guardrails ? engine.cappedEnemyLevel(raw,run.team,run.rulesetId,boss?"boss":"ordinary") : raw;
     const v=scenarios.selectEncounterVersion(run.scenarioState.id,wave,tier,[],random);
-    samples[wave-1].push({raw,reference,capped:Number(enemy<raw),combatXp,mean,max:Math.max(...levels),gap:enemy-mean,enemy,ko:run.team.filter(p=>!p.hp).length,scenario:run.scenarioState.id,tier:boss ? boss.ids.reduce((sum,id)=>sum+engine.byId(id).tier,0)/boss.ids.length : v?.encounterTier});
+    samples[wave-1].push({raw,reference,capped:Number(enemy<raw),combatXp,mean,max:Math.max(...levels),gap:enemy-mean,enemy,ko:run.team.filter(p=>!p.hp).length,scenario:run.scenarioState.id,tier:boss ? boss.ids.reduce((sum,id)=>sum+catalog.resolveVersion(id).encounterTier,0)/boss.ids.length : v?.encounterTier});
     // Synthetic encounter frequency; noncombat nodes use travel XP only.
     if(boss || wave===1 || random()<rate) {
      const count=boss ? boss.ids.length : random()<.6 ? 1 : wave<5 ? 2 : (random()<.5?2:3);

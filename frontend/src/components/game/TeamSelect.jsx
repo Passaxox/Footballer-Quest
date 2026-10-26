@@ -1,5 +1,6 @@
 import { getCollectionProgress } from "@/game/collection";
 import { CHARACTER_VERSIONS } from "@/game/catalog";
+import { isFreshPlayerVersion } from "@/game/scenarios";
 import { useState } from "react";
 import { ELEMENTS } from "@/game/data";
 import { createPlayer } from "@/game/engine";
@@ -10,7 +11,7 @@ import { Btn, Header, PlayerCard, StatLine } from "./ui";
 export default function TeamSelect({ meta, onStart, onBack }) {
   const [sel, setSel] = useState([]);
   const [difficultyId, setDifficultyId] = useState("normal");
-  const roster = Object.values(CHARACTER_VERSIONS).filter(v => v.kind === "player" && getCollectionProgress(meta, v.versionId).starterUnlocked);
+  const roster = Object.values(CHARACTER_VERSIONS).filter(v => isFreshPlayerVersion(v) && getCollectionProgress(meta, v.versionId).starterUnlocked);
   const toggle = (id) => {
     sfx.select();
     setSel((s) => (s.includes(id) ? s.filter((x) => x !== id) : s.length < 3 ? [...s, id] : s));

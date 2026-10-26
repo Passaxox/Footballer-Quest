@@ -1,4 +1,5 @@
-import { selectEncounterVersion, scenarioForWave, normalizeScenarioState } from "./scenarios";
+import { selectEncounterVersion, scenarioForWave, normalizeScenarioState, isFreshPlayerVersion } from "./scenarios";
+import { initialOverworld, selectableOverworldNode } from "./overworld";
 import { CHARACTERS, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, TEAM_NAMES, SHOP_POOL } from "./data";
@@ -183,14 +184,20 @@ export const enemyLevel = (wave, rulesetId) => {
   return Math.max(1, wave + rand(-1, 2) + (segment?.offset ?? rules.ordinaryEnemyLevelOffset));
 };
 
+// Only fresh event generation uses this substitution; never normalize saved players with it.
+const freshEventId = id => resolveVersion(id)?.versionId === "jonas:base" ? "jonas:zeus" : id;
 export const randomRosterId = (maxTier, exclude = []) => {
-  const pool = ROSTER.filter((r) => r.tier <= maxTier && !exclude.includes(r.id));
-  return pick(pool).id;
+  const excluded = new Set(exclude.map(id => resolveVersion(freshEventId(id))?.versionId));
+  const pool = ROSTER.map(r => freshEventId(r.id)).filter(id => {
+    const v = resolveVersion(id);
+    return isFreshPlayerVersion(v) && v.encounterTier <= maxTier && !excluded.has(v.versionId);
+  });
+  return pick(pool);
 };
 
 const tierForWave = (wave) => (wave < 8 ? 1 : wave < 18 ? 2 : 3);
 
-const generateWaveNode = (run) => {
+const generateWaveNode = (run, forcedType = null) => {
   const wave = run.wave;
   const pickOpponent = (tier, exclude = []) => selectEncounterVersion(run.scenarioState.id, wave, tier, exclude)?.versionId;
   const boss = BOSSES[wave];
@@ -200,8 +207,8 @@ const generateWaveNode = (run) => {
     const level = cappedEnemyLevel(rawLevel, run.team, run.rulesetId, "boss");
     return { type: "battle", kind: "boss", teamName: boss.team, intro: boss.intro, enemies: boss.ids.map((id) => createPlayer(id, level)) };
   }
-  const roll = Math.random() * 100;
-  if (wave === 1 || roll < 50) {
+  const roll = forcedType ? null : Math.random() * 100;
+  if (forcedType === "battle" || (!forcedType && (wave === 1 || roll < 50))) {
     const solo = chance(60);
     if (solo) return { type: "battle", kind: "wild", enemies: [createPlayer(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId), run.team, run.rulesetId))] };
     const n = wave < 5 ? 2 : rand(2, 3);
@@ -209,9 +216,9 @@ const generateWaveNode = (run) => {
     while (ids.length < n) ids.push(pickOpponent(tierForWave(wave), ids));
     return { type: "battle", kind: "team", teamName: pick(TEAM_NAMES), enemies: ids.map((id) => createPlayer(id, cappedEnemyLevel(enemyLevel(wave, run.rulesetId), run.team, run.rulesetId))) };
   }
-  if (roll < 62) return { type: "recruit", player: createPlayer(pickOpponent(tierForWave(wave) + (chance(20) ? 1 : 0)), Math.max(1, wave - 1)), price: 60 + wave * 4 };
-  if (roll < 74) return { type: "shop", stock: generateShop(wave) };
-  if (roll < 84) return { type: "training" };
+  if (forcedType === "recruit" || (!forcedType && roll < 62)) return { type: "recruit", player: createPlayer(pickOpponent(tierForWave(wave) + (chance(20) ? 1 : 0)), Math.max(1, wave - 1)), price: 60 + wave * 4 };
+  if (forcedType === "shop" || (!forcedType && roll < 74)) return { type: "shop", stock: generateShop(wave) };
+  if (forcedType === "training" || (!forcedType && roll < 84)) return { type: "training" };
   const ev = pick(EVENTS.filter((e) => !(run.seenEvents || []).includes(e.id)) .length ? EVENTS.filter((e) => !(run.seenEvents || []).includes(e.id)) : EVENTS);
   return { type: "event", eventId: ev.id };
 };
@@ -221,6 +228,16 @@ export const generateWave = (run) => {
   if (run.pending) return run.pending; // Never reroll an already persisted encounter.
   const scenarioState = scenarioForWave(normalizeScenarioState(run.scenarioState, run.wave), run.wave, tierForWave(run.wave));
   return { ...generateWaveNode({ ...run, scenarioState }), scenarioState };
+};
+
+// Selecting a tile commits path + location + generated content in one saved run.
+export const beginOverworldNode = (run, nodeId) => {
+  const node = selectableOverworldNode(run, nodeId);
+  if (!node) return run;
+  const scenarioState = { id: node.locationId, revision: 1, segmentStart: run.wave, segmentEnd: run.wave };
+  const pending = { ...generateWaveNode({ ...run, scenarioState }, node.type), scenarioState, overworldNodeId: node.nodeId };
+  return { ...run, scenarioState, pending, overworld: { ...run.overworld,
+    routeId: run.overworld.routeId || node.routeId, selectedNodeId: node.nodeId } };
 };
 
 export const generateShop = (wave) => {
@@ -246,19 +263,23 @@ export const enemiesForEffect = (eff, wave, run) => {
   const adjustment = run ? ENEMY_GUARDRAILS[getRules(run.rulesetId).difficultyId].challengeOffset : 0;
   const raw = Math.max(1, wave + (eff.levelBonus || 0) + adjustment);
   const level = run ? cappedEnemyLevel(raw, run.team, run.rulesetId, "challenge") : raw;
-  if (eff.ids) return eff.ids.map((id) => createPlayer(id, level));
+  if (eff.ids) return eff.ids.map((id) => createPlayer(freshEventId(id), level));
   const ids = [];
   while (ids.length < (eff.count || 1)) ids.push(randomRosterId(tierForWave(wave), ids));
   return ids.map((id) => createPlayer(id, level));
 };
 
 // ---------- Run helpers ----------
-export const newRun = (starterIds, difficultyId = "normal") => normalizeRun({
+export const newRun = (starterIds, difficultyId = "normal") => {
+  if (starterIds.some(id => !isFreshPlayerVersion(resolveVersion(id)))) throw new Error("Versione non disponibile per una nuova run.");
+  return normalizeRun({
+  overworld: initialOverworld(),
   scenarioState: scenarioForWave(null, 1, tierForWave(1)),
   difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
   wave: 1, team: starterIds.map((id) => createPlayer(id, 3)), items: { barretta: 2 }, money: 100,
   stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], pending: null, fischietto: false, startedAt: Date.now(),
-});
+  });
+};
 
 export const resolveActiveUid = (team, activeUid) =>
   team.find((p) => p.uid === activeUid && p.hp > 0)?.uid || team.find((p) => p.hp > 0)?.uid || null;

@@ -24,6 +24,15 @@ test("UNKNOWN conceals name, portrait and all strategic data", async () => {
   for (const text of ["Darren", "Portiere", "Natura", "Mano Mugen", "POT", "HP", "★"]) expect(card.textContent).not.toContain(text);
 });
 
+test("legacy Jonas remains in collection history but cannot enter a new draft", async () => {
+  const meta = recruitVersion(recruitVersion(blank, "jonas"), "jonas:zeus");
+  await act(async () => root.render(<CollectionScreen meta={meta} />));
+  expect(host.querySelector('[data-testid="collection-jonas"]').textContent).toContain("solo run esistenti");
+  await act(async () => root.render(<TeamSelect meta={meta} />));
+  expect(host.querySelector('[data-testid="starter-jonas"]')).toBeNull();
+  expect(host.querySelector('[data-testid="starter-jonas:zeus"]')).not.toBeNull();
+});
+
 test("Royal Jude and Zeus Demeter reveal their own portraits without unlocking legacy versions", async () => {
   const meta = recruitVersion(recruitVersion(blank, "jude:royal"), "jonas:zeus");
   await act(async () => root.render(<CollectionScreen meta={meta} />));

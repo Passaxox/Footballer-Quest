@@ -45,10 +45,12 @@ export function validateScenarios(scenarios = SCENARIOS) {
 validateScenarios();
 export const getScenario = id => SCENARIOS.find(s => s.id === id) || SCENARIOS.find(s => s.id === "urban");
 const eligible = (s, wave) => s.availability && wave >= s.waveRange.from && (s.waveRange.to == null || wave <= s.waveRange.to);
+// Compatibility records stay resolvable, but must never enter a new encounter or draft.
+export const isFreshPlayerVersion = v => v?.kind === "player" && v.versionId !== "jonas:base";
 export function scenarioPool(scenarioId, wave, maxTier, exclude = []) {
   const s = getScenario(scenarioId);
   if (!eligible(s, wave) || maxTier < s.minTier) return [];
-  return Object.values(CHARACTER_VERSIONS).filter(v => v.kind === "player" && v.encounterTier <= maxTier
+  return Object.values(CHARACTER_VERSIONS).filter(v => isFreshPlayerVersion(v) && v.encounterTier <= maxTier
     && !exclude.includes(v.versionId) && !exclude.includes(v.legacyRosterId)
     && (!s.allowedVersionIds || s.allowedVersionIds.includes(v.versionId))
     && (!s.allowedTeamTags.length || v.teamTags.some(t => s.allowedTeamTags.includes(t)))
