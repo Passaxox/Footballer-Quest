@@ -222,3 +222,27 @@ test("V2n Golden Ball battle selection clearly distinguishes KO from disabled li
  await click("item-target-0");expect(attack).not.toHaveBeenCalled();
  expect(find("item-target-1")).not.toBeNull();
 });
+
+
+test("Epsilon elite presentation resolves all four opponents once with Dvalin last", async () => {
+ const run = engine.newRun(STARTER_IDS.slice(0, 3)); run.wave = 25;
+ let seed = 0;
+ while (!engine.epsilonEntryEligible({ ...run, overworld: { contentSeed: seed } })) seed++;
+ run.overworld.contentSeed = seed;
+ const encounter = engine.generateWave(run);
+ jest.spyOn(engine, "turnOrder").mockReturnValue("player");
+ jest.spyOn(engine, "performAttack").mockImplementation((att, def) => ({ att, def: { ...def, hp: 0 }, msgs: ["KO"] }));
+ const xp = jest.spyOn(engine, "grantCombatXp");
+ const cb = await setup(run, false, encounter);
+ expect(host.textContent).toContain("ELITE: Epsilon");
+ await click("pre-battle-keep"); await settle();
+ for (let i = 0; i < 4; i++) {
+   expect(cb.onWin).not.toHaveBeenCalled();
+   await click("attack-button"); await settle();
+ }
+ expect(cb.onWin).toHaveBeenCalledTimes(1);
+ expect(cb.onLose).not.toHaveBeenCalled();
+ expect(xp).toHaveBeenCalledTimes(4);
+ expect(xp.mock.calls.every(args => args[3] === false)).toBe(true);
+ expect(cb.onDiscover.mock.calls.map(args => args[0].versionId)).toEqual(engine.EPSILON_ENTRY_IDS);
+});

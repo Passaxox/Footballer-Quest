@@ -1,6 +1,6 @@
 import { selectEncounterVersion, selectEncounterLineup, scenarioForWave, normalizeScenarioState, isFreshPlayerVersion } from "./scenarios";
 import { initialOverworld, selectableOverworldNode, nodeRandom } from "./overworld";
-import { CHARACTERS, canonicalCharacterId, ownedCharacterIds, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
+import { CHARACTERS, canRecruitPlayer, canonicalCharacterId, ownedCharacterIds, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, SHOP_POOL } from "./data";
 
@@ -225,9 +225,43 @@ const generateWaveNode = (run, forcedType = null, random = Math.random) => {
   return { type: "event", eventId: ev.id };
 };
 
+// One seeded opportunity between Zeus W20 and the Alius special W30.
+// No scenario membership, global pool, new unlock state or additional reward budget.
+export const EPSILON_ENTRY = { wave: 25, probability: 0.25, id: "epsilon-w25" };
+export const EPSILON_ENTRY_IDS = ["tytan:epsilon-ie2", "krypto:epsilon-ie2", "zell:epsilon-ie2", "dvalin:epsilon-ie2"];
+const epsilonRandom = run => nodeRandom(run.overworld?.contentSeed ?? (Number(run.startedAt) >>> 0), EPSILON_ENTRY.id);
+export const epsilonEntryEligible = run => {
+  if (run.wave !== EPSILON_ENTRY.wave) return false;
+  // Legacy snapshots without either stable seed source stay on their original flow.
+  if (!Number.isFinite(run.overworld?.contentSeed) && !Number.isFinite(run.startedAt)) return false;
+  return epsilonRandom(run)() < EPSILON_ENTRY.probability;
+};
+const epsilonEncounter = run => {
+  const random = epsilonRandom(run);
+  random(); // The appearance draw belongs to this stream, never the global scenario RNG.
+  const level = cappedEnemyLevel(enemyLevel(run.wave, run.rulesetId, random), run.team, run.rulesetId);
+  return { type: "battle", kind: "team", encounterType: "canonical-team", teamId: "epsilon", teamName: "Epsilon",
+    entryId: EPSILON_ENTRY.id, elite: true,
+    intro: "Sfida elite: Epsilon. Dvalin osserva i suoi compagni e si prepara a chiudere la sfida.",
+    recruitIndex: rand(0, 3, random),
+    enemies: EPSILON_ENTRY_IDS.map(id => createPlayer(id, level, random)),
+    scenarioState: normalizeScenarioState(run.scenarioState, run.wave) };
+};
+// Recruitment reads only the persisted spawned roster, never a scenario/global pool.
+export const epsilonRecruitOffer = (encounter, team) => {
+  if (encounter?.entryId !== EPSILON_ENTRY.id || encounter.teamId !== "epsilon"
+    || encounter.enemies?.length !== 4 || !Number.isInteger(encounter.recruitIndex)
+    || encounter.recruitIndex < 0 || encounter.recruitIndex > 3
+    || new Set(encounter.enemies.map(p => p.versionId)).size !== 4
+    || encounter.enemies.some(p => !EPSILON_ENTRY_IDS.includes(p.versionId))) return null;
+  return Array.from({ length: 4 }, (_, i) => encounter.enemies[(encounter.recruitIndex + i) % 4])
+    .find(p => canRecruitPlayer(team, p)) || null;
+};
+
 // Scenario is selected once per segment and returned for atomic persistence with the pending node.
 export const generateWave = (run, random = Math.random) => {
   if (run.pending) return run.pending; // Never reroll an already persisted encounter.
+  if (epsilonEntryEligible(run)) return epsilonEncounter(run);
   const scenarioState = scenarioForWave(normalizeScenarioState(run.scenarioState, run.wave), run.wave, tierForWave(run.wave), random);
   return { ...generateWaveNode({ ...run, scenarioState }, null, random), scenarioState };
 };

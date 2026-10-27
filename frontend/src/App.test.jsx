@@ -548,3 +548,46 @@ test("exhausted recruitment survives reload and consumes only one wave on skip",
   expect(loadRun().stats.recruits).toBe(0);
   expect(loadRun().money).toBe(run.money);
 });
+
+
+test("Epsilon victory offers only a spawned unowned member; reload and duplicate callbacks cannot repeat rewards", async () => {
+  const run = runWith(null); run.wave = 25; run.fischietto = true;
+  run.team.push(createPlayer("dvalin", 3));
+  let seed = 0;
+  while (!engine.epsilonEntryEligible({ ...run, overworld: { contentSeed: seed } })) seed++;
+  run.overworld = { ...newRun(STARTER_IDS.slice(0, 3)).overworld, contentSeed: seed };
+  run.pending = engine.generateWave(run);
+  const spawned = run.pending.enemies.map(p => p.versionId);
+  saveRun(run); await mountAndContinue();
+  const win = props(BattleScreen).onWin;
+  await act(async () => { win(run.team, run.items, run.team[0].uid); win(run.team, run.items, run.team[0].uid); });
+  expect(loadRun().stats.wins).toBe(1);
+  expect(loadRun().money).toBe(run.money + Math.round((20 + 25 * 3) * 1.6));
+  expect(loadRun().fischietto).toBe(true);
+  const offer = props(RecruitScreen).player;
+  expect(spawned).toContain(offer.versionId);
+  expect(offer.versionId).not.toBe("dvalin:epsilon-ie2");
+  expect(loadMeta().collection?.[offer.versionId]?.starterUnlocked).not.toBe(true);
+  await reload(); expect(props(RecruitScreen).player).toEqual(offer);
+  const join = props(RecruitScreen).onJoin;
+  await act(async () => { join(null, false); join(null, false); });
+  expect(loadRun().stats.recruits).toBe(1);
+  expect(loadRun().team.filter(p => p.versionId === offer.versionId)).toHaveLength(1);
+  expect(loadMeta().collection[offer.versionId].starterUnlocked).toBe(true);
+  expect(loadRun().pending.type).toBe("reward");
+  await call(RewardScreen, "onPick", null);
+  expect(loadRun().wave).toBe(26);
+});
+
+test("Epsilon with every canonical member owned goes directly to ordinary team rewards", async () => {
+  const run = runWith(null); run.wave = 25;
+  let seed = 0;
+  while (!engine.epsilonEntryEligible({ ...run, overworld: { contentSeed: seed } })) seed++;
+  run.overworld = { ...newRun(STARTER_IDS.slice(0, 3)).overworld, contentSeed: seed };
+  run.team = engine.EPSILON_ENTRY_IDS.map(id => createPlayer(id, 3));
+  run.pending = engine.generateWave(run);
+  saveRun(run); await mountAndContinue();
+  await call(BattleScreen, "onWin", run.team, run.items, run.team[0].uid);
+  expect(loadRun().pending.type).toBe("reward");
+  expect(RecruitScreen).not.toHaveBeenCalled();
+});

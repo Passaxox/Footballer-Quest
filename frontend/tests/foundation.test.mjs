@@ -1542,3 +1542,48 @@ test("Epsilon nucleus is additive, coherent, deterministic and isolated from pro
     assert.equal(oversized.versions.length, 4); // No unrelated filler or canonical banner.
   } finally { scenarios.SCENARIOS.pop(); }
 });
+
+
+test("Epsilon controlled entry: 2000 seeded runs, one W25 opportunity, safe snapshots and recruitment", () => {
+  const original = newRun(starters);
+  let appearances = 0, repeats = 0, offTeam = 0;
+  for (let seed = 0; seed < 2000; seed++) {
+    const run = { ...original, wave: 25, pending: null, overworld: { ...original.overworld, contentSeed: seed } };
+    const waves = Array.from({ length: 50 }, (_, i) => i + 1).filter(wave => engine.epsilonEntryEligible({ ...run, wave }));
+    assert.ok(waves.every(w => w === 25));
+    repeats += Math.max(0, waves.length - 1);
+    if (!waves.length) continue;
+    appearances++;
+    const forbidden = () => { throw Error("Epsilon must use its local seeded stream"); };
+    const a = engine.generateWave(run, forbidden);
+    assert.deepEqual(a, engine.generateWave(run, forbidden));
+    assert.equal(a.kind, "team"); assert.equal(a.teamName, "Epsilon");
+    assert.equal(a.encounterType, "canonical-team"); assert.equal(a.enemies.length, 4);
+    assert.equal(new Set(a.enemies.map(catalog.canonicalCharacterId)).size, 4);
+    assert.deepEqual(a.enemies.map(p => p.versionId), engine.EPSILON_ENTRY_IDS);
+    offTeam += a.enemies.filter(p => catalog.resolveVersion(p.versionId).primaryTeamId !== "epsilon").length;
+    assert.equal(a.enemies.at(-1).versionId, "dvalin:epsilon-ie2");
+    storage.saveRun({ ...run, pending: a });
+    const loaded = storage.loadRun();
+    assert.deepEqual(engine.generateWave(loaded, forbidden), a);
+    const offer = engine.epsilonRecruitOffer(a, run.team);
+    assert.ok(a.enemies.includes(offer));
+    const ownedDvalin = [...run.team, createPlayer("dvalin", 3)];
+    assert.notEqual(engine.epsilonRecruitOffer(a, ownedDvalin)?.versionId, "dvalin:epsilon-ie2");
+    assert.equal(engine.epsilonRecruitOffer(a, a.enemies), null);
+    assert.equal(engine.epsilonRecruitOffer({ ...a, enemies: [...a.enemies.slice(0, 3), createPlayer("dvalin", 3)] }, []), null);
+  }
+  assert.ok(appearances > 350 && appearances < 650, `Unexpected appearance count: ${appearances}`);
+  assert.equal(repeats, 0); assert.equal(offTeam, 0);
+  console.log(`Epsilon simulation: 2000 seeds, ${appearances} appearances, earliest/latest W25, repeats ${repeats}, off-team ${offTeam}`);
+  const legacy = { ...original, wave: 25, startedAt: 1700000000000 }; delete legacy.overworld;
+  assert.equal(engine.epsilonEntryEligible(legacy), engine.epsilonEntryEligible(structuredClone(legacy)));
+  delete legacy.startedAt; assert.equal(engine.epsilonEntryEligible(legacy), false);
+  const pending = { type: "battle", kind: "team", enemies: [createPlayer("dvalin", 9)] };
+  assert.equal(engine.generateWave({ ...original, wave: 25, pending }), pending);
+  for (const wave of [10, 20, 30, 40, 50]) {
+    const enc = engine.generateWave({ ...original, wave, pending: null }, () => 0.5);
+    assert.equal(enc.kind, "boss"); assert.equal(enc.teamName, data.BOSSES[wave].team);
+    assert.deepEqual(enc.enemies.map(p => p.versionId), data.BOSSES[wave].ids.map(id => catalog.resolveVersion(id).versionId));
+  }
+});

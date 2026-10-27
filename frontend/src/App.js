@@ -5,7 +5,7 @@ import { hasOverworld, completeOverworldNode } from "@/game/overworld";
 import { beginOverworldNode } from "@/game/engine";
 import "@/App.css";
 import { EVENTS, FINAL_WAVE } from "@/game/data";
-import { generateWave, recruitChallengePlayer, generateRewards, addItem, createPlayer, randomRosterId, enemiesForEffect, fuseRunPlayers, gainXp, recalcStats, chance, newRun, normalizeRun, resolveActiveUid, applyEventDamage, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
+import { generateWave, epsilonRecruitOffer, recruitChallengePlayer, generateRewards, addItem, createPlayer, randomRosterId, enemiesForEffect, fuseRunPlayers, gainXp, recalcStats, chance, newRun, normalizeRun, resolveActiveUid, applyEventDamage, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
 import { loadMeta, saveMeta, loadRun, saveRun, clearRun, recordFinishedRun } from "@/game/storage";
 import { setSoundEnabled } from "@/game/audio";
 import TitleScreen from "@/components/game/TitleScreen";
@@ -105,10 +105,11 @@ function App() {
     if (r.wave >= FINAL_WAVE) { finishRun(r, "win"); return; }
     const rewards = generateRewards();
     const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport };
-    if (enc.kind === "wild" && canRecruitPlayer(r.team, enc.enemies[0]) && (r.fischietto || enc.forceRecruit || chance(40))) {
-      const e = enc.enemies[0];
+    const epsilonOffer = epsilonRecruitOffer(enc, r.team);
+    if (epsilonOffer || (enc.kind === "wild" && canRecruitPlayer(r.team, enc.enemies[0]) && (r.fischietto || enc.forceRecruit || chance(40)))) {
+      const e = epsilonOffer || enc.enemies[0];
       const fresh = { ...createPlayer(e.versionId || e.baseId, e.level), uid: e.uid };
-      r = { ...r, fischietto: false };
+      r = { ...r, fischietto: epsilonOffer ? r.fischietto : false };
       const context = { ...base, mode: "offer", offer: fresh, after: "rewards" };
       updateRun({ ...r, pending: { type: "recruit", context } });
       setCtx(context);

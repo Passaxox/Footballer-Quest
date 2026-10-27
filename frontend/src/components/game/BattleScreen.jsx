@@ -74,7 +74,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       return;
     }
     (async () => {
-      if (encounter.kind === "boss") await say(encounter.intro, 1600);
+      if (encounter.kind === "boss" || encounter.elite) await say(encounter.intro, 1600);
       else if (encounter.kind === "team") await say(`La squadra ${encounter.teamName} vi sfida!`, 1000);
       else await say(pick(WILD_INTROS), 1000);
       if (cancelled) return;
@@ -226,7 +226,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1">
       <div className="flex items-center justify-between px-3 py-2 bg-[#111827] border-b-4 border-slate-800">
         <span data-testid="wave-counter-badge" className="font-pixel text-[9px] text-amber-300">ONDATA {run.wave}</span>
-        <span className="font-pixel text-[8px] text-slate-400 uppercase truncate mx-2">{encounter.kind === "boss" ? `BOSS: ${encounter.teamName}` : encounter.teamName || "Sfida"}</span>
+        <span className="font-pixel text-[8px] text-slate-400 uppercase truncate mx-2">{encounter.kind === "boss" ? `BOSS: ${encounter.teamName}` : encounter.elite ? `ELITE: ${encounter.teamName}` : encounter.teamName || "Sfida"}</span>
         <Dots team={st.enemies} active={st.eIdx} />
       </div>
 
