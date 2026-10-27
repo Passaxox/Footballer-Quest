@@ -238,6 +238,7 @@ test("Epsilon elite presentation resolves all four opponents once with Dvalin la
  await click("pre-battle-keep"); await settle();
  for (let i = 0; i < 4; i++) {
    expect(cb.onWin).not.toHaveBeenCalled();
+   if (find("pre-battle-keep")) { await click("pre-battle-keep"); await settle(); }
    await click("attack-button"); await settle();
  }
  expect(cb.onWin).toHaveBeenCalledTimes(1);

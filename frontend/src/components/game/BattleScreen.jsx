@@ -5,7 +5,8 @@ import { performAttack, applyBurn, turnOrder, resetBattleStatus, settleCombatPro
 import { sfx } from "@/game/audio";
 import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, ItemTargetCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+import useBattlePace from "./useBattlePace";
+import "./battlePace.css";
 
 const Fighter = ({ p, side, hit, cue }) => (
   <div className={`flex ${side === "enemy" ? "flex-row-reverse" : "flex-row"} items-end gap-2 ${hit ? "animate-shake" : ""}`}>
@@ -39,7 +40,8 @@ const Dots = ({ team, active }) => (
   </div>
 );
 
-export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, onActiveChange, onDiscover }) {
+export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, onActiveChange, onDiscover, manualMoment = null }) {
+  const pace = useBattlePace(manualMoment);
   const s = useRef(null);
   if (!s.current) {
     s.current = {
@@ -55,11 +57,14 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
 
-  const say = async (msg, ms = 750) => {
-    if (!mounted.current) return;
+  const say = async (msg, ms = 750, important = false) => {
+    if (!mounted.current) return false;
+    st.important = important;
     st.log = [...st.log.slice(-5), msg];
     rr();
-    await sleep(ms);
+    const alive = await pace.wait(ms, important);
+    st.important = false;
+    return alive;
   };
 
   const active = () => st.team[st.active];
@@ -74,7 +79,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       return;
     }
     (async () => {
-      if (encounter.kind === "boss" || encounter.elite) await say(encounter.intro, 1600);
+      if (encounter.kind === "boss" || encounter.elite) await say(encounter.intro, 1600, true);
       else if (encounter.kind === "team") await say(`La squadra ${encounter.teamName} vi sfida!`, 1000);
       else await say(pick(WILD_INTROS), 1000);
       if (cancelled) return;
@@ -92,17 +97,17 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     const { att, def, msgs } = performAttack(a, d);
     st.cue = { ...attackFeedback(a, d, def), side: attackerSide, stage: "windup" };
     st.log = [...st.log.slice(-5), msgs[0]]; rr();
-    await sleep(450);
+    if (!await pace.wait(450)) return false;
     if (!mounted.current) return;
     st.cue = { ...st.cue, stage: "impact" };
     st.hit = attackerSide === "player" ? "enemy" : "player";
     if (attackerSide === "player") { setActive(att); setEnemy(def); } else { setEnemy(att); setActive(def); }
     (msgs.includes("Colpo critico!") ? sfx.crit : sfx.hit)();
     rr();
-    await sleep(350);
+    if (!await pace.wait(350)) return false;
     if (!mounted.current) return;
     st.hit = null; st.cue = null; rr();
-    for (const m of msgs.slice(1)) { if (m.includes("KO")) sfx.ko(); if (m.includes("recupera")) sfx.heal(); await say(m, 650); }
+    for (const m of msgs.slice(1)) { if (m.includes("KO")) sfx.ko(); if (m.includes("recupera")) sfx.heal(); if (!await say(m, 650)) return false; }
   };
 
   const endOfTurn = async () => {
@@ -110,7 +115,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       const p = side === "player" ? active() : enemy();
       if (p.hp === 0) continue;
       const { p: q, msg } = applyBurn(p);
-      if (msg) { side === "player" ? setActive(q) : setEnemy(q); await say(msg); }
+      if (msg) { side === "player" ? setActive(q) : setEnemy(q); if (!await say(msg)) return; }
     }
   };
 
@@ -124,11 +129,14 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
 
   const afterAction = async () => {
     await endOfTurn();
+    if (!mounted.current) return;
     // Resolve the real team after all end-of-turn effects, before victory/XP/boss healing.
     if (!st.team.some((p) => p.hp > 0)) {
+      pace.stop();
       sfx.lose();
       await say("Tutta la squadra è KO... La run finisce qui.", 1500);
-      st.phase = "end"; rr();
+      if (!mounted.current) return;
+      st.phase = "end"; pace.stop(); rr();
       const settled = settleCombatProgression("lose", st.initialTeam, st.team, st.xpReport);
       st.team = settled.team; st.xpReport = settled.report;
       onLose(st.team, st.items, active()?.uid, st.xpReport);
@@ -138,16 +146,21 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       await grantXp(enemy());
       if (st.eIdx < st.enemies.length - 1) {
         st.eIdx += 1;
-        await say(`${encounter.teamName || "L'avversario"} manda in campo ${enemy().name}!`, 900);
+        if (encounter.kind === "boss" || encounter.elite) pace.stop();
+        await say(`${encounter.teamName || "L'avversario"} manda in campo ${enemy().name}!`, 900, encounter.kind === "boss" || encounter.elite);
+        if (!mounted.current) return;
       } else {
+        pace.stop();
         sfx.win();
         await say(encounter.kind === "boss" ? `Avete sconfitto ${encounter.teamName}!` : "Vittoria!", 1100);
-        st.phase = "end"; rr();
+        if (!mounted.current) return;
+        st.phase = "end"; pace.stop(); rr();
         onWin(st.team.map((p) => ({ ...p, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false } })), st.items, resolveActiveUid(st.team, active()?.uid), finishCombatReport(st.team, st.xpReport));
         return;
       }
     }
     if (active().hp === 0) {
+      pace.stop();
       st.phase = "forcedSwitch"; st.menu = "switch";
       await say("Scegli il prossimo giocatore!", 300); rr();
       return;
@@ -155,24 +168,29 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     st.phase = "menu"; st.menu = "main"; rr();
   };
 
-  const attack = async () => {
-    if (st.phase !== "menu") return;
+  const attack = async (automatic = false) => {
+    if (st.phase !== "menu" || st.menu !== "main" || pace.state.blocked || !mounted.current || (automatic && (!pace.state.auto || pace.state.hidden))) return;
+    if (!automatic) pace.stop();
     sfx.confirm();
     st.phase = "busy"; rr();
     const first = turnOrder(active(), enemy());
     const second = first === "player" ? "enemy" : "player";
     await doAttack(first);
+    if (!mounted.current) return;
     const defender = first === "player" ? enemy() : active();
     if (defender.hp > 0) await doAttack(second);
+    if (!mounted.current) return;
     await afterAction();
   };
 
   const enemyFreeTurn = async () => {
     await doAttack("enemy");
+    if (!mounted.current) return;
     await afterAction();
   };
 
   const beginBattle = async (idx = st.active) => {
+    if (pace.state.blocked) return;
     if (st.phase !== "preBattle" || !st.team[idx] || st.team[idx].hp <= 0) return;
     st.active = idx;
     st.phase = "busy"; st.menu = "main";
@@ -183,6 +201,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   };
 
   const switchTo = async (idx) => {
+    if (pace.state.blocked) return;
+    pace.stop();
     if (st.phase === "preBattle") { await beginBattle(idx); return; }
     if (!["menu", "forcedSwitch"].includes(st.phase)) return;
     if (idx === st.active || st.team[idx].hp === 0) return;
@@ -190,31 +210,42 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     sfx.confirm();
     st.phase = "busy"; st.menu = "main";
     st.active = idx;
-    await say(`Entra in campo ${active().name}!`, 700);
+    if (!await say(`Entra in campo ${active().name}!`, 700)) return;
     if (forced) { st.phase = "menu"; rr(); return; }
     await enemyFreeTurn();
   };
 
   const consumeItem = async (itemId, idx) => {
+    if (st.phase !== "menu" || st.menu !== "items" || pace.state.blocked) return;
+    pace.stop();
     st.phase = "busy"; st.menu = "main"; st.itemSel = null;
     const before = st.team[idx];
     const after = applyItemTo(itemId, before);
     st.team = st.team.map((q, j) => (j === idx ? after : q));
     st.items = removeItem(st.items, itemId);
     sfx.heal();
-    await say(`Usi ${ITEMS[itemId].name} su ${before.name}!`, 800);
+    if (!await say(`Usi ${ITEMS[itemId].name} su ${before.name}!`, 800)) return;
     await enemyFreeTurn();
   };
 
   const flee = async () => {
+    if (st.phase !== "menu" || st.menu !== "main" || pace.state.blocked) return;
+    pace.stop();
     if (encounter.kind === "boss") { await say("Non puoi fuggire da un boss!", 700); return; }
     sfx.cancel();
     st.phase = "busy"; rr();
     const ok = chance(45 + Math.max(-30, Math.min(30, (active().spd - enemy().spd) * 2)));
-    if (ok) { await say("Siete fuggiti con successo!", 900); st.phase = "end"; rr(); onFlee(st.team, st.items, active()?.uid, finishCombatReport(st.team, st.xpReport)); return; }
-    await say("La fuga è fallita!", 700);
+    if (ok) { await say("Siete fuggiti con successo!", 900); if (!mounted.current) return; st.phase = "end"; pace.stop(); rr(); onFlee(st.team, st.items, active()?.uid, finishCombatReport(st.team, st.xpReport)); return; }
+    if (!await say("La fuga è fallita!", 700)) return;
     await enemyFreeTurn();
   };
+
+  // One cancellable decision at a legal state boundary, never an interval.
+  useEffect(() => {
+    if (!pace.state.auto || pace.state.hidden || pace.state.blocked || st.phase !== "menu" || st.menu !== "main") return;
+    const timer = setTimeout(() => { void attack(true); }, 220);
+    return () => clearTimeout(timer);
+  });
 
   if (st.active < 0) return <div role="status">Nessun giocatore disponibile. La run è terminata.</div>;
 
@@ -223,12 +254,21 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const battleItems = Object.entries(st.items).filter(([id, n]) => ITEMS[id].battle && n > 0);
 
   return (
-    <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1">
+    <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1" style={{ "--battle-speed": st.important || pace.state.blocked ? 1 : pace.state.speed }}>
       <div className="flex items-center justify-between px-3 py-2 bg-[#111827] border-b-4 border-slate-800">
         <span data-testid="wave-counter-badge" className="font-pixel text-[9px] text-amber-300">ONDATA {run.wave}</span>
         <span className="font-pixel text-[8px] text-slate-400 uppercase truncate mx-2">{encounter.kind === "boss" ? `BOSS: ${encounter.teamName}` : encounter.elite ? `ELITE: ${encounter.teamName}` : encounter.teamName || "Sfida"}</span>
         <Dots team={st.enemies} active={st.eIdx} />
       </div>
+
+      <div className="battle-pace" aria-label="Ritmo battaglia">
+        <span className="battle-pace-status" role="status">{pace.state.blocked || st.important ? "Momento importante · x1" : pace.state.auto ? "AUTO attivo · puoi fermarlo" : "Controllo manuale"}</span>
+        <div className="battle-pace-controls">
+          <button data-testid="battle-auto" aria-pressed={pace.state.auto} disabled={!["menu", "busy"].includes(st.phase) || st.menu !== "main" || pace.state.blocked || pace.state.hidden || st.important} onClick={pace.toggle}>AUTO {pace.state.auto ? "ON" : "OFF"}</button>
+          <button data-testid="battle-speed" aria-label={`Velocita battaglia x${pace.state.speed}`} disabled={st.phase === "end"} onClick={pace.cycle}>FAST x{pace.state.speed}</button>
+        </div>
+      </div>
+      {pace.state.blocked && <div className="battle-moment" role="alertdialog" aria-label="Momento importante"><p>{manualMoment.message}</p><button data-testid="battle-acknowledge" onClick={pace.acknowledge}>Continua</button></div>}
 
       <div className={`relative flex flex-col justify-between gap-3 p-3 battle-bg ${encounter.kind === "boss" ? "boss-glow" : ""}`}>
         <Fighter p={e} side="enemy" hit={st.hit === "enemy"} cue={st.cue} />
@@ -275,12 +315,12 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         )}
         {(st.phase === "menu" || st.phase === "forcedSwitch") && st.menu === "main" && (
           <div className="grid grid-cols-2 gap-2">
-            <Btn data-testid="attack-button" variant="primary" onClick={attack} className="col-span-2 flex flex-wrap items-center justify-center gap-2">
+            <Btn data-testid="attack-button" variant="primary" onClick={() => attack()} className="col-span-2 flex flex-wrap items-center justify-center gap-2">
               <ElementIcon element={p.move.element} size={14} /> {p.move.name} <MatchupBadge attacker={p} defender={e} />
               <span className="text-[8px] opacity-70">POT {p.move.power}</span>
             </Btn>
-            <Btn data-testid="switch-button" onClick={() => { sfx.select(); st.menu = "switch"; rr(); }}>Cambia</Btn>
-            <Btn data-testid="item-button" onClick={() => { sfx.select(); st.menu = "items"; rr(); }}>Zaino</Btn>
+            <Btn data-testid="switch-button" onClick={() => { pace.stop(); sfx.select(); st.menu = "switch"; rr(); }}>Cambia</Btn>
+            <Btn data-testid="item-button" onClick={() => { pace.stop(); sfx.select(); st.menu = "items"; rr(); }}>Zaino</Btn>
             <Btn data-testid="flee-button" variant="ghost" onClick={flee} className="col-span-2" disabled={encounter.kind === "boss"}>Fuggi</Btn>
           </div>
         )}
