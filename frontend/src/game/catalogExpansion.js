@@ -259,3 +259,31 @@ export const EXPANSION_VERSIONS = rows.map(r => ({
 export const EXPANSION_MOVES = rows.filter(r => r.characterId !== "jude").map(r => ({
   moveId: r.versionId + ":primary", element: r.element, ...moveProfiles[r.role],
 }));
+
+// Approved Epsilon Batch 1A. Contextual versions; legacy Dvalin remains untouched.
+export const EPSILON_ALIASES = {
+  dvalin: ["Dvalin", "Desarm", "Dezamu / Desarm", "Dave Quagmire", "Osamu Saginuma", "Saginuma"],
+  tytan: ["Tytan", "Titan", "Taitan", "Donovan Crag"],
+  krypto: ["Krypto", "Crypto", "Kuriputo"],
+  zell: ["Zell", "Zel", "Zeru", "Zeke Valanche", "Ryuuichirou Segata", "Segata"],
+};
+const epsilon = [
+  ["dvalin", "Dvalin", "P", "natura", "Rare"],
+  ["tytan", "Tytan", "D", "terra", "Common"],
+  ["krypto", "Krypto", "C", "aria", "Common"],
+  ["zell", "Zell", "A", "aria", "Uncommon"],
+];
+for (const [id, name, role, element, rarityId] of epsilon) {
+  const versionId = `${id}:epsilon-ie2`;
+  if (id !== "dvalin") EXPANSION_CHARACTERS.push({ characterId: id, displayName: name });
+  EXPANSION_VERSIONS.push({ versionId, characterId: id, legacyRosterId: null,
+    displayName: name, kind: "player", role, gender: null,
+    spriteId: `${id}-epsilon-ie2`, teamTags: ["epsilon"], primaryTeamId: "epsilon", legacyOnly: false,
+    element, types: [element], baseStats: { ...profiles[role] },
+    primaryMoveId: `${versionId}:primary`, secondaryMoveId: null, rarityId,
+    variantId: "epsilon", categoryId: null, arcId: "alius", eraId: "original", gameOrigin: "ie2",
+    encounterTier: 3,
+  });
+  // Same role budgets/generic techniques as Royal/Zeus; rarity never scales power.
+  EXPANSION_MOVES.push({ moveId: `${versionId}:primary`, element, ...moveProfiles[role] });
+}

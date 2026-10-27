@@ -17,7 +17,7 @@ export function starterGroups(meta, versions = Object.values(CHARACTER_VERSIONS)
       name: characters[characterId]?.displayName || version.displayName, versions: [], aliases: [] });
     const group = groups.get(characterId);
     group.versions.push(version);
-    group.aliases.push(characters[version.characterId]?.displayName || "");
+    group.aliases.push(characters[version.characterId]?.displayName || "", ...(characters[characterId]?.aliases || []));
   }
   return [...groups.values()];
 }

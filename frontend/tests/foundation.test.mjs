@@ -166,8 +166,8 @@ test("Jonas compatibility snapshots survive load; fresh boss/events/draft use ca
 
 test("Royal/Zeus expansion keeps identities, legacy aliases and collection progress distinct", async () => {
   const manifest = JSON.parse(await readFile(new URL("../../docs/royal-zeus-assets.json", import.meta.url), "utf8"));
-  assert.equal(catalog.CATALOG_SOURCE.versions.length, 63);
-  assert.equal(catalog.CATALOG_SOURCE.characters.length, 61);
+  assert.equal(catalog.CATALOG_SOURCE.versions.length, 67);
+  assert.equal(catalog.CATALOG_SOURCE.characters.length, 64);
   assert.equal(catalog.CATALOG_SOURCE.legacyMappings.length, 44);
   for (const row of manifest.entries) {
     const v = catalog.resolveVersion(row.versionId);
@@ -331,7 +331,7 @@ test("V2b catalog rejects duplicate, ambiguous and broken references before inde
 
 test("V2b permits partial metadata, multiple affiliations and distinct incarnations without rarity effects", () => {
   const source = structuredClone(catalog.CATALOG_SOURCE);
-  source.rarityIds = ["test-rarity"];
+  source.rarityIds = [...source.rarityIds, "test-rarity"];
   source.teams.push({ teamId: "test-team-a" }, { teamId: "test-team-b" });
   for (const kind of ["player", "manager", "coach", "dev"]) source.versions.push({
     ...source.versions[0], versionId: `test:${kind}`, legacyRosterId: null, displayName: `Test ${kind}`, kind,
@@ -1504,4 +1504,41 @@ test("integrity: checked-in verified localization duplicates have an explicit co
     if (people.has(row.canonicalCharacter)) assert.equal(key, people.get(row.canonicalCharacter));
     people.set(row.canonicalCharacter, key);
   }
+});
+
+
+test("Epsilon nucleus is additive, coherent, deterministic and isolated from progression", () => {
+  const ids = ["dvalin", "tytan", "krypto", "zell"].map(id => `${id}:epsilon-ie2`);
+  const versions = ids.map(catalog.resolveVersion);
+  assert.deepEqual(versions.map(v => v.role), ["P", "D", "C", "A"]);
+  assert.deepEqual(versions.map(v => v.element), ["natura", "terra", "aria", "aria"]);
+  assert.deepEqual(versions.map(v => v.rarityId), ["Rare", "Common", "Common", "Uncommon"]);
+  assert.deepEqual(Object.values(catalog.CHARACTER_VERSIONS).filter(v => v.primaryTeamId === "epsilon").map(v => v.versionId), ids);
+  assert.equal(catalog.CATALOG_SOURCE.characters.filter(c => c.characterId === "dvalin").length, 1);
+  assert.equal(catalog.resolveVersion("dvalin").primaryTeamId, null);
+  assert.equal(Object.values(catalog.CHARACTER_VERSIONS).filter(v => v.primaryTeamId === "epsilon-plus").length, 0);
+  assert.equal(scenarios.teamReadiness(versions, 4).find(t => t.teamId === "epsilon").ready, true);
+  assert.equal(scenarios.teamReadiness(versions, 5).find(t => t.teamId === "epsilon").ready, false);
+  scenarios.validateTeamIntegrity({ bosses: data.BOSSES });
+  for (const s of scenarios.SCENARIOS) assert.equal(scenarios.scenarioPool(s.id, 50, 4).some(r => ids.includes(r.version.versionId)), false);
+  const legacy = newRun(starters); legacy.team.push(createPlayer("dvalin", 9));
+  legacy.pending = { type: "battle", enemies: [createPlayer("dvalin", 8)] };
+  storage.saveRun(legacy); assert.deepEqual(storage.loadRun(), legacy);
+  assert.equal(catalog.canRecruitPlayer(legacy.team, createPlayer(ids[0], 3)), false);
+  const fixture = { ...scenarios.SCENARIOS[0], id: "epsilon-test", allowedTeamTags: ["epsilon"], preferredTeamTags: [], minTier: 3 };
+  scenarios.SCENARIOS.push(fixture);
+  try {
+    for (let seed = 1; seed <= 1200; seed++) {
+      const rng = () => { let n = seed; return () => ((n = (Math.imul(n, 1664525) + 1013904223) >>> 0) / 4294967296); };
+      const a = scenarios.selectEncounterLineup(fixture.id, 30, 3, 2 + seed % 3, rng());
+      assert.deepEqual(a, scenarios.selectEncounterLineup(fixture.id, 30, 3, 2 + seed % 3, rng()));
+      assert.equal(a.encounterType, "canonical-team");
+      assert.equal(a.teamId, "epsilon");
+      assert.ok(a.versions.every(v => v.primaryTeamId === "epsilon"));
+      assert.equal(new Set(a.versions.map(catalog.canonicalCharacterId)).size, a.versions.length);
+    }
+    const oversized = scenarios.selectEncounterLineup(fixture.id, 30, 3, 5, () => 0.5);
+    assert.equal(oversized.encounterType, "mixed"); assert.equal(oversized.teamId, null);
+    assert.equal(oversized.versions.length, 4); // No unrelated filler or canonical banner.
+  } finally { scenarios.SCENARIOS.pop(); }
 });

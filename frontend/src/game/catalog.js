@@ -1,7 +1,7 @@
 import { TEAMS, ARCS, ERAS, GAME_ORIGINS, VERSION_METADATA } from "./catalogMetadata";
 import { ROSTER } from "./data";
 import { validateCatalog } from "./catalogValidation";
-import { EXPANSION_CHARACTERS, EXPANSION_VERSIONS, EXPANSION_MOVES } from "./catalogExpansion";
+import { EXPANSION_CHARACTERS, EXPANSION_VERSIONS, EXPANSION_MOVES, EPSILON_ALIASES } from "./catalogExpansion";
 
 // Character = person; CharacterVersion = authored incarnation; PlayerInstance = mutable run state.
 // Legacy roster is the technical 1:1 source, not proof of canonical identity.
@@ -30,11 +30,11 @@ export const CATALOG_SOURCE = {
   // Stable primary identity, not a secondary/evolution system. Instances keep their saved move copy.
   moves: [...ROSTER.map(r => ({ moveId: `${r.id}:primary`, ...r.move })), ...EXPANSION_MOVES],
   legacyMappings: ROSTER.map(r => ({ legacyId: r.id, versionId: `${r.id}:base` })),
-  rarityIds: [],
+  rarityIds: ["Common", "Uncommon", "Rare"],
   teams: TEAMS, arcs: ARCS, eras: ERAS, gameOrigins: GAME_ORIGINS,
 };
 validateCatalog(CATALOG_SOURCE, { requiredLegacyIds: ROSTER.map(r => r.id) });
-export const CHARACTERS = Object.fromEntries(CATALOG_SOURCE.characters.map(c => [c.characterId, c]));
+export const CHARACTERS = Object.fromEntries(CATALOG_SOURCE.characters.map(c => [c.characterId, EPSILON_ALIASES[c.characterId] ? { ...c, aliases: EPSILON_ALIASES[c.characterId] } : c]));
 export const CHARACTER_VERSIONS = Object.fromEntries(CATALOG_SOURCE.versions.map(v => [v.versionId, v]));
 export const LEGACY_VERSION_IDS = Object.fromEntries(CATALOG_SOURCE.legacyMappings.map(m => [m.legacyId, m.versionId]));
 // Keep the V2a move shape: adding registry identifiers must not change runtime/saved moves.

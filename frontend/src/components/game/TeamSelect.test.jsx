@@ -91,3 +91,22 @@ test("team filter opens matching version and preserves selected slots across fil
   await click("starter-slot-0"); expect(find("version-jude:royal").getAttribute("aria-pressed")).toBe("true");
   await click("starter-confirm"); expect(find("starter-slot-0")).toBeNull();
 });
+
+
+test("Epsilon unlocks, aliases and Dvalin versions share canonical starter slots", async () => {
+  const ids = ["dvalin", "tytan", "krypto", "zell"].map(id => `${id}:epsilon-ie2`);
+  expect(starterGroups({ unlocked: [] })).toHaveLength(0);
+  const unlocked = { unlocked: ["dvalin"], collection: Object.fromEntries(ids.map(id => [id, { starterUnlocked: true }])) };
+  const groups = starterGroups(unlocked);
+  expect(groups).toHaveLength(4);
+  expect(groups.find(g => g.characterId === "dvalin").versions).toHaveLength(2);
+  for (const [alias, id] of [["Dave Quagmire", "dvalin"], ["Titan", "tytan"], ["Donovan Crag", "tytan"], ["Crypto", "krypto"], ["Kuriputo", "krypto"], ["Zeke Valanche", "zell"], ["Segata", "zell"]]) {
+    expect(filterStarterGroups(groups, { search: alias }).map(g => g.characterId)).toEqual([id]);
+  }
+  expect(selectStarterVersion(["dvalin:base"], ids[0])).toEqual([ids[0]]);
+  await act(async () => root.render(<TeamSelect meta={unlocked} />));
+  expect(host.querySelectorAll(".ss-tile")).toHaveLength(4);
+  await click("starter-dvalin"); await click("version-dvalin:epsilon-ie2"); await click("starter-confirm");
+  expect(find("starter-slot-0").textContent).toContain("Epsilon");
+  expect(newRun([ids[0], ids[1], ids[2]]).team.map(p => p.versionId)).toEqual(ids.slice(0, 3));
+});

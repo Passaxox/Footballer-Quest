@@ -71,7 +71,7 @@ test("current catalog audit preserves all 44 legacy files and surfaces existing 
  const versions=await loadVersions();
  const fixture=JSON.parse(await readFile(new URL("fixtures/catalog-identity-audit.json",import.meta.url),"utf8"));
  const report=await auditAssets({versions,identities:fixture.entries});
- assert.equal(report.summary.assetCount,63);assert.equal(report.summary.missing,0);assert.equal(report.summary.orphans,0);
+ assert.equal(report.summary.assetCount,67);assert.equal(report.summary.missing,0);assert.equal(report.summary.orphans,0);
  assert.deepEqual(report,await auditAssets({versions,identities:fixture.entries}));
  assert.equal(report.versions.length,versions.length);
  for(const entry of fixture.entries) assert.equal(report.files.find(f=>f.filename===entry.spriteId+".png").sha256,entry.spriteSha256);
@@ -88,8 +88,8 @@ test("legacy WebP payloads are warnings and the actual audit CLI exits zero",asy
  assert.equal(auditExitCode(report),0);
  assert.equal(report.summary.invalidPng,0);
  assert.equal(report.summary.invalidAssets,0);
- assert.equal(report.summary.extensionFormatMismatches,44);
- assert.deepEqual(report.summary.dimensionBuckets,{"256x256":2,"64x64":61});
+ assert.equal(report.summary.extensionFormatMismatches,48);
+ assert.deepEqual(report.summary.dimensionBuckets,{"256x256":2,"64x64":65});
  for(const file of report.files.filter(f=>f.sourceFormat==="WEBP")) {
   assert.equal(file.validAsset,true);
   assert.deepEqual(file.issues.find(i=>i.code==="EXTENSION_FORMAT_MISMATCH"),{
@@ -100,7 +100,7 @@ test("legacy WebP payloads are warnings and the actual audit CLI exits zero",asy
  }
  const cli=spawnSync(process.execPath,[fileURLToPath(new URL("../scripts/asset-audit.mjs",import.meta.url))],{encoding:"utf8"});
  assert.equal(cli.status,0,cli.stderr);
- assert.equal(JSON.parse(cli.stdout).summary.extensionFormatMismatches,44);
+ assert.equal(JSON.parse(cli.stdout).summary.extensionFormatMismatches,48);
 });
 
 test("corrupt image alone produces a nonzero audit exit code",async()=>{
@@ -113,4 +113,22 @@ test("corrupt image alone produces a nonzero audit exit code",async()=>{
   assert.equal(report.files[0].validAsset,false);
   assert.deepEqual(report,await auditAssets({directory,versions:[{versionId:"broken",spriteId:"broken"}]}));
  } finally { await rm(directory,{recursive:true,force:true}); }
+});
+
+
+test("Epsilon runtime assets preserve approved source bytes and provenance", async () => {
+ const root = new URL("../../", import.meta.url);
+ const manifest = JSON.parse(await readFile(new URL("docs/epsilon-batch-1a-assets.json", root), "utf8"));
+ assert.equal(manifest.entries.length, 4);
+ for (const entry of manifest.entries) {
+  const source = await readFile(new URL(entry.sourcePath, root));
+  const runtime = await readFile(new URL(entry.runtimePath, root));
+  const provenance = JSON.parse(await readFile(new URL(entry.provenancePath, root), "utf8"));
+  assert.deepEqual(runtime, source);
+  assert.equal(createHash("sha256").update(runtime).digest("hex"), entry.sha256);
+  assert.equal(provenance.sha256, entry.sha256);
+  assert.equal(provenance.versionId, entry.versionId);
+  assert.equal(provenance.decision, "ASSET-VERIFIED");
+  assert.deepEqual(webpDimensions(runtime), { width:64, height:64, aspectRatio:1 });
+ }
 });
