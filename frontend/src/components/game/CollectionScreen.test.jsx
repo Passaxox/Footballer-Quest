@@ -29,8 +29,10 @@ test("legacy Jonas remains in collection history but cannot enter a new draft", 
   await act(async () => root.render(<CollectionScreen meta={meta} />));
   expect(host.querySelector('[data-testid="collection-jonas"]').textContent).toContain("solo run esistenti");
   await act(async () => root.render(<TeamSelect meta={meta} />));
-  expect(host.querySelector('[data-testid="starter-jonas"]')).toBeNull();
-  expect(host.querySelector('[data-testid="starter-jonas:zeus"]')).not.toBeNull();
+  expect(host.querySelectorAll('[data-testid="starter-jonas"]')).toHaveLength(1);
+  expect(host.querySelector('[data-testid="starter-jonas"] img').getAttribute("src")).toBe("/sprites/jonas-zeus.png");
+  await act(async () => host.querySelector('[data-testid="starter-jonas"]').click());
+  expect(host.querySelector(".ss-versions")).toBeNull();
 });
 
 test("Royal Jude and Zeus Demeter reveal their own portraits without unlocking legacy versions", async () => {
@@ -42,9 +44,10 @@ test("Royal Jude and Zeus Demeter reveal their own portraits without unlocking l
   expect(host.querySelector('[data-testid="collection-jonas"] img')).toBeNull();
   expect(host.querySelectorAll('[data-testid="collection-byron"]')).toHaveLength(1);
   await act(async () => root.render(<TeamSelect meta={meta} />));
-  expect(host.querySelector('[data-testid="starter-jude:royal"]')).not.toBeNull();
-  expect(host.querySelector('[data-testid="starter-jonas:zeus"]')).not.toBeNull();
-  expect(host.querySelector('[data-testid="starter-jude"]')).toBeNull();
+  expect(host.querySelector('[data-testid="starter-jude"] img').getAttribute("src")).toBe("/sprites/jude-royal.png");
+  expect(host.querySelector('[data-testid="starter-jonas"] img').getAttribute("src")).toBe("/sprites/jonas-zeus.png");
+  await act(async () => host.querySelector('[data-testid="starter-jude"]').click());
+  expect(host.querySelector(".ss-versions")).toBeNull();
 });
 test.each(["DISCOVERED", "RECRUITED"])("%s has the appropriate portrait and ownership information", async state => {
   const meta = state === "DISCOVERED" ? discoverVersion(blank, "darren") : recruitVersion(blank, "darren");

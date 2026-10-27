@@ -30,13 +30,15 @@ test("starter stats and complete technique are visible before choosing", async (
   await act(async () => root.render(<TeamSelect meta={{ unlocked: STARTER_IDS }} />));
   const run = newRun(STARTER_IDS);
   for (const p of run.team) {
-    const card = find(`starter-${p.baseId}`);
+    await click(`starter-${p.baseId}`);
+    const card = host.querySelector("dialog");
     expect(card.textContent).toContain(p.move.name);
     expect(card.textContent).toContain(`POT ${p.move.power}`);
     expect(card.textContent).toContain("Effetto:");
     expect(card.parentElement.textContent).toContain(String(p.atk));
     expect(card.parentElement.textContent).toContain("DIF");
     expect(card.parentElement.textContent).toContain("VEL");
+    await act(async () => host.querySelector('[aria-label="Chiudi dettagli"]').click());
   }
   expect(find("start-run-btn").disabled).toBe(true);
 });
@@ -125,7 +127,7 @@ test("starter difficulty selection only affects the new run and clearly labels t
   expect(find("difficulty-easy").checked).toBe(true);
   expect(find("start-run-btn").textContent).toContain("FACILE");
   expect(loadRun()).toEqual(existing);
-  for (const id of STARTER_IDS.slice(0, 3)) await click(`starter-${id}`);
+  for (const id of STARTER_IDS.slice(0, 3)) { await click(`starter-${id}`); await click("starter-confirm"); }
   await click("start-run-btn");
   expect(onStart).toHaveBeenCalledWith(STARTER_IDS.slice(0, 3).map(id => `${id}:base`), "easy");
 });
@@ -179,9 +181,9 @@ test("V2n Golden Ball highlights KO targets and disables living players in the b
 test("starter selection replaces an alternate version rather than duplicating its person", async () => {
   const onStart = jest.fn();
   await act(async () => root.render(<TeamSelect meta={{ unlocked: ["jude", "mark", "axel", "paolo", "fidio"], collection: { "jude:royal": { starterUnlocked: true } } }} onStart={onStart} />));
-  await click("starter-jude"); await click("starter-jude:royal");
+  await click("starter-jude"); await click("version-jude:royal"); await click("starter-confirm");
   expect(find("start-run-btn").disabled).toBe(true);
-  await click("starter-mark"); await click("starter-axel"); await click("start-run-btn");
+  await click("starter-mark"); await click("starter-confirm"); await click("starter-axel"); await click("starter-confirm"); await click("start-run-btn");
   expect(onStart.mock.calls[0][0]).toEqual(["jude:royal", "mark:base", "axel:base"]);
 });
 
