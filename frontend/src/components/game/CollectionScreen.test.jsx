@@ -108,3 +108,32 @@ test("S1b baseline: collection cards are versionId-scoped; no historical transfe
   expect(state("jim:base")).toBeNull();
   expect(state("suzette:base")).toBeNull();
 });
+
+import { getCollectionProgress } from "@/game/collection";
+import { CHARACTER_VERSIONS } from "@/game/catalog";
+
+test("S2A: starter availability denominator counts only fresh player versions", async () => {
+  const all = Object.values(CHARACTER_VERSIONS);
+  const active = all.filter(v => v.kind === "player" && !v.legacyOnly && v.versionId !== "jonas:base").length;
+  expect(active).toBeLessThan(all.length);
+  await act(async () => root.render(<CollectionScreen meta={blank} />));
+  expect(host.textContent).toContain(`0/${active} starter disponibili`);
+  expect(host.textContent).not.toContain(`/${all.length} starter disponibili`);
+});
+
+test("S2A: archived Jonas stays visible but never raises the availability numerator", async () => {
+  const active = Object.values(CHARACTER_VERSIONS).filter(v => v.kind === "player" && !v.legacyOnly && v.versionId !== "jonas:base").length;
+  const meta = recruitVersion(blank, "jonas:base");
+  await act(async () => root.render(<CollectionScreen meta={meta} />));
+  expect(host.textContent).toContain(`0/${active} starter disponibili`);
+  expect(host.querySelector('[data-testid="collection-jonas"]').textContent).toContain("solo run esistenti");
+  expect(host.querySelector('[data-testid="collection-jonas:zeus"]').textContent).toContain("???");
+});
+
+test("S2A: Fidio/Paolo and Jonas base/Zeus ownership never transfers recruited or starterUnlocked", () => {
+  for (const [from, to] of [["fidio:base", "paolo:base"], ["paolo:base", "fidio:base"], ["jonas:base", "jonas:zeus"], ["jonas:zeus", "jonas:base"]]) {
+    const meta = recruitVersion(blank, from);
+    expect(getCollectionProgress(meta, from)).toEqual({ discovered: true, recruited: true, starterUnlocked: true });
+    expect(getCollectionProgress(meta, to)).toEqual({ discovered: false, recruited: false, starterUnlocked: false });
+  }
+});

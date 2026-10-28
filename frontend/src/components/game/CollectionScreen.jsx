@@ -9,7 +9,7 @@ export default function CollectionScreen({ meta, onBack }) {
   const unlocked = versions.filter(v => isFreshPlayerVersion(v) && getCollectionProgress(meta, v.versionId).starterUnlocked).length;
   return (
     <div data-testid="collection-screen" className="flex flex-col flex-1">
-      <Header title="Collezione" sub={`${unlocked}/${versions.length} starter disponibili`} right={<Btn variant="ghost" data-testid="collection-back-btn" onClick={onBack}>Menu</Btn>} />
+      <Header title="Collezione" sub={`${unlocked}/${versions.filter(isFreshPlayerVersion).length} starter disponibili`} right={<Btn variant="ghost" data-testid="collection-back-btn" onClick={onBack}>Menu</Btn>} />
       <div className="p-3 grid grid-cols-2 gap-2 overflow-y-auto">
         {versions.map(v => {
           const state = getCollectionState(meta, v.versionId);
