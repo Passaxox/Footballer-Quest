@@ -17,7 +17,7 @@ export const ROSTER = [
   { id: "axel", name: "Axel Blaze", element: "fuoco", role: "A", tier: 1, hp: 70, atk: 42, def: 24, spd: 32, move: M("Tornado di Fuoco", "fuoco", 90) },
   { id: "jude", name: "Jude Sharp", element: "aria", role: "C", tier: 1, hp: 72, atk: 34, def: 30, spd: 34, move: M("Pinguino Imperatore N.2", "natura", 75, "weaken") },
   { id: "nathan", name: "Nathan Swift", element: "aria", role: "D", tier: 1, hp: 68, atk: 30, def: 28, spd: 46, move: M("Scatto Repentino", "aria", 65, "priority") },
-  { id: "shawn", name: "Shawn Froste", element: "aria", role: "A", tier: 1, hp: 68, atk: 40, def: 24, spd: 38, move: M("Tormenta Glaciale", "aria", 85, "crit") },
+  { id: "shawn", name: "Shawn Froste", element: "aria", role: "A", tier: 1, hp: 68, atk: 40, def: 24, spd: 38, move: M("Richiamo del Lupo", "aria", 85, "crit") },
   { id: "jack", name: "Jack Wallside", element: "terra", role: "D", tier: 1, hp: 100, atk: 26, def: 44, spd: 14, move: M("Muro di Roccia", "terra", 50, "guard") },
   { id: "kevin", name: "Kevin Dragonfly", element: "natura", role: "A", tier: 1, hp: 78, atk: 38, def: 28, spd: 26, move: M("Dragon Crash", "natura", 80, "recoil") },
   { id: "darren", name: "Darren LaChance", element: "natura", role: "P", tier: 2, hp: 88, atk: 22, def: 38, spd: 24, move: M("Mano Insuperabile", "natura", 50, "heal") },
@@ -27,10 +27,10 @@ export const ROSTER = [
   { id: "bobby", name: "Bobby Shearer", element: "aria", role: "D", tier: 1, hp: 74, atk: 26, def: 36, spd: 30, move: M("Scivolata Micidiale", "natura", 55, "guard") },
   { id: "maxwell", name: "Maxwell Carson", element: "terra", role: "C", tier: 1, hp: 72, atk: 32, def: 30, spd: 30, move: M("Tiro Incrociato", "aria", 60, "weaken") },
   { id: "tim", name: "Tim Saunders", element: "aria", role: "C", tier: 1, hp: 64, atk: 28, def: 26, spd: 40, move: M("Vortice Implacabile", "aria", 60, "multi") },
-  { id: "willy", name: "Willy Glass", element: "natura", role: "C", tier: 1, hp: 62, atk: 26, def: 24, spd: 36, move: M("Occhio Analitico", "natura", 55, "shatter") },
-  { id: "erik", name: "Erik Eagle", element: "aria", role: "A", tier: 2, hp: 70, atk: 40, def: 26, spd: 36, move: M("Tiro Aquila", "aria", 85) },
+  { id: "willy", name: "Willy Glass", element: "natura", role: "C", tier: 1, hp: 62, atk: 26, def: 24, spd: 36, move: M("Schianto del Viso", "terra", 55, "shatter") },
+  { id: "erik", name: "Erik Eagle", element: "aria", role: "A", tier: 2, hp: 70, atk: 40, def: 26, spd: 36, move: M("Tiro Roteante", "aria", 85) },
   { id: "austin", name: "Austin Hobbes", element: "fuoco", role: "A", tier: 2, hp: 72, atk: 42, def: 24, spd: 30, move: M("Ruggito della Tigre", "terra", 88) },
-  { id: "caleb", name: "Caleb Stonewall", element: "terra", role: "C", tier: 2, hp: 74, atk: 36, def: 30, spd: 34, move: M("Pugno di Roccia", "terra", 75, "charge") },
+  { id: "caleb", name: "Caleb Stonewall", element: "terra", role: "C", tier: 2, hp: 74, atk: 36, def: 30, spd: 34, move: M("Calcio Stordente 2", "fuoco", 75, "charge") },
   { id: "hurley", name: "Hurley Kane", element: "natura", role: "A", tier: 2, hp: 74, atk: 40, def: 26, spd: 30, move: M("Onda Inarrestabile", "aria", 85, "drain") },
   { id: "scotty", name: "Scotty Banyan", element: "natura", role: "C", tier: 2, hp: 70, atk: 34, def: 28, spd: 42, move: M("Turbina Rotante", "aria", 65, "multi") },
   { id: "thor", name: "Thor Stoutberg", element: "terra", role: "A", tier: 2, hp: 90, atk: 44, def: 32, spd: 18, move: M("Super Blocco Difensivo", "fuoco", 95, "recoil") },
@@ -56,7 +56,7 @@ export const ROSTER = [
   { id: "malcolm", name: "Jim Wraith", element: "terra", role: "D", tier: 1, hp: 74, atk: 30, def: 34, spd: 30, move: M("Tiro Fantasma", "terra", 65, "weaken") },
   { id: "hector", name: "Rika Urabe", element: "natura", role: "C", tier: 2, hp: 70, atk: 36, def: 28, spd: 38, move: M("Anello Arcobaleno", "natura", 78, "charge") },
   { id: "silvia", name: "Silvia Woods", element: "natura", role: "C", tier: 1, hp: 60, atk: 22, def: 26, spd: 36, move: M("Incoraggiamento", "natura", 40, "heal") },
-  { id: "aiden", name: "Aiden Frost", element: "aria", role: "A", tier: 2, hp: 72, atk: 40, def: 26, spd: 34, move: M("Tiro Rotante", "aria", 80, "shatter") },
+  { id: "aiden", name: "Aiden Frost", element: "aria", role: "A", tier: 2, hp: 72, atk: 40, def: 26, spd: 34, move: M("Tormenta Glaciale", "aria", 80, "shatter") },
 ];
 
 export const STARTER_IDS = ["mark", "axel", "jude", "nathan", "shawn", "jack", "kevin", "tod"];
