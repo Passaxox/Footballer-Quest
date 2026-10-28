@@ -21,7 +21,7 @@ test("UNKNOWN conceals name, portrait and all strategic data", async () => {
   const card = host.querySelector('[data-testid="collection-darren"]');
   expect(card.textContent).toContain("???");
   expect(card.querySelector("img")).toBeNull();
-  for (const text of ["Darren", "Portiere", "Natura", "Mano Mugen", "POT", "HP", "★"]) expect(card.textContent).not.toContain(text);
+  for (const text of ["Darren", "Portiere", "Natura", "Mano Insuperabile", "POT", "HP", "★"]) expect(card.textContent).not.toContain(text);
 });
 
 test("legacy Jonas remains in collection history but cannot enter a new draft", async () => {
@@ -58,10 +58,10 @@ test.each(["DISCOVERED", "RECRUITED"])("%s has the appropriate portrait and owne
   if (state === "DISCOVERED") {
     expect(card.textContent).toContain("non ancora reclutato");
     expect(card.textContent).not.toContain("Disponibile nel draft");
-    expect(card.textContent).not.toContain("Mano Mugen");
+    expect(card.textContent).not.toContain("Mano Insuperabile");
   } else {
     expect(card.textContent).toContain("Reclutato");
-    expect(card.textContent).toContain("Mano Mugen");
+    expect(card.textContent).toContain("Mano Insuperabile");
     expect(card.textContent).toContain("POT 50");
     expect(card.textContent).toContain("HP 88");
   }

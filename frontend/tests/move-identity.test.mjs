@@ -18,19 +18,109 @@ const engine = await import(await load("engine"));
 const storage = await import(await load("storage"));
 const { LEGACY_MOVE_IDENTITIES } = await import(await load("legacyMoveIdentity"));
 const payload = ({ moveId, ...move }) => move;
-const legacy = id => { const p = engine.createPlayer(id, 5, () => 0.2); return { ...p, move: payload(p.move) }; };
+const legacy = id => {
+  const p = engine.createPlayer(id, 5, () => 0.2);
+  const [, name, element, power, effect] = LEGACY_MOVE_IDENTITIES[p.versionId];
+  return { ...p, move: { name, element, power, effect } };
+};
 const values = new Map();
 globalThis.localStorage = { getItem: k => values.get(k) ?? null, setItem: (k, v) => values.set(k, String(v)), removeItem: k => values.delete(k) };
 
-test("all 67 fresh instances retain exact registry ID and unchanged baseline payload", () => {
+// Current Batch 1 targets only. Historical evidence above must never follow these edits.
+const batch1 = {
+  "mark:primary": { name: "Mano di Luce" },
+  "jude:primary": { element: "natura" },
+  "nathan:primary": { name: "Scatto Repentino" },
+  "shawn:primary": { name: "Tormenta Glaciale" },
+  "jack:primary": { name: "Muro di Roccia" },
+  "kevin:primary": { name: "Dragon Crash" },
+  "darren:primary": { name: "Mano Insuperabile" },
+  "hurley:primary": { name: "Onda Inarrestabile", element: "aria" },
+  "david:primary": { name: "Calcio Gemello" },
+  "byron:primary": { name: "Colpo Supremo" },
+};
+
+for (const [moveId, correction] of Object.entries(batch1)) {
+  test(`Batch 1 ${moveId}: fresh/current and historical v2 payloads round-trip separately`, () => {
+    const versions = Object.values(catalog.CHARACTER_VERSIONS).filter(v => v.primaryMoveId === moveId);
+    assert.equal(versions.length, moveId === "jude:primary" ? 2 : 1);
+    for (const version of versions) {
+      const old = legacy(version.versionId);
+      const current = engine.createPlayer(version.versionId, 5, () => 0.2);
+      assert.deepEqual(current.move, { moveId, ...old.move, ...correction });
+      const run = engine.newRun(["mark", "jude", "axel"]);
+      run.team[0] = old;
+      run.activeUid = old.uid;
+      run.pending = { type: "battle", enemies: [structuredClone(old)] };
+      // Raw v2 storage, before current save normalization can add identity metadata.
+      values.set("inazuma_rogue_run", JSON.stringify(run));
+      const hydrated = storage.loadRun();
+      assert.equal(hydrated.saveVersion, 2);
+      assert.deepEqual(hydrated.team[0].move, { moveId, ...old.move });
+      assert.deepEqual(hydrated.pending.enemies[0].move, { moveId, ...old.move });
+      storage.saveRun(hydrated);
+      assert.deepEqual(storage.loadRun(), hydrated);
+      run.team[0] = current;
+      run.pending = null;
+      storage.saveRun(run);
+      assert.deepEqual(storage.loadRun(), run);
+    }
+  });
+}
+
+test("Batch 1 changes exactly ten identities; all powers, effects and other moves stay frozen", () => {
+  assert.equal(Object.keys(catalog.PRIMARY_MOVES).length, 66);
+  assert.equal(Object.keys(catalog.CHARACTER_VERSIONS).length, 67);
+  const changed = new Set(), elementChanges = new Set();
+  for (const [versionId, [moveId, name, element, power, effect]] of Object.entries(LEGACY_MOVE_IDENTITIES)) {
+    const current = catalog.PRIMARY_MOVES[catalog.resolveVersion(versionId).primaryMoveId];
+    const historical = { moveId, name, element, power, effect };
+    assert.deepEqual(current, { ...historical, ...batch1[moveId] }, versionId);
+    if (current.name !== name || current.element !== element) changed.add(moveId);
+    if (current.element !== element) elementChanges.add(moveId);
+  }
+  assert.deepEqual([...changed].sort(), Object.keys(batch1).sort());
+  assert.deepEqual([...elementChanges].sort(), ["hurley:primary", "jude:primary"]);
+  assert.equal(catalog.resolveVersion("jude:base").primaryMoveId, "jude:primary");
+  assert.equal(catalog.resolveVersion("jude:royal").primaryMoveId, "jude:primary");
+});
+
+test("Jude and Hurley use corrected elements with existing type/STAB math and identical RNG draw counts", () => {
+  const random = Math.random;
+  const multipliers = {
+    natura: { aria: 1.5, terra: 1, fuoco: 0.67, natura: 1 },
+    aria: { aria: 1, terra: 1.5, fuoco: 1, natura: 0.67 },
+  };
+  try {
+    for (const id of ["jude:base", "jude:royal", "hurley:base"]) {
+      const current = engine.createPlayer(id, 8, () => 0.2);
+      const oldMove = legacy(id).move;
+      assert.equal(current.element, id.startsWith("jude:") ? "aria" : "natura");
+      for (const move of [oldMove, current.move]) {
+        for (const [element, mult] of Object.entries(multipliers[move.element])) {
+          const defender = { ...engine.createPlayer("mark", 8, () => 0.3), element };
+          let draws = 0;
+          Math.random = () => { draws++; return 0.5; };
+          const result = engine.calcDamage(current, defender, move);
+          const stab = move === oldMove ? 1.1 : 1;
+          const base = (((2 * current.level) / 5 + 2) * move.power * current.atk / defender.def) / 9 + 2;
+          assert.deepEqual(result, { dmg: Math.max(1, Math.round(base * mult * stab * 0.94)), mult, crit: false });
+          assert.equal(draws, 2);
+        }
+      }
+    }
+  } finally { Math.random = random; }
+});
+
+test("all 67 fresh instances retain exact registry ID and current payload", () => {
   assert.equal(Object.keys(LEGACY_MOVE_IDENTITIES).length, 67);
   for (const v of Object.values(catalog.CHARACTER_VERSIONS)) {
     const p = engine.createPlayer(v.versionId, 5, () => 0.2);
-    const [id, name, element, power, effect] = LEGACY_MOVE_IDENTITIES[v.versionId];
+    const [id] = LEGACY_MOVE_IDENTITIES[v.versionId];
     assert.equal(p.versionId, v.versionId);
     assert.equal(p.move.moveId, v.primaryMoveId);
     assert.equal(p.move.moveId, id);
-    assert.deepEqual(payload(p.move), { name, element, power, effect });
+    assert.deepEqual(p.move, catalog.PRIMARY_MOVES[id]);
     assert.notEqual(p.move, catalog.PRIMARY_MOVES[id]);
   }
 });

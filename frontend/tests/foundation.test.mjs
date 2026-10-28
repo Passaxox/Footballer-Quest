@@ -13,6 +13,11 @@ const { validateCatalog, validateIdentityAudit } = await import(validationUrl);
 const metadataUrl = moduleUrl(await source("catalogMetadata"));
 const expansionUrl = moduleUrl(await source("catalogExpansion"));
 const legacyMovesUrl = moduleUrl(await source("legacyMoveIdentity"));
+const { LEGACY_MOVE_IDENTITIES } = await import(legacyMovesUrl);
+const historicalMove = versionId => {
+  const [, name, element, power, effect] = LEGACY_MOVE_IDENTITIES[versionId];
+  return { name, element, power, effect };
+};
 const catalogUrl = moduleUrl((await source("catalog")).replace('"./legacyMoveIdentity"', JSON.stringify(legacyMovesUrl)).replace("\"./catalogExpansion\"", JSON.stringify(expansionUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
 const collectionUrl = moduleUrl((await source("collection")).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const catalog = await import(catalogUrl);
@@ -889,15 +894,17 @@ test("V2c metadata registries reject broken references and inconsistent eras", (
 
 test("V2c passive metadata preserves validated V2b gameplay fixture and runtime serialization", async () => {
   const baseline = JSON.parse(await readFile(new URL("./fixtures/v2b-gameplay.json", import.meta.url), "utf8"));
-  // Only authorized GAME_DATA_FIX: new Joseph instances are goalkeepers. V2b fixture stays historical.
+  // Joseph's role fix remains; frozen move snapshots are distinct from current canon payloads.
+  // Exact current Batch 1 deltas are independently checked by move-identity.test.mjs.
   const expectedRoster = baseline.roster.map(r => r.id === "joseph" ? { ...r, role: "P" } : r);
-  assert.deepEqual(data.ROSTER, expectedRoster);
+  assert.deepEqual(data.ROSTER.map(r => ({ ...r, move: historicalMove(r.id + ":base") })), expectedRoster);
   assert.deepEqual(data.STARTER_IDS, baseline.starters);
   for (const row of baseline.roster) {
     const v = catalog.resolveVersion(row.id);
     assert.equal(v.versionId, row.id + ":base");
     assert.equal(v.characterId, row.id);
-    assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], { moveId: v.primaryMoveId, ...row.move });
+    assert.deepEqual(historicalMove(v.versionId), row.move);
+    assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], { moveId: v.primaryMoveId, ...data.ROSTER.find(r => r.id === row.id).move });
     const p = createPlayer(row.id, 3);
     for (const key of ["gender", "teamTags", "arcId", "eraId", "gameOrigin"]) assert.equal(Object.hasOwn(p, key), false);
   }
@@ -1030,7 +1037,7 @@ test("V2f audit separates observed identity, runtime data and proposed remediati
     const r = data.ROSTER.find(r => r.id === row.legacyId);
     assert.equal(typeof row.declaredCharacter, "string");
     assert.equal(typeof row.assetCharacter, "string");
-    assert.deepEqual(row.runtimeSnapshot, { role: r.role, element: r.element, move: r.move, baseStats: { hp: r.hp, atk: r.atk, def: r.def, spd: r.spd } });
+    assert.deepEqual(row.runtimeSnapshot, { role: r.role, element: r.element, move: historicalMove(r.id + ":base"), baseStats: { hp: r.hp, atk: r.atk, def: r.def, spd: r.spd } });
     assert.equal(new Set(row.remediationCategories).size, row.remediationCategories.length);
     assert.ok(row.remediationCategories.every(c => allowed.includes(c)));
     if (row.identityStatus === "suspicious") {
