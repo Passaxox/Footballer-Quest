@@ -82,11 +82,11 @@ test("one Jude tile, inline switch updates the same slot, correct versions enter
 
 test("team filter opens matching version and preserves selected slots across filtering", async () => {
   await act(async () => root.render(<TeamSelect meta={meta} />));
-  await act(async () => { const select = host.querySelector('[aria-label="Squadra"]'); select.value = "royal-academy"; select.dispatchEvent(new Event("change", { bubbles: true })); });
+  await act(async () => host.querySelector('[aria-label="Squadra"]').click()); await click("choice-royal-academy");
   expect(host.querySelectorAll(".ss-tile")).toHaveLength(1);
   await click("starter-jude"); expect(find("version-jude:royal").getAttribute("aria-pressed")).toBe("true");
   await click("starter-confirm");
-  await act(async () => { const select = host.querySelector('[aria-label="Squadra"]'); select.value = "raimon"; select.dispatchEvent(new Event("change", { bubbles: true })); });
+  await act(async () => host.querySelector('[aria-label="Squadra"]').click()); await click("choice-raimon");
   expect(find("starter-slot-0").textContent).toContain("Royal Academy");
   await click("starter-slot-0"); expect(find("version-jude:royal").getAttribute("aria-pressed")).toBe("true");
   await click("starter-confirm"); expect(find("starter-slot-0")).toBeNull();
@@ -109,4 +109,58 @@ test("Epsilon unlocks, aliases and Dvalin versions share canonical starter slots
   await click("starter-dvalin"); await click("version-dvalin:epsilon-ie2"); await click("starter-confirm");
   expect(find("starter-slot-0").textContent).toContain("Epsilon");
   expect(newRun([ids[0], ids[1], ids[2]]).team.map(p => p.versionId)).toEqual(ids.slice(0, 3));
+});
+
+
+test("direct add is separate from inspector, respects capacity, and initializes exact versions", async () => {
+  const onStart = jest.fn();
+  await act(async () => root.render(<TeamSelect meta={meta} onStart={onStart} />));
+  await click("add-mark");
+  expect(host.querySelector("dialog")).toBeNull();
+  expect(find("starter-slot-0").textContent).toContain("Mark");
+  await click("add-jude");
+  expect(host.querySelector(".ss-picker")).not.toBeNull();
+  expect(host.querySelector('[data-testid="move-info"]')).toBeNull();
+  await click("choice-jude:royal");
+  expect(find("starter-slot-1").textContent).toContain("Royal Academy");
+  await click("add-axel"); await click("add-fidio");
+  expect(host.querySelector('[role="status"]').textContent).toContain("Tre posti");
+  await click("add-jude");
+  expect(host.querySelector("dialog")).toBeNull();
+  await click("start-run-btn");
+  expect(onStart).toHaveBeenCalledWith(["mark:base", "jude:royal", "axel:base"], "normal");
+  expect(newRun(...onStart.mock.calls[0]).team.map(p => p.versionId)).toEqual(["mark:base", "jude:royal", "axel:base"]);
+  await click("starter-jude"); await click("version-jude:base");
+  await act(async () => host.querySelector('[aria-label="Chiudi dettagli"]').click());
+  expect(find("starter-slot-1").textContent).toContain("Raimon");
+  expect(host.querySelectorAll('.ss-summary button')).toHaveLength(3);
+  await click("add-fidio");
+  expect(host.querySelector('[role="status"]')).not.toBeNull();
+  expect(host.querySelector("dialog")).toBeNull();
+  await click("starter-slot-0"); await click("starter-confirm");
+  expect(host.querySelector('[role="status"]')).toBeNull();
+  expect(host.querySelectorAll('.ss-summary button')).toHaveLength(2);
+});
+
+test("custom filters combine, close, indicate active choice and reset", async () => {
+  await act(async () => root.render(<TeamSelect meta={meta} />));
+  expect(host.querySelector("select")).toBeNull();
+  for (const [label, id] of [["Squadra", "royal-academy"], ["Ruolo", "C"], ["Elemento", "aria"]]) {
+    await act(async () => host.querySelector(`[aria-label="${label}"]`).click());
+    await click(`choice-${id}`);
+    expect(host.querySelector("dialog")).toBeNull();
+  }
+  expect(host.querySelectorAll(".ss-tile")).toHaveLength(1);
+  await click("add-jude");
+  expect(find("starter-slot-0").textContent).toContain("Royal Academy");
+  await act(async () => host.querySelector('[aria-label="Elemento"]').click());
+  expect(find("choice-aria").getAttribute("aria-pressed")).toBe("true");
+  await click("choice-all");
+  await act(async () => host.querySelector('.ss-count button').click());
+  expect(host.querySelectorAll(".ss-tile")).toHaveLength(4);
+  expect(host.querySelector('[aria-label="Squadra"]').textContent).toContain("Tutte");
+  for (const label of ["Ruolo", "Elemento"]) expect(host.querySelector(`[aria-label="${label}"]`).textContent).toContain("Tutti");
+  await act(async () => host.querySelector('[aria-label="Squadra"]').click());
+  await act(async () => host.querySelector('[aria-label="Chiudi scelta"]').click());
+  expect(host.querySelector("dialog")).toBeNull();
 });
