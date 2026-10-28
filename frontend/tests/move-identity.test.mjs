@@ -40,8 +40,21 @@ const batch1 = {
   "byron:primary": { name: "Colpo Supremo" },
 };
 
-for (const [moveId, correction] of Object.entries(batch1)) {
-  test(`Batch 1 ${moveId}: fresh/current and historical v2 payloads round-trip separately`, () => {
+const batch2 = {
+  "joseph:primary": { name: "Barriera di Forza", element: "fuoco" },
+  "xavier:primary": { name: "Meteora Dirompente", element: "fuoco" },
+  "jordan:primary": { name: "Cometa Astrale", element: "natura" },
+  "torch:primary": { name: "Palla di Fuoco", element: "fuoco" },
+  "gazelle:primary": { name: "Sfera di Ghiaccio", element: "aria" },
+  "rococo:primary": { name: "Mano di Luce X", element: "fuoco" },
+  "canon:primary": { name: "Cannonata Rovente", element: "terra" },
+  "chae:primary": { name: "Salto Abissale", element: "fuoco" },
+};
+const currentCorrections = { ...batch1, ...batch2 };
+
+for (const [moveId, correction] of Object.entries(currentCorrections)) {
+  const batch = Object.hasOwn(batch1, moveId) ? 1 : 2;
+  test(`Batch ${batch} ${moveId}: fresh/current and historical v2 payloads round-trip separately`, () => {
     const versions = Object.values(catalog.CHARACTER_VERSIONS).filter(v => v.primaryMoveId === moveId);
     assert.equal(versions.length, moveId === "jude:primary" ? 2 : 1);
     for (const version of versions) {
@@ -68,34 +81,41 @@ for (const [moveId, correction] of Object.entries(batch1)) {
   });
 }
 
-test("Batch 1 changes exactly ten identities; all powers, effects and other moves stay frozen", () => {
+test("only the 18 approved Batch 1/2 payloads differ; IDs, powers, effects and other moves stay frozen", () => {
   assert.equal(Object.keys(catalog.PRIMARY_MOVES).length, 66);
   assert.equal(Object.keys(catalog.CHARACTER_VERSIONS).length, 67);
   const changed = new Set(), elementChanges = new Set();
   for (const [versionId, [moveId, name, element, power, effect]] of Object.entries(LEGACY_MOVE_IDENTITIES)) {
     const current = catalog.PRIMARY_MOVES[catalog.resolveVersion(versionId).primaryMoveId];
     const historical = { moveId, name, element, power, effect };
-    assert.deepEqual(current, { ...historical, ...batch1[moveId] }, versionId);
+    assert.deepEqual(current, { ...historical, ...currentCorrections[moveId] }, versionId);
     if (current.name !== name || current.element !== element) changed.add(moveId);
     if (current.element !== element) elementChanges.add(moveId);
   }
-  assert.deepEqual([...changed].sort(), Object.keys(batch1).sort());
-  assert.deepEqual([...elementChanges].sort(), ["hurley:primary", "jude:primary"]);
+  assert.equal(Object.keys(batch1).length, 10);
+  assert.equal(Object.keys(batch2).length, 8);
+  assert.deepEqual([...changed].sort(), Object.keys(currentCorrections).sort());
+  assert.deepEqual([...elementChanges].sort(), ["chae:primary", "hurley:primary", "jordan:primary", "jude:primary", "rococo:primary"]);
   assert.equal(catalog.resolveVersion("jude:base").primaryMoveId, "jude:primary");
   assert.equal(catalog.resolveVersion("jude:royal").primaryMoveId, "jude:primary");
 });
 
-test("Jude and Hurley use corrected elements with existing type/STAB math and identical RNG draw counts", () => {
+test("Batch 1/2 corrected elements use existing type/STAB math and identical RNG draw counts", () => {
   const random = Math.random;
   const multipliers = {
     natura: { aria: 1.5, terra: 1, fuoco: 0.67, natura: 1 },
     aria: { aria: 1, terra: 1.5, fuoco: 1, natura: 0.67 },
+    fuoco: { aria: 1, terra: 0.67, fuoco: 1, natura: 1.5 },
+    terra: { aria: 0.67, terra: 1, fuoco: 1.5, natura: 1 },
   };
   try {
-    for (const id of ["jude:base", "jude:royal", "hurley:base"]) {
+    for (const [id, characterElement] of [
+      ["jude:base", "aria"], ["jude:royal", "aria"], ["hurley:base", "natura"],
+      ["jordan:base", "aria"], ["rococo:base", "natura"], ["chae:base", "terra"],
+    ]) {
       const current = engine.createPlayer(id, 8, () => 0.2);
       const oldMove = legacy(id).move;
-      assert.equal(current.element, id.startsWith("jude:") ? "aria" : "natura");
+      assert.equal(current.element, characterElement);
       for (const move of [oldMove, current.move]) {
         for (const [element, mult] of Object.entries(multipliers[move.element])) {
           const defender = { ...engine.createPlayer("mark", 8, () => 0.3), element };
@@ -224,6 +244,29 @@ test("fusion copies selected known ID; unresolved or old fused snapshots never g
   }
   const oldFusion = engine.fusePlayers(a, b, "a"); delete oldFusion.move.moveId;
   assert.equal(catalog.withPlayerIdentity(oldFusion).move.moveId, null);
+});
+
+test("Batch 2 fusion preserves selected current, historical and unresolved parent snapshots", () => {
+  for (const moveId of Object.keys(batch2)) {
+    const version = Object.values(catalog.CHARACTER_VERSIONS).find(v => v.primaryMoveId === moveId);
+    const old = legacy(version.versionId);
+    const current = engine.createPlayer(version.versionId, 5, () => 0.2);
+    const historical = catalog.withPlayerIdentity(old);
+    const unresolved = { ...old, move: { ...old.move, moveId: null } };
+    for (const parent of [current, historical, unresolved]) {
+      for (const chosen of ["a", "b"]) {
+        const other = engine.createPlayer("axel", 5, () => 0.3);
+        const parents = chosen === "a" ? [parent, other] : [other, parent];
+        const fused = engine.fusePlayers(...parents, chosen);
+        assert.deepEqual(fused.move, parent.move);
+        const run = engine.newRun(["mark", "jude", "axel"]);
+        run.team[0] = fused;
+        run.activeUid = fused.uid;
+        storage.saveRun(run);
+        assert.deepEqual(storage.loadRun(), run);
+      }
+    }
+  }
 });
 
 test("identity metadata leaves real attacks, action order and RNG draws unchanged for all effects", () => {
