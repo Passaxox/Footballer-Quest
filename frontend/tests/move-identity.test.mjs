@@ -17,6 +17,9 @@ const catalog = await import(await load("catalog"));
 const engine = await import(await load("engine"));
 const storage = await import(await load("storage"));
 const { LEGACY_MOVE_IDENTITIES } = await import(await load("legacyMoveIdentity"));
+const collection = await import(await load("collection"));
+const scenarios = await import(await load("scenarios"));
+const data = await import(await load("data"));
 const payload = ({ moveId, ...move }) => move;
 const legacy = id => {
   const p = engine.createPlayer(id, 5, () => 0.2);
@@ -407,4 +410,188 @@ test("identity metadata leaves real attacks, action order and RNG draws unchange
       assert.deepEqual(outcomes[1], outcomes[0]); assert.deepEqual(draws[1], draws[0]);
     }
   } finally { Math.random = random; }
+});
+
+// ---- S1b historical compatibility fixtures (baseline b8b8797). Historical INPUT behavior only. ----
+// Literal raw saveVersion 2 PlayerInstances; moveId is absent, as in pre-identity saves.
+const histStats = { base: { hp: 71, atk: 33, def: 29, spd: 31 }, bonus: { hp: 1, atk: 2, def: 3, spd: 4 }, maxHp: 90, hp: 77, atk: 40, def: 35, spd: 36, level: 6, xp: 13, fused: false, status: { burn: 0, atkMod: 0, defMod: 0, guard: false, talisman: false } };
+const historical = (uid, baseId, extra, move) => ({ uid, baseId, ...extra, tier: 1, move, ...structuredClone(histStats) });
+const rawRun = player => {
+  const run = engine.newRun(["mark", "jude", "axel"]);
+  run.team[0] = player; run.activeUid = player.uid; run.pending = null;
+  values.set("inazuma_rogue_run", JSON.stringify(run));
+};
+const hydrateTwice = player => {
+  rawRun(player);
+  const first = storage.loadRun();
+  storage.saveRun(first);
+  const second = storage.loadRun();
+  assert.deepEqual(second, first);
+  assert.deepEqual(second.team[0], first.team[0]);
+  return first.team[0];
+};
+const assertOnlyIdentityAdded = (input, out, moveId) => {
+  const { move, ...rest } = input;
+  assert.deepEqual(out.move, { ...move, moveId });
+  for (const [k, v] of Object.entries(rest)) assert.deepEqual(out[k], v, k);
+  for (const k of Object.keys(out)) assert.ok(k in input || ["characterId", "versionId"].includes(k), `invented ${k}`);
+};
+
+const historicalFixtures = {
+  Jim: [["malcolm:base", "malcolm", { characterId: "malcolm", versionId: "malcolm:base", name: "Jim Wraith", role: "D", element: "terra", teamTags: ["raimon"] }, { name: "Tiro Fantasma", element: "terra", power: 65, effect: "weaken" }]],
+  Rika: [["hector:base", "hector", { characterId: "hector", versionId: "hector:base", name: "Rika Urabe", role: "C", element: "natura" }, { name: "Anello Arcobaleno", element: "natura", power: 78, effect: "charge" }]],
+  Fidio: [["fidio:base", "fidio", { characterId: "fidio", versionId: "fidio:base", name: "Fidio Aldena", role: "A", element: "natura" }, { name: "Fuoco Fatuo Divino", element: "natura", power: 92, effect: "drain" }]],
+  Paolo: [["paolo:base", "paolo", { versionId: "paolo:base", name: "Paolo Bianchi", role: "A", element: "fuoco" }, { name: "Colpo d'Odino", element: "fuoco", power: 95, effect: "crit" }]],
+  Dvalin: [["dvalin:base", "dvalin", { characterId: "dvalin", versionId: "dvalin:base", name: "Dvalin", role: "P", element: "aria" }, { name: "Guanto Rotante", element: "aria", power: 70, effect: "guard" }]],
+  Silvia: [["silvia:base", "silvia", { versionId: "silvia:base", name: "Silvia Woods", role: "C", element: "natura" }, { name: "Incoraggiamento", element: "natura", power: 40, effect: "heal" }]],
+  Jonas: [["jonas:base", "jonas", { versionId: "jonas:base", name: "Jonas Demetrius", role: "D", element: "aria" }, { name: "Tridente di Poseidone", element: "aria", power: 75, effect: "shatter" }]],
+};
+for (const [label, [[versionId, baseId, extra, move]]] of Object.entries(historicalFixtures)) {
+  test(`S1b ${label}: historical ${versionId} snapshot hydrates with only identity added and is stable`, () => {
+    const moveId = `${versionId.split(":")[0]}:primary`;
+    const input = historical(`h-${baseId}`, baseId, extra, move);
+    assert.ok(!Object.hasOwn(input.move, "moveId"));
+    // Frozen evidence in the legacy registry matches the fixture payload exactly.
+    assert.deepEqual(LEGACY_MOVE_IDENTITIES[versionId], [moveId, move.name, move.element, move.power, move.effect]);
+    const out = hydrateTwice(input);
+    assert.equal(out.move.moveId, moveId);
+    assertOnlyIdentityAdded(input, out, moveId);
+    assert.equal(out.name, extra.name); assert.equal(out.role, extra.role); assert.equal(out.element, extra.element);
+    assert.equal(out.versionId, versionId);
+    assert.equal(out.characterId, extra.characterId ?? baseId);
+    assert.equal(out.hp, 77); assert.equal(out.level, 6); assert.equal(out.uid, `h-${baseId}`);
+  });
+}
+
+test("S1b Jim: Raimon context and no canonical/future identity fields are invented", () => {
+  const [[versionId, baseId, extra, move]] = historicalFixtures.Jim;
+  const out = hydrateTwice(historical("jim", baseId, extra, move));
+  assert.deepEqual(out.teamTags, ["raimon"]);
+  assert.equal(Object.hasOwn(out, "canonicalCharacterId"), false);
+  assert.equal(catalog.resolveVersion("jim:base"), null);
+  assert.equal(catalog.resolveVersion("suzette:base"), null);
+});
+
+test("S1b Fidio: fidio:primary stays referenced and non-orphan", () => {
+  assert.equal(catalog.resolveVersion("fidio:base").primaryMoveId, "fidio:primary");
+  assert.ok(Object.hasOwn(catalog.PRIMARY_MOVES, "fidio:primary"));
+  assert.equal(Object.values(catalog.CHARACTER_VERSIONS).filter(v => v.primaryMoveId === "fidio:primary").length, 1);
+});
+
+test("S1b Dvalin: hydration keeps snapshot instead of rebuilding from live registry metadata", () => {
+  const input = historical("dv", "dvalin", { characterId: "dvalin", versionId: "dvalin:base", name: "Dvalin", role: "P", element: "aria" }, { name: "Guanto Rotante", element: "aria", power: 70, effect: "guard" });
+  input.base = { hp: 1, atk: 2, def: 3, spd: 4 }; input.tier = 9; input.maxHp = 5; input.hp = 4;
+  const out = hydrateTwice(input);
+  assert.deepEqual(out.base, input.base); assert.equal(out.tier, 9); assert.equal(out.maxHp, 5); assert.equal(out.hp, 4);
+});
+
+test("S1b Jonas: legacyOnly jonas:base resolves, hydrates and keeps a frozen snapshot", () => {
+  const version = catalog.resolveVersion("jonas:base");
+  assert.equal(version.legacyOnly, true);
+  assert.equal(catalog.resolveVersion("jonas").versionId, "jonas:base");
+  assert.equal(version.primaryMoveId, "jonas:primary");
+  assert.equal(catalog.canRecruitPlayer([], { versionId: "jonas:base" }), false);
+  assert.deepEqual(LEGACY_MOVE_IDENTITIES["jonas:base"], ["jonas:primary", "Tridente di Poseidone", "aria", 75, "shatter"]);
+});
+
+const fusedHistory = (extra = {}) => {
+  const a = legacy("mark:base"), b = legacy("axel:base");
+  return { uid: "fz", baseId: "mark+axel", name: "Mark Burns", element: "fuoco", role: "A", tier: 1, move: { name: "Tiro Storico", element: "fuoco", power: 80, effect: "crit", moveId: null },
+    level: 7, xp: 0, fused: true, status: histStats.status, base: a.base, bonus: b.bonus, maxHp: 99, hp: 88, atk: 1, def: 2, spd: 3, ...extra };
+};
+for (const [label, extra] of [["with parentVersionIds", { parentVersionIds: ["mark:base", "axel:base"] }], ["legacy without parentVersionIds", {}]]) {
+  test(`S1b fused ${label}: no identity invented, move untouched, round-trip stable`, () => {
+    const input = fusedHistory(extra);
+    const out = hydrateTwice(input);
+    assert.deepEqual(out, input);
+    assert.equal(out.move.moveId, null);
+    assert.equal(Object.hasOwn(out, "characterId"), false);
+    assert.equal(Object.hasOwn(out, "versionId"), false);
+    assert.deepEqual([...catalog.ownedCharacterIds([out])].sort(), ["axel", "mark"]);
+    assert.equal(catalog.canRecruitPlayer([out], { versionId: "mark:base" }), false);
+    assert.equal(catalog.canRecruitPlayer([out], { versionId: "jack:base" }), true);
+  });
+}
+
+test("S1b null / orphan / missing / mismatched moveIds", () => {
+  const base = { characterId: "malcolm", versionId: "malcolm:base", name: "Jim Wraith", role: "D", element: "terra" };
+  const exact = { name: "Tiro Fantasma", element: "terra", power: 65, effect: "weaken" };
+  const outOf = move => hydrateTwice(historical("m", "malcolm", base, move)).move;
+  assert.deepEqual(outOf({ ...exact, moveId: null }), { ...exact, moveId: null });
+  assert.deepEqual(outOf({ ...exact, moveId: "ghost:orphan" }), { ...exact, moveId: "ghost:orphan" });
+  assert.equal(Object.hasOwn(catalog.PRIMARY_MOVES, "ghost:orphan"), false);
+  assert.deepEqual(outOf(exact), { ...exact, moveId: "malcolm:primary" });
+  assert.deepEqual(outOf({ ...exact, power: 66 }), { ...exact, power: 66, moveId: null });
+  assert.deepEqual(outOf({ name: "Tiro Fantasma", element: "terra" }), { name: "Tiro Fantasma", element: "terra", moveId: null });
+  // A null marker from a mismatched payload is durable and never retried.
+  assert.equal(outOf({ ...exact, power: 66 }).moveId, null);
+});
+
+test("S1b Dvalin versions share canonical identity: recruitment, starters and encounters", () => {
+  assert.equal(catalog.canonicalCharacterId("dvalin:base"), "dvalin");
+  assert.equal(catalog.canonicalCharacterId("dvalin:epsilon-ie2"), "dvalin");
+  const base = engine.createPlayer("dvalin:base", 5, () => 0.2), eps = engine.createPlayer("dvalin:epsilon-ie2", 5, () => 0.2);
+  assert.equal(catalog.canRecruitPlayer([base], eps), false);
+  assert.equal(catalog.canRecruitPlayer([eps], base), false);
+  assert.throws(() => engine.newRun(["dvalin:base", "dvalin:epsilon-ie2", "mark"]), /versioni della stessa persona/);
+  const random = Math.random;
+  try {
+    for (const excluded of ["dvalin:base", "dvalin:epsilon-ie2"]) {
+      for (let i = 0; i < 400; i++) {
+        Math.random = () => i / 400;
+        assert.notEqual(catalog.canonicalCharacterId(engine.randomRosterId(3, [excluded])), "dvalin");
+      }
+      for (const s of scenarios.SCENARIOS) {
+        for (const v of scenarios.scenarioPool(s.id, 40, 3, [excluded])) assert.notEqual(catalog.canonicalCharacterId(v.versionId), "dvalin", `${s.id}/${excluded}`);
+      }
+    }
+  } finally { Math.random = random; }
+});
+
+test("S1b W30/W40 authored bosses reference legacy id dvalin which resolves to dvalin:base", () => {
+  for (const wave of [30, 40]) {
+    assert.ok(data.BOSSES[wave].ids.includes("dvalin"), `wave ${wave}`);
+    assert.equal(catalog.resolveVersion("dvalin").versionId, "dvalin:base");
+  }
+  assert.deepEqual(data.BOSSES[30].ids, ["dvalin", "torch", "gazelle"]);
+  assert.deepEqual(data.BOSSES[40].ids, ["jordan", "dvalin", "xavier"]);
+});
+
+test("S1b collection baseline: versionId-scoped, legacy versions resolvable, no automatic transfer", () => {
+  const blank = { unlocked: [], collection: {} };
+  for (const [from, to] of [["fidio:base", "paolo:base"], ["malcolm:base", "jim:base"], ["hector:base", "suzette:base"], ["jonas:base", "jonas:zeus"]]) {
+    const meta = collection.recruitVersion(blank, from);
+    assert.equal(collection.getCollectionState(meta, from), "RECRUITED");
+    assert.deepEqual(Object.keys(meta.collection), [from]);
+    assert.equal(collection.getCollectionState(meta, to), "UNKNOWN", `${from} must not transfer to ${to}`);
+    assert.deepEqual(collection.getCollectionProgress(meta, to), { discovered: false, recruited: false, starterUnlocked: false });
+  }
+  assert.equal(catalog.resolveVersion("jim:base"), null);
+  assert.equal(catalog.resolveVersion("suzette:base"), null);
+  assert.equal(catalog.resolveVersion("jonas:base").legacyOnly, true);
+  assert.equal(catalog.resolveVersion("jonas:zeus").legacyOnly, false);
+});
+
+test("S1b seeded baseline: pending encounter survives reload; Epsilon W25 uses its fixed-ID path", () => {
+  const eligible = contentSeed => engine.epsilonEntryEligible({ wave: 25, overworld: { contentSeed } });
+  let seed = 1; while (!eligible(seed)) seed++;
+  const run = engine.newRun(["mark", "jude", "axel"]);
+  run.wave = 25; run.overworld = { ...run.overworld, contentSeed: seed };
+  const encounter = engine.generateWave(run, () => 0.99);
+  assert.equal(encounter.entryId, "epsilon-w25");
+  assert.deepEqual(encounter.enemies.map(e => e.versionId), engine.EPSILON_ENTRY_IDS);
+  // The scenario pool RNG cannot influence the fixed-ID roster.
+  const other = engine.generateWave(run, () => 0.01);
+  assert.deepEqual(other.enemies.map(e => e.versionId), engine.EPSILON_ENTRY_IDS);
+  assert.deepEqual(other, encounter);
+  run.pending = encounter;
+  storage.saveRun(run);
+  const reloaded = storage.loadRun();
+  assert.deepEqual(reloaded.pending, storage.loadRun().pending);
+  assert.deepEqual(engine.generateWave(reloaded, () => 0.5), reloaded.pending);
+  assert.deepEqual(reloaded.pending.enemies.map(e => e.versionId), engine.EPSILON_ENTRY_IDS);
+  assert.deepEqual(reloaded.pending.enemies.map(e => e.uid), encounter.enemies.map(e => e.uid));
+  assert.equal(reloaded.pending.recruitIndex, encounter.recruitIndex);
+  storage.saveRun(reloaded);
+  assert.deepEqual(storage.loadRun(), reloaded);
 });

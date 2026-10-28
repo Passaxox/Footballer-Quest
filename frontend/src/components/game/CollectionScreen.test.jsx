@@ -96,3 +96,15 @@ test("fusion portraits prefer V2 parents and retain the legacy fallback", async 
   await act(async () => root.render(<Avatar p={{ ...base, baseId: "mark+axel" }} />));
   expect([...host.querySelectorAll("img")].map(img => img.getAttribute("src"))).toEqual(["/sprites/mark.png", "/sprites/axel.png"]);
 });
+
+test("S1b baseline: collection cards are versionId-scoped; no historical transfer exists yet", async () => {
+  const meta = ["fidio:base", "malcolm:base", "hector:base", "jonas:base"].reduce(recruitVersion, blank);
+  await act(async () => root.render(<CollectionScreen meta={meta} />));
+  const state = id => host.querySelector(`[data-testid="collection-${id}"]`);
+  expect(state("jonas").textContent).toContain("solo run esistenti");
+  for (const id of ["fidio", "malcolm", "hector"]) expect(state(id).textContent).not.toContain("???");
+  expect(state("paolo").textContent).toContain("???");
+  expect(state("jonas:zeus").textContent).toContain("???");
+  expect(state("jim:base")).toBeNull();
+  expect(state("suzette:base")).toBeNull();
+});
