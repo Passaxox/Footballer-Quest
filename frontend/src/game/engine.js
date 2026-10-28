@@ -149,7 +149,7 @@ export const fusePlayers = (a, b, moveFrom) => {
   const last = b.name.split(" ").slice(-1)[0];
   const lvl = Math.max(a.level, b.level);
   const p = {
-    uid: uid(), baseId: `${a.baseId}+${b.baseId}`, name: `${first} ${last}`, element: src.element, role: a.role, tier: Math.max(a.tier, b.tier), move: { ...src.move },
+    uid: uid(), baseId: `${a.baseId}+${b.baseId}`, name: `${first} ${last}`, element: src.element, role: a.role, tier: Math.max(a.tier, b.tier), move: { ...src.move, moveId: src.move.moveId ?? null },
     parentVersionIds: [resolveVersion(a.versionId || a.baseId)?.versionId ?? null, resolveVersion(b.versionId || b.baseId)?.versionId ?? null],
     level: lvl, xp: 0, fused: true, status: freshStatus(),
     base: { hp: Math.round((a.base.hp + b.base.hp) / 2 * 1.15), atk: Math.round((a.base.atk + b.base.atk) / 2 * 1.15), def: Math.round((a.base.def + b.base.def) / 2 * 1.15), spd: Math.round((a.base.spd + b.base.spd) / 2 * 1.15) },
@@ -334,7 +334,13 @@ export const normalizeRun = (run) => {
   if (!run) return null;
   const rulesetId = run.rulesetId || DIFFICULTIES[run.difficultyId || "normal"]?.rulesetId || DEFAULT_RULESET;
   const rules = getRules(rulesetId);
-  return { ...run, scenarioState: normalizeScenarioState(run.scenarioState, run.wave), team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
+  // Only hydrate known PlayerInstance locations; never regenerate pending content.
+  const pending = run.pending && { ...run.pending,
+    ...(Array.isArray(run.pending.enemies) ? { enemies: run.pending.enemies.map(withPlayerIdentity) } : {}),
+    ...(run.pending.player ? { player: withPlayerIdentity(run.pending.player) } : {}),
+    ...(run.pending.context?.offer ? { context: { ...run.pending.context, offer: withPlayerIdentity(run.pending.context.offer) } } : {}),
+  };
+  return { ...run, ...(run.pending ? { pending } : {}), scenarioState: normalizeScenarioState(run.scenarioState, run.wave), team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
     rulesetVersion: run.rulesetVersion ?? rules.version,
     activeUid: resolveActiveUid(run.team, run.activeUid) };
 };

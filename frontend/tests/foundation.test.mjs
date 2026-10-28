@@ -12,7 +12,8 @@ const validationUrl = moduleUrl(await source("catalogValidation"));
 const { validateCatalog, validateIdentityAudit } = await import(validationUrl);
 const metadataUrl = moduleUrl(await source("catalogMetadata"));
 const expansionUrl = moduleUrl(await source("catalogExpansion"));
-const catalogUrl = moduleUrl((await source("catalog")).replace("\"./catalogExpansion\"", JSON.stringify(expansionUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
+const legacyMovesUrl = moduleUrl(await source("legacyMoveIdentity"));
+const catalogUrl = moduleUrl((await source("catalog")).replace('"./legacyMoveIdentity"', JSON.stringify(legacyMovesUrl)).replace("\"./catalogExpansion\"", JSON.stringify(expansionUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalogValidation"', JSON.stringify(validationUrl)).replace('"./catalogMetadata"', JSON.stringify(metadataUrl)));
 const collectionUrl = moduleUrl((await source("collection")).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const catalog = await import(catalogUrl);
 const collection = await import(collectionUrl);
@@ -288,7 +289,7 @@ test("V2b complete catalog validates against actual sprite files and required le
     const v = catalog.resolveVersion(row.id);
     assert.equal(v.displayName, row.name);
     for (const key of ["rarityId", "variantId"]) assert.equal(v[key], null);
-    assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], row.move);
+    assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], { moveId: v.primaryMoveId, ...row.move });
     for (const level of [1, 3, 15]) {
       const p = createPlayer(v.versionId, level);
       for (const [base, runtime] of [["hp", "maxHp"], ["atk", "atk"], ["def", "def"], ["spd", "spd"]]) {
@@ -378,12 +379,12 @@ test("V2a maps legacy IDs to versions without changing playable data", () => {
     assert.ok(version.gender === null || ["male", "female", "unknown"].includes(version.gender));
     assert.ok(Array.isArray(version.teamTags));
     assert.deepEqual(version.baseStats, { hp: row.hp, atk: row.atk, def: row.def, spd: row.spd });
-    assert.deepEqual(catalog.PRIMARY_MOVES[version.primaryMoveId], row.move);
+    assert.deepEqual(catalog.PRIMARY_MOVES[version.primaryMoveId], { moveId: version.primaryMoveId, ...row.move });
     const p = createPlayer(version.versionId, 3);
     assert.equal(p.baseId, row.id);
     assert.equal(p.versionId, version.versionId);
     assert.equal(p.characterId, version.characterId);
-    assert.deepEqual(p.move, row.move);
+    assert.deepEqual(p.move, { moveId: version.primaryMoveId, ...row.move });
   }
   assert.equal(catalog.resolveVersion("missing"), null);
   assert.equal(catalog.resolveVersion("toString"), null);
@@ -896,7 +897,7 @@ test("V2c passive metadata preserves validated V2b gameplay fixture and runtime 
     const v = catalog.resolveVersion(row.id);
     assert.equal(v.versionId, row.id + ":base");
     assert.equal(v.characterId, row.id);
-    assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], row.move);
+    assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], { moveId: v.primaryMoveId, ...row.move });
     const p = createPlayer(row.id, 3);
     for (const key of ["gender", "teamTags", "arcId", "eraId", "gameOrigin"]) assert.equal(Object.hasOwn(p, key), false);
   }

@@ -2,6 +2,7 @@ import { TEAMS, ARCS, ERAS, GAME_ORIGINS, VERSION_METADATA } from "./catalogMeta
 import { ROSTER } from "./data";
 import { validateCatalog } from "./catalogValidation";
 import { EXPANSION_CHARACTERS, EXPANSION_VERSIONS, EXPANSION_MOVES, EPSILON_ALIASES } from "./catalogExpansion";
+import { LEGACY_MOVE_IDENTITIES } from "./legacyMoveIdentity";
 
 // Character = person; CharacterVersion = authored incarnation; PlayerInstance = mutable run state.
 // Legacy roster is the technical 1:1 source, not proof of canonical identity.
@@ -37,8 +38,8 @@ validateCatalog(CATALOG_SOURCE, { requiredLegacyIds: ROSTER.map(r => r.id) });
 export const CHARACTERS = Object.fromEntries(CATALOG_SOURCE.characters.map(c => [c.characterId, EPSILON_ALIASES[c.characterId] ? { ...c, aliases: EPSILON_ALIASES[c.characterId] } : c]));
 export const CHARACTER_VERSIONS = Object.fromEntries(CATALOG_SOURCE.versions.map(v => [v.versionId, v]));
 export const LEGACY_VERSION_IDS = Object.fromEntries(CATALOG_SOURCE.legacyMappings.map(m => [m.legacyId, m.versionId]));
-// Keep the V2a move shape: adding registry identifiers must not change runtime/saved moves.
-export const PRIMARY_MOVES = Object.fromEntries(CATALOG_SOURCE.moves.map(({ moveId, ...move }) => [moveId, move]));
+// Runtime snapshots retain identity alongside the unchanged authored gameplay payload.
+export const PRIMARY_MOVES = Object.fromEntries(CATALOG_SOURCE.moves.map(move => [move.moveId, { ...move }]));
 
 export const resolveVersion = id => Object.hasOwn(CHARACTER_VERSIONS, id) ? CHARACTER_VERSIONS[id]
   : Object.hasOwn(LEGACY_VERSION_IDS, id) ? CHARACTER_VERSIONS[LEGACY_VERSION_IDS[id]] : null;
@@ -57,8 +58,29 @@ export const canRecruitPlayer = (team, player) => !!canonicalCharacterId(player)
   && !resolveVersion(player?.versionId || player?.baseId)?.legacyOnly
   && !ownedCharacterIds(team).has(canonicalCharacterId(player));
 
-// Add identity only. Never rebuild saved stats, moves, HP, XP, UID or legacy fusion data.
+// Missing IDs can only be inferred from exact incarnation AND complete payload evidence.
+// Null is a durable unresolved marker: never retry it against a later content registry.
+export const withMoveIdentity = player => {
+  const move = player?.move;
+  if (!move || typeof move !== "object" || Array.isArray(move)) return player;
+  if (move.moveId === null || (typeof move.moveId === "string" && move.moveId.trim())) return player;
+  let moveId = null;
+  if (!Object.hasOwn(move, "moveId") && !player.fused && !String(player.baseId).includes("+")) {
+    const version = resolveVersion(player.versionId || player.baseId);
+    const baseVersion = resolveVersion(player.baseId);
+    const consistent = (!player.versionId || !baseVersion || baseVersion.versionId === version?.versionId)
+      && (!player.characterId || player.characterId === version?.characterId);
+    const expected = version && LEGACY_MOVE_IDENTITIES[version.versionId];
+    if (consistent && expected && ["name", "element", "power", "effect"].every((key, i) => Object.hasOwn(move, key) && move[key] === expected[i + 1])) {
+      moveId = expected[0];
+    }
+  }
+  return { ...player, move: { ...move, moveId } };
+};
+
+// Add identity only. Never rebuild saved stats, move payloads, HP, XP or UID.
 export const withPlayerIdentity = player => {
+  player = withMoveIdentity(player);
   if (!player || player.fused || String(player.baseId).includes("+")) return player;
   const version = resolveVersion(player.versionId || player.baseId);
   if (!version) return player;
