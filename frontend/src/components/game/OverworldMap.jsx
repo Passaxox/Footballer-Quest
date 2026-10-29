@@ -15,7 +15,7 @@ function EnvironmentLayer({ environment }) {
       <div className="ow-pitch"><i /><b /></div><div className="ow-building"><i /><i /><i /></div>
       <div className="ow-trees"><i /><i /><i /></div>
     </div>)}
-    <div className="ow-royal-district" /><span className="ow-district-label">TERRITORIO ROYAL</span>
+    <div className="ow-royal-district" /><span className="ow-district-label">ROYAL</span>
   </div>;
 }
 
@@ -50,8 +50,7 @@ function MapNode({ node, state, overview, onPreview, nodeRef }) {
       <span className="ow-wave">{node.wave}</span>
       {state === "locked" && <Lock className="ow-lock" size={12} aria-hidden="true" />}
     </button>
-    <span className="ow-place">{boss && <small>CHECKPOINT · W10</small>}{visibleName}</span>
-    {state === "available" && <span className="ow-reachable">{overview ? OVERWORLD_ROUTES.find(r => r.id === node.routeId).name : "ESPLORA"}</span>}
+    <span className="ow-place" aria-hidden="true">{boss ? "ROYAL" : state === "unknown" ? "" : state === "available" && overview ? OVERWORLD_ROUTES.find(r => r.id === node.routeId).name : OVERWORLD_NODE_LABELS[node.type]}</span>
   </div>;
 }
 
@@ -83,28 +82,56 @@ function NodePreview({ node, run, onClose, onEnter }) {
 export default function OverworldMap({ run, onSelect, onResume }) {
   const [preview, setPreview] = useState(null);
   const nodes = mapNodes(run), marker = markerNode(run, nodes), environment = environmentFor(run);
-  const currentRef = useRef(null), checkpointRef = useRef(null);
-  const focusCurrent = () => currentRef.current?.scrollIntoView?.({ block: "center", behavior: "smooth" });
+  const currentRef = useRef(null), checkpointRef = useRef(null), viewportRef = useRef(null);
+  // Scrolls only the internal viewport; scrollIntoView could also scroll the document.
+  const centerOn = (el, behavior) => {
+    const vp = viewportRef.current;
+    if (!vp || !el) return;
+    const v = vp.getBoundingClientRect(), r = el.getBoundingClientRect();
+    const top = Math.max(0, vp.scrollTop + r.top - v.top - (vp.clientHeight - r.height) / 2);
+    if (typeof vp.scrollTo === "function") vp.scrollTo({ top, behavior });
+    else vp.scrollTop = top;
+  };
+  const focusCurrent = () => { panned.current = false; centerOn(currentRef.current, "smooth"); };
+  const panned = useRef(false), markPanned = () => { panned.current = true; };
+  // Only keys that natively scroll the viewport count as panning; Tab, Enter and Escape do not.
+  const onViewportKey = e => {
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"].includes(e.key) || (e.key === " " && e.target === e.currentTarget)) markPanned();
+  };
   useEffect(() => {
-    if (run.overworld.routeId) currentRef.current?.scrollIntoView?.({ block: "center", behavior: "auto" });
-  }, [run.wave, run.overworld.routeId]);
+    panned.current = false;
+    centerOn(currentRef.current, "auto");
+  }, [run.wave, run.overworld.routeId, run.pending?.overworldNodeId]);
+  // Re-centre on viewport resize/orientation change, unless the user has panned since the last auto-centre.
+  useEffect(() => {
+    const vp = viewportRef.current;
+    if (!vp || typeof ResizeObserver === "undefined") return;
+    let size = `${vp.clientWidth}x${vp.clientHeight}`;
+    const ro = new ResizeObserver(() => {
+      const next = `${vp.clientWidth}x${vp.clientHeight}`;
+      if (next === size) return;
+      size = next;
+      if (!panned.current) centerOn(currentRef.current, "auto");
+    });
+    ro.observe(vp);
+    return () => ro.disconnect();
+  }, []);
   const current = nodes.find(n => nodeState(run, n) === "available")?.nodeId || marker.nodeId;
   return <section className="ow-map" aria-label="Mappa verso la Royal" data-testid="overworld-map"
     style={{ "--ow-ground": environment.palette[0], "--ow-accent": environment.palette[1] }}>
+    <div className="ow-viewport" ref={viewportRef} data-testid="overworld-viewport" onWheel={markPanned} onTouchMove={markPanned} onKeyDown={onViewportKey} tabIndex={0} aria-label="Area scorrevole della mappa">
     <div className="ow-area-heading">
-      <div className="ow-eyebrow">FOOTBALL FRONTIER · AREA 01</div>
-      <h1>La strada per la <em>Royal</em></h1>
-      <p>{run.overworld.routeId ? environment.description : "Scegli dove partire. Il tuo percorso comincia qui."}</p>
-      <button type="button" className="ow-destination" onClick={() => checkpointRef.current?.scrollIntoView?.({ block: "center", behavior: "smooth" })}>
-        <Trophy size={18} /><span>ROYAL ACADEMY <small data-testid="map-progress">{run.overworld.completedWave}/10 tappe · {10 - run.overworld.completedWave} alla Royal</small></span><ArrowDown size={18} />
+      <h1 title={environment.description}>{run.overworld.routeId ? environment.name : "Scegli la strada"}</h1>
+      <button type="button" className="ow-destination" onClick={() => { markPanned(); centerOn(checkpointRef.current, "smooth"); }}>
+        <Trophy size={18} /><span>ROYAL <small data-testid="map-progress">{run.overworld.completedWave}/10 tappe · {10 - run.overworld.completedWave} alla Royal</small></span><ArrowDown size={18} />
       </button>
     </div>
     <div className={`ow-world ${run.overworld.routeId ? "ow-journey" : ""}`} style={{ height: MAP_LAYOUT.height }}>
       <EnvironmentLayer environment={environment} />
       <MapPath nodes={nodes} run={run} />
-      <div className="ow-departure"><span>RAIMON</span><small>IL VIAGGIO COMINCIA QUI</small></div>
-      {!run.overworld.routeId && <div className="ow-fork-label">SCEGLI UNA STRADA</div>}
-      {run.overworld.routeId && <div className="ow-route-sign"><Lock size={12} /> {OVERWORLD_ROUTES.find(r => r.id === run.overworld.routeId)?.name}<span>le altre strade restano al bivio</span></div>}
+      <div className="ow-departure"><span>RAIMON</span></div>
+      {run.overworld.routeId && <div className="ow-route-sign"><Lock size={11} /> {OVERWORLD_ROUTES.find(r => r.id === run.overworld.routeId)?.name}</div>}
       {nodes.map(node => <MapNode key={node.nodeId} node={node} state={nodeState(run, node)} overview={!run.overworld.routeId}
         nodeRef={el => { if (!node.routeId) checkpointRef.current = el; if (node.nodeId === current) currentRef.current = el; }} onPreview={setPreview} />)}
       <div className="ow-marker" data-testid="map-player-marker" aria-label={`Squadra: ${marker.name}`}
@@ -112,9 +139,10 @@ export default function OverworldMap({ run, onSelect, onResume }) {
         <Avatar p={run.team[0]} size={30} /><span>VOI</span>
       </div>
     </div>
+    </div>
     <div className="ow-map-controls">
-      <button type="button" onClick={focusCurrent}><Navigation size={18} /> La tua posizione</button>
-      {run.pending ? <button type="button" data-testid="next-wave-btn" className="ow-resume" onClick={onResume}>Riprendi la tappa</button> : <span>TOCCA UN LUOGO ILLUMINATO</span>}
+      <button type="button" onClick={focusCurrent}><Navigation size={18} /> Posizione</button>
+      {run.pending ? <button type="button" data-testid="next-wave-btn" className="ow-resume" onClick={onResume}>Riprendi la tappa</button> : <span>Tocca un luogo</span>}
     </div>
     {preview && <NodePreview key={preview.nodeId} node={preview} run={run} onClose={() => setPreview(null)} onEnter={id => { setPreview(null); onSelect(id); }} />}
   </section>;

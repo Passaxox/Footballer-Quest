@@ -231,9 +231,10 @@ function App() {
     }
   };
 
+  const owHub = screen === "hub" && hasOverworld(run);
   return (
-    <div className="min-h-screen bg-[#05070d] flex justify-center font-body">
-      <div className={`w-full max-w-md min-h-screen bg-[#0d1322] text-slate-100 flex flex-col border-x-4 border-slate-800 relative ${screen === "hub" && hasOverworld(run) ? "overflow-clip" : "overflow-hidden"} scanlines`}>
+    <div className={`min-h-screen bg-[#05070d] flex justify-center font-body ${owHub ? "ow-shell" : ""}`}>
+      <div className={`w-full max-w-md min-h-screen bg-[#0d1322] text-slate-100 flex flex-col border-x-4 border-slate-800 relative ${owHub ? "ow-shell overflow-clip" : "overflow-hidden"} scanlines`}>
         {render()}
       </div>
     </div>
