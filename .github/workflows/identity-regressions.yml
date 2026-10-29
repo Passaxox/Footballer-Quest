@@ -1,0 +1,39 @@
+name: Identity Regressions
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["v0.3-v2q*", "v0.3-v2q/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: identity-regressions-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  node-regressions:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Node regression suites
+        run: >-
+          node --test
+          tests/foundation.test.mjs
+          tests/move-identity.test.mjs
+          tests/s2-compat.test.mjs
+          tests/s2b-identity-reference.test.mjs
