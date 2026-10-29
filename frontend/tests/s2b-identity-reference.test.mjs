@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 
 // S2B pre-migration reference lock. Every "PRE-MIGRATION BASELINE" assertion records what the code does at
 // 32f43dd0 and is NOT permanent canon: S3 may supersede it only after independent compatibility verification.
+// G2 supersedes only the live hector characterId/name and derived ownership; historical saves stay locked.
 // Collection no-transfer, duplicate-canonical saves, pending encounters and fused history are covered by S1b/S2A.
 const urls = new Map();
 async function load(name) {
@@ -52,9 +53,9 @@ test("S2B lock: sensitive historical version and move IDs keep their literal ide
 });
 
 // 2. PRE-MIGRATION BASELINE: canonical behaviour -------------------------------------------------
-test("S2B PRE-MIGRATION BASELINE: live canonical identities and display names", () => {
+test("S2B live identities: only the approved G2 Suzette rekey supersedes the baseline", () => {
   const baseline = [
-    ["malcolm:base", "malcolm", "Jim Wraith"], ["hector:base", "hector", "Rika Urabe"], ["rococo:base", "rococo", "Rococo Urupa"],
+    ["malcolm:base", "malcolm", "Jim Wraith"], ["hector:base", "suzette", "Suzette Hartland"], ["rococo:base", "rococo", "Rococo Urupa"],
     ["fidio:base", "fidio", "Fidio Aldena"], ["paolo:base", "fidio", "Paolo Bianchi"],
     ["jonas:base", "jonas", "Jonas Demetrius"], ["jonas:zeus", "jonas", "Jonas Demetrius (Demeter)"],
     ["dvalin:base", "dvalin", "Dvalin"], ["dvalin:epsilon-ie2", "dvalin", "Dvalin"],
@@ -75,7 +76,7 @@ test("S2B PRE-MIGRATION BASELINE: live canonical identities and display names", 
 
 test("S2B PRE-MIGRATION BASELINE: canonicalCharacterId prefers the live registry over a stored characterId", () => {
   assert.equal(catalog.canonicalCharacterId({ versionId: "malcolm:base", characterId: "future-malcolm-night" }), "malcolm");
-  assert.equal(catalog.canonicalCharacterId({ baseId: "hector", characterId: "future-rika" }), "hector");
+  assert.equal(catalog.canonicalCharacterId({ baseId: "hector", characterId: "future-rika" }), "suzette");
   // Only an unresolvable version falls back to the stored value, which keeps opaque history readable.
   assert.equal(catalog.canonicalCharacterId({ versionId: "opaque:legacy", characterId: "opaque-person" }), "opaque-person");
   assert.equal(catalog.canonicalCharacterId({ baseId: "mark+axel", fused: true }), null);
@@ -102,7 +103,7 @@ test("S2B move identity: absent characterId is added from the live version and d
   const hydrated = catalog.withPlayerIdentity(snapshot);
   assert.equal(hydrated.move.moveId, "hector:primary");
   assert.equal(hydrated.versionId, "hector:base");
-  assert.equal(hydrated.characterId, "hector");
+  assert.equal(hydrated.characterId, "suzette");
 });
 
 test("S2B move identity: stored characterId consistent with the version still infers", () => {
@@ -150,9 +151,9 @@ test("S2B move identity: fusion snapshots keep parentVersionIds and never gain a
   assert.equal(hydrated.move.moveId, null);
   assert.equal("versionId" in hydrated, false);
   assert.equal("characterId" in hydrated, false);
-  assert.deepEqual([...catalog.ownedCharacterIds([hydrated])].sort(), ["hector", "malcolm"]);
+  assert.deepEqual([...catalog.ownedCharacterIds([hydrated])].sort(), ["malcolm", "suzette"]);
   // Without parentVersionIds, ownership falls back to the baseId split only; no name-based inference.
-  assert.deepEqual([...catalog.ownedCharacterIds([drop(hydrated, "parentVersionIds")])].sort(), ["hector", "malcolm"]);
+  assert.deepEqual([...catalog.ownedCharacterIds([drop(hydrated, "parentVersionIds")])].sort(), ["malcolm", "suzette"]);
 });
 
 // 4. Static boss / event / scenario references ---------------------------------------------------

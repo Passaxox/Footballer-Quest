@@ -12,10 +12,15 @@ const activeTeam = tags => {
   // Only unambiguous authored membership; never select the first historical tag.
   return teams.length === 1 ? teams[0] : null;
 };
+// G2: rekey the person only; hector remains the historical version/move/roster/sprite key.
+// Hector Helio is the independent rococo identity.
+const rosterIdentity = r => r.id === "hector"
+  ? { characterId: "suzette", displayName: "Suzette Hartland" }
+  : { characterId: r.id, displayName: r.name };
 export const CATALOG_SOURCE = {
-  characters: [...ROSTER.map(r => ({ characterId: r.id, displayName: r.name })), ...EXPANSION_CHARACTERS],
+  characters: [...ROSTER.map(rosterIdentity), ...EXPANSION_CHARACTERS],
   versions: [...ROSTER.map(r => ({
-    versionId: `${r.id}:base`, characterId: r.id, legacyRosterId: r.id, displayName: r.name, kind: "player",
+    versionId: `${r.id}:base`, ...rosterIdentity(r), legacyRosterId: r.id, kind: "player",
     role: r.role, gender: VERSION_METADATA[`${r.id}:base`]?.gender ?? null, spriteId: r.id,
     teamTags: [...(VERSION_METADATA[`${r.id}:base`]?.teamTags ?? [])], element: r.element, types: [r.element],
     primaryTeamId: activeTeam(VERSION_METADATA[`${r.id}:base`]?.teamTags),

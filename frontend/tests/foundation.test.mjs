@@ -292,7 +292,7 @@ test("V2b complete catalog validates against actual sprite files and required le
   assert.equal(validateCatalog(catalog.CATALOG_SOURCE, { spriteIds, requiredLegacyIds: data.ROSTER.map(r => r.id) }), true);
   for (const row of data.ROSTER) {
     const v = catalog.resolveVersion(row.id);
-    assert.equal(v.displayName, row.name);
+    assert.equal(v.displayName, row.id === "hector" ? "Suzette Hartland" : row.name);
     for (const key of ["rarityId", "variantId"]) assert.equal(v[key], null);
     assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], { moveId: v.primaryMoveId, ...row.move });
     for (const level of [1, 3, 15]) {
@@ -378,7 +378,7 @@ test("V2a maps legacy IDs to versions without changing playable data", () => {
   for (const row of data.ROSTER) {
     const version = catalog.resolveVersion(row.id);
     assert.equal(catalog.resolveVersion(version.versionId), version);
-    assert.equal(catalog.CHARACTERS[version.characterId].displayName, row.name);
+    assert.equal(catalog.CHARACTERS[version.characterId].displayName, row.id === "hector" ? "Suzette Hartland" : row.name);
     assert.equal(version.encounterTier, row.tier);
     assert.equal(version.rarityId, null);
     assert.ok(version.gender === null || ["male", "female", "unknown"].includes(version.gender));
@@ -902,7 +902,7 @@ test("V2c passive metadata preserves validated V2b gameplay fixture and runtime 
   for (const row of baseline.roster) {
     const v = catalog.resolveVersion(row.id);
     assert.equal(v.versionId, row.id + ":base");
-    assert.equal(v.characterId, row.id);
+    assert.equal(v.characterId, row.id === "hector" ? "suzette" : row.id);
     assert.deepEqual(historicalMove(v.versionId), row.move);
     assert.deepEqual(catalog.PRIMARY_MOVES[v.primaryMoveId], { moveId: v.primaryMoveId, ...data.ROSTER.find(r => r.id === row.id).move });
     const p = createPlayer(row.id, 3);
@@ -948,7 +948,7 @@ test("V2e batch protects all localized legacy mappings and specific incarnation 
   for (const a of fixture.aliases) {
     const v = catalog.resolveVersion(a.legacyId);
     assert.equal(v.versionId, a.versionId);
-    assert.equal(v.displayName, a.displayName);
+    assert.equal(v.displayName, a.legacyId === "hector" ? "Suzette Hartland" : a.displayName);
   }
   for (const [id, fields] of Object.entries(fixture.metadata)) {
     const v = catalog.resolveVersion(id);
@@ -1072,8 +1072,8 @@ test("V2g preserves all persistent identities and legacy runtime/collection/hist
   for (const a of baseline.aliases) {
     const v = catalog.resolveVersion(a.legacyId);
     assert.equal(v.versionId, a.versionId);
-    assert.equal(v.characterId, a.legacyId);
-    assert.equal(v.displayName, a.displayName);
+    assert.equal(v.characterId, a.legacyId === "hector" ? "suzette" : a.legacyId);
+    assert.equal(v.displayName, a.legacyId === "hector" ? "Suzette Hartland" : a.displayName);
   }
   const run = newRun(starters);
   const oldJoseph = { ...createPlayer("joseph", 8), role: "A", hp: 13, xp: 29 };

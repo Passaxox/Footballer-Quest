@@ -19,10 +19,10 @@ const engine = await import(await load("engine"));
 const collection = await import(await load("collection"));
 const data = await import(await load("data"));
 
-test("S2A Jim and Rika historical identities are preserved without speculative IDs", () => {
+test("S2A Jim stays unchanged; G2 rekeys Suzette without creating new version IDs", () => {
   assert.equal(catalog.resolveVersion("malcolm:base").displayName, "Jim Wraith");
-  assert.equal(catalog.resolveVersion("hector:base").displayName, "Rika Urabe");
-  assert.equal(catalog.canonicalCharacterId("hector:base"), "hector");
+  assert.equal(catalog.resolveVersion("hector:base").displayName, "Suzette Hartland");
+  assert.equal(catalog.canonicalCharacterId("hector:base"), "suzette");
   assert.equal(catalog.canonicalCharacterId("rococo:base"), "rococo");
   const ids = Object.keys(catalog.CHARACTER_VERSIONS);
   for (const id of ids) assert.ok(!/^(jim|suzette|malcolm-night)\b|^malcolm:(?!base$)|^hector:(?!base$)/.test(id), `unexpected identity ${id}`);

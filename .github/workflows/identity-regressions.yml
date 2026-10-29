@@ -38,3 +38,4 @@ jobs:
           tests/s2-compat.test.mjs
           tests/s2b-identity-reference.test.mjs
           tests/s3-g1-identity-compat.test.mjs
+          tests/s3-g2-suzette-identity.test.mjs

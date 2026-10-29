@@ -91,7 +91,16 @@ export function validateIdentityAudit(catalog, audit, { spriteHashes } = {}) {
       seen.add(row[key]);
     }
     const v = versions.get(row.versionId);
-    if (!v || mappings.get(label) !== row.versionId || v.characterId !== row.characterId) errors.push("Audit technical mapping mismatch: " + label);
+    const isHectorRow = label === "hector" || row.versionId === "hector:base";
+    // Pin the historical evidence independently of the approved live identity.
+    const frozenHectorEvidence = label === "hector" && row.versionId === "hector:base"
+      && row.characterId === "hector" && row.displayName === "Rika Urabe"
+      && row.identityStatus === "legacy-weird-but-verified";
+    if (isHectorRow && !frozenHectorEvidence) errors.push("Frozen hector audit evidence drift");
+    // Exact G2 remediation of the frozen historical observation, never a general drift waiver.
+    const suzetteRemediation = frozenHectorEvidence
+      && v?.characterId === "suzette" && v.displayName === "Suzette Hartland";
+    if (!v || mappings.get(label) !== row.versionId || (isHectorRow ? !suzetteRemediation : v.characterId !== row.characterId)) errors.push("Audit technical mapping mismatch: " + label);
     if (!IDENTITY_STATUSES.includes(row.identityStatus)) { errors.push("Invalid identityStatus: " + label); continue; }
     counts[row.identityStatus]++;
     if (!Array.isArray(row.sources) || row.sources.length < 2 || row.sources.some(s => typeof s !== "string" || !s.trim()) || !row.notes) errors.push("Missing audit evidence: " + label);
@@ -99,7 +108,10 @@ export function validateIdentityAudit(catalog, audit, { spriteHashes } = {}) {
     if (["verified", "legacy-weird-but-verified"].includes(row.identityStatus)) {
       verifiedLegacyIds.push(label);
       if (typeof row.canonicalCharacter !== "string" || !row.canonicalCharacter.trim()) errors.push("Verified identity missing canon: " + label);
-      for (const key of ["displayName", "spriteId", "primaryMoveId"]) if (v?.[key] !== row[key]) errors.push("Verified identity drift " + key + ": " + label);
+      for (const key of ["displayName", "spriteId", "primaryMoveId"]) {
+        if (key === "displayName" && suzetteRemediation) continue;
+        if (v?.[key] !== row[key]) errors.push("Verified identity drift " + key + ": " + label);
+      }
       if (spriteHashes && spriteHashes.get(row.spritePath) !== row.spriteSha256) errors.push("Verified sprite content drift: " + label);
     } else pending.push(label);
   }
