@@ -113,3 +113,13 @@ code {
         border-bottom-color: inherit;
     }
 }
+
+/* Android system-bar safe areas for non-Overworld screens. env() is 0 where the WebView is already inset (no double padding). The Overworld shell and starter selector footer manage their own insets. */
+.fq-safe, .fq-safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+.fq-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
