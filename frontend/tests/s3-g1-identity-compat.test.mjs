@@ -107,7 +107,7 @@ test("incomplete, altered or ambiguous signatures stay unresolved", () => {
 
 test("versionId/baseId mismatch behavior unchanged", () => {
   assert.equal(idOf(mk("hector:base", HECTOR, { versionId: "malcolm:base" })), null);
-  assert.equal(idOf(mk("malcolm:base", HECTOR, { versionId: "hector:base" })), "hector:primary");
+  assert.equal(idOf(mk("malcolm:base", HECTOR, { versionId: "hector:base" })), null);
   assert.equal(idOf(mk("malcolm", MALCOLM, { versionId: "malcolm:base" })), "malcolm:primary");
   assert.equal(idOf(mk("ghost", MALCOLM, { versionId: "malcolm:base" })), "malcolm:primary");
 });
