@@ -58,6 +58,15 @@ export const canRecruitPlayer = (team, player) => !!canonicalCharacterId(player)
   && !resolveVersion(player?.versionId || player?.baseId)?.legacyOnly
   && !ownedCharacterIds(team).has(canonicalCharacterId(player));
 
+// Frozen historical saved characterIds, valid only for their own versionId. Not a registry alias.
+export const HISTORICAL_CHARACTER_IDS = Object.freeze({
+  "malcolm:base": "malcolm",
+  "hector:base": "hector",
+});
+export const isCharacterIdConsistent = (savedId, versionId, liveCharacterId) => !savedId
+  || savedId === liveCharacterId
+  || (Object.hasOwn(HISTORICAL_CHARACTER_IDS, versionId) && HISTORICAL_CHARACTER_IDS[versionId] === savedId);
+
 // Missing IDs can only be inferred from exact incarnation AND complete payload evidence.
 // Null is a durable unresolved marker: never retry it against a later content registry.
 export const withMoveIdentity = player => {
@@ -69,7 +78,7 @@ export const withMoveIdentity = player => {
     const version = resolveVersion(player.versionId || player.baseId);
     const baseVersion = resolveVersion(player.baseId);
     const consistent = (!player.versionId || !baseVersion || baseVersion.versionId === version?.versionId)
-      && (!player.characterId || player.characterId === version?.characterId);
+      && isCharacterIdConsistent(player.characterId, version?.versionId, version?.characterId);
     const expected = version && LEGACY_MOVE_IDENTITIES[version.versionId];
     if (consistent && expected && ["name", "element", "power", "effect"].every((key, i) => Object.hasOwn(move, key) && move[key] === expected[i + 1])) {
       moveId = expected[0];
