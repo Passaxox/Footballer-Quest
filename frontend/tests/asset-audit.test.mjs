@@ -1,3 +1,4 @@
+import { frozenIdentityAudit, assetRemediationLedger, assertCurrentSpriteAssets, parseFrozenG2Audit } from "./helpers/asset-remediation.mjs";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { cropCoordinates } from "../../tools/assets/extract-headshot.mjs";
@@ -67,14 +68,14 @@ test("cross-check detects missing, orphan, invalid, shared and non-square assets
  } finally { await rm(directory,{recursive:true,force:true}); }
 });
 
-test("current catalog audit preserves all 44 legacy files and surfaces existing identity warnings",async()=>{
+test("current catalog audit checks all 44 legacy files with only the approved Visual 1B remediations",async()=>{
  const versions=await loadVersions();
- const fixture=JSON.parse(await readFile(new URL("fixtures/catalog-identity-audit.json",import.meta.url),"utf8"));
+ const fixture=frozenIdentityAudit;
  const report=await auditAssets({versions,identities:fixture.entries});
  assert.equal(report.summary.assetCount,67);assert.equal(report.summary.missing,0);assert.equal(report.summary.orphans,0);
  assert.deepEqual(report,await auditAssets({versions,identities:fixture.entries}));
  assert.equal(report.versions.length,versions.length);
- for(const entry of fixture.entries) assert.equal(report.files.find(f=>f.filename===entry.spriteId+".png").sha256,entry.spriteSha256);
+ assertCurrentSpriteAssets(fixture,assetRemediationLedger,new Map(report.files.map(file=>["frontend/"+file.path,file.sha256])));
  for(const id of ["jonas:base","austin:base","joseph:base"]) assert.ok(report.versions.find(v=>v.versionId===id).issues.some(i=>i.code==="KNOWN_IDENTITY_WARNING"));
  const image=await readFile(new URL("../public/sprites/mark.png",import.meta.url));
  assert.deepEqual(webpDimensions(image),{width:64,height:64,aspectRatio:1});
@@ -131,4 +132,114 @@ test("Epsilon runtime assets preserve approved source bytes and provenance", asy
   assert.equal(provenance.decision, "ASSET-VERIFIED");
   assert.deepEqual(webpDimensions(runtime), { width:64, height:64, aspectRatio:1 });
  }
+});
+
+const currentSpriteHashes = new Map(await Promise.all(frozenIdentityAudit.entries.map(async row => [row.spritePath,
+  createHash("sha256").update(await readFile(new URL("../../" + row.spritePath, import.meta.url))).digest("hex")])));
+
+test("Visual 1B pins the untouched G2 fixture, including its incorrect historical identity observations", async () => {
+  const bytes = await readFile(new URL("fixtures/catalog-identity-audit.json", import.meta.url));
+  assert.deepEqual(parseFrozenG2Audit(bytes), frozenIdentityAudit);
+  const text = bytes.toString("utf8"), sam = frozenIdentityAudit.entries.find(row => row.spriteId === "sam");
+  for (const [before, after] of [
+    [sam.spriteSha256, "0".repeat(64)],
+    ['"canonicalCharacter": "Shourinji Ayumu"', '"canonicalCharacter": "Shishido Sakichi"'],
+  ]) {
+    const changed = text.replace(before, after);
+    assert.notEqual(changed, text, "the intended evidence field was changed without reformatting");
+    assert.throws(() => parseFrozenG2Audit(Buffer.from(changed)), /Frozen G2 audit bytes drift/);
+  }
+  assert.throws(() => parseFrozenG2Audit(Buffer.concat([bytes, Buffer.from(" ")])), /Frozen G2 audit bytes drift/);
+});
+
+test("Visual 1B checks the approved current cycle without mutating historical evidence or inputs", () => {
+  const audit = structuredClone(frozenIdentityAudit), ledger = structuredClone(assetRemediationLedger);
+  const hashes = new Map(currentSpriteHashes);
+  assert.equal(assertCurrentSpriteAssets(audit, ledger, hashes), true);
+  assert.deepEqual(audit, frozenIdentityAudit);
+  assert.deepEqual(ledger, assetRemediationLedger);
+  assert.deepEqual(hashes, currentSpriteHashes);
+});
+
+test("Visual 1B rejects unauthorized, missing, duplicate and redirected remediation entries", () => {
+  for (const mutate of [
+    l => { l.entries.push({ ...l.entries[0], spriteId: "mark" }); },
+    l => { l.entries.pop(); },
+    l => { l.entries[1] = structuredClone(l.entries[0]); },
+    l => { l.entries[0].spriteId = "mark"; },
+    l => { l.entries[0].spritePath = "frontend/public/sprites/mark.png"; },
+    l => { l.ledgerVersion++; },
+    l => { l.baselineCommit = "0".repeat(40); },
+    l => { l.entries[0].baselineCommit = "0".repeat(40); },
+    l => { l.historicalAuditSha256 = "0".repeat(64); },
+  ]) {
+    const ledger = structuredClone(assetRemediationLedger); mutate(ledger);
+    assert.throws(() => assertCurrentSpriteAssets(frozenIdentityAudit, ledger, currentSpriteHashes), { name: "AssertionError" });
+  }
+});
+
+test("Visual 1B rejects altered hashes, provenance, identities and approval for each remediated sprite", () => {
+  for (let index = 0; index < 3; index++) {
+    for (const mutate of [
+      e => { e.historicalSha256 = "0".repeat(64); },
+      e => { e.approvedSha256 = "0".repeat(64); },
+      e => { e.provenance.sourceSpriteId = e.spriteId; },
+      e => { e.provenance.sourceSha256 = "0".repeat(64); },
+      e => { e.provenance.sourceCommit = "0".repeat(40); },
+      e => { e.historicalIdentity.canonicalCharacter = e.correctedIdentity.canonicalCharacter; },
+      e => { e.correctedIdentity.canonicalCharacter = e.historicalIdentity.canonicalCharacter; },
+      e => { e.productOwnerVisualApproval.status = "pending"; },
+      e => { delete e.productOwnerVisualApproval; },
+    ]) {
+      const ledger = structuredClone(assetRemediationLedger); mutate(ledger.entries[index]);
+      assert.throws(() => assertCurrentSpriteAssets(frozenIdentityAudit, ledger, currentSpriteHashes), { name: "AssertionError" });
+    }
+  }
+});
+
+test("Visual 1B rejects coordinated ledger/file tampering and a reversed three-way cycle", () => {
+  const ledger = structuredClone(assetRemediationLedger), hashes = new Map(currentSpriteHashes);
+  const entry = ledger.entries[0];
+  entry.approvedSha256 = "0".repeat(64);
+  entry.provenance.sourceSha256 = entry.approvedSha256;
+  hashes.set(entry.spritePath, entry.approvedSha256);
+  assert.throws(() => assertCurrentSpriteAssets(frozenIdentityAudit, ledger, hashes), /Unapproved current hash: sam/);
+
+  const reversed = structuredClone(assetRemediationLedger), reversedHashes = new Map(currentSpriteHashes);
+  const sources = { sam: "tim", steve: "sam", tim: "steve" };
+  for (const entry of reversed.entries) {
+    const source = frozenIdentityAudit.entries.find(row => row.spriteId === sources[entry.spriteId]);
+    entry.approvedSha256 = source.spriteSha256;
+    Object.assign(entry.provenance, { sourceSpriteId: source.spriteId, sourcePath: source.spritePath, sourceSha256: source.spriteSha256 });
+    reversedHashes.set(entry.spritePath, entry.approvedSha256);
+  }
+  assert.throws(() => assertCurrentSpriteAssets(frozenIdentityAudit, reversed, reversedHashes), /Unapproved current hash/);
+});
+
+test("Visual 1B rejects reverted, missing and byte-tampered approved portraits", async () => {
+  for (const entry of assetRemediationLedger.entries) {
+    const bytes = await readFile(new URL("../../" + entry.spritePath, import.meta.url));
+    bytes[bytes.length - 1] ^= 1;
+    const tamperedHash = createHash("sha256").update(bytes).digest("hex");
+    for (const value of [entry.historicalSha256, tamperedHash, undefined]) {
+      const hashes = new Map(currentSpriteHashes);
+      if (value === undefined) hashes.delete(entry.spritePath);
+      else hashes.set(entry.spritePath, value);
+      assert.throws(() => assertCurrentSpriteAssets(frozenIdentityAudit, assetRemediationLedger, hashes),
+        new RegExp("Current sprite content drift: " + entry.spriteId));
+    }
+  }
+});
+
+test("Visual 1B rejects drift or removal of every unrelated historical sprite, including disputed identities", () => {
+  const remediated = new Set(["sam", "steve", "tim"]);
+  for (const row of frozenIdentityAudit.entries.filter(row => !remediated.has(row.spriteId))) {
+    for (const remove of [false, true]) {
+      const hashes = new Map(currentSpriteHashes);
+      if (remove) hashes.delete(row.spritePath);
+      else hashes.set(row.spritePath, "0".repeat(64));
+      assert.throws(() => assertCurrentSpriteAssets(frozenIdentityAudit, assetRemediationLedger, hashes),
+        new RegExp("Current sprite content drift: " + row.spriteId));
+    }
+  }
 });

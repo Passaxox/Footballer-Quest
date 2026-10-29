@@ -1,3 +1,4 @@
+import { frozenIdentityAudit, assetRemediationLedger, assertCurrentSpriteAssets } from "./helpers/asset-remediation.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
@@ -248,12 +249,14 @@ test("G2 scenario exclusions accept legacy, version, canonical and old snapshots
   }
 });
 
-const audit = JSON.parse(await readFile(new URL("fixtures/catalog-identity-audit.json", import.meta.url), "utf8"));
+const audit = frozenIdentityAudit;
 test("G2 frozen identity audit accepts exactly the approved remediation and still checks portrait hashes", async () => {
   const before = structuredClone(audit);
   const hashes = new Map(await Promise.all(audit.entries.map(async row => [row.spritePath,
     createHash("sha256").update(await readFile(new URL("../../" + row.spritePath, import.meta.url))).digest("hex")])));
-  const result = validateIdentityAudit(catalog.CATALOG_SOURCE, audit, { spriteHashes: hashes });
+  assertCurrentSpriteAssets(audit, assetRemediationLedger, hashes);
+  const historicalHashes = new Map(audit.entries.map(row => [row.spritePath, row.spriteSha256]));
+  const result = validateIdentityAudit(catalog.CATALOG_SOURCE, audit, { spriteHashes: historicalHashes });
   assert.equal(result.technicalValid, true);
   assert.deepEqual(result.counts, { verified: 39, "legacy-weird-but-verified": 2, suspicious: 2, unresolved: 1 });
   const row = audit.entries.find(r => r.legacyId === "hector");
@@ -261,7 +264,9 @@ test("G2 frozen identity audit accepts exactly the approved remediation and stil
   assert.equal(row.displayName, "Rika Urabe");
   assert.deepEqual(audit, before, "frozen observations are not rewritten");
   hashes.set(row.spritePath, "0".repeat(64));
-  assert.throws(() => validateIdentityAudit(catalog.CATALOG_SOURCE, audit, { spriteHashes: hashes }), /Verified sprite content drift: hector/);
+  assert.throws(() => assertCurrentSpriteAssets(audit, assetRemediationLedger, hashes), /Current sprite content drift: hector/);
+  historicalHashes.set(row.spritePath, "0".repeat(64));
+  assert.throws(() => validateIdentityAudit(catalog.CATALOG_SOURCE, audit, { spriteHashes: historicalHashes }), /Verified sprite content drift: hector/);
 });
 
 test("G2 audit rejects a structurally valid rollback to the frozen hector identity", () => {

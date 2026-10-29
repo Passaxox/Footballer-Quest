@@ -1,3 +1,4 @@
+import { frozenIdentityAudit, assetRemediationLedger, assertCurrentSpriteAssets } from "./helpers/asset-remediation.mjs";
 import test from "node:test";
 import { createHash } from "node:crypto";
 import assert from "node:assert/strict";
@@ -971,15 +972,19 @@ test("V2e batch protects all localized legacy mappings and specific incarnation 
 });
 
 
-const identityAudit = JSON.parse(await readFile(new URL("./fixtures/catalog-identity-audit.json", import.meta.url), "utf8"));
+const identityAudit = frozenIdentityAudit;
 const identityHashes = new Map(await Promise.all(identityAudit.entries.map(async row => [row.spritePath,
   createHash("sha256").update(await readFile(new URL("../../" + row.spritePath, import.meta.url))).digest("hex")])));
+// Historical validator-unit checks are available only after real current assets pass.
+assertCurrentSpriteAssets(identityAudit, assetRemediationLedger, identityHashes);
+const historicalIdentityHashes = new Map(identityAudit.entries.map(row => [row.spritePath, row.spriteSha256]));
 
 test("V2f complete 44-entry identity audit distinguishes technical validity from canon", () => {
   assert.equal(identityAudit.entries.length, 44);
   assert.equal(new Set(identityAudit.entries.map(r => r.legacyId)).size, 44);
   assert.equal(new Set(identityAudit.entries.map(r => r.versionId)).size, 44);
-  const result = validateIdentityAudit(catalog.CATALOG_SOURCE, identityAudit, { spriteHashes: identityHashes });
+  assertCurrentSpriteAssets(identityAudit, assetRemediationLedger, identityHashes);
+  const result = validateIdentityAudit(catalog.CATALOG_SOURCE, identityAudit, { spriteHashes: historicalIdentityHashes });
   assert.equal(result.technicalValid, true);
   assert.deepEqual(result.counts, { verified: 39, "legacy-weird-but-verified": 2, suspicious: 2, unresolved: 1 });
   assert.deepEqual([...result.reviewRequiredLegacyIds].sort(), ["austin", "jonas", "joseph"]);
@@ -992,9 +997,9 @@ test("V2f verified identity and portrait regressions require explicit re-audit",
     c.versions[0][field] = field === "primaryMoveId" ? c.versions[1].primaryMoveId : "changed";
     assert.throws(() => validateIdentityAudit(c, identityAudit), /Verified identity drift/);
   }
-  const hashes = new Map(identityHashes);
+  const hashes = new Map(historicalIdentityHashes);
   hashes.set(identityAudit.entries[0].spritePath, "0".repeat(64));
-  assert.throws(() => validateIdentityAudit(catalog.CATALOG_SOURCE, identityAudit, { spriteHashes: hashes }), /Verified sprite content drift/);
+  assert.throws(() => validateIdentityAudit(catalog.CATALOG_SOURCE, identityAudit, { spriteHashes: hashes }), /Verified sprite content drift: mark/);
   const c = structuredClone(catalog.CATALOG_SOURCE);
   c.versions.find(v => v.legacyRosterId === "hector").displayName = "Hector Helio";
   assert.throws(() => validateIdentityAudit(c, identityAudit), /Verified identity drift/);

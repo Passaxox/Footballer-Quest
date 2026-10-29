@@ -1,0 +1,106 @@
+{
+  "ledgerVersion": 1,
+  "remediationId": "visual-identity-fix-1b",
+  "baselineCommit": "44065604a65cc287a20ae0b56d340e69d6c0cccf",
+  "historicalAuditPath": "frontend/tests/fixtures/catalog-identity-audit.json",
+  "historicalAuditSha256": "dcbe293aa3de3663df711bc83bcbe10c362b36d138d2ab833df843c8bc2ea065",
+  "historicalEvidenceNote": "The G2 canonicalCharacter, declaredCharacter, assetCharacter and spriteObservation values below are frozen historical observations, including their known errors. Corrected identities are separate Product Owner-approved evidence; no runtime catalog data changes.",
+  "entries": [
+    {
+      "spriteId": "sam",
+      "spritePath": "frontend/public/sprites/sam.png",
+      "baselineCommit": "44065604a65cc287a20ae0b56d340e69d6c0cccf",
+      "historicalSha256": "ebf74578528fba54163bd15831cb92e92235223efbca685f86cb1e7ddd57e4d7",
+      "approvedSha256": "9fb2690f0ab8cc4e921ce1fb47e3ac150451052ae34a0d3382c28d05b3ccf577",
+      "historicalIdentity": {
+        "displayName": "Sam Kincaid",
+        "canonicalCharacter": "Shourinji Ayumu",
+        "declaredCharacter": "Shourinji Ayumu",
+        "assetCharacter": "Shourinji Ayumu",
+        "spriteObservation": "shaved monk head and central tuft"
+      },
+      "correctedIdentity": {
+        "displayName": "Sam Kincaid",
+        "canonicalCharacter": "Shishido Sakichi",
+        "spriteObservation": "orange hair"
+      },
+      "productOwnerVisualApproval": {
+        "authority": "Product Owner",
+        "status": "approved",
+        "basis": "Final human visual audit and explicit approval of the existing portrait rotation."
+      },
+      "remediationReason": "Correct the approved Sam/Steve/Tim cyclic portrait misassignment while preserving the G2 audit as historical evidence.",
+      "provenance": {
+        "method": "cyclic-reassignment-of-existing-G2-assets",
+        "sourceSpriteId": "steve",
+        "sourcePath": "frontend/public/sprites/steve.png",
+        "sourceCommit": "44065604a65cc287a20ae0b56d340e69d6c0cccf",
+        "sourceSha256": "9fb2690f0ab8cc4e921ce1fb47e3ac150451052ae34a0d3382c28d05b3ccf577"
+      }
+    },
+    {
+      "spriteId": "steve",
+      "spritePath": "frontend/public/sprites/steve.png",
+      "baselineCommit": "44065604a65cc287a20ae0b56d340e69d6c0cccf",
+      "historicalSha256": "9fb2690f0ab8cc4e921ce1fb47e3ac150451052ae34a0d3382c28d05b3ccf577",
+      "approvedSha256": "9950b1d4268e2e4d3edd3a9e4719dce6e867070516bf4f3d2dcd2930fa12880d",
+      "historicalIdentity": {
+        "displayName": "Steve Grim",
+        "canonicalCharacter": "Shishido Sakichi",
+        "declaredCharacter": "Shishido Sakichi",
+        "assetCharacter": "Shishido Sakichi",
+        "spriteObservation": "orange curls over eyes"
+      },
+      "correctedIdentity": {
+        "displayName": "Steve Grim",
+        "canonicalCharacter": "Handa Shinichi",
+        "spriteObservation": "brown hair and eyes"
+      },
+      "productOwnerVisualApproval": {
+        "authority": "Product Owner",
+        "status": "approved",
+        "basis": "Final human visual audit and explicit approval of the existing portrait rotation."
+      },
+      "remediationReason": "Correct the approved Sam/Steve/Tim cyclic portrait misassignment while preserving the G2 audit as historical evidence.",
+      "provenance": {
+        "method": "cyclic-reassignment-of-existing-G2-assets",
+        "sourceSpriteId": "tim",
+        "sourcePath": "frontend/public/sprites/tim.png",
+        "sourceCommit": "44065604a65cc287a20ae0b56d340e69d6c0cccf",
+        "sourceSha256": "9950b1d4268e2e4d3edd3a9e4719dce6e867070516bf4f3d2dcd2930fa12880d"
+      }
+    },
+    {
+      "spriteId": "tim",
+      "spritePath": "frontend/public/sprites/tim.png",
+      "baselineCommit": "44065604a65cc287a20ae0b56d340e69d6c0cccf",
+      "historicalSha256": "9950b1d4268e2e4d3edd3a9e4719dce6e867070516bf4f3d2dcd2930fa12880d",
+      "approvedSha256": "ebf74578528fba54163bd15831cb92e92235223efbca685f86cb1e7ddd57e4d7",
+      "historicalIdentity": {
+        "displayName": "Tim Saunders",
+        "canonicalCharacter": "Handa Shinichi",
+        "declaredCharacter": "Handa Shinichi",
+        "assetCharacter": "Handa Shinichi",
+        "spriteObservation": "short dark fringe"
+      },
+      "correctedIdentity": {
+        "displayName": "Tim Saunders",
+        "canonicalCharacter": "Shourinji Ayumu",
+        "spriteObservation": "long hair, front tuft, closed eyes"
+      },
+      "productOwnerVisualApproval": {
+        "authority": "Product Owner",
+        "status": "approved",
+        "basis": "Final human visual audit and explicit approval of the existing portrait rotation."
+      },
+      "remediationReason": "Correct the approved Sam/Steve/Tim cyclic portrait misassignment while preserving the G2 audit as historical evidence.",
+      "provenance": {
+        "method": "cyclic-reassignment-of-existing-G2-assets",
+        "sourceSpriteId": "sam",
+        "sourcePath": "frontend/public/sprites/sam.png",
+        "sourceCommit": "44065604a65cc287a20ae0b56d340e69d6c0cccf",
+        "sourceSha256": "ebf74578528fba54163bd15831cb92e92235223efbca685f86cb1e7ddd57e4d7"
+      }
+    }
+  ]
+}
