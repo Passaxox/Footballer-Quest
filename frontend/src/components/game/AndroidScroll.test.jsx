@@ -12,6 +12,12 @@ const find = (id) => host.querySelector(`[data-testid="${id}"]`);
 const click = async (id) => { expect(find(id)).not.toBeNull(); await act(async () => find(id).click()); };
 const settle = async () => { for (let i = 0; i < 20; i++) await act(async () => { jest.advanceTimersByTime(1000); }); };
 const inScroll = (id) => { const el = find(id); expect(el).not.toBeNull(); expect(el.closest('[data-testid="battle-scroll"]')).not.toBeNull(); };
+const inActions = (id) => {
+  const el = find(id);
+  expect(el).not.toBeNull();
+  expect(el.closest('[data-testid="battle-actions"]')).not.toBeNull();
+  expect(el.closest('[data-testid="battle-scroll"]')).toBeNull();
+};
 const mount = async (run, overrides = {}) => {
   const encounter = { kind: "team", teamName: "Test", enemies: [engine.createPlayer(STARTER_IDS[0], 1)], ...overrides };
   await act(async () => root.render(<BattleScreen run={run} encounter={encounter} onWin={jest.fn()} onLose={jest.fn()} onFlee={jest.fn()} onActiveChange={jest.fn()} onDiscover={jest.fn()} />));
@@ -27,26 +33,57 @@ beforeEach(() => {
 });
 afterEach(async () => { await act(async () => root.unmount()); host.remove(); jest.clearAllTimers(); jest.useRealTimers(); jest.restoreAllMocks(); });
 
-test("battle: header stays outside the scroll area; every action control is inside it (preBattle, menu, switch, items, target)", async () => {
+test("battle: header and action bar are anchored outside the scroller; info and long lists scroll inside it (preBattle, menu, switch, items, target)", async () => {
   const run = engine.newRun(STARTER_IDS.slice(0, 6));
   await mount(run);
-  expect(find("battle-screen").className).toContain("min-h-0");
+  const screen = find("battle-screen");
+  expect(screen.className).toContain("min-h-0");
   expect(find("wave-counter-badge").closest('[data-testid="battle-scroll"]')).toBeNull();
-  inScroll("pre-battle-keep"); inScroll("pre-battle-change");
+  // Action bar is a direct, last sibling of the scroller: it never scrolls away.
+  expect(find("battle-actions").parentElement).toBe(screen);
+  expect(find("battle-scroll").nextElementSibling).toBe(find("battle-actions"));
+  expect(screen.querySelectorAll('[data-testid="battle-scroll"]')).toHaveLength(1);
+  inScroll("battle-log"); inScroll("pre-battle-prompt");
+  inActions("pre-battle-keep"); inActions("pre-battle-change");
   await click("pre-battle-keep"); await settle();
-  ["attack-button", "switch-button", "item-button", "flee-button"].forEach(inScroll);
+  inScroll("battle-decision");
+  ["attack-button", "switch-button", "item-button", "flee-button"].forEach(inActions);
   await click("item-button");
-  inScroll("use-item-barretta"); inScroll("items-cancel");
+  inScroll("use-item-barretta"); inActions("items-cancel");
   await click("use-item-barretta");
   for (let i = 0; i < 6; i++) inScroll(`item-target-${i}`);
-  inScroll("item-target-cancel");
+  inActions("item-target-cancel");
   await click("item-target-cancel"); await click("items-cancel");
+  expect(find("attack-button")).not.toBeNull();
   await click("switch-button");
   for (let i = 0; i < 6; i++) inScroll(`switch-player-btn-${i}`);
-  inScroll("switch-cancel");
+  inActions("switch-cancel");
+  await click("switch-cancel");
+  inActions("attack-button");
 });
 
-test("battle: forced switch lists the bench inside the scroll area with no cancel", async () => {
+test("battle: pre-battle switch list scrolls with all six players while Indietro stays anchored", async () => {
+  const run = engine.newRun(STARTER_IDS.slice(0, 6));
+  await mount(run);
+  await click("pre-battle-change");
+  for (let i = 0; i < 6; i++) inScroll(`switch-player-btn-${i}`);
+  inActions("switch-cancel");
+  await click("switch-cancel");
+  inActions("pre-battle-keep"); inActions("pre-battle-change");
+});
+
+test("battle: busy state keeps the placeholder action bar in place and unclickable", async () => {
+  const run = engine.newRun(STARTER_IDS.slice(0, 6));
+  await act(async () => root.render(<BattleScreen run={run} encounter={{ kind: "team", teamName: "Test", enemies: [engine.createPlayer(STARTER_IDS[0], 1)] }} onWin={jest.fn()} onLose={jest.fn()} onFlee={jest.fn()} onActiveChange={jest.fn()} onDiscover={jest.fn()} />));
+  // Intro phase is busy-like: no interactive commands, bar still anchored outside the scroller.
+  const bar = find("battle-actions");
+  expect(bar).not.toBeNull();
+  expect(find("battle-scroll").contains(bar)).toBe(false);
+  expect(bar.querySelector('[data-testid="attack-button"]')).toBeNull();
+  expect(bar.querySelector(".pointer-events-none")).not.toBeNull();
+});
+
+test("battle: forced switch lists the bench inside the scroller with no cancel and no action bar controls", async () => {
   const run = engine.newRun(STARTER_IDS.slice(0, 6));
   const uid = run.team[0].uid;
   const prepare = (p) => ({ ...p, hp: p.uid === uid ? 0 : p.hp });
@@ -57,6 +94,7 @@ test("battle: forced switch lists the bench inside the scroll area with no cance
   await click("pre-battle-keep"); await settle();
   await click("attack-button"); await settle();
   expect(find("switch-cancel")).toBeNull();
+  expect(find("battle-actions").querySelector("button")).toBeNull();
   for (let i = 1; i < 6; i++) inScroll(`switch-player-btn-${i}`);
 });
 

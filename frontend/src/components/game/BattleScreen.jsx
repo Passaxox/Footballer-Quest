@@ -52,8 +52,14 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const st = s.current;
   const shownEnemy = encounter.enemies[st.eIdx];
   useEffect(() => { if (st.active >= 0) onDiscover?.(shownEnemy); }, [shownEnemy, onDiscover, st.active]);
+  const listRef = useRef(null);
   const [, force] = useState(0);
   const rr = () => force((n) => n + 1);
+  useEffect(() => {
+    const list = listRef.current; const scroller = list?.parentElement;
+    if (!list || !scroller) return;
+    scroller.scrollTop += st.menu === "main" ? 0 : list.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+  }, [st.menu, st.itemSel, st.phase]);
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
 
@@ -287,7 +293,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         <span className="font-body text-slate-400 text-sm">Squadra {st.team.filter((q) => q.hp > 0).length}/{st.team.length}</span>
       </div>
 
-      <div className="p-3 mt-auto">
+      <div className="p-3 mt-auto" ref={listRef}>
         {["preBattle", "menu", "busy"].includes(st.phase) && st.menu === "main" && (
           <div className="battle-decision mb-3" data-testid="battle-decision">
             <div className="grid grid-cols-2 gap-2">
@@ -305,24 +311,9 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
           </div>
         )}
         {st.phase === "preBattle" && st.menu === "main" && (
-          <div className="space-y-2" data-testid="pre-battle-prompt">
+          <div className="space-y-1" data-testid="pre-battle-prompt">
             <p className="font-body text-lg">Vuoi mantenere {p.name} in campo?</p>
-            <div className="grid grid-cols-2 gap-2">
-              <Btn data-testid="pre-battle-keep" variant="primary" onClick={() => beginBattle()}>Mantieni</Btn>
-              <Btn data-testid="pre-battle-change" onClick={() => { st.menu = "switch"; rr(); }}>Cambia</Btn>
-            </div>
             <p className="font-body text-sm text-slate-400">Questa scelta non consuma un turno.</p>
-          </div>
-        )}
-        {(st.phase === "menu" || st.phase === "forcedSwitch") && st.menu === "main" && (
-          <div className="grid grid-cols-2 gap-2">
-            <Btn data-testid="attack-button" variant="primary" onClick={() => attack()} className="col-span-2 flex flex-wrap items-center justify-center gap-2">
-              <ElementIcon element={p.move.element} size={14} /> {p.move.name} <MatchupBadge attacker={p} defender={e} />
-              <span className="text-[8px] opacity-70">POT {p.move.power}</span>
-            </Btn>
-            <Btn data-testid="switch-button" onClick={() => { pace.stop(); sfx.select(); st.menu = "switch"; rr(); }}>Cambia</Btn>
-            <Btn data-testid="item-button" onClick={() => { pace.stop(); sfx.select(); st.menu = "items"; rr(); }}>Zaino</Btn>
-            <Btn data-testid="flee-button" variant="ghost" onClick={flee} className="col-span-2" disabled={encounter.kind === "boss"}>Fuggi</Btn>
           </div>
         )}
         {(st.phase === "menu" || st.phase === "forcedSwitch" || st.phase === "preBattle") && st.menu === "switch" && (
@@ -330,7 +321,6 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
             {st.team.map((q, i) => (
               <PlayerCard key={q.uid} p={q} compact selected={i === st.active} testId={`switch-player-btn-${i}`} onClick={() => switchTo(i)} right={q.hp > 0 ? <MatchupBadge attacker={q} defender={e} compact /> : null} />
             ))}
-            {(st.phase === "menu" || st.phase === "preBattle") && <Btn data-testid="switch-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.menu = "main"; rr(); }}>Indietro</Btn>}
           </div>
         )}
         {st.phase === "menu" && st.menu === "items" && !st.itemSel && (
@@ -341,7 +331,6 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
                 <span>{ITEMS[id].name}</span><span className="text-amber-300">x{n}</span>
               </Btn>
             ))}
-            <Btn data-testid="items-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.menu = "main"; rr(); }}>Indietro</Btn>
           </div>
         )}
         {st.phase === "menu" && st.menu === "items" && st.itemSel && (
@@ -350,16 +339,43 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
             {st.team.map((q, i) => (
               <ItemTargetCard key={q.uid} p={q} itemId={st.itemSel} testId={`item-target-${i}`} onClick={() => consumeItem(st.itemSel, i)} />
             ))}
-            <Btn data-testid="item-target-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.itemSel = null; rr(); }}>Indietro</Btn>
-          </div>
-        )}
-        {(st.phase === "busy" || st.phase === "intro" || st.phase === "end") && (
-          <div className="grid grid-cols-2 gap-2 opacity-40 pointer-events-none">
-            <Btn variant="primary" className="col-span-2">...</Btn>
-            <Btn>Cambia</Btn><Btn>Zaino</Btn>
           </div>
         )}
       </div>
+      </div>
+      <div data-testid="battle-actions" className="battle-actions">
+        {st.phase === "preBattle" && st.menu === "main" && (
+          <div className="grid grid-cols-2 gap-2">
+            <Btn data-testid="pre-battle-keep" variant="primary" onClick={() => beginBattle()}>Mantieni</Btn>
+            <Btn data-testid="pre-battle-change" onClick={() => { st.menu = "switch"; rr(); }}>Cambia</Btn>
+          </div>
+        )}
+        {(st.phase === "menu" || st.phase === "forcedSwitch") && st.menu === "main" && (
+          <div className="grid grid-cols-3 gap-2">
+            <Btn data-testid="attack-button" variant="primary" onClick={() => attack()} className="col-span-3 flex flex-wrap items-center justify-center gap-2">
+              <ElementIcon element={p.move.element} size={14} /> {p.move.name} <MatchupBadge attacker={p} defender={e} />
+              <span className="text-[8px] opacity-70">POT {p.move.power}</span>
+            </Btn>
+            <Btn data-testid="switch-button" onClick={() => { pace.stop(); sfx.select(); st.menu = "switch"; rr(); }}>Cambia</Btn>
+            <Btn data-testid="item-button" onClick={() => { pace.stop(); sfx.select(); st.menu = "items"; rr(); }}>Zaino</Btn>
+            <Btn data-testid="flee-button" variant="ghost" onClick={flee} disabled={encounter.kind === "boss"}>Fuggi</Btn>
+          </div>
+        )}
+        {(st.phase === "menu" || st.phase === "preBattle") && st.menu === "switch" && (
+          <Btn data-testid="switch-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.menu = "main"; rr(); }}>Indietro</Btn>
+        )}
+        {st.phase === "menu" && st.menu === "items" && !st.itemSel && (
+          <Btn data-testid="items-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.menu = "main"; rr(); }}>Indietro</Btn>
+        )}
+        {st.phase === "menu" && st.menu === "items" && st.itemSel && (
+          <Btn data-testid="item-target-cancel" variant="ghost" className="w-full" onClick={() => { sfx.cancel(); st.itemSel = null; rr(); }}>Indietro</Btn>
+        )}
+        {(st.phase === "busy" || st.phase === "intro" || st.phase === "end") && (
+          <div className="grid grid-cols-3 gap-2 opacity-40 pointer-events-none" aria-hidden="true">
+            <Btn variant="primary" className="col-span-3">...</Btn>
+            <Btn>Cambia</Btn><Btn>Zaino</Btn><Btn>Fuggi</Btn>
+          </div>
+        )}
       </div>
     </div>
   );

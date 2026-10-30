@@ -137,6 +137,14 @@ code {
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
 }
+/* Battle actions stay anchored below the scrolling info area; the safe-area bottom inset is already applied by the .fq-safe-fit ancestor. */
+.battle-actions {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    background: #111827;
+    border-top: 4px solid #1e293b;
+}
+.battle-actions:empty { display: none; }
 .fq-scroll > * {
     flex-shrink: 0;
 }
