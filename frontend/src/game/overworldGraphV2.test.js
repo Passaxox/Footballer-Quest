@@ -14,7 +14,7 @@ const BOUNDARY_SEEDS = [0, 1, 2, 2 ** 31 - 1, 2 ** 31, 2 ** 32 - 1];
 const SEEDS = (() => {
   const out = [...BOUNDARY_SEEDS];
   let x = 20260430;
-  while (out.length < 100) { x = (Math.imul(x, 1664525) + 1013904223) >>> 0; out.push(x); }
+  while (out.length < 1000) { x = (Math.imul(x, 1664525) + 1013904223) >>> 0; out.push(x); }
   return out;
 })();
 const GRAPHS = SEEDS.map(s => g.generateOverworldGraphV2(s));
@@ -22,11 +22,28 @@ const clone = graph => JSON.parse(JSON.stringify(graph));
 const node = (graph, wave, lane = 0) => graph.nodes.find(n => n.wave === wave && n.lane === lane);
 const key = n => `${n.type}|${n.locationId}|${n.environmentId}`;
 
-describe("structure (all 100 sample seeds)", () => {
+// Independent oracle: work backwards through successors, unlike the production predecessor DP.
+// Each value is the longest non-battle prefix starting at this node, over every continuation.
+const exactNonBattleRun = graph => {
+  const prefixes = new Map();
+  for (const n of [...graph.nodes].sort((a, b) => b.wave - a.wave)) {
+    prefixes.set(n.nodeId, n.type === "battle" ? 0 : 1 + Math.max(0, ...n.next.map(id => prefixes.get(id))));
+  }
+  return Math.max(...prefixes.values());
+};
+const walkNonBattleRun = nodes => {
+  let best = 0, run = 0;
+  for (const n of nodes) { run = n.type === "battle" ? 0 : run + 1; best = Math.max(best, run); }
+  return best;
+};
+const shape = graph => JSON.stringify(graph.nodes.map(n => [n.nodeId, n.next, n.locationId, n.environmentId, n.boss, n.hooks]));
+
+describe("structure (all 1000 sample seeds)", () => {
   test("every graph validates and has the expected shape and bounded size", () => {
     for (const graph of GRAPHS) {
       expect(g.validateOverworldGraphV2(graph)).toEqual({ valid: true, errors: [] });
       expect(graph.revision).toBe(2);
+      expect(graph.algorithmVersion).toBe(2);
       expect(graph.nodes.length).toBeGreaterThan(FINAL_WAVE);
       expect(graph.nodes.length).toBeLessThanOrEqual(150);
       expect(g.summarizeOverworldGraphV2(graph).maxWidth).toBeLessThanOrEqual(3);
@@ -155,6 +172,7 @@ describe("freedom of choice", () => {
       const first = g.walkOverworldPathV2(graph, o => o[0]), last = g.walkOverworldPathV2(graph, o => o.at(-1));
       const differing = first.nodes.filter((n, i) => key(n) !== key(last.nodes[i])).length;
       expect(differing).toBeGreaterThan(10);
+      expect(first.nodes.some((n, i) => n.type !== last.nodes[i].type)).toBe(true);
       expect(first.nodeIds.filter((id, i) => id === last.nodeIds[i]).length).toBeGreaterThanOrEqual(5);
     }
   });
@@ -169,6 +187,79 @@ describe("freedom of choice", () => {
     expect(() => g.nextOptions(graph, "nope")).toThrow(/sconosciuto/);
     expect(g.nodesAtWave(graph, 0)).toEqual([]);
     expect(g.nodesAtWave(graph, 51)).toEqual([]);
+  });
+});
+
+describe("P1b combat rhythm on all reachable paths", () => {
+  test("all 1000 seeds meet the exact four-node bound, independently of sampled walks", () => {
+    expect(new Set(SEEDS).size).toBe(1000);
+    expect(g.MAX_NON_BATTLE_RUN).toBe(4);
+    for (const graph of GRAPHS) {
+      const exact = exactNonBattleRun(graph);
+      expect(exact).toBeLessThanOrEqual(4);
+      expect(g.summarizeOverworldGraphV2(graph).perPath.longestNonBattleRun).toBe(exact);
+    }
+  });
+
+  test("a safe first path cannot hide five non-battles merging from another predecessor", () => {
+    const graph = clone(g.generateOverworldGraphV2(0, { templateIds: ["B", "E"] }));
+    graph.nodes.forEach(n => { n.type = "battle"; });
+    for (const [wave, lane, type] of [[3, 1, "recruit"], [4, 1, "training"], [5, 1, "shop"], [6, 1, "event"], [7, 0, "recruit"]]) {
+      node(graph, wave, lane).type = type;
+    }
+    const safe = g.walkOverworldPathV2(graph);
+    const unsafe = g.walkOverworldPathV2(graph, options => options.find(n => n.lane === 1) || options[0]);
+    expect(walkNonBattleRun(safe.nodes)).toBe(1);
+    expect(walkNonBattleRun(unsafe.nodes)).toBe(5);
+    expect(node(graph, 6, 0).type).toBe("battle");
+    expect(node(graph, 6, 0).next).toContain(node(graph, 7).nodeId);
+    expect(node(graph, 6, 1).next).toContain(node(graph, 7).nodeId);
+    expect(exactNonBattleRun(graph)).toBe(5);
+    expect(g.summarizeOverworldGraphV2(graph).perPath.longestNonBattleRun).toBe(5);
+    const before = JSON.stringify(graph);
+    for (const options of [{}, { maxNonBattleRun: 99, maxForcedRun: 99, minChoicesPerSegment: 0 }]) {
+      const result = g.validateOverworldGraphV2(graph, options);
+      expect(result.valid).toBe(false);
+      expect(result.errors.join("\n")).toMatch(/non-battle consecutive: 5/);
+    }
+    expect(JSON.stringify(graph)).toBe(before);
+    graph.nodes.reverse();
+    expect(g.validateOverworldGraphV2(graph).valid).toBe(false);
+    expect(g.summarizeOverworldGraphV2(graph).perPath.longestNonBattleRun).toBe(5);
+    node(graph, 3, 1).type = "battle";
+    expect(exactNonBattleRun(graph)).toBe(4);
+    expect(g.validateOverworldGraphV2(graph)).toEqual({ valid: true, errors: [] });
+  });
+
+  test.each(["recruit", "training", "shop", "event"])("%s-only preferences still enforce pacing and preserve topology", type => {
+    for (const seed of BOUNDARY_SEEDS) {
+      const options = Object.freeze({ typeWeights: Object.freeze(Object.fromEntries(g.NODE_TYPES.map(t => [t, t === type ? 1 : 0]))) });
+      const graph = g.generateOverworldGraphV2(seed, options);
+      expect(g.validateOverworldGraphV2(graph)).toEqual({ valid: true, errors: [] });
+      expect(exactNonBattleRun(graph)).toBe(4);
+      expect(shape(graph)).toBe(shape(g.generateOverworldGraphV2(seed)));
+      expect(graph.nodes.every(n => n.type === type || n.type === "battle")).toBe(true);
+      expect(graph.nodes.some(n => n.type === type)).toBe(true);
+      expect(g.serializeOverworldGraphV2(g.generateOverworldGraphV2(seed, options))).toBe(g.serializeOverworldGraphV2(graph));
+      expect(options.typeWeights.battle).toBe(0);
+    }
+  });
+
+  test("opposite activity preferences produce different type sequences without mutating the graph", () => {
+    for (const graph of GRAPHS.slice(0, 30)) {
+      const before = g.serializeOverworldGraphV2(graph);
+      const action = g.walkOverworldPathV2(graph, options => options.find(n => n.type === "battle") || options[0]);
+      const preparation = g.walkOverworldPathV2(graph, options => options.find(n => n.type !== "battle") || options[0]);
+      expect(action.nodes.map(n => n.type)).not.toEqual(preparation.nodes.map(n => n.type));
+      expect(walkNonBattleRun(action.nodes)).toBeLessThanOrEqual(4);
+      expect(walkNonBattleRun(preparation.nodes)).toBeLessThanOrEqual(4);
+      expect(g.serializeOverworldGraphV2(graph)).toBe(before);
+    }
+  });
+
+  test("different seeds vary the activity sequence with the same path policy", () => {
+    const sequences = GRAPHS.map(graph => g.walkOverworldPathV2(graph).nodes.map(n => n.type).join(","));
+    expect(new Set(sequences).size).toBe(SEEDS.length);
   });
 });
 
@@ -199,9 +290,12 @@ describe("validator rejects broken graphs", () => {
     node(gr, 20, 1).next = [...boss.next];
   }, /nodo unico/));
   test("boss inconsistent with BOSSES", () => rejects(gr => { node(gr, 20).boss.teamId = "royal-academy"; }, /incoerente con BOSSES/));
+  test("boss metadata alone does not make a non-battle descriptor combat", () => rejects(gr => { node(gr, 20).type = "event"; }, /battle/));
   test("boss flag outside a checkpoint", () => rejects(gr => { node(gr, 5).boss = { ...node(gr, 10).boss }; }, /Boss fuori checkpoint/));
   test("two nodes that are the same logical node", () => rejects(gr => {
-    const [a, b] = gr.nodes.filter(n => n.wave === 3);
+    const layer = gr.nodes.filter(n => n.wave === 1);
+    expect(layer.length).toBeGreaterThanOrEqual(2);
+    const [a, b] = layer;
     Object.assign(b, { type: a.type, locationId: a.locationId, environmentId: a.environmentId });
   }, /logicamente identici|senza differenze/));
   test("unknown location / environment / type", () => {
@@ -246,8 +340,8 @@ describe("validator rejects broken graphs", () => {
 
 describe("determinism", () => {
   test("same seed and version => identical serialized graph, repeated calls unchanged", () => {
-    for (const s of SEEDS.slice(0, 25)) {
-      const a = g.generateOverworldGraphV2(s), b = g.generateOverworldGraphV2(s, { algorithmVersion: 1 });
+    for (const s of SEEDS) {
+      const a = g.generateOverworldGraphV2(s), b = g.generateOverworldGraphV2(s, { algorithmVersion: 2 });
       expect(g.serializeOverworldGraphV2(a)).toBe(g.serializeOverworldGraphV2(b));
       expect(a).toEqual(b);
       expect(g.fingerprintOverworldGraphV2(a)).toBe(g.fingerprintOverworldGraphV2(GRAPHS[SEEDS.indexOf(s)]));
@@ -305,7 +399,7 @@ describe("determinism", () => {
     expect(restricted.segments.every(s => ["E", "F", "B", "D"].includes(s.templateId))).toBe(true);
     expect(g.validateOverworldGraphV2(restricted).valid).toBe(true);
     expect(() => g.generateOverworldGraphV2(1, { templateIds: ["E"] })).toThrow(/Nessun template/);
-    expect(() => g.generateOverworldGraphV2(1, { algorithmVersion: 2 })).toThrow(/non supportata/);
+    for (const algorithmVersion of [1, 3]) expect(() => g.generateOverworldGraphV2(1, { algorithmVersion })).toThrow(/non supportata/);
     expect(() => g.generateOverworldGraphV2(1, { typeWeights: { battle: -1 } })).toThrow(/Pesi/);
   });
 
@@ -319,11 +413,14 @@ describe("determinism", () => {
 });
 
 describe("golden fixtures", () => {
+  // Algorithm v2 deliberately changes output: ow2/graph/v2 streams plus the all-path pacing repair.
+  // Refreshed only after independent DAG/reverse-DP audits (1000 seeds + 500 extreme-weight graphs).
+  // Previous v1 fingerprints: 0=6faf9d1e, 1=95c50e7e, 42=07e78b8d, 4294967295=2cab5a66.
   const GOLDEN = {
-    0: { fp: "6faf9d1e", nodes: 108, edges: 166, widths: "33221322213223321231233212332122332213313332221221" },
-    1: { fp: "95c50e7e", nodes: 104, edges: 161, widths: "33322212213212332121332213222132123321212233221331" },
-    42: { fp: "07e78b8d", nodes: 105, edges: 162, widths: "33221322212223332211332213222132233212313212332121" },
-    4294967295: { fp: "2cab5a66", nodes: 106, edges: 163, widths: "33221322213212332121233212332122233322113223321231" },
+    0: { fp: "7e7d7e72", nodes: 109, edges: 168, widths: "33221322212332123321233212332132233212313223321231" },
+    1: { fp: "efc4cdc0", nodes: 107, edges: 165, widths: "32233212313223321231332213222133322212213322132221" },
+    42: { fp: "9591a4a3", nodes: 106, edges: 162, widths: "33221322212223332211233212332133221322213322132221" },
+    4294967295: { fp: "fada3abb", nodes: 104, edges: 162, widths: "32123321213212332121332213222132233212313322132221" },
   };
   test.each(Object.keys(GOLDEN))("seed %s matches its golden graph", seed => {
     const graph = g.generateOverworldGraphV2(Number(seed));
@@ -388,6 +485,41 @@ describe("compatibility: V1, engine and saves are untouched", () => {
 });
 
 describe("diagnostics and size", () => {
+  test("segment type ranges match exhaustive local paths; global extrema compose through shared bosses", () => {
+    // Only enumerate each nine-wave segment of three graphs, never the billions of full paths.
+    for (const graph of GRAPHS.slice(0, 3)) {
+      const byId = new Map(graph.nodes.map(n => [n.nodeId, n]));
+      const summary = g.summarizeOverworldGraphV2(graph);
+      for (const segment of graph.segments) {
+        const observed = [];
+        const visit = (n, counts) => {
+          const nextCounts = { ...counts, [n.type]: counts[n.type] + 1 };
+          if (n.wave === segment.toWave) observed.push(nextCounts);
+          else n.next.forEach(id => visit(byId.get(id), nextCounts));
+        };
+        const zero = Object.fromEntries(g.NODE_TYPES.map(t => [t, 0]));
+        graph.nodes.filter(n => n.wave === segment.fromWave).forEach(n => visit(n, zero));
+        const reported = summary.segments[segment.segment - 1];
+        const segmentNodes = graph.nodes.filter(n => n.wave >= segment.fromWave && n.wave <= segment.toWave);
+        expect(observed.length).toBeGreaterThan(1);
+        expect(observed.every(counts => Object.values(counts).reduce((a, b) => a + b, 0) === 9)).toBe(true);
+        for (const type of g.NODE_TYPES) {
+          expect(reported.nodeTypeCounts[type]).toBe(segmentNodes.filter(n => n.type === type).length);
+          expect(reported.perPathTypeCounts[type]).toEqual({
+            min: Math.min(...observed.map(counts => counts[type])),
+            max: Math.max(...observed.map(counts => counts[type])),
+          });
+        }
+      }
+      for (const type of g.NODE_TYPES) {
+        for (const extreme of ["min", "max"]) {
+          const total = summary.segments.reduce((sum, s) => sum + s.perPathTypeCounts[type][extreme], type === "battle" ? 5 : 0);
+          expect(summary.perPath.typeCounts[type][extreme]).toBe(total);
+        }
+      }
+    }
+  });
+
   test("summary is JSON-serializable, linear in size and exposes per-path ranges", () => {
     for (const graph of GRAPHS.slice(0, 10)) {
       const summary = g.summarizeOverworldGraphV2(graph);

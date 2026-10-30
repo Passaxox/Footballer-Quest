@@ -1,4 +1,4 @@
-// Overworld 2.0 / P1: pure, deterministic, serializable branching route graph (DAG).
+// Overworld 2.0 / P1b: pure, deterministic, serializable branching route graph (DAG).
 // Not wired into the engine, saves or UI: V1 (`revision: 1`, overworld.js) stays the only live path until P2.
 //
 // MODEL. A run is 50 waves; the graph has MORE nodes than that. Layer N holds the destinations the player can pick
@@ -10,9 +10,11 @@
 //
 // DENSITY (tunable via GRAPH_TEMPLATES): every path meets at least 5 choice points per segment (the entry choice
 // plus 4 or more braids/forks) and never walks more than 3 consecutive forced waves. Siblings always differ in
-// place (location + environment) and type, so no fork is cosmetic. Node `type` and place are descriptors only:
-// no encounters, rewards, quotas or weights are assigned here (P2). Quotas must be judged per PATH (see
+// place (location + environment); their types may match. Node `type` and place are descriptors only:
+// no encounters, rewards or quotas are assigned here (P2). Quotas must be judged per PATH (see
 // summarizeOverworldGraphV2().perPath), never on graph-wide node counts.
+// PACING. Weighted types are preserved unless a node would extend ANY incoming non-battle streak beyond 4.
+// One topological repair pass makes only those nodes battle; no fixed-wave schedule or regeneration loop.
 //
 // RNG. Structural decisions use a private, versioned stream namespace (`ow2/graph/v<version>`) built on a local
 // hash + mulberry32, one independent stream per decision. It never touches Math.random, the clock, combat streams,
@@ -27,10 +29,13 @@ import { SCENARIOS } from "./scenarios";
 import { ENVIRONMENTS } from "./overworldPresentation";
 
 export const OVERWORLD_V2_REVISION = 2;
-export const GRAPH_ALGORITHM = Object.freeze({ id: "branching-dag", version: 1 });
+// v2 changes descriptor assignment and the private stream namespace. P1/v1 was never saved or integrated;
+// callers requesting v1 are rejected, not silently regenerated. P2 must persist the algorithm version.
+export const GRAPH_ALGORITHM = Object.freeze({ id: "branching-dag", version: 2 });
+export const MAX_NON_BATTLE_RUN = 4;
 export const CHECKPOINT_WAVES = Object.freeze([10, 20, 30, 40, 50]);
 export const NODE_TYPES = Object.freeze(["battle", "recruit", "training", "shop", "event"]);
-// Descriptor weights only (same 5/9 battle share as the V1 routes). They gate no reward or encounter.
+// Descriptor preferences only (5/9 battle before pacing). The safety bound overrides even battle: 0.
 export const DEFAULT_TYPE_WEIGHTS = Object.freeze({ battle: 5, recruit: 1, training: 1, shop: 1, event: 1 });
 export const RESERVED_WAVES = Object.freeze({
   25: Object.freeze({ entryId: "epsilon-w25", type: "battle" }),
@@ -191,12 +196,14 @@ export function generateOverworldGraphV2(seed, options = {}) {
     for (const [i, t] of transitionEdges(from.length, to.length, isLane, stream(s, `transition/${wave}`, version))) from[i].next.push(to[t].nodeId);
   }
 
+  const nodes = [...layers.keys()].sort((x, y) => x - y).flatMap(w => layers.get(w));
+  enforceCombatPacing(nodes);
   return deepFreeze({
     revision: OVERWORLD_V2_REVISION, algorithm: GRAPH_ALGORITHM.id, algorithmVersion: version, seed: s,
     finalWave: FINAL_WAVE, checkpoints: [...CHECKPOINT_WAVES],
     config: { typeWeights: Object.fromEntries(NODE_TYPES.map(t => [t, weights[t]])), templateIds: pool.map(t => t.id) },
     segments: segments.map(({ segment, fromWave, toWave, bossWave, templateId, lanes }) => ({ segment, fromWave, toWave, bossWave, templateId, lanes })),
-    nodes: [...layers.keys()].sort((x, y) => x - y).flatMap(w => layers.get(w)),
+    nodes,
   });
 }
 
@@ -264,6 +271,19 @@ function analyse(nodes) {
   for (const n of nodes) for (const id of n.next) prev.get(id)?.push(n);
   return { byId, prev, order: [...nodes].sort((a, b) => a.wave - b.wave) };
 }
+// The generator supplies fresh nodes in wave order, with only wave N -> N+1 edges.
+// incoming[id] is the maximum suffix arriving through ALL predecessors, including merges.
+// Induction: every retained non-battle node ends a suffix <=4; a necessary battle resets it to zero.
+// The forced battle is the bounded fallback for any weights. O(V+E), no RNG draws or retry budget.
+function enforceCombatPacing(nodes) {
+  const incoming = new Map();
+  for (const n of nodes) {
+    const before = incoming.get(n.nodeId) ?? 0;
+    if (n.type !== "battle" && before >= MAX_NON_BATTLE_RUN) n.type = "battle";
+    const suffix = n.type === "battle" ? 0 : before + 1;
+    for (const id of n.next) incoming.set(id, Math.max(incoming.get(id) ?? 0, suffix));
+  }
+}
 // Min/max over all start->end paths by dynamic programming (no path enumeration).
 function pathRange(order, prev, value, startWave = 1, endWave = FINAL_WAVE) {
   const lo = new Map(), hi = new Map();
@@ -287,6 +307,8 @@ function longestForcedRun(order, prev) {
   return best;
 }
 function longestNonBattleRun(order, prev) {
+  // Exact maximum over all paths, not a sampled walk. At a merge the largest predecessor
+  // suffix dominates all shorter histories for this metric. Only the battle descriptor resets it.
   const run = new Map();
   let best = 0;
   for (const n of order) {
@@ -355,6 +377,7 @@ export function validateOverworldGraphV2(graph, options = {}) {
   for (const w of CHECKPOINT_WAVES) {
     const layer = order.filter(n => n.wave === w), boss = BOSSES[w];
     if (layer.length !== 1) { errors.push(`Il checkpoint W${w} deve essere un nodo unico`); continue; }
+    if (layer[0].type !== "battle") errors.push(`Il checkpoint W${w} deve essere battle`);
     const b = layer[0].boss;
     if (!b || b.wave !== w || b.encounterType !== boss?.encounterType || b.teamId !== boss?.teamId || b.team !== boss?.team) errors.push(`Boss W${w} incoerente con BOSSES`);
   }
@@ -384,6 +407,8 @@ export function validateOverworldGraphV2(graph, options = {}) {
   }
   const forced = longestForcedRun(order, prev);
   if (forced > maxForcedRun) errors.push(`Troppe wave senza scelta consecutive: ${forced}`);
+  const nonBattle = longestNonBattleRun(order, prev);
+  if (nonBattle > MAX_NON_BATTLE_RUN) errors.push(`Troppe tappe non-battle consecutive: ${nonBattle} (massimo ${MAX_NON_BATTLE_RUN})`);
   return { valid: errors.length === 0, errors };
 }
 export function assertValidOverworldGraphV2(graph, options) {
@@ -406,6 +431,9 @@ export function summarizeOverworldGraphV2(graph) {
     const inSeg = graph.nodes.filter(n => n.wave >= sg.fromWave && n.wave <= sg.toWave);
     return { segment: sg.segment, templateId: sg.templateId, nodes: inSeg.length, forkNodes: inSeg.filter(isChoice).length,
       joinNodes: inSeg.filter(n => prev.get(n.nodeId).length >= 2).length,
+      // As with `nodes`, these diagnostics cover fromWave..toWave (the nine waves BEFORE the boss).
+      nodeTypeCounts: Object.fromEntries(NODE_TYPES.map(t => [t, inSeg.filter(n => n.type === t).length])),
+      perPathTypeCounts: Object.fromEntries(NODE_TYPES.map(t => [t, pathRange(order, prev, n => (n.type === t ? 1 : 0), sg.fromWave, sg.toWave)])),
       minChoicesPerPath: choices.min + (sg.segment === 1 ? 1 : 0), maxChoicesPerPath: choices.max + (sg.segment === 1 ? 1 : 0) };
   });
   return {
