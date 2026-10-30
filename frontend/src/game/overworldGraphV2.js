@@ -1,4 +1,4 @@
-// Overworld 2.0 / P1b: pure, deterministic, serializable branching route graph (DAG).
+// Overworld 2.0 / P1c: pure, deterministic, serializable branching route graph (DAG).
 // Not wired into the engine, saves or UI: V1 (`revision: 1`, overworld.js) stays the only live path until P2.
 //
 // MODEL. A run is 50 waves; the graph has MORE nodes than that. Layer N holds the destinations the player can pick
@@ -13,8 +13,8 @@
 // place (location + environment); their types may match. Node `type` and place are descriptors only:
 // no encounters, rewards or quotas are assigned here (P2). Quotas must be judged per PATH (see
 // summarizeOverworldGraphV2().perPath), never on graph-wide node counts.
-// PACING. Weighted types are preserved unless a node would extend ANY incoming non-battle streak beyond 4.
-// One topological repair pass makes only those nodes battle; no fixed-wave schedule or regeneration loop.
+// PACING. A first topological pass enforces the non-battle bound. Joint P1c repairs then ensure
+// optional reachable activities and timely battle exits while preserving that bound. No fixed-wave schedule.
 //
 // RNG. Structural decisions use a private, versioned stream namespace (`ow2/graph/v<version>`) built on a local
 // hash + mulberry32, one independent stream per decision. It never touches Math.random, the clock, combat streams,
@@ -25,17 +25,17 @@
 // Epsilon. This module does not fix that. It guarantees only that W25 is ONE battle node (hooks: ["epsilon-w25"]),
 // so P2 can hijack it without discarding a player choice. See P2_INTEGRATION_CONTRACT.
 import { BOSSES, FINAL_WAVE } from "./data";
-import { SCENARIOS } from "./scenarios";
+import { SCENARIOS, scenarioPool } from "./scenarios";
 import { ENVIRONMENTS } from "./overworldPresentation";
 
 export const OVERWORLD_V2_REVISION = 2;
-// v2 changes descriptor assignment and the private stream namespace. P1/v1 was never saved or integrated;
-// callers requesting v1 are rejected, not silently regenerated. P2 must persist the algorithm version.
-export const GRAPH_ALGORITHM = Object.freeze({ id: "branching-dag", version: 2 });
+// v3 adds joint route-quality constraints and changes the private stream namespace.
+// Earlier prototypes were never saved/integrated; P2 must persist the version.
+export const GRAPH_ALGORITHM = Object.freeze({ id: "branching-dag", version: 3 });
 export const MAX_NON_BATTLE_RUN = 4;
 export const CHECKPOINT_WAVES = Object.freeze([10, 20, 30, 40, 50]);
 export const NODE_TYPES = Object.freeze(["battle", "recruit", "training", "shop", "event"]);
-// Descriptor preferences only (5/9 battle before pacing). The safety bound overrides even battle: 0.
+// Descriptor preferences only (5/9 battle before repairs). Hard route constraints override zero weights too.
 export const DEFAULT_TYPE_WEIGHTS = Object.freeze({ battle: 5, recruit: 1, training: 1, shop: 1, event: 1 });
 export const RESERVED_WAVES = Object.freeze({
   25: Object.freeze({ entryId: "epsilon-w25", type: "battle" }),
@@ -44,6 +44,8 @@ export const P2_INTEGRATION_CONTRACT = Object.freeze([
   "W25 is a single battle node carrying hooks: [RESERVED_WAVES[25].entryId]; never widen it or drop the hook.",
   "Epsilon must keep its own stream nodeRandom(contentSeed, 'epsilon-w25') and its 25% probability; graph generation never draws from it.",
   "engine.generateWave handles Epsilon but beginOverworldNode does not: P2 must route V2 W25 through the Epsilon check explicitly.",
+  "Signatures describe potential content, not distinct draws. P2 must provide stable seeded previews; P3 must explain route consequences for shared profiles.",
+  "Reachability does not imply affordable shops or eligible recruits; P2 owns resource and ownership checks.",
   "V2 runs must be opt-in; V1 runs (revision 1) keep the historical flow untouched.",
 ]);
 export const DEFAULT_VALIDATION = Object.freeze({ minChoicesPerSegment: 2, maxForcedRun: 4 });
@@ -198,6 +200,7 @@ export function generateOverworldGraphV2(seed, options = {}) {
 
   const nodes = [...layers.keys()].sort((x, y) => x - y).flatMap(w => layers.get(w));
   enforceCombatPacing(nodes);
+  enforceRouteQuality(nodes, s);
   return deepFreeze({
     revision: OVERWORLD_V2_REVISION, algorithm: GRAPH_ALGORITHM.id, algorithmVersion: version, seed: s,
     finalWave: FINAL_WAVE, checkpoints: [...CHECKPOINT_WAVES],
@@ -409,6 +412,12 @@ export function validateOverworldGraphV2(graph, options = {}) {
   if (forced > maxForcedRun) errors.push(`Troppe wave senza scelta consecutive: ${forced}`);
   const nonBattle = longestNonBattleRun(order, prev);
   if (nonBattle > MAX_NON_BATTLE_RUN) errors.push(`Troppe tappe non-battle consecutive: ${nonBattle} (massimo ${MAX_NON_BATTLE_RUN})`);
+  const quality = inspectQuality(qualityContext(graph.nodes));
+  if (quality.maxEscape > MAX_BATTLE_ESCAPE) errors.push(`Uscita dai combattimenti troppo distante: ${quality.maxEscape}`);
+  for (const e of quality.access) for (const t of requiredFor(e.segment)) {
+    if (!(e.reachable & typeBit(t))) errors.push(`Opportunità ${t} irraggiungibile da ${e.nodeId}`);
+    if (e.unavoidable & typeBit(t)) errors.push(`Opportunità ${t} obbligatoria da ${e.nodeId}`);
+  }
   return { valid: errors.length === 0, errors };
 }
 export function assertValidOverworldGraphV2(graph, options) {
@@ -441,6 +450,184 @@ export function summarizeOverworldGraphV2(graph) {
     forkCount: forks.length, joinCount: joins.length, widthByWave, maxWidth: Math.max(...widthByWave),
     forkWaves: [...new Set(forks.map(n => n.wave))], joinWaves: [...new Set(joins.map(n => n.wave))],
     pathCount: order.filter(n => n.wave === graph.finalWave).reduce((sum, n) => sum + paths.get(n.nodeId), 0n).toString(),
+    routeQuality: routeQualityV2(graph),
     segments, perPath: { typeCounts: perType, longestForcedRun: longestForcedRun(order, prev), longestNonBattleRun: longestNonBattleRun(order, prev) },
   };
+}
+
+// P1c: shortest further distance after a battle to a non-battle or completed W50.
+// Existential route on the DAG, NOT a cap on voluntarily selected battle sequences.
+export const MAX_BATTLE_ESCAPE = 6;
+export const ESSENTIAL_TYPES = Object.freeze(["recruit", "shop", "training"]);
+const typeBit = type => 1 << NODE_TYPES.indexOf(type);
+const requiredFor = segment => [...ESSENTIAL_TYPES, ...(segment === 1 ? ["event"] : [])];
+const bitCount = bits => NODE_TYPES.reduce((sum, t) => sum + ((bits & typeBit(t)) ? 1 : 0), 0);
+
+// Potential immediate content with equal run inputs, not a particular random outcome.
+// Mirrors engine.generateWaveNode's tier gates without calling any content RNG.
+// Version ids also identify team membership; recruit includes its 80%/20% tier cases.
+// Ownership, rules and seenEvents remain run-dependent. Environments are presentation.
+const profileCache = new Map();
+export function gameplaySignatureV2(node) {
+  if (!["battle", "recruit"].includes(node.type)) return node.type + "|" + node.wave;
+  if (node.boss) return JSON.stringify(["boss", node.wave, node.boss]);
+  const key = [node.type, node.wave, node.locationId].join("|");
+  if (!profileCache.has(key)) {
+    const tier = node.wave < 8 ? 1 : node.wave < 18 ? 2 : 3;
+    const pools = (node.type === "recruit" ? [tier, tier + 1] : [tier]).map(level => {
+      const rows = scenarioPool(node.locationId, node.wave, level);
+      const total = rows.reduce((sum, r) => sum + r.weight, 0);
+      return rows.map(r => [r.version.versionId, r.weight / total]);
+    });
+    profileCache.set(key, JSON.stringify([node.type, node.wave, pools]));
+  }
+  return profileCache.get(key);
+}
+function qualityContext(nodes) {
+  const order = [...nodes].sort((a, b) => a.wave - b.wave || (a.nodeId < b.nodeId ? -1 : a.nodeId > b.nodeId ? 1 : 0));
+  const byId = new Map(order.map((n, i) => [n.nodeId, i]));
+  const next = order.map(n => n.next.map(id => byId.get(id)));
+  const entries = [];
+  for (let segment = 1; segment <= SEGMENTS; segment++) {
+    const sources = order.filter(n => n.wave === (segment === 1 ? 1 : (segment - 1) * 10));
+    for (const source of sources) entries.push({
+      segment, nodeId: source.nodeId, required: requiredFor(segment).reduce((mask, t) => mask | typeBit(t), 0),
+      starts: segment === 1 ? [byId.get(source.nodeId)] : next[byId.get(source.nodeId)],
+    });
+  }
+  const groups = [order.map((n, i) => n.wave === 1 ? i : -1).filter(i => i >= 0), ...next.filter(ids => ids.length > 1)];
+  return { order, next, entries, groups };
+}
+function inspectQuality(context, includeProfiles = false) {
+  const { order, next, entries, groups } = context;
+  const nonBattle = [], escape = [], available = [], mandatory = [];
+  let maxNonBattle = 0, maxEscape = 0, escapeExcess = 0;
+  for (let i = order.length - 1; i >= 0; i--) {
+    const n = order[i], kids = next[i];
+    nonBattle[i] = n.type === "battle" ? 0 : 1 + Math.max(0, ...kids.map(k => nonBattle[k]));
+    escape[i] = n.type !== "battle" || n.wave === FINAL_WAVE ? 0 : 1 + Math.min(...kids.map(k => escape[k]));
+    maxNonBattle = Math.max(maxNonBattle, nonBattle[i]);
+    maxEscape = Math.max(maxEscape, escape[i]);
+    escapeExcess += Math.max(0, escape[i] - MAX_BATTLE_ESCAPE);
+    // Opportunity queries stop at each segment's closing boss.
+    available[i] = n.wave % 10 === 0 ? 0 : typeBit(n.type) | kids.reduce((mask, k) => mask | available[k], 0);
+    mandatory[i] = n.wave % 10 === 0 ? 0 : typeBit(n.type) | kids.reduce((mask, k) => mask & mandatory[k], 31);
+  }
+  let missing = 0, forced = 0;
+  const access = entries.map(e => {
+    const reachable = e.starts.reduce((mask, i) => mask | available[i], 0);
+    const unavoidable = e.starts.reduce((mask, i) => mask & mandatory[i], 31);
+    missing += bitCount(e.required & ~reachable);
+    forced += bitCount(e.required & unavoidable);
+    return { segment: e.segment, nodeId: e.nodeId, required: e.required, reachable, unavoidable };
+  });
+  const redundant = [];
+  if (includeProfiles) for (const group of groups) for (let a = 0; a < group.length; a++) for (let b = a + 1; b < group.length; b++) {
+    if (gameplaySignatureV2(order[group[a]]) === gameplaySignatureV2(order[group[b]])) {
+      redundant.push([order[group[a]].nodeId, order[group[b]].nodeId]);
+    }
+  }
+  return { maxNonBattle, maxEscape, escapeExcess, missing, forced, access, escape, redundant };
+}
+export function routeQualityV2(graph) {
+  const context = qualityContext(graph.nodes);
+  const q = inspectQuality(context, true);
+  return {
+    maxBattleEscape: q.maxEscape,
+    battleEscapeByNode: Object.fromEntries(context.order.map((n, i) => [n.nodeId, q.escape[i]])),
+    opportunities: q.access.map(e => ({
+      segment: e.segment, fromNodeId: e.nodeId,
+      types: Object.fromEntries(NODE_TYPES.filter(t => e.required & typeBit(t)).map(t => [t, {
+        reachable: !!(e.reachable & typeBit(t)), avoidable: !(e.unavoidable & typeBit(t)),
+      }])),
+    })),
+    redundantOptionPairs: q.redundant,
+  };
+}
+function enforceRouteQuality(nodes, seed) {
+  const context = qualityContext(nodes), { order, next, entries } = context;
+  const mutable = n => n.wave !== 1 && !n.boss && !RESERVED_WAVES[n.wave];
+  const candidates = shuffle(order.filter(mutable), stream(seed, "quality/candidates"));
+  const types = shuffle(NODE_TYPES, stream(seed, "quality/types"));
+  // Establish bypasses with minimum edits along actual paths. Non-battle -> battle
+  // cannot break the non-battle bound or a previously established category bypass.
+  for (const e of entries) for (const type of requiredFor(e.segment)) {
+    const cost = new Map(), step = new Map(), end = e.segment * 10;
+    for (let i = order.length - 1; i >= 0; i--) {
+      const n = order[i];
+      if (n.wave < segmentStart(e.segment) || n.wave > end) continue;
+      if (n.wave === end) { cost.set(i, 0); continue; }
+      const best = [...next[i]].sort((a, b) => cost.get(a) - cost.get(b) || a - b)[0];
+      cost.set(i, (n.type === type ? 1 : 0) + cost.get(best)); step.set(i, best);
+    }
+    let i = [...e.starts].sort((a, b) => cost.get(a) - cost.get(b) || a - b)[0];
+    while (order[i].wave < end) {
+      if (order[i].type === type) order[i].type = "battle";
+      i = step.get(i);
+    }
+  }
+  const keepsCoverage = (before, after) => after.access.every((e, i) =>
+    ((before.access[i].reachable & e.required) & ~e.reachable) === 0);
+  const safe = q => q.maxNonBattle <= MAX_NON_BATTLE_RUN && q.forced === 0;
+  // Missing (entry, category) pairs strictly decrease. A bounded two-node fallback
+  // can free a crowded non-battle chain. Explicit failure never returns an invalid graph.
+  let q = inspectQuality(context);
+  while (q.missing) {
+    const deficit = q.access.find(e => e.required & ~e.reachable);
+    const type = types.find(t => deficit.required & ~deficit.reachable & typeBit(t));
+    const local = candidates.filter(n => n.segment === deficit.segment && n.type !== type);
+    let accepted = false;
+    for (const release of [null, ...candidates.filter(n => n.segment === deficit.segment && n.type !== "battle")]) {
+      for (const n of local) {
+        if (n === release) continue;
+        const old = n.type, released = release?.type;
+        n.type = type;
+        if (release) release.type = "battle";
+        const after = inspectQuality(context);
+        if (safe(after) && after.missing < q.missing && keepsCoverage(q, after)) {
+          q = after; accepted = true; break;
+        }
+        n.type = old;
+        if (release) release.type = released;
+      }
+      if (accepted) break;
+    }
+    if (!accepted) throw new Error("Conflitto P1c: opportunità opzionali e pacing non conciliabili.");
+  }
+  // Strictly decreasing escape excess, at most V battle -> non-battle edits.
+  while (q.escapeExcess) {
+    let accepted = false;
+    for (const n of candidates.filter(n => n.type === "battle")) {
+      for (const type of types.filter(t => t !== "battle")) {
+        n.type = type;
+        const after = inspectQuality(context);
+        if (safe(after) && !after.missing && after.escapeExcess < q.escapeExcess) {
+          q = after; accepted = true; break;
+        }
+        n.type = "battle";
+      }
+      if (accepted) break;
+    }
+    if (!accepted) throw new Error("Conflitto P1c: uscita dai combattimenti e opportunità non conciliabili.");
+  }
+  // Optional refinement: pair count strictly decreases and hard constraints stay valid.
+  // Locked W1 profiles or local minima remain visible in diagnostics for P2/P3.
+  q = inspectQuality(context, true);
+  while (q.redundant.length) {
+    const involved = new Set(q.redundant.flat());
+    let accepted = false;
+    for (const n of candidates.filter(n => involved.has(n.nodeId))) {
+      const old = n.type;
+      for (const type of types.filter(t => t !== old)) {
+        n.type = type;
+        const after = inspectQuality(context, true);
+        if (safe(after) && !after.missing && !after.escapeExcess && after.redundant.length < q.redundant.length) {
+          q = after; accepted = true; break;
+        }
+        n.type = old;
+      }
+      if (accepted) break;
+    }
+    if (!accepted) break;
+  }
 }

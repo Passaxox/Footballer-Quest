@@ -43,7 +43,7 @@ describe("structure (all 1000 sample seeds)", () => {
     for (const graph of GRAPHS) {
       expect(g.validateOverworldGraphV2(graph)).toEqual({ valid: true, errors: [] });
       expect(graph.revision).toBe(2);
-      expect(graph.algorithmVersion).toBe(2);
+      expect(graph.algorithmVersion).toBe(3);
       expect(graph.nodes.length).toBeGreaterThan(FINAL_WAVE);
       expect(graph.nodes.length).toBeLessThanOrEqual(150);
       expect(g.summarizeOverworldGraphV2(graph).maxWidth).toBeLessThanOrEqual(3);
@@ -228,7 +228,9 @@ describe("P1b combat rhythm on all reachable paths", () => {
     expect(g.summarizeOverworldGraphV2(graph).perPath.longestNonBattleRun).toBe(5);
     node(graph, 3, 1).type = "battle";
     expect(exactNonBattleRun(graph)).toBe(4);
-    expect(g.validateOverworldGraphV2(graph)).toEqual({ valid: true, errors: [] });
+    // This synthetic mostly-battle graph still lacks P1c opportunities. Only its pacing error is resolved.
+    expect(g.validateOverworldGraphV2(graph).errors.some(e => e.includes("non-battle consecutive"))).toBe(false);
+    expect(g.validateOverworldGraphV2(graph).errors.some(e => e.includes("Opportunità"))).toBe(true);
   });
 
   test.each(["recruit", "training", "shop", "event"])("%s-only preferences still enforce pacing and preserve topology", type => {
@@ -236,9 +238,10 @@ describe("P1b combat rhythm on all reachable paths", () => {
       const options = Object.freeze({ typeWeights: Object.freeze(Object.fromEntries(g.NODE_TYPES.map(t => [t, t === type ? 1 : 0]))) });
       const graph = g.generateOverworldGraphV2(seed, options);
       expect(g.validateOverworldGraphV2(graph)).toEqual({ valid: true, errors: [] });
-      expect(exactNonBattleRun(graph)).toBe(4);
+      expect(exactNonBattleRun(graph)).toBeLessThanOrEqual(4);
       expect(shape(graph)).toBe(shape(g.generateOverworldGraphV2(seed)));
-      expect(graph.nodes.every(n => n.type === type || n.type === "battle")).toBe(true);
+      // P1c hard opportunity guarantees override even zero descriptor weights.
+      expect(g.routeQualityV2(graph).opportunities.every(e => Object.values(e.types).every(v => v.reachable && v.avoidable))).toBe(true);
       expect(graph.nodes.some(n => n.type === type)).toBe(true);
       expect(g.serializeOverworldGraphV2(g.generateOverworldGraphV2(seed, options))).toBe(g.serializeOverworldGraphV2(graph));
       expect(options.typeWeights.battle).toBe(0);
@@ -341,7 +344,7 @@ describe("validator rejects broken graphs", () => {
 describe("determinism", () => {
   test("same seed and version => identical serialized graph, repeated calls unchanged", () => {
     for (const s of SEEDS) {
-      const a = g.generateOverworldGraphV2(s), b = g.generateOverworldGraphV2(s, { algorithmVersion: 2 });
+      const a = g.generateOverworldGraphV2(s), b = g.generateOverworldGraphV2(s, { algorithmVersion: 3 });
       expect(g.serializeOverworldGraphV2(a)).toBe(g.serializeOverworldGraphV2(b));
       expect(a).toEqual(b);
       expect(g.fingerprintOverworldGraphV2(a)).toBe(g.fingerprintOverworldGraphV2(GRAPHS[SEEDS.indexOf(s)]));
@@ -394,12 +397,13 @@ describe("determinism", () => {
     const base = g.generateOverworldGraphV2(99), onlyBattle = g.generateOverworldGraphV2(99, { typeWeights: { battle: 1, recruit: 0, training: 0, shop: 0, event: 0 } });
     const shape = gr => JSON.stringify(gr.nodes.map(n => [n.nodeId, n.next, n.locationId, n.environmentId]));
     expect(shape(onlyBattle)).toBe(shape(base));
-    expect(onlyBattle.nodes.every(n => n.type === "battle")).toBe(true);
+    expect(g.validateOverworldGraphV2(onlyBattle).valid).toBe(true);
+    expect(onlyBattle.nodes.some(n => n.type !== "battle")).toBe(true);
     const restricted = g.generateOverworldGraphV2(99, { templateIds: ["E", "F", "B", "D"] });
     expect(restricted.segments.every(s => ["E", "F", "B", "D"].includes(s.templateId))).toBe(true);
     expect(g.validateOverworldGraphV2(restricted).valid).toBe(true);
     expect(() => g.generateOverworldGraphV2(1, { templateIds: ["E"] })).toThrow(/Nessun template/);
-    for (const algorithmVersion of [1, 3]) expect(() => g.generateOverworldGraphV2(1, { algorithmVersion })).toThrow(/non supportata/);
+    for (const algorithmVersion of [1, 2, 4]) expect(() => g.generateOverworldGraphV2(1, { algorithmVersion })).toThrow(/non supportata/);
     expect(() => g.generateOverworldGraphV2(1, { typeWeights: { battle: -1 } })).toThrow(/Pesi/);
   });
 
@@ -413,15 +417,35 @@ describe("determinism", () => {
 });
 
 describe("golden fixtures", () => {
-  // Algorithm v2 deliberately changes output: ow2/graph/v2 streams plus the all-path pacing repair.
-  // Refreshed only after independent DAG/reverse-DP audits (1000 seeds + 500 extreme-weight graphs).
-  // Previous v1 fingerprints: 0=6faf9d1e, 1=95c50e7e, 42=07e78b8d, 4294967295=2cab5a66.
+  // v3: joint opportunity/escape/profile repairs and ow2/graph/v3 streams.
+  // Refreshed after independent forward-DP/BFS audit of 1000 seeds + 100 extreme graphs.
+  // v2 fingerprints: 0=7e7d7e72, 1=efc4cdc0, 42=9591a4a3, 4294967295=fada3abb.
   const GOLDEN = {
-    0: { fp: "7e7d7e72", nodes: 109, edges: 168, widths: "33221322212332123321233212332132233212313223321231" },
-    1: { fp: "efc4cdc0", nodes: 107, edges: 165, widths: "32233212313223321231332213222133322212213322132221" },
-    42: { fp: "9591a4a3", nodes: 106, edges: 162, widths: "33221322212223332211233212332133221322213322132221" },
-    4294967295: { fp: "fada3abb", nodes: 104, edges: 162, widths: "32123321213212332121332213222132233212313322132221" },
-  };
+  "0": {
+    "fp": "1f79018d",
+    "nodes": 106,
+    "edges": 163,
+    "widths": "33221322212233221331332213222133322212213322132221"
+  },
+  "1": {
+    "fp": "b240c9e2",
+    "nodes": 106,
+    "edges": 162,
+    "widths": "33322212213223321231233212332133322212213212332121"
+  },
+  "42": {
+    "fp": "f779631d",
+    "nodes": 105,
+    "edges": 162,
+    "widths": "32233212313212332121332213222133322212213322132221"
+  },
+  "4294967295": {
+    "fp": "d18dacfa",
+    "nodes": 106,
+    "edges": 163,
+    "widths": "33221322213212332121233212332132233212313332221221"
+  }
+};
   test.each(Object.keys(GOLDEN))("seed %s matches its golden graph", seed => {
     const graph = g.generateOverworldGraphV2(Number(seed));
     const summary = g.summarizeOverworldGraphV2(graph);
@@ -531,5 +555,121 @@ describe("diagnostics and size", () => {
       for (const t of g.NODE_TYPES) expect(summary.perPath.typeCounts[t].min).toBeLessThanOrEqual(summary.perPath.typeCounts[t].max);
       expect(summary.forkWaves.some(w => w > 1)).toBe(true);
     }
+  });
+});
+
+describe("P1c reachable opportunities and voluntary combat", () => {
+  const reachable = (graph, source, end, avoid = null) => {
+    const byId = new Map(graph.nodes.map(n => [n.nodeId, n]));
+    const queue = [source], seen = new Set(), out = [];
+    while (queue.length) {
+      const id = queue.shift();
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const n = byId.get(id);
+      if (n.type === avoid) continue;
+      out.push(n);
+      if (n.wave < end) queue.push(...n.next);
+    }
+    return out;
+  };
+  const escapeBfs = (graph, start) => {
+    if (start.type !== "battle" || start.wave === 50) return 0;
+    const byId = new Map(graph.nodes.map(n => [n.nodeId, n]));
+    let frontier = [start], distance = 0;
+    const seen = new Set([start.nodeId]);
+    while (frontier.length) {
+      distance++;
+      const next = [];
+      for (const n of frontier) for (const id of n.next) {
+        if (seen.has(id)) continue;
+        seen.add(id);
+        const child = byId.get(id);
+        if (child.type !== "battle" || child.wave === 50) return distance;
+        next.push(child);
+      }
+      frontier = next;
+    }
+    return Infinity;
+  };
+  test("1000 seeds: independent BFS agrees at every node and every segment entry", () => {
+    for (const graph of GRAPHS) {
+      const q = g.routeQualityV2(graph);
+      const exact = Object.fromEntries(graph.nodes.map(n => [n.nodeId, escapeBfs(graph, n)]));
+      expect(q.battleEscapeByNode).toEqual(exact);
+      expect(Math.max(...Object.values(exact))).toBeLessThanOrEqual(6);
+      const observations = [];
+      for (let segment = 1; segment <= 5; segment++) {
+        const entries = graph.nodes.filter(n => n.wave === (segment === 1 ? 1 : (segment - 1) * 10));
+        expect(entries.length).toBe(segment === 1 ? 3 : 1);
+        for (const entry of entries) {
+          const reached = reachable(graph, entry.nodeId, segment * 10);
+          const required = ["recruit", "shop", "training", ...(segment === 1 ? ["event"] : [])];
+          const types = Object.fromEntries(required.map(t => [t, {
+            reachable: reached.some(n => n.wave < segment * 10 && n.type === t),
+            avoidable: reachable(graph, entry.nodeId, segment * 10, t).some(n => n.wave === segment * 10),
+          }]));
+          expect(Object.values(types).every(v => v.reachable && v.avoidable)).toBe(true);
+          observations.push({ segment, fromNodeId: entry.nodeId, types });
+        }
+      }
+      expect(q.opportunities).toEqual(observations);
+    }
+  });
+
+  test("global presence cannot hide recruit unreachable from a particular W1 lane", () => {
+    const graph = clone(g.generateOverworldGraphV2(0, { templateIds: ["B", "E"] }));
+    graph.nodes.filter(n => n.wave < 10 && n.type === "recruit").forEach(n => { n.type = "battle"; });
+    node(graph, 2, 1).type = "recruit";
+    expect(graph.nodes.some(n => n.wave < 10 && n.type === "recruit")).toBe(true);
+    expect(reachable(graph, node(graph, 1, 0).nodeId, 10).some(n => n.type === "recruit")).toBe(false);
+    const result = g.validateOverworldGraphV2(graph);
+    expect(result.valid).toBe(false);
+    expect(result.errors.join("\n")).toMatch(/recruit irraggiungibile da ow2:w01:a/);
+  });
+  test("reachable shops on every W2 lane cannot become an obligatory checkpoint", () => {
+    const graph = clone(GRAPHS[0]);
+    graph.nodes.filter(n => n.wave === 2).forEach(n => { n.type = "shop"; });
+    const result = g.validateOverworldGraphV2(graph);
+    expect(result.valid).toBe(false);
+    expect(result.errors.join("\n")).toMatch(/shop obbligatoria/);
+  });
+  test("a battle corridor without a timely exit is rejected; W50 is a valid conclusion", () => {
+    const graph = clone(GRAPHS[0]);
+    graph.nodes.filter(n => n.wave <= 10).forEach(n => { n.type = "battle"; });
+    expect(g.routeQualityV2(graph).maxBattleEscape).toBeGreaterThan(6);
+    expect(g.validateOverworldGraphV2(graph).errors.join("\n")).toMatch(/Uscita dai combattimenti/);
+    graph.nodes.filter(n => n.wave >= 45).forEach(n => { n.type = "battle"; });
+    const q = g.routeQualityV2(graph);
+    expect(q.battleEscapeByNode[node(graph, 45).nodeId]).toBe(5);
+    expect(q.battleEscapeByNode[node(graph, 50).nodeId]).toBe(0);
+  });
+  test("long voluntarily selected battle streaks remain possible in valid graphs", () => {
+    const longest = GRAPHS.slice(0, 20).map(graph => {
+      let best = 0, run = 0;
+      const walk = g.walkOverworldPathV2(graph, options => options.find(n => n.type === "battle") || options[0]);
+      for (const n of walk.nodes) { run = n.type === "battle" ? run + 1 : 0; best = Math.max(best, run); }
+      expect(g.validateOverworldGraphV2(graph).valid).toBe(true);
+      return best;
+    });
+    expect(Math.max(...longest)).toBeGreaterThan(6);
+  });
+  test("profiles distinguish encounter pools but not visual-only localities or RNG identities", () => {
+    const base = { wave: 5, boss: null, locationId: "urban", environmentId: "riverside", nodeId: "a" };
+    const elsewhere = { ...base, locationId: "raimon-training", environmentId: "training", nodeId: "b" };
+    for (const type of ["shop", "training", "event"]) {
+      expect(g.gameplaySignatureV2({ ...base, type })).toBe(g.gameplaySignatureV2({ ...elsewhere, type }));
+    }
+    for (const type of ["battle", "recruit"]) {
+      expect(g.gameplaySignatureV2({ ...base, type })).not.toBe(g.gameplaySignatureV2({ ...elsewhere, type }));
+      expect(g.gameplaySignatureV2({ ...base, type })).toBe(g.gameplaySignatureV2({ ...base, type, nodeId: "different", environmentId: "metropolitan" }));
+    }
+    const graph = GRAPHS[0], before = JSON.stringify(graph);
+    const first = g.routeQualityV2(graph);
+    [...graph.nodes].reverse().forEach(g.gameplaySignatureV2);
+    expect(g.routeQualityV2(graph)).toEqual(first);
+    expect(JSON.stringify(graph)).toBe(before);
+    // W1 urban alternatives have equal current profiles; future content previews belong to P2.
+    expect(first.redundantOptionPairs.some(pair => pair.every(id => id.startsWith("ow2:w01:")))).toBe(true);
   });
 });
