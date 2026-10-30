@@ -114,12 +114,29 @@ code {
     }
 }
 
-/* Android system-bar safe areas for non-Overworld screens. env() is 0 where the WebView is already inset (no double padding). The Overworld shell and starter selector footer manage their own insets. */
+/* Android system-bar safe areas for non-Overworld screens. Uses env() and the --safe-area-inset-* variables Capacitor's SystemBars injects (max() never double-counts: the variable is 0 whenever Capacitor pads the WebView natively). The Overworld shell and starter selector footer manage their own insets. */
 .fq-safe, .fq-safe-top {
-    padding-top: env(safe-area-inset-top, 0px);
+    --fq-inset-top: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
+    --fq-inset-bottom: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
+    padding-top: var(--fq-inset-top);
     min-height: 100vh;
     min-height: 100dvh;
 }
 .fq-safe {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: var(--fq-inset-bottom);
+}
+/* Viewport-locked screens (Battle, Team): the column is exactly one viewport tall and the content area scrolls internally. */
+.fq-safe-fit {
+    height: 100vh;
+    height: 100dvh;
+}
+.fq-scroll {
+    flex: 1 1 0%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+.fq-scroll > * {
+    flex-shrink: 0;
 }

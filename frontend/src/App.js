@@ -234,7 +234,7 @@ function App() {
   const owHub = screen === "hub" && hasOverworld(run);
   return (
     <div className={`min-h-screen bg-[#05070d] flex justify-center font-body ${owHub ? "ow-shell" : ""}`}>
-      <div className={`w-full max-w-md min-h-screen bg-[#0d1322] text-slate-100 flex flex-col border-x-4 border-slate-800 relative ${owHub ? "ow-shell overflow-clip" : "overflow-hidden"} ${owHub ? "" : screen === "select" ? "fq-safe-top" : "fq-safe"} scanlines`}>
+      <div className={`w-full max-w-md min-h-screen bg-[#0d1322] text-slate-100 flex flex-col border-x-4 border-slate-800 relative ${owHub ? "ow-shell overflow-clip" : "overflow-hidden"} ${owHub ? "" : screen === "select" ? "fq-safe-top" : "fq-safe"} ${screen === "battle" || screen === "team" ? "fq-safe-fit" : ""} scanlines`}>
         {render()}
       </div>
     </div>

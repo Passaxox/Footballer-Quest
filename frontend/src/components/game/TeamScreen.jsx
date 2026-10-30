@@ -33,9 +33,9 @@ export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
   };
 
   return (
-    <div data-testid="inventory-bench-screen" className="flex flex-col flex-1">
+    <div data-testid="inventory-bench-screen" className="flex flex-col flex-1 min-h-0">
       <Header title="Squadra & Zaino" sub={`${run.team.length}/6 giocatori · ${run.money} Prestigio${run.fischietto ? " · Fischietto attivo" : ""}`} right={<Btn variant="ghost" data-testid="team-back-btn" onClick={onBack}>Indietro</Btn>} />
-      <div className="p-3 space-y-2 flex-1 overflow-y-auto">
+      <div className="p-3 space-y-2 fq-scroll">
         {itemSel ? (
           <>
             <div className="font-body text-slate-300 text-lg">Su chi usare {ITEMS[itemSel].name}?</div>

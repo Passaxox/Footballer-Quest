@@ -254,7 +254,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const battleItems = Object.entries(st.items).filter(([id, n]) => ITEMS[id].battle && n > 0);
 
   return (
-    <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1" style={{ "--battle-speed": st.important || pace.state.blocked ? 1 : pace.state.speed }}>
+    <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1 min-h-0" style={{ "--battle-speed": st.important || pace.state.blocked ? 1 : pace.state.speed }}>
       <div className="flex items-center justify-between px-3 py-2 bg-[#111827] border-b-4 border-slate-800">
         <span data-testid="wave-counter-badge" className="font-pixel text-[9px] text-amber-300">ONDATA {run.wave}</span>
         <span className="font-pixel text-[8px] text-slate-400 uppercase truncate mx-2">{encounter.kind === "boss" ? `BOSS: ${encounter.teamName}` : encounter.elite ? `ELITE: ${encounter.teamName}` : encounter.teamName || "Sfida"}</span>
@@ -270,6 +270,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       </div>
       {pace.state.blocked && <div className="battle-moment" role="alertdialog" aria-label="Momento importante"><p>{manualMoment.message}</p><button data-testid="battle-acknowledge" onClick={pace.acknowledge}>Continua</button></div>}
 
+      <div data-testid="battle-scroll" className="fq-scroll flex flex-col">
       <div className={`relative flex flex-col justify-between gap-3 p-3 battle-bg ${encounter.kind === "boss" ? "boss-glow" : ""}`}>
         <Fighter p={e} side="enemy" hit={st.hit === "enemy"} cue={st.cue} />
         <Fighter p={p} side="player" hit={st.hit === "player"} cue={st.cue} />
@@ -358,6 +359,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
             <Btn>Cambia</Btn><Btn>Zaino</Btn>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
