@@ -1,9 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 
+const SPEED_KEY = "inazuma_rogue_battle_speed";
+const loadSpeed = () => {
+  try {
+    const value = localStorage.getItem(SPEED_KEY);
+    return ["1", "2", "3"].includes(value) ? Number(value) : 1;
+  } catch { return 1; }
+};
+
 // Presentation only. Never reads RNG or writes run/meta storage.
 export default function useBattlePace(manualMoment) {
   const [, render] = useState(0);
-  const ref = useRef({ speed: 1, auto: false, hidden: false, alive: true, waits: new Set(), acknowledged: null });
+  const ref = useRef(null);
+  if (!ref.current) ref.current = { speed: loadSpeed(), auto: false, hidden: false, alive: true, waits: new Set(), acknowledged: null };
   const state = ref.current;
   state.blocked = !!manualMoment && state.acknowledged !== manualMoment.id;
   const refresh = () => { if (state.alive) render(n => n + 1); };
@@ -42,7 +51,13 @@ export default function useBattlePace(manualMoment) {
     state.waits.add(entry);
   });
   return { state, wait, stop,
-    cycle: () => { state.speed = state.speed % 3 + 1; refresh(); },
+    cycle: () => {
+      state.speed = state.speed % 3 + 1;
+      // Save only the explicit FAST choice, never temporary x1 overrides or AUTO.
+      try { localStorage.setItem(SPEED_KEY, String(state.speed)); }
+      catch { /* Storage may be denied/full; the current battle stays usable. */ }
+      refresh();
+    },
     toggle: () => { state.auto = !state.auto; refresh(); },
     acknowledge: () => {
       state.acknowledged = manualMoment.id; state.blocked = false;

@@ -4,14 +4,16 @@ import BattleScreen from "./BattleScreen";
 import useBattlePace from "./useBattlePace";
 import * as engine from "@/game/engine";
 import { STARTER_IDS } from "@/game/data";
+import { saveRun, clearRun } from "@/game/storage";
 
 jest.mock("@/game/audio", () => ({ sfx: new Proxy({}, { get: () => jest.fn() }) }));
 let root, host;
+const SPEED_KEY = "inazuma_rogue_battle_speed";
 const find = id => host.querySelector(`[data-testid="${id}"]`);
 const tick = async ms => act(async () => { jest.advanceTimersByTime(ms); });
 const click = async id => act(async () => { find(id).click(); });
 const settle = async () => { for (let i = 0; i < 20; i++) await tick(1000); };
-beforeEach(() => { globalThis.IS_REACT_ACT_ENVIRONMENT = true; jest.useFakeTimers(); host = document.createElement("div"); root = createRoot(host); });
+beforeEach(() => { globalThis.IS_REACT_ACT_ENVIRONMENT = true; localStorage.clear(); jest.useFakeTimers(); host = document.createElement("div"); root = createRoot(host); });
 afterEach(async () => { await act(async () => root.unmount()); jest.clearAllTimers(); jest.useRealTimers(); jest.restoreAllMocks(); });
 const start = async (overrides = {}) => {
   const run = overrides.run || engine.newRun(STARTER_IDS.slice(0, 3));
@@ -33,6 +35,7 @@ test.each([1, 2, 3])("x%s scales only waits; important waits remain full duratio
   done.mockClear(); pace.wait(900, true).then(done);
   await tick(899); expect(done).not.toHaveBeenCalled();
   await tick(1); expect(done).toHaveBeenCalledTimes(1);
+  expect(localStorage.getItem(SPEED_KEY)).toBe(speed === 1 ? null : String(speed));
 });
 
 test("AUTO uses default action, busy is exclusive, OFF and background cancel future decisions", async () => {
@@ -51,6 +54,7 @@ test("AUTO uses default action, busy is exclusive, OFF and background cancel fut
   expect(find("battle-auto").getAttribute("aria-pressed")).toBe("false");
   await act(async () => window.dispatchEvent(new Event("focus")));
   expect(find("battle-auto").getAttribute("aria-pressed")).toBe("false");
+  expect(localStorage.getItem(SPEED_KEY)).toBe("3");
 });
 
 test("manual menu cancels queued AUTO, items are never consumed, manual action wins the race", async () => {
@@ -69,10 +73,12 @@ test("important acknowledgement pauses AUTO and forces x1 then resumes previous 
   await act(async () => root.render(<BattleScreen {...props} manualMoment={{ id: "cut-in", message: "Momento speciale" }} />));
   await settle(); expect(attack).not.toHaveBeenCalled();
   expect(find("battle-screen").style.getPropertyValue("--battle-speed")).toBe("1");
+  expect(localStorage.getItem(SPEED_KEY)).toBe("3");
   await click("attack-button"); expect(attack).not.toHaveBeenCalled();
   await click("battle-acknowledge"); await tick(220);
   expect(attack).toHaveBeenCalledTimes(1);
   expect(find("battle-screen").style.getPropertyValue("--battle-speed")).toBe("3");
+  expect(localStorage.getItem(SPEED_KEY)).toBe("3");
   await click("battle-auto"); await settle();
 });
 
@@ -115,4 +121,115 @@ test("unmount cancels active presentation and produces no late battle result", a
   await settle(); expect(attack).toHaveBeenCalledTimes(1);
   expect(props.onWin).not.toHaveBeenCalled(); expect(props.onLose).not.toHaveBeenCalled();
   await tick(60000); expect(attack).toHaveBeenCalledTimes(1);
+});
+
+test("fresh install defaults to x1; FAST cycles 1/2/3/1 and reads storage only on mount", async () => {
+  let pace;
+  function Harness() { pace = useBattlePace(null); return null; }
+  const read = jest.spyOn(Storage.prototype, "getItem"), write = jest.spyOn(Storage.prototype, "setItem");
+  await act(async () => root.render(<Harness />));
+  expect(pace.state.speed).toBe(1); expect(pace.state.auto).toBe(false);
+  expect(write).not.toHaveBeenCalled();
+  for (const speed of [2, 3, 1]) {
+    await act(async () => pace.cycle());
+    expect(pace.state.speed).toBe(speed);
+    expect(write).toHaveBeenLastCalledWith(SPEED_KEY, String(speed));
+  }
+  expect(read).toHaveBeenCalledTimes(1); expect(read).toHaveBeenCalledWith(SPEED_KEY);
+  expect(localStorage.getItem(SPEED_KEY)).toBe("1");
+});
+
+test.each([1, 2, 3])("loads persisted x%s without enabling AUTO", async speed => {
+  localStorage.setItem(SPEED_KEY, String(speed));
+  let pace;
+  function Harness() { pace = useBattlePace(null); return null; }
+  await act(async () => root.render(<Harness />));
+  expect(pace.state.speed).toBe(speed); expect(pace.state.auto).toBe(false);
+});
+
+test.each([null, "", "0", "4", "-1", "2.0", "02", " 2 ", "NaN", "true", '"2"', "[2]", "{}", "corrupt"])("invalid stored speed %j safely falls back to x1", async value => {
+  if (value !== null) localStorage.setItem(SPEED_KEY, value);
+  let pace;
+  function Harness() { pace = useBattlePace(null); return null; }
+  await act(async () => root.render(<Harness />));
+  expect(pace.state.speed).toBe(1);
+  const done = jest.fn(); pace.wait(300).then(done);
+  await tick(299); expect(done).not.toHaveBeenCalled();
+  await tick(1); expect(done).toHaveBeenCalledWith(true);
+  await act(async () => pace.cycle());
+  expect(localStorage.getItem(SPEED_KEY)).toBe("2");
+});
+
+test("FAST survives different battles, new V1/V2 runs and clearRun; AUTO never survives remount", async () => {
+  const meta = JSON.stringify({ collection: { untouched: true } });
+  localStorage.setItem("inazuma_rogue_meta", meta);
+  for (const [index, revision] of [1, 1, 2, 1].entries()) {
+    const run = revision === 2 ? engine.newRunV2(STARTER_IDS.slice(0, 3), 42) : engine.newRun(STARTER_IDS.slice(0, 3));
+    saveRun(run); const snapshot = localStorage.getItem("inazuma_rogue_run");
+    await start({ run, encounter: { kind: "wild", enemies: [engine.createPlayer(index % 2 ? "byron" : "darren", 1)] } });
+    expect(find("battle-speed").textContent).toBe(index ? "FAST x3" : "FAST x1");
+    expect(find("battle-auto").getAttribute("aria-pressed")).toBe("false");
+    if (index === 0) { await click("battle-speed"); await click("battle-speed"); }
+    await click("battle-auto");
+    expect(localStorage.getItem("inazuma_rogue_run")).toBe(snapshot);
+    expect(localStorage.getItem("inazuma_rogue_meta")).toBe(meta);
+    await act(async () => root.unmount()); root = createRoot(host);
+    clearRun(); expect(localStorage.getItem(SPEED_KEY)).toBe("3");
+  }
+});
+
+test("simulated reload uses a fresh hook module and restores persisted x2", async () => {
+  let pace, usePace = useBattlePace;
+  function Harness() { pace = usePace(null); return null; }
+  await act(async () => root.render(<Harness />)); await act(async () => pace.cycle());
+  await act(async () => root.unmount()); root = createRoot(host);
+  // Keep the renderer's React instance while discarding this hook's module cache.
+  const react = jest.requireActual("react");
+  try {
+    jest.isolateModules(() => {
+      jest.doMock("react", () => react);
+      usePace = require("./useBattlePace").default;
+    });
+    expect(usePace).not.toBe(useBattlePace);
+    await act(async () => root.render(<Harness />));
+    expect(pace.state.speed).toBe(2); expect(pace.state.auto).toBe(false);
+  } finally { jest.dontMock("react"); }
+});
+
+test("unavailable localStorage getter falls back to x1 and does not block FAST or waits", async () => {
+  const descriptor = Object.getOwnPropertyDescriptor(window, "localStorage");
+  Object.defineProperty(window, "localStorage", { configurable: true, get() { throw new Error("Storage denied"); } });
+  try {
+    let pace;
+    function Harness() { pace = useBattlePace(null); return null; }
+    await act(async () => root.render(<Harness />)); expect(pace.state.speed).toBe(1);
+    await act(async () => pace.cycle()); expect(pace.state.speed).toBe(2);
+    const done = jest.fn(); pace.wait(300).then(done);
+    await tick(150); expect(done).toHaveBeenCalledWith(true);
+    await act(async () => root.unmount()); root = createRoot(host);
+    await act(async () => root.render(<Harness />)); expect(pace.state.speed).toBe(1);
+  } finally { Object.defineProperty(window, "localStorage", descriptor); }
+});
+
+test("a failed preference write leaves combat usable and the next mount falls back to x1", async () => {
+  const write = jest.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("Quota exceeded"); });
+  await start(); await click("battle-speed");
+  expect(find("battle-speed").textContent).toBe("FAST x2"); expect(find("attack-button")).not.toBeNull();
+  expect(write).toHaveBeenCalledWith(SPEED_KEY, "2"); expect(localStorage.getItem(SPEED_KEY)).toBeNull();
+  await act(async () => root.unmount()); root = createRoot(host);
+  await start(); expect(find("battle-speed").textContent).toBe("FAST x1");
+});
+
+test("visibility background stops AUTO without resetting the persisted speed", async () => {
+  let pace;
+  function Harness() { pace = useBattlePace(null); return null; }
+  await act(async () => root.render(<Harness />));
+  await act(async () => { pace.cycle(); pace.toggle(); });
+  const hidden = jest.spyOn(document, "hidden", "get").mockReturnValue(true);
+  await act(async () => document.dispatchEvent(new Event("visibilitychange")));
+  expect(pace.state.auto).toBe(false); expect(pace.state.hidden).toBe(true);
+  hidden.mockReturnValue(false);
+  await act(async () => document.dispatchEvent(new Event("visibilitychange")));
+  expect(pace.state.auto).toBe(false); expect(pace.state.speed).toBe(2);
+  expect(localStorage.getItem(SPEED_KEY)).toBe("2");
 });
