@@ -27,10 +27,14 @@ const scenariosUrl = moduleUrl((await source("scenarios")).replace('"./catalog"'
 const scenarios = await import(scenariosUrl);
 const overworldUrl = moduleUrl(await source("overworld"));
 const overworld = await import(overworldUrl);
-const engineUrl = moduleUrl((await source("engine")).replace("\"./overworld\"", JSON.stringify(overworldUrl)).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
+const presentationUrl = moduleUrl((await source("overworldPresentation")).replace('"./overworld"', JSON.stringify(overworldUrl)));
+const graphUrl = moduleUrl((await source("overworldGraphV2")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./overworldPresentation"', JSON.stringify(presentationUrl)));
+const runV2Url = moduleUrl((await source("overworldRunV2")).replace('"./overworldGraphV2"', JSON.stringify(graphUrl)));
+const engineUrl = moduleUrl((await source("engine")).replace('"./overworldRunV2"', JSON.stringify(runV2Url)).replace("\"./overworld\"", JSON.stringify(overworldUrl)).replace('"./scenarios"', JSON.stringify(scenariosUrl)).replace('"./data"', JSON.stringify(dataUrl)).replace('"./rules"', JSON.stringify(rulesUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)));
 const engine = await import(engineUrl);
 const data = await import(dataUrl);
-const storage = await import(moduleUrl((await source("storage"))
+const actionsV2Url = moduleUrl((await source("overworldActionsV2")).replace('"./data"', JSON.stringify(dataUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./overworld"', JSON.stringify(overworldUrl)).replace('"./overworldRunV2"', JSON.stringify(runV2Url)).replace('"./engine"', JSON.stringify(engineUrl)));
+const storage = await import(moduleUrl((await source("storage")).replace('"./overworldRunV2"', JSON.stringify(runV2Url)).replace('"./overworldActionsV2"', JSON.stringify(actionsV2Url))
   .replace('"./data"', JSON.stringify(dataUrl)).replace('"./engine"', JSON.stringify(engineUrl)).replace('"./catalog"', JSON.stringify(catalogUrl)).replace('"./collection"', JSON.stringify(collectionUrl))));
 const { createPlayer, recalcStats, gainXp, xpForLevel, applyItemTo, applyEventDamage,
   fusePlayers, fuseRunPlayers, newRun, normalizeRun, resolveActiveUid, canReleasePlayer } = engine;
@@ -618,6 +622,9 @@ test("reward, recruit offer, shop purchases and event outcome survive save/load"
   assert.equal(storage.loadRun(), null);
   localStorage.setItem("inazuma_rogue_run", "{broken");
   assert.equal(storage.loadRun(), null);
+  // P2a preserves incompatible saves; this corruption fixture must not leak to later tests.
+  assert.equal(localStorage.getItem("inazuma_rogue_run"), "{broken");
+  storage.clearRun();
 });
 
 test("Normal combat EXP is 1.5x, bench 70%, with full-then-share rounding", () => {

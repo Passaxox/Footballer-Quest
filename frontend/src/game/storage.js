@@ -1,7 +1,9 @@
+import { hydrateOverworldV2, hasOverworldV2, runTokenV2, OverworldSaveError } from "./overworldRunV2";
+import { resolveOverworldActionV2 } from "./overworldActionsV2";
 import { migrateCollection } from "./collection";
 import { withPlayerIdentity } from "./catalog";
 import { STARTER_IDS } from "./data";
-import { normalizeRun, glory, playtestSummary } from "./engine";
+import { beginOverworldNode, normalizeRun, glory, playtestSummary } from "./engine";
 
 const RUN_KEY = "inazuma_rogue_run";
 const META_KEY = "inazuma_rogue_meta";
@@ -32,8 +34,51 @@ export const recordFinishedRun = (meta, run, result) => {
   return { ...meta, records: [...meta.records, record], runs: meta.runs + 1, bestWave: Math.max(meta.bestWave, run.wave) };
 };
 
-export const loadRun = () => {
-  try { return normalizeRun(JSON.parse(localStorage.getItem(RUN_KEY))); } catch { return null; }
+// Invalid/incompatible saves remain byte-for-byte intact; callers can inspect the
+// result without crashing startup. Only explicit clearRun discards that snapshot.
+let verifiedRaw = null;
+const readRun = (hydrate) => {
+  try {
+    const raw = localStorage.getItem(RUN_KEY);
+    if (raw === null) return { status: "empty", run: null };
+    const run = normalizeRun(JSON.parse(raw));
+    if (!run) throw new Error("Salvataggio vuoto o non valido.");
+    if (hydrate || raw !== verifiedRaw) hydrateOverworldV2(run);
+    verifiedRaw = raw;
+    return { status: "ok", run };
+  } catch (error) { return { status: "incompatible", run: null, error }; }
 };
-export const saveRun = (run) => (run ? localStorage.setItem(RUN_KEY, JSON.stringify(normalizeRun(run))) : localStorage.removeItem(RUN_KEY));
+export const loadRunResult = () => readRun(true);
+export const loadRun = () => loadRunResult().run;
+export const saveRun = run => {
+  const existing = readRun(false);
+  if (existing.status === "incompatible") throw new OverworldSaveError("Salvataggio incompatibile conservato; rimozione esplicita necessaria.");
+  // Check only the saved path (at most 50 IDs), using the cached graph; never run
+  // the whole-graph validator on HP/XP updates. Reject bad incoming snapshots too.
+  const next = normalizeRun(run);
+  if (next) hydrateOverworldV2(next);
+  const raw = next ? JSON.stringify(next) : null;
+  if (raw === null) localStorage.removeItem(RUN_KEY);
+  else localStorage.setItem(RUN_KEY, raw);
+  verifiedRaw = raw;
+};
 export const clearRun = () => localStorage.removeItem(RUN_KEY);
+
+// Synchronous single-writer transaction: read latest, reject stale command, apply
+// once, and persist the entire next snapshot with one setItem. A failed write
+// throws and leaves the previous snapshot available; no partially saved selection.
+export function dispatchRunV2(expected, action) {
+  const loaded = loadRunResult();
+  if (loaded.status === "incompatible") throw loaded.error;
+  const run = loaded.run;
+  if (!hasOverworldV2(run) || !expected || Object.entries(runTokenV2(run)).some(([key, value]) => expected[key] !== value)) return run;
+  const next = action.type === "select" ? beginOverworldNode(run, action.nodeId) : resolveOverworldActionV2(run, action);
+  if (next !== run) {
+    // As in saveRun, reject a snapshot that hydration would refuse before writing.
+    hydrateOverworldV2(next);
+    const raw = JSON.stringify(next);
+    localStorage.setItem(RUN_KEY, raw);
+    verifiedRaw = raw;
+  }
+  return next;
+}

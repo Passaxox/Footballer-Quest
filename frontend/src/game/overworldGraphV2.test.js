@@ -480,9 +480,21 @@ describe("Epsilon W25 architectural contract", () => {
     expect(hits).toBeLessThan(seeds.length);
   });
 
-  test("documented V1 discrepancy (update deliberately in P2): generateWave knows Epsilon, beginOverworldNode does not", () => {
-    expect(engine.generateWave.toString()).toMatch(/epsilonEntryEligible/);
-    expect(engine.beginOverworldNode.toString()).not.toMatch(/epsilon/i);
+  // P2a replaces the P1c source-text placeholder with the actual compatibility contract.
+  // Golden fixtures and graph generation are intentionally unchanged.
+  test("P2a wires Epsilon only for V2 node selection; V1 retains its historical flow", () => {
+    const contentSeed = Array.from({ length: 1000 }, (_, seed) => seed).find(seed => engine.epsilonEntryEligible(epsilonRun(seed)));
+    expect(contentSeed).toBeDefined();
+    const original = engine.newRun(STARTER_IDS.slice(0, 3));
+    const legacy = { ...original, wave: 25, overworld: { ...original.overworld, contentSeed } };
+    expect(engine.beginOverworldNode(legacy, "ow2:w25:a")).toBe(legacy);
+    expect(engine.generateWave(legacy).teamId).toBe("epsilon");
+    const graph = GRAPHS[0], initial = engine.newRunV2(STARTER_IDS.slice(0, 3), graph.seed, "normal", { contentSeed });
+    const run = { ...initial, wave: 25, overworld: { ...initial.overworld,
+      completedWave: 24, path: g.walkOverworldPathV2(graph).nodeIds.slice(0, 24) } };
+    const selected = engine.beginOverworldNode(run, g.nodesAtWave(graph, 25)[0].nodeId);
+    expect(selected.pending.teamId).toBe("epsilon");
+    expect(selected.pending.enemies).toEqual(engine.generateWave(legacy).enemies);
   });
 });
 

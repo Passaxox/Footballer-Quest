@@ -1,4 +1,5 @@
 import { selectEncounterVersion, selectEncounterLineup, scenarioForWave, normalizeScenarioState, isFreshPlayerVersion } from "./scenarios";
+import { initialOverworldV2, hasOverworldV2, assertOverworldVersion, selectableNodesV2 } from "./overworldRunV2";
 import { initialOverworld, selectableOverworldNode, nodeRandom } from "./overworld";
 import { CHARACTERS, canRecruitPlayer, canonicalCharacterId, ownedCharacterIds, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
@@ -186,13 +187,13 @@ export const enemyLevel = (wave, rulesetId, random = Math.random) => {
 
 // Only fresh event generation uses this substitution; never normalize saved players with it.
 const freshEventId = id => resolveVersion(id)?.versionId === "jonas:base" ? "jonas:zeus" : id;
-export const randomRosterId = (maxTier, exclude = []) => {
+export const randomRosterId = (maxTier, exclude = [], random = Math.random) => {
   const excluded = new Set(exclude.map(id => canonicalCharacterId(freshEventId(id))));
   const pool = ROSTER.map(r => freshEventId(r.id)).filter(id => {
     const v = resolveVersion(id);
     return isFreshPlayerVersion(v) && v.encounterTier <= maxTier && !excluded.has(canonicalCharacterId(v.versionId));
   });
-  return pick(pool);
+  return pick(pool, random);
 };
 
 const tierForWave = (wave) => (wave < 8 ? 1 : wave < 18 ? 2 : 3);
@@ -260,7 +261,9 @@ export const epsilonRecruitOffer = (encounter, team) => {
 
 // Scenario is selected once per segment and returned for atomic persistence with the pending node.
 export const generateWave = (run, random = Math.random) => {
+  assertOverworldVersion(run);
   if (run.pending) return run.pending; // Never reroll an already persisted encounter.
+  if (hasOverworldV2(run)) throw new Error("Seleziona una tappa V2 prima di generare il contenuto.");
   if (epsilonEntryEligible(run)) return epsilonEncounter(run);
   const scenarioState = scenarioForWave(normalizeScenarioState(run.scenarioState, run.wave), run.wave, tierForWave(run.wave), random);
   return { ...generateWaveNode({ ...run, scenarioState }, null, random), scenarioState };
@@ -268,14 +271,19 @@ export const generateWave = (run, random = Math.random) => {
 
 // Selecting a tile commits path + location + generated content in one saved run.
 export const beginOverworldNode = (run, nodeId) => {
-  const node = selectableOverworldNode(run, nodeId);
+  assertOverworldVersion(run);
+  const v2 = hasOverworldV2(run);
+  const node = v2 ? selectableNodesV2(run).find(n => n.nodeId === nodeId) : selectableOverworldNode(run, nodeId);
   if (!node) return run;
   const scenarioState = { id: node.locationId, revision: 1, segmentStart: run.wave, segmentEnd: run.wave };
   const contentSeed = run.overworld.contentSeed ?? (Number(run.startedAt) >>> 0);
-  const pending = { ...generateWaveNode({ ...run, scenarioState }, node.type, nodeRandom(contentSeed, node.nodeId)),
+  const situated = { ...run, scenarioState };
+  const content = v2 && node.hooks.includes(EPSILON_ENTRY.id) && epsilonEntryEligible(situated)
+    ? epsilonEncounter(situated) : generateWaveNode(situated, node.type, nodeRandom(contentSeed, node.nodeId));
+  const pending = { ...content, ...(v2 ? { actionStep: 0 } : {}),
     scenarioState, overworldNodeId: node.nodeId, environmentId: node.environmentId };
   return { ...run, scenarioState, pending, overworld: { ...run.overworld,
-    contentSeed, environmentId: node.environmentId, routeId: run.overworld.routeId || node.routeId, selectedNodeId: node.nodeId } };
+    contentSeed, environmentId: node.environmentId, ...(v2 ? { transition: run.overworld.transition + 1 } : { routeId: run.overworld.routeId || node.routeId }), selectedNodeId: node.nodeId } };
 };
 
 export const generateShop = (wave, random = Math.random) => {
@@ -284,12 +292,12 @@ export const generateShop = (wave, random = Math.random) => {
   return ids.map((id) => ({ id, price: Math.round(ITEMS[id].price * (1 + wave * 0.01)) }));
 };
 
-export const generateRewards = () => {
+export const generateRewards = (random = Math.random) => {
   const out = [];
   const pool = [...REWARD_POOL];
   while (out.length < 3 && pool.length) {
     const total = pool.reduce((s, r) => s + r.w, 0);
-    let x = Math.random() * total;
+    let x = random() * total;
     const idx = pool.findIndex((r) => (x -= r.w) < 0);
     out.push(pool[idx].id);
     pool.splice(idx, 1);
@@ -297,7 +305,7 @@ export const generateRewards = () => {
   return out;
 };
 
-export const enemiesForEffect = (eff, wave, run) => {
+export const enemiesForEffect = (eff, wave, run, random = Math.random) => {
   const adjustment = run ? ENEMY_GUARDRAILS[getRules(run.rulesetId).difficultyId].challengeOffset : 0;
   const raw = Math.max(1, wave + (eff.levelBonus || 0) + adjustment);
   const level = run ? cappedEnemyLevel(raw, run.team, run.rulesetId, "challenge") : raw;
@@ -307,31 +315,38 @@ export const enemiesForEffect = (eff, wave, run) => {
       const identity = canonicalCharacterId(id);
       if (seen.has(identity)) return false;
       seen.add(identity); return true;
-    }).map(id => createPlayer(id, level));
+    }).map(id => createPlayer(id, level, random));
   }
   const ids = [];
-  while (ids.length < (eff.count || 1)) ids.push(randomRosterId(tierForWave(wave), ids));
-  return ids.map((id) => createPlayer(id, level));
+  while (ids.length < (eff.count || 1)) ids.push(randomRosterId(tierForWave(wave), ids, random));
+  return ids.map((id) => createPlayer(id, level, random));
 };
 
 // ---------- Run helpers ----------
-export const newRun = (starterIds, difficultyId = "normal") => {
+export const newRun = (starterIds, difficultyId = "normal", options = {}) => {
+  const v2 = options.overworldRevision === 2;
+  if (options.overworldRevision != null && ![1, 2].includes(options.overworldRevision)) throw new Error("Revisione Overworld non supportata.");
   if (new Set(starterIds.map(canonicalCharacterId)).size !== starterIds.length) throw new Error("Scegli personaggi diversi, non versioni della stessa persona.");
   if (starterIds.some(id => !isFreshPlayerVersion(resolveVersion(id)))) throw new Error("Versione non disponibile per una nuova run.");
   return normalizeRun({
-  overworld: initialOverworld(),
-  scenarioState: scenarioForWave(null, 1, tierForWave(1)),
+  overworld: v2 ? initialOverworldV2(options.seed, options.contentSeed, options.algorithmVersion) : initialOverworld(),
+  scenarioState: v2 ? normalizeScenarioState(null, 1) : scenarioForWave(null, 1, tierForWave(1)),
   difficultyId, rulesetId: DIFFICULTIES[difficultyId].rulesetId,
   wave: 1, team: starterIds.map((id) => createPlayer(id, 3)), items: { barretta: 2 }, money: 100,
   stats: { wins: 0, recruits: 0, fusions: 0, glory: 0 }, seenEvents: [], pending: null, fischietto: false, startedAt: Date.now(),
   });
 };
 
+// Explicit headless opt-in; no UI selector and no conversion of existing runs.
+export const newRunV2 = (starterIds, seed, difficultyId = "normal", options = {}) =>
+  newRun(starterIds, difficultyId, { ...options, overworldRevision: 2, seed });
+
 export const resolveActiveUid = (team, activeUid) =>
   team.find((p) => p.uid === activeUid && p.hp > 0)?.uid || team.find((p) => p.hp > 0)?.uid || null;
 
 export const normalizeRun = (run) => {
   if (!run) return null;
+  assertOverworldVersion(run);
   const rulesetId = run.rulesetId || DIFFICULTIES[run.difficultyId || "normal"]?.rulesetId || DEFAULT_RULESET;
   const rules = getRules(rulesetId);
   // Only hydrate known PlayerInstance locations; never regenerate pending content.
