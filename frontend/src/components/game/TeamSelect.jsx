@@ -51,6 +51,7 @@ function StarterInspector({ group, version, selected, full, onVersion, onSelect,
 
 export default function TeamSelect({ meta, onStart, onBack }) {
   const [selected, setSelected] = useState([]), [difficultyId, setDifficultyId] = useState("normal");
+  const [overworldV2, setOverworldV2] = useState(false);
   const [filters, setFilters] = useState({ search: "", team: "", role: "", element: "" });
   const [choices, setChoices] = useState({}), [open, setOpen] = useState(null);
   const [picker, setPicker] = useState(null), [notice, setNotice] = useState("");
@@ -93,9 +94,10 @@ export default function TeamSelect({ meta, onStart, onBack }) {
     role: [{ id: "", label: "Tutti" }, ...Object.entries(ROLES).map(([id, label]) => ({ id, label }))],
     element: [{ id: "", label: "Tutti" }, ...Object.values(ELEMENTS).map(e => ({ id: e.id, label: e.label }))],
   };
-  return <div className="ss-screen" data-testid="team-selection-screen">
+  return <div className="ss-screen ss-with-mode" data-testid="team-selection-screen">
     <header className="ss-heading"><div><span className="ss-eyebrow">LA TUA SQUADRA, IL TUO VIAGGIO</span><h1>Scegli i titolari</h1></div><button data-testid="select-back-btn" onClick={onBack}>Menu</button></header>
-    <div className="ss-controls">
+    <div className="ss-browse"><div className="ss-controls">
+      <label className="ss-mode"><input data-testid="overworld-v2-opt-in" type="checkbox" checked={overworldV2} onChange={e => setOverworldV2(e.target.checked)} />Overworld V2 sperimentale <span>{overworldV2 ? "Nuovo percorso · 50 wave" : "Predefinito: percorso V1"}</span></label>
       <label className="ss-search">Cerca nel roster<input aria-label="Cerca personaggio o squadra" placeholder="Nome, alias o squadra…" value={filters.search} onChange={e => setFilters(f => ({ ...f, search: e.target.value }))} /></label>
       <div className="ss-filters">
         {[["team", "Squadra"], ["role", "Ruolo"], ["element", "Elemento"]].map(([key, label]) => <div className="ss-filter" key={key}><span>{label}</span><button aria-label={label} aria-haspopup="dialog" onClick={() => setPicker({ title: label, options: filterOptions[key], value: filters[key], onChoose: id => { setFilters(f => ({ ...f, [key]: id })); setPicker(null); } })}>{filterOptions[key].find(o => o.id === filters[key])?.label} ▾</button></div>)}
@@ -113,6 +115,7 @@ export default function TeamSelect({ meta, onStart, onBack }) {
       })}</div>
       {!visible.length && <p className="ss-empty">Nessun titolare con questi filtri. Prova un'altra ricerca.</p>}
     </div>
+    </div>
     <footer className="ss-footer">
       {notice && <p role="status" className="ss-notice">{notice}</p>}
       <div className="ss-summary-title"><strong>TITOLARI · {selected.length}/3</strong><span>Tocca per cambiare</span></div>
@@ -121,7 +124,7 @@ export default function TeamSelect({ meta, onStart, onBack }) {
         return v ? <button key={i} data-testid={`starter-slot-${i}`} aria-label={`Modifica ${g.name}`} onClick={() => inspect(g, v)}><Avatar p={portrait(v)} size={32} /><span><strong>{g.name}</strong><small>{starterVersionName(v)}</small></span></button> : <div key={i} className="ss-slot-empty">{i + 1}<span>Da scegliere</span></div>;
       })}</div>
       <div className="ss-launch"><fieldset><legend>Difficoltà</legend>{Object.entries(DIFFICULTIES).map(([id, d]) => <label key={id} title={d.description}><input data-testid={`difficulty-${id}`} type="radio" name="difficulty" checked={difficultyId === id} onChange={() => setDifficultyId(id)} />{d.label}</label>)}</fieldset>
-        <button className="ss-action" data-testid="start-run-btn" disabled={selected.length !== 3} onClick={() => { sfx.win(); onStart(selected, difficultyId); }}>Inizia · {DIFFICULTIES[difficultyId].label}</button></div>
+        <button className="ss-action" data-testid="start-run-btn" disabled={selected.length !== 3} onClick={() => { sfx.win(); if (overworldV2) onStart(selected, difficultyId, 2); else onStart(selected, difficultyId); }}>Inizia · {DIFFICULTIES[difficultyId].label}{overworldV2 ? " · V2" : ""}</button></div>
     </footer>
     {group && <StarterInspector group={group} version={version} selected={selectedFor(open)} full={selected.length === 3} onVersion={switchVersion} onSelect={confirm} onClose={() => setOpen(null)} />}
     {picker && <ChoicePanel {...picker} onClose={() => setPicker(null)} />}

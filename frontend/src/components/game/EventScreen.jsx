@@ -7,10 +7,12 @@ const pickOutcome = (outcomes) => {
   return outcomes.find((o) => (x -= o.chance) < 0) || outcomes[outcomes.length - 1];
 };
 
-export default function EventScreen({ run, event, onChoose, onResolve }) {
-  const [result, setResult] = useState(run.pending.result || null);
-  const choose = (c) => {
+export default function EventScreen({ run, event, onChoose, onChooseIndex, onResolve }) {
+  const [localResult, setResult] = useState(run.pending.result || null);
+  const result = onChooseIndex ? run.pending.result : localResult;
+  const choose = (c, index) => {
     sfx.confirm();
+    if (onChooseIndex) { onChooseIndex(index); return; }
     const chosen = pickOutcome(c.outcomes);
     onChoose(chosen);
     setResult(chosen);
@@ -27,7 +29,7 @@ export default function EventScreen({ run, event, onChoose, onResolve }) {
         </Panel>
         <div className="mt-auto space-y-2">
           {!result && event.choices.map((c, i) => (
-            <Btn key={i} data-testid={`event-choice-${i}`} className="w-full text-left normal-case" disabled={c.cost && run.money < c.cost} onClick={() => choose(c)}>
+            <Btn key={i} data-testid={`event-choice-${i}`} className="w-full text-left normal-case" disabled={c.cost && run.money < c.cost} onClick={() => choose(c, i)}>
               ▶ {c.label}{c.cost && run.money < c.cost ? " (Prestigio insufficiente)" : ""}
             </Btn>
           ))}

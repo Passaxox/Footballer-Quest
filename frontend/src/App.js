@@ -2,11 +2,13 @@ import { discoverVersion, recruitVersion } from "@/game/collection";
 import { canRecruitPlayer, ownedCharacterIds } from "@/game/catalog";
 import { useCallback, useRef, useState } from "react";
 import { hasOverworld, completeOverworldNode } from "@/game/overworld";
-import { beginOverworldNode } from "@/game/engine";
+import { beginOverworldNode, newRunV2 } from "@/game/engine";
+import { hasOverworldV2 } from "@/game/overworldRunV2";
+import RunV2 from "@/components/game/RunV2";
 import "@/App.css";
 import { EVENTS, FINAL_WAVE } from "@/game/data";
 import { generateWave, epsilonRecruitOffer, recruitChallengePlayer, generateRewards, addItem, createPlayer, randomRosterId, enemiesForEffect, fuseRunPlayers, gainXp, recalcStats, chance, newRun, normalizeRun, resolveActiveUid, applyEventDamage, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
-import { loadMeta, saveMeta, loadRun, saveRun, clearRun, recordFinishedRun } from "@/game/storage";
+import { loadMeta, saveMeta, loadRunResult, saveRun, clearRun, recordFinishedRun } from "@/game/storage";
 import { setSoundEnabled } from "@/game/audio";
 import TitleScreen from "@/components/game/TitleScreen";
 import TeamSelect from "@/components/game/TeamSelect";
@@ -24,11 +26,15 @@ import CollectionScreen from "@/components/game/CollectionScreen";
 import RecordsScreen from "@/components/game/RecordsScreen";
 
 function App() {
-  const [screen, setScreen] = useState("title");
-  const [run, setRun] = useState(() => loadRun());
+  const [initialSave] = useState(() => loadRunResult());
+  // Restore V2 directly, including terminal snapshots awaiting meta recovery.
+  const [screen, setScreen] = useState(() => hasOverworldV2(initialSave.run) ? "v2" : "title");
+  const [saveProblem, setSaveProblem] = useState(initialSave.status === "incompatible");
+  const [run, setRun] = useState(initialSave.run);
   const [meta, setMeta] = useState(() => { const saved = loadMeta(); setSoundEnabled(saved.sound); return saved; });
   const [ctx, setCtx] = useState({});
   const runRef = useRef(run);
+  const adoptSnapshot = useCallback(snapshot => { runRef.current = snapshot; setRun(snapshot); }, []);
 
   const updateRun = (r) => { const nextRun = normalizeRun(r); runRef.current = nextRun; setRun(nextRun); saveRun(nextRun); return nextRun; };
   // Reject duplicate taps/stale screen callbacks before applying any resource/XP effects.
@@ -44,7 +50,16 @@ function App() {
     });
   }, []);
 
-  const startRun = (ids, difficultyId) => {
+  const startRun = (ids, difficultyId, revision = 1) => {
+    if (!isCurrentAction()) return;
+    if (loadRunResult().status === "incompatible") { setSaveProblem(true); return; }
+    if (revision === 2) {
+      // Generate once at the confirmed launch, never during render or resume.
+      const seed = window.crypto.getRandomValues(new Uint32Array(1))[0];
+      updateRun(newRunV2(ids, seed, difficultyId));
+      setScreen("v2");
+      return;
+    }
     updateRun(newRun(ids, difficultyId));
     updateMeta(ids.reduce((nextMeta, id) => recruitVersion(nextMeta, id), meta));
     setScreen("hub");
@@ -204,10 +219,17 @@ function App() {
   };
 
   const toggleSound = () => { const m = { ...meta, sound: !meta.sound }; updateMeta(m); setSoundEnabled(m.sound); };
+  const continueRun = () => {
+    const loaded = loadRunResult();
+    if (loaded.status === "incompatible") { setSaveProblem(true); return; }
+    if (!loaded.run) return;
+    adoptSnapshot(loaded.run);
+    setScreen(hasOverworldV2(loaded.run) ? "v2" : "hub");
+  };
 
   const render = () => {
     switch (screen) {
-      case "title": return <TitleScreen hasRun={!!run} meta={meta} onNew={() => { if (!run || window.confirm("Esiste una run in corso. Iniziando una nuova run perderai quei progressi. Continuare?")) setScreen("select"); }} onContinue={() => setScreen("hub")} onRecords={() => setScreen("records")} onCollection={() => setScreen("collection")} onToggleSound={toggleSound} />;
+      case "title": return <TitleScreen hasRun={!!run} meta={meta} onNew={() => { if (loadRunResult().status === "incompatible") { setSaveProblem(true); return; } if (!run || window.confirm("Esiste una run in corso. Iniziando una nuova run perderai quei progressi. Continuare?")) setScreen("select"); }} onContinue={continueRun} onRecords={() => setScreen("records")} onCollection={() => setScreen("collection")} onToggleSound={toggleSound} />;
       case "select": return <TeamSelect meta={meta} onStart={startRun} onBack={() => setScreen("title")} />;
       case "records": return <RecordsScreen meta={meta} onBack={() => setScreen("title")} />;
       case "collection": return <CollectionScreen meta={meta} onBack={() => setScreen("title")} />;
@@ -231,6 +253,12 @@ function App() {
     }
   };
 
+  if (saveProblem) return <div className="fq-safe min-h-screen bg-slate-950 text-white p-5" role="alert" data-testid="incompatible-save">
+    <h1 className="text-xl">Salvataggio incompatibile</h1>
+    <p className="my-4">Questa versione non può aprire il salvataggio. I dati sono conservati. Per iniziare una nuova run devi rinunciare esplicitamente al salvataggio esistente.</p>
+    <button className="pixel-btn border-2 p-3" data-testid="discard-save-btn" onClick={() => { if (window.confirm("Eliminare definitivamente il salvataggio incompatibile? Questa azione non è annullabile.")) { clearRun(); adoptSnapshot(null); setSaveProblem(false); setScreen("title"); } }}>Rinuncia al salvataggio</button>
+  </div>;
+  if (screen === "v2" && hasOverworldV2(run)) return <RunV2 run={run} onSnapshot={adoptSnapshot} onMeta={setMeta} onHome={() => setScreen("title")} onNew={() => setScreen("select")} />;
   const owHub = screen === "hub" && hasOverworld(run);
   return (
     <div className={`min-h-screen bg-[#05070d] flex justify-center font-body ${owHub ? "ow-shell" : ""}`}>

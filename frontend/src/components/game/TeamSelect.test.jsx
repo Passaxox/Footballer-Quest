@@ -14,6 +14,18 @@ const click = async id => act(async () => find(id).click());
 beforeEach(() => { globalThis.IS_REACT_ACT_ENVIRONMENT = true; host = document.createElement("div"); root = createRoot(host); });
 afterEach(async () => act(async () => root.unmount()));
 
+test("V2 is an unchecked new-run opt-in and resets with a fresh draft", async () => {
+  const onStart = jest.fn();
+  await act(async () => root.render(<TeamSelect meta={meta} onStart={onStart} />));
+  expect(find("overworld-v2-opt-in").checked).toBe(false);
+  await click("add-mark"); await click("add-axel"); await click("starter-jude"); await click("starter-confirm");
+  await click("overworld-v2-opt-in"); await click("start-run-btn");
+  expect(onStart).toHaveBeenCalledWith(["mark:base", "axel:base", "jude:base"], "normal", 2);
+  await act(async () => root.unmount()); root = createRoot(host);
+  await act(async () => root.render(<TeamSelect meta={meta} onStart={onStart} />));
+  expect(find("overworld-v2-opt-in").checked).toBe(false);
+});
+
 test("grouping uses canonical people, eligible versions only, and localization aliases", () => {
   const groups = starterGroups(meta);
   expect(groups.map(g => g.characterId)).toEqual(["mark", "axel", "jude", "fidio"]);

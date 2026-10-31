@@ -1,0 +1,13 @@
+.v2-shell { display: flex; flex-direction: column; overflow: hidden; }
+.v2-content { display: flex; flex-direction: column; flex: 1 1 0%; min-height: 0; overflow-y: auto; }
+.v2-content-fit { overflow: hidden; }
+.v2-hub { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.v2-destination { display: flex; flex-direction: column; width: 100%; gap: 5px; text-align: left; padding: 12px; border: 2px solid #475569; background: #172439; }
+.v2-destination:hover, .v2-destination:focus-visible { border-color: #facc15; }
+.v2-destination strong { color: #fde68a; }
+.v2-destination small { font-size: 15px; line-height: 1.25; color: #cbd5e1; }
+.v2-hub-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; border-top: 2px solid #334155; }
+.v2-pause { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; flex: 0 0 auto; border-bottom: 1px solid #334155; }
+.v2-pause button { min-height: 40px; padding: 4px 8px; text-decoration: underline; }
+.v2-error { padding: 8px; color: #fef3c7; background: #78350f; }
+.v2-error button { display: block; min-height: 44px; text-decoration: underline; }

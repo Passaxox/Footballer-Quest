@@ -5,7 +5,7 @@ import { nodeRandom } from "./overworld";
 import { hydrateOverworldV2, hasOverworldV2, actionTokenV2 } from "./overworldRunV2";
 import { normalizeRun, completeNonCombatNode, generateRewards, epsilonRecruitOffer, recruitChallengePlayer,
   createPlayer, chance, addItem, gainXp, recalcStats, applyEventDamage, reportXpChanges, mergeXpReports,
-  randomRosterId, enemiesForEffect, resolveActiveUid } from "./engine";
+  randomRosterId, enemiesForEffect, resolveActiveUid, fuseRunPlayers } from "./engine";
 
 const advance = (run, nonCombat = false) => {
   const r = nonCombat ? completeNonCombatNode(run) : run;
@@ -25,6 +25,18 @@ const afterRecruit = run => run.pending.context?.after === "rewards"
 export function resolveOverworldActionV2(run, action) {
   if (!hasOverworldV2(run)) return run;
   hydrateOverworldV2(run);
+  if (run.overworld.result) return run;
+  // Hub commands use storage's run token; no pending/action token exists here.
+  if (action?.type === "abandon") return normalizeRun({ ...run, overworld: { ...run.overworld, transition: run.overworld.transition + 1, result: "lose" } });
+  if (!run.pending && action?.type === "teamPatch") {
+    const patch = Object.fromEntries(Object.entries(action.patch || {}).filter(([key]) => ["team", "items", "money", "fischietto"].includes(key)));
+    return normalizeRun({ ...run, ...patch, overworld: { ...run.overworld, transition: run.overworld.transition + 1 } });
+  }
+  if (!run.pending && action?.type === "fuse") {
+    const { a, b, moveFrom } = action;
+    if (!(run.items.cuneo > 0) || a === b || !run.team[a] || !run.team[b] || run.team[a].fused || run.team[b].fused || !["a", "b"].includes(moveFrom)) return run;
+    return normalizeRun({ ...fuseRunPlayers(run, a, b, moveFrom), overworld: { ...run.overworld, transition: run.overworld.transition + 1 } });
+  }
   const token = actionTokenV2(run), p = run.pending;
   if (!token || !action || action.nodeId !== token.nodeId || action.step !== token.step) return run;
   const random = nodeRandom(run.overworld.contentSeed, `${token.nodeId}/action/${token.step}`);
@@ -58,7 +70,8 @@ export function resolveOverworldActionV2(run, action) {
       if (replace === null ? run.team.length >= 6 : !Number.isInteger(replace) || !run.team[replace]) return run;
       const player = { ...offer, hp: offer.maxHp };
       const team = replace === null ? [...run.team, player] : run.team.map((q, i) => i === replace ? player : q);
-      return afterRecruit({ ...run, team, money: run.money - (free ? 0 : p.price), stats: { ...run.stats, recruits: run.stats.recruits + 1 } });
+      const recruitedVersionsV2 = [...new Set([...(run.recruitedVersionsV2 || []), ...run.team.filter(q => !q.fused).map(q => q.versionId || q.baseId), player.versionId || player.baseId])];
+      return afterRecruit({ ...run, team, recruitedVersionsV2, money: run.money - (free ? 0 : p.price), stats: { ...run.stats, recruits: run.stats.recruits + 1 } });
     }
   }
   if (action.type === "chooseEvent" && p.type === "event" && !p.result) {

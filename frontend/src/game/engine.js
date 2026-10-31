@@ -337,9 +337,11 @@ export const newRun = (starterIds, difficultyId = "normal", options = {}) => {
   });
 };
 
-// Explicit headless opt-in; no UI selector and no conversion of existing runs.
-export const newRunV2 = (starterIds, seed, difficultyId = "normal", options = {}) =>
-  newRun(starterIds, difficultyId, { ...options, overworldRevision: 2, seed });
+// Explicit opt-in; keep receipts so separate Collection writes can be retried.
+export const newRunV2 = (starterIds, seed, difficultyId = "normal", options = {}) => {
+  const run = newRun(starterIds, difficultyId, { ...options, overworldRevision: 2, seed });
+  return { ...run, recruitedVersionsV2: run.team.map(p => p.versionId) };
+};
 
 export const resolveActiveUid = (team, activeUid) =>
   team.find((p) => p.uid === activeUid && p.hp > 0)?.uid || team.find((p) => p.hp > 0)?.uid || null;

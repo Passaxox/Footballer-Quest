@@ -1,6 +1,6 @@
 import { hydrateOverworldV2, hasOverworldV2, runTokenV2, OverworldSaveError } from "./overworldRunV2";
 import { resolveOverworldActionV2 } from "./overworldActionsV2";
-import { migrateCollection } from "./collection";
+import { migrateCollection, recruitVersion, discoverVersion } from "./collection";
 import { withPlayerIdentity } from "./catalog";
 import { STARTER_IDS } from "./data";
 import { beginOverworldNode, normalizeRun, glory, playtestSummary } from "./engine";
@@ -24,7 +24,7 @@ export const saveMeta = (m) => localStorage.setItem(META_KEY, JSON.stringify(mig
 
 // Extend the existing archive; never manufacture snapshots for legacy records.
 export const recordFinishedRun = (meta, run, result) => {
-  const recordId = `${run.startedAt}:${run.team[0]?.uid || "empty"}`;
+  const recordId = hasOverworldV2(run) ? `v2:${run.startedAt}:${run.overworld.seed}:${run.overworld.contentSeed}` : `${run.startedAt}:${run.team[0]?.uid || "empty"}`;
   if (meta.records.some(record => record.recordId === recordId)) return meta;
   const record = { ...playtestSummary(run), recordId, date: Date.now(), result,
     difficultyId: run.difficultyId, rulesetId: run.rulesetId, glory: glory(run),
@@ -33,6 +33,18 @@ export const recordFinishedRun = (meta, run, result) => {
   };
   return { ...meta, records: [...meta.records, record], runs: meta.runs + 1, bestWave: Math.max(meta.bestWave, run.wave) };
 };
+
+// Run and meta are separate writes. Durable run receipts allow retry after a
+// crash/quota failure between them, even if a recruited player later leaves.
+export function reconcileRunV2Meta(run, discoveries = []) {
+  let meta = loadMeta();
+  const previous = meta;
+  for (const id of discoveries) meta = discoverVersion(meta, id);
+  for (const id of new Set([...(run.recruitedVersionsV2 || []), ...run.team.filter(p => !p.fused).map(p => p.versionId || p.baseId)])) meta = recruitVersion(meta, id);
+  if (run.overworld.result) meta = recordFinishedRun(meta, run, run.overworld.result);
+  if (meta !== previous) saveMeta(meta);
+  return meta;
+}
 
 // Invalid/incompatible saves remain byte-for-byte intact; callers can inspect the
 // result without crashing startup. Only explicit clearRun discards that snapshot.

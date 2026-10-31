@@ -10,10 +10,10 @@ const DRILLS = [
   { id: "hp", label: "Resistenza", desc: "+12 HP max", apply: (p) => { const q = recalcStats({ ...p, bonus: { ...p.bonus, hp: p.bonus.hp + 12 } }); return { ...q, hp: p.hp === 0 ? 0 : Math.min(q.maxHp, q.hp + 12) }; } },
 ];
 
-export default function TrainingScreen({ run, onDone }) {
+export default function TrainingScreen({ run, onDone, onTrain }) {
   const [sel, setSel] = useState(null);
-  const teamXp = () => { sfx.levelup(); onDone(run.team.map((p) => gainXp(p, 30).player), true); };
-  const drill = (d) => { sfx.levelup(); onDone(run.team.map((p, i) => (i === sel ? d.apply(p) : p))); };
+  const teamXp = () => { sfx.levelup(); if (onTrain) onTrain("xp"); else onDone(run.team.map((p) => gainXp(p, 30).player), true); };
+  const drill = (d) => { sfx.levelup(); if (onTrain) onTrain(d.id, sel); else onDone(run.team.map((p, i) => (i === sel ? d.apply(p) : p))); };
   return (
     <div data-testid="training-screen" className="flex flex-col flex-1">
       <Header title="Allenamento Inazuma" sub="Coach Hillman vi osserva" />
