@@ -55,7 +55,7 @@ function pendingType(type) {
   const node = graphForRunV2(fresh()).nodes.find(n => n.type === type && !n.boss);
   return engine.beginOverworldNode(beforeNode(node), node.nodeId);
 }
-const select = async node => click(`v2-node-${node.nodeId}`);
+const select = async node => { await click(`v2-node-${node.nodeId}`); await click("v2-confirm-btn"); };
 async function finishPending() {
   let guard = 0;
   while (loadRun().pending && !loadRun().overworld.result && guard++ < 10) {
@@ -311,4 +311,22 @@ test("functional UI route completes all 50 waves and final victory is archived o
   expect(loadRun().overworld.path).toHaveLength(50); const record = loadMeta().records;
   await reload(); expect(loadMeta().records).toEqual(record); expect(loadMeta().runs).toBe(1);
   await call(EndScreen, "onRetry"); expect(TeamSelect).toHaveBeenCalled(); expect(loadRun()).toBeNull();
+});
+
+test("resume restores the district map at the saved position and a double tap on confirm persists one selection", async () => {
+  const node = graphForRunV2(fresh()).nodes.find(n => n.wave === 4 && !n.boss);
+  const run = beforeNode(node); saveRun(run); await resume();
+  const last = run.overworld.path.at(-1);
+  expect(find("v2-district-map")).not.toBeNull();
+  expect(host.querySelector(`[data-node-id="${last}"]`).dataset.state).toBe("completed");
+  expect(find("v2-caravan").dataset.mode).toBe("node");
+  await reload();
+  expect(host.querySelector(`[data-node-id="${last}"]`).dataset.state).toBe("completed");
+  const target = selectableNodesV2(run)[0];
+  await click(`v2-node-${target.nodeId}`);
+  await act(async () => { find("v2-confirm-btn").click(); find("v2-confirm-btn").click(); });
+  expect(loadRun().pending.overworldNodeId).toBe(target.nodeId);
+  expect(loadRun().overworld.transition).toBe(run.overworld.transition + 1);
+  await reload();
+  expect(loadRun().pending.overworldNodeId).toBe(target.nodeId);
 });
