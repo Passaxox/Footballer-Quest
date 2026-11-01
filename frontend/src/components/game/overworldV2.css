@@ -2,75 +2,100 @@
 .v2-content { display: flex; flex-direction: column; flex: 1 1 0%; min-height: 0; overflow-y: auto; }
 .v2-content-fit { overflow: hidden; }
 .v2-hub { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-.v2-hub-scroll { overflow-x: hidden; }
-.v2-status { padding: 8px; font-size: 16px; line-height: 1.2; }
-.v2-destination { display: flex; flex-direction: column; width: 100%; min-height: 56px; gap: 3px; text-align: left; padding: 10px 12px; border: 2px solid #475569; background: #172439; }
-.v2-destination:hover, .v2-destination:focus-visible { border-color: #facc15; }
-.v2-destination.is-focus { border-color: #facc15; background: #22304a; box-shadow: inset 4px 0 0 #facc15; }
-.v2-destination strong { color: #fde68a; }
-.v2-destination small { font-size: 15px; line-height: 1.25; color: #cbd5e1; }
-.v2-tactical h2 { font-family: "Press Start 2P", monospace; font-size: 10px; color: #7dd3fc; text-transform: uppercase; margin-bottom: 8px; }
-.v2-frame-nav { display: grid; grid-template-columns: 44px 1fr 44px; gap: 6px; align-items: stretch; }
+
+/* Compact HUD: stats left, persistent commands right. */
+.v2-hud { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 6px; background: #111827; border-bottom: 2px solid #1e293b; }
+.v2-hud-stats { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; line-height: 1.1; }
+.v2-hud-stats strong { font-family: "Press Start 2P", monospace; font-size: 10px; color: #fcd34d; }
+.v2-hud-stats span { color: #fde68a; }
+.v2-hud-stats small { font-size: 14px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2-hud-actions { display: flex; gap: 4px; flex: 0 0 auto; }
+.v2-hud-actions button { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 48px; min-height: 44px; padding: 2px 3px; border: 2px solid #475569; background: #1e293b; color: #e2e8f0; font-size: 11px; line-height: 1.05; }
+.v2-hud-actions button:hover, .v2-hud-actions button:focus-visible { border-color: #facc15; }
+.v2-hud-actions [data-testid="abandon-btn"] { color: #fca5a5; }
+
+.v2-frame-nav { flex: 0 0 auto; display: grid; grid-template-columns: 44px 1fr 44px 44px; gap: 4px; padding: 4px 6px; background: #0d1322; }
 .v2-frame-nav button { min-height: 44px; border: 2px solid #475569; background: #111827; color: #e2e8f0; }
-.v2-frame-nav button:disabled { opacity: .45; }
+.v2-frame-nav button:disabled { opacity: .55; }
 .v2-frame-nav button:not(:disabled):focus-visible, .v2-frame-nav button:not(:disabled):hover { border-color: #facc15; }
-.v2-frame-title { display: flex; flex-direction: column; line-height: 1.1; }
+.v2-frame-nav .v2-center { background: #422006; border-color: #f59e0b; font-size: 20px; }
+.v2-frame-title { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
 .v2-frame-title strong { color: #fde68a; }
 .v2-frame-title small { color: #94a3b8; font-size: 14px; }
-.v2-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 14px; color: #cbd5e1; }
-.v2-legend li::before { content: ""; display: inline-block; width: 22px; height: 0; margin-right: 5px; vertical-align: middle; border-top: 4px solid; }
-.v2-legend [data-state="completed"]::before { border-color: #facc15; }
-.v2-legend [data-state="reachable"]::before { border-color: #38bdf8; border-top-style: dashed; }
-.v2-legend [data-state="discarded"]::before { border-color: #64748b; border-top-style: dotted; }
 
-/* Map: one 1000x700 logical frame scaled to the viewport width; never scrolls horizontally. */
-.v2-map { position: relative; width: 100%; aspect-ratio: 1000 / 700; border: 3px solid #334155; background: #d9e6c3; overflow: hidden; }
+/* The map is the only large scrolling area; it never scrolls horizontally. */
+.v2-map-scroll { flex: 1 1 0%; min-height: 0; position: relative; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; background: #0b1220; }
+.v2-xp { margin: 4px; }
+.v2-xp summary { min-height: 44px; display: flex; align-items: center; padding: 0 8px; color: #7dd3fc; background: #111827; border: 2px solid #334155; }
+.v2-map { position: relative; width: 100%; background: #0b1220; overflow: hidden; }
 .v2-map-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.v2-map-wave { font: 700 24px "Press Start 2P", monospace; fill: #334155; opacity: .8; }
-.v2-map-pitch rect { fill: #4f9d5d; stroke: #f8fafc; stroke-width: 3; }
-.v2-map-pitch path, .v2-map-pitch circle { fill: none; stroke: #f8fafc; stroke-width: 2.5; }
-.v2-road-bed { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke: #334155; stroke-width: 40; }
-.v2-road-line { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 8; }
-.v2-road-future .v2-road-bed { stroke: #64748b; stroke-opacity: .55; }
-.v2-road-future .v2-road-line { stroke: #cbd5e1; stroke-dasharray: 2 18; }
-.v2-road-discarded .v2-road-bed { stroke: #94a3b8; stroke-opacity: .5; stroke-width: 30; }
-.v2-road-discarded .v2-road-line { stroke: #64748b; stroke-width: 5; stroke-dasharray: 4 14; }
-.v2-road-reachable .v2-road-bed { stroke: #1e3a5f; }
-.v2-road-reachable .v2-road-line { stroke: #38bdf8; stroke-dasharray: 22 14; }
-.v2-road-active .v2-road-bed, .v2-road-completed .v2-road-bed { stroke: #1f2937; }
-.v2-road-active .v2-road-line { stroke: #f97316; stroke-dasharray: 22 14; }
-.v2-road-completed .v2-road-line { stroke: #facc15; stroke-width: 12; }
-.v2-seam { fill: none; stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; stroke: #94a3b8; }
-.v2-seam-completed { stroke: #facc15; } .v2-seam-reachable { stroke: #38bdf8; } .v2-seam-active { stroke: #f97316; }
-.v2-pad circle { stroke-width: 7; fill: #1e293b; stroke: #64748b; }
-.v2-pad text { font: 700 24px "Press Start 2P", monospace; fill: #e2e8f0; }
-.v2-pad-future { opacity: .55; }
-.v2-pad-discarded circle { fill: #475569; stroke: #94a3b8; stroke-dasharray: 8 6; opacity: .75; }
-.v2-pad-discarded text { opacity: 0; }
-.v2-pad-reachable circle { fill: #0c4a6e; stroke: #38bdf8; }
-.v2-pad-active circle { fill: #7c2d12; stroke: #f97316; }
-.v2-pad-completed circle { fill: #713f12; stroke: #facc15; }
-.v2-pad-completed text { opacity: 0; }
-.v2-pad-check { fill: none; stroke: #fef9c3; stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
-.v2-pad-cross { fill: none; stroke: #e2e8f0; stroke-width: 7; stroke-linecap: round; }
-.v2-pad-boss circle { stroke-width: 9; } .v2-pad-boss text { font-size: 34px; fill: #fde68a; }
-.v2-pad-focus circle { stroke: #fff; stroke-width: 10; }
-.v2-map-hit { position: absolute; width: 8%; height: 11.4%; transform: translate(-50%, -50%); border-radius: 50%; border: 3px solid transparent; background: transparent; padding: 0; }
+.v2-map-wave { font: 700 9px "Press Start 2P", monospace; fill: #64748b; }
+.v2-wave-rule { stroke: #1e293b; stroke-width: 1; stroke-dasharray: 3 7; fill: none; }
+.v2-wave-context { opacity: .55; }
+.v2-seam-rule { stroke: #475569; stroke-width: 1.5; stroke-dasharray: 10 6; fill: none; }
+.v2-seam-text { font: 700 9px "Press Start 2P", monospace; fill: #94a3b8; }
+.v2-road-bed { fill: none; stroke-linecap: round; stroke: #1f2937; stroke-width: 14; }
+.v2-road-line { fill: none; stroke-linecap: round; stroke-width: 4; }
+.v2-road-future .v2-road-bed { stroke: #172033; }
+.v2-road-future .v2-road-line { stroke: #64748b; stroke-dasharray: 2 9; }
+.v2-road-discarded .v2-road-bed { stroke-width: 10; stroke: #131a29; }
+.v2-road-discarded .v2-road-line { stroke: #475569; stroke-width: 2; stroke-dasharray: 3 8; }
+.v2-road-reachable .v2-road-bed { stroke: #0c2a4a; }
+.v2-road-reachable .v2-road-line { stroke: #38bdf8; stroke-dasharray: 12 8; }
+.v2-road-active .v2-road-bed, .v2-road-completed .v2-road-bed { stroke: #3b2a07; }
+.v2-road-active .v2-road-line { stroke: #f97316; stroke-dasharray: 12 8; }
+.v2-road-completed .v2-road-line { stroke: #facc15; stroke-width: 6; }
+
+/* Nodes: one accent colour and one icon per activity. */
+.v2-pad { --accent: #94a3b8; }
+.v2-type-battle { --accent: #fb7185; } .v2-type-recruit { --accent: #4ade80; } .v2-type-shop { --accent: #fbbf24; }
+.v2-type-training { --accent: #60a5fa; } .v2-type-event { --accent: #c084fc; } .v2-type-boss { --accent: #f59e0b; }
+.v2-disc { fill: #111c33; stroke: var(--accent); stroke-width: 4; }
+.v2-ico { fill: var(--accent); stroke: none; }
+.v2-ico-cut { fill: #111c33; } .v2-ico-line { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; }
+.v2-ico-text { font: 700 24px "Press Start 2P", monospace; }
+.v2-ico-coin { font-size: 18px; }
+.v2-label { font: 700 11px "VT323", monospace; fill: #e2e8f0; stroke: #0b1220; stroke-width: 4; paint-order: stroke; stroke-linejoin: round; font-size: 13px; }
+.v2-pad-future { opacity: .6; }
+.v2-pad-discarded { opacity: .5; } .v2-pad-discarded .v2-disc { stroke: #475569; stroke-dasharray: 5 4; fill: #0f172a; }
+.v2-pad-reachable .v2-disc { fill: #12284a; stroke-width: 6; }
+.v2-pad-active .v2-disc { fill: #431407; stroke: #f97316; stroke-width: 6; }
+.v2-pad-completed .v2-disc { fill: #3b2a07; stroke: #facc15; } .v2-pad-completed .v2-ico { opacity: .65; }
+.v2-pad-check circle { fill: #facc15; stroke: #0b1220; stroke-width: 2; }
+.v2-pad-check path { fill: none; stroke: #0b1220; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.v2-pad-cross { fill: none; stroke: #94a3b8; stroke-width: 4; stroke-linecap: round; }
+.v2-pad-boss .v2-disc { stroke-width: 6; }
+.v2-pad-focus .v2-disc { stroke: #fff; stroke-width: 8; }
+.v2-here-ring { fill: none; stroke: #f59e0b; stroke-width: 4; stroke-dasharray: 10 6; }
+.v2-here-text { font: 700 10px "Press Start 2P", monospace; fill: #fde68a; stroke: #0b1220; stroke-width: 4; paint-order: stroke; }
+.v2-caravan { filter: drop-shadow(0 0 6px #f59e0b); }
+/* Hit areas are >= 64 logical units (>= 68 px at 320 px wide) and sit on the node centres. */
+.v2-map-hit { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; border: 3px solid transparent; background: transparent; padding: 0; min-width: 44px; min-height: 44px; }
 .v2-map-hit:focus-visible, .v2-map-hit.is-focus { border-color: #fff; box-shadow: 0 0 0 3px #facc15; }
 @media (prefers-reduced-motion: no-preference) {
   .v2-road-reachable .v2-road-line, .v2-road-active .v2-road-line { animation: v2-march 1.2s linear infinite; }
-  .v2-pad-reachable circle { animation: v2-pulse 1.6s ease-in-out infinite; }
+  .v2-pad-reachable .v2-disc { animation: v2-pulse 1.6s ease-in-out infinite; }
+  .v2-here-ring { animation: v2-spin 6s linear infinite; transform-box: fill-box; transform-origin: center; }
 }
-@keyframes v2-march { to { stroke-dashoffset: -36; } }
-@keyframes v2-pulse { 50% { stroke-width: 11; } }
+@keyframes v2-march { to { stroke-dashoffset: -20; } }
+@keyframes v2-pulse { 50% { stroke-width: 9; } }
+@keyframes v2-spin { to { transform: rotate(360deg); } }
 
-/* The dock stays in normal flow inside .fq-safe-fit, which already pads the Android bottom inset (never position:fixed). */
-.v2-hub-dock { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-top: 2px solid #334155; background: #0d1322; }
-.v2-hub-dock .v2-cta { width: 100%; min-height: 52px; font-size: 11px; background: #facc15; color: #0f172a; border-color: #fde68a; }
+/* Bottom panel: preview + CTA. It stays in normal flow inside .fq-safe-fit, which already pads the Android bottom inset (never fixed). */
+.v2-hub-dock { position: relative; flex: 0 0 auto; display: flex; flex-direction: column; gap: 4px; padding: 4px 6px 6px; border-top: 2px solid #334155; background: #0d1322; }
+.v2-chips { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
+.v2-destination { display: flex; flex-direction: column; min-width: 0; min-height: 44px; text-align: left; padding: 3px 6px; border: 2px solid var(--accent, #475569); background: #172439; line-height: 1.1; }
+.v2-destination strong { color: #fde68a; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2-destination span { font-size: 13px; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2-destination.is-focus { background: #22304a; box-shadow: inset 0 -4px 0 #facc15; }
+.v2-preview[hidden] { display: none; }
+.v2-preview { font-size: 14px; line-height: 1.15; color: #cbd5e1; min-height: 17px; }
+.v2-hub-dock .v2-cta { width: 100%; min-height: 48px; font-size: 10px; background: #facc15; color: #0f172a; border-color: #fde68a; }
 .v2-hub-dock .v2-cta:disabled { background: #334155; color: #cbd5e1; }
-.v2-hub-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.v2-hub-actions button { min-height: 48px; padding: 6px 4px; font-size: 9px; }
 .v2-pause { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; flex: 0 0 auto; border-bottom: 1px solid #334155; }
 .v2-pause button { min-height: 40px; padding: 4px 8px; text-decoration: underline; }
 .v2-error { padding: 8px; color: #fef3c7; background: #78350f; }
 .v2-error button { display: block; min-height: 44px; text-decoration: underline; }
+
+/* A lone destination is already named by the preview and CTA: keep its chip reachable for assistive tech without spending the scarce map height. */
+.v2-chips-solo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
