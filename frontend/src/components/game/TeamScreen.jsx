@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { ITEMS } from "@/game/data";
 import { applyItemTo, consumeRunItem, removeItem, gainXp, canReleasePlayer, xpProgress } from "@/game/engine";
+import { computeTeamSynergies, isTowerRuleset } from "@/game/traits";
 import { sfx } from "@/game/audio";
 import { Btn, Header, Panel, PlayerCard, ItemTargetCard, StatLine, MoveInfo, XpBar } from "./ui";
+import SynergyPanel from "./SynergyPanel";
 
 export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
   const [sel, setSel] = useState(0);
@@ -46,6 +48,11 @@ export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
           </>
         ) : (
           <>
+            <SynergyPanel
+              synergies={computeTeamSynergies(run.team, { duringMatch: false, towerMode: isTowerRuleset(run.rulesetId) })}
+              subtitle="Punti dati dalla squadra d'appartenenza di ogni calciatore"
+              empty="Schiera almeno due calciatori della stessa squadra per vedere la prima sinergia."
+            />
             {run.team.map((q, i) => <PlayerCard key={q.uid} p={q} compact selected={sel === i} testId={`team-player-${i}`} onClick={() => { sfx.select(); setSel(i); }}
               right={i === 0 ? <span className="font-pixel text-[7px] text-amber-300 border border-amber-400 px-1">CAP</span> : null} />)}
             {p && (
@@ -68,7 +75,7 @@ export default function TeamScreen({ run, onUpdate, onFusion, onBack }) {
                   <div className="font-pixel text-[9px] text-white">{ITEMS[id].name} <span className="text-amber-300">x{n}</span></div>
                   <div className="font-body text-slate-300 text-sm leading-tight">{ITEMS[id].desc}</div>
                 </div>
-                <Btn data-testid={`bag-use-${id}`} variant={id === "cuneo" ? "fusion" : "default"} disabled={ITEMS[id].battleOnly || (id === "cuneo" && run.team.length < 2)} onClick={() => consumeItem(id)}>
+                <Btn data-testid={`bag-use-${id}`} variant={id === "cuneo" ? "fusion" : "default"} disabled={ITEMS[id].battleOnly || (id === "cuneo" && (run.team.length < 2 || run.stats.fusions > 0))} onClick={() => consumeItem(id)}>
                   {ITEMS[id].battleOnly ? "In lotta" : id === "cuneo" ? "Fondi" : "Usa"}
                 </Btn>
               </div>

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { attackFeedback } from "@/game/battleFeedback";
 import { ITEMS, WILD_INTROS, ELEMENTS } from "@/game/data";
-import { performAttack, applyBurn, turnOrder, resetBattleStatus, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, removeItem, pick, chance, resolveActiveUid, xpProgress } from "@/game/engine";
+import { performAttack, applyBurn, turnOrder, resetBattleStatus, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, removeItem, pick, chance, resolveActiveUid, xpProgress, recalcStats } from "@/game/engine";
+import { computeTeamSynergies, applySynergyBuffs, isTowerRuleset } from "@/game/traits";
+import { canSummonSpirit, summonSpirit, spiritFor, spiritTeamId } from "@/game/spirits";
 import { sfx } from "@/game/audio";
 import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, ItemTargetCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
@@ -12,7 +14,7 @@ const Fighter = ({ p, side, hit, cue }) => (
   <div className={`flex ${side === "enemy" ? "flex-row-reverse" : "flex-row"} items-end gap-2 ${hit ? "animate-shake" : ""}`}>
     <div className={`battle-portrait ${cue?.side === side && cue.stage === "windup" ? "battle-lunge" : ""}`} style={{ "--lunge-x": side === "player" ? "12px" : "-12px", "--impact-color": ELEMENTS[cue?.element]?.color || "#fff" }}>
       {hit && cue && <div className={`battle-impact battle-impact-${cue.effectiveness}`} aria-hidden="true"><b>-{cue.damage} HP</b><span>{cue.label}</span></div>}
-      <div className={`${p.hp === 0 ? "animate-ko" : "animate-idle"} ${hit ? "battle-flash" : ""}`}>
+      <div className={`${p.hp === 0 ? "animate-ko" : "animate-idle"} ${hit ? "battle-flash" : ""} ${p.status.spirit && p.hp > 0 ? "battle-spirit-aura" : ""}`} style={p.status.spirit ? { "--spirit-color": spiritFor(p)?.color || "#facc15" } : undefined}>
         <Avatar p={p} size={side === "enemy" ? 100 : 120} ko={p.hp === 0} />
       </div>
     </div>
@@ -23,6 +25,7 @@ const Fighter = ({ p, side, hit, cue }) => (
       </div>
       <div className="flex flex-wrap items-center gap-1 my-1">
         <ElementBadge element={p.element} />
+        {p.status.spirit && <span data-testid={`${side}-spirit-status`} className="font-pixel text-[7px] text-amber-200 border border-amber-400 px-1 battle-spirit-tag">SPIRITO: {spiritFor(p)?.name}</span>}
         {p.status.burn > 0 && <span className="font-pixel text-[7px] text-orange-400 border border-orange-500 px-1">BRUCIA</span>}
         {p.status.guard && <span className="font-pixel text-[7px] text-sky-300 border border-sky-500 px-1">PARATA</span>}
         {p.status.atkMod !== 0 && <span className="font-pixel text-[7px] text-slate-300">ATK{p.status.atkMod > 0 ? "+" : ""}{p.status.atkMod}</span>}
@@ -44,9 +47,19 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const pace = useBattlePace(manualMoment);
   const s = useRef(null);
   if (!s.current) {
+    const synergies = computeTeamSynergies(run.team, { duringMatch: true, towerMode: isTowerRuleset(run.rulesetId) });
+    const activeSynergies = synergies.filter((syn) => syn.tier > 0);
+    const baseTeam = resetBattleStatus(run.team);
+    const baseEnemies = encounter.enemies.map((e) => ({ ...e }));
+    const buffed = applySynergyBuffs(baseTeam, baseEnemies, activeSynergies);
     s.current = {
-      initialTeam: run.team.map(p => ({ ...p })), team: resetBattleStatus(run.team), items: { ...run.items }, active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
-      enemies: encounter.enemies.map((e) => ({ ...e })), eIdx: 0, log: [], phase: "intro", cue: null, hit: null, menu: "main", itemSel: null, xpReport: null,
+      initialTeam: run.team.map((p) => ({ ...p })),
+      team: buffed.team,
+      items: { ...run.items },
+      active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
+      enemies: buffed.enemies,
+      eIdx: 0, log: [], phase: "intro", cue: null, hit: null, menu: "main", itemSel: null, xpReport: null,
+      synergies, activeSynergies, synergyLogs: buffed.logs, synergyAnnounced: false, spiritUsed: false,
     };
   }
   const st = s.current;
@@ -83,6 +96,12 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       else if (encounter.kind === "team") await say(`La squadra ${encounter.teamName} vi sfida!`, 1000);
       else await say(pick(WILD_INTROS), 1000);
       if (cancelled) return;
+      if (st.activeSynergies.length > 0 && !st.synergyAnnounced) {
+        st.synergyAnnounced = true;
+        const top = st.activeSynergies[0];
+        await say(`Sinergia attiva: ${top.traitLabel} T${top.tier}!`, 900);
+        if (cancelled) return;
+      }
       await say(`${enemy().name} scende in campo!`, 700);
       if (cancelled) return;
       st.phase = "preBattle"; rr();
@@ -155,7 +174,10 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         await say(encounter.kind === "boss" ? `Avete sconfitto ${encounter.teamName}!` : "Vittoria!", 1100);
         if (!mounted.current) return;
         st.phase = "end"; pace.stop(); rr();
-        onWin(st.team.map((p) => ({ ...p, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false } })), st.items, resolveActiveUid(st.team, active()?.uid), finishCombatReport(st.team, st.xpReport));
+        onWin(st.team.map((p) => {
+          const clean = recalcStats({ ...p, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false, spirit: false } });
+          return { ...clean, hp: Math.min(clean.maxHp, p.hp) };
+        }), st.items, resolveActiveUid(st.team, active()?.uid), finishCombatReport(st.team, st.xpReport));
         return;
       }
     }
@@ -181,6 +203,33 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     if (defender.hp > 0) await doAttack(second);
     if (!mounted.current) return;
     await afterAction();
+  };
+
+  // Free action, once per match: temporary form + 1 temporary synergy point.
+  const summon = async () => {
+    if (st.phase !== "menu" || st.menu !== "main" || pace.state.blocked || !canSummonSpirit(active(), st.spiritUsed)) return;
+    pace.stop();
+    st.phase = "busy"; st.spiritUsed = true;
+    const user = active();
+    const spirit = spiritFor(user);
+    const teamId = spiritTeamId(user);
+    setActive(summonSpirit(user));
+    sfx.fusion();
+    if (!await say(`${user.name} evoca lo Spirito Guerriero ${spirit.name}!`, 1200, true)) return;
+    if (teamId) {
+      const opts = { duringMatch: true, towerMode: isTowerRuleset(run.rulesetId) };
+      const before = st.synergies.find((x) => x.teamId === teamId);
+      const synergies = computeTeamSynergies(st.team.map((q) => q.uid === user.uid ? { ...q, spiritTeamId: teamId } : q), opts);
+      const after = synergies.find((x) => x.teamId === teamId);
+      st.synergies = synergies; st.activeSynergies = synergies.filter((x) => x.tier > 0);
+      const delta = (after?.value || 0) - (before?.tier > 0 ? before.value : 0);
+      if (after && delta > 0) {
+        const buffed = applySynergyBuffs(st.team, st.enemies, [{ ...after, value: delta }]);
+        st.team = buffed.team; st.enemies = buffed.enemies;
+        if (!await say(`+1 punto sinergia: ${after.traitLabel} T${after.tier}!`, 900)) return;
+      } else if (after && !await say(`+1 punto sinergia ${after.traitLabel} (${after.points}/${after.nextThreshold ?? after.points})`, 800)) return;
+    }
+    st.phase = "menu"; rr();
   };
 
   const enemyFreeTurn = async () => {
@@ -209,6 +258,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     const forced = st.phase === "forcedSwitch";
     sfx.confirm();
     st.phase = "busy"; st.menu = "main";
+    if (st.team[st.active]?.status.spirit) st.team = st.team.map((q, i) => i === st.active ? { ...q, status: { ...q.status, spirit: false } } : q);
     st.active = idx;
     if (!await say(`Entra in campo ${active().name}!`, 700)) return;
     if (forced) { st.phase = "menu"; rr(); return; }
@@ -235,7 +285,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     sfx.cancel();
     st.phase = "busy"; rr();
     const ok = chance(45 + Math.max(-30, Math.min(30, (active().spd - enemy().spd) * 2)));
-    if (ok) { await say("Siete fuggiti con successo!", 900); if (!mounted.current) return; st.phase = "end"; pace.stop(); rr(); onFlee(st.team, st.items, active()?.uid, finishCombatReport(st.team, st.xpReport)); return; }
+    if (ok) { await say("Siete fuggiti con successo!", 900); if (!mounted.current) return; st.phase = "end"; pace.stop(); rr(); onFlee(st.team.map((p) => { const c = recalcStats(p); return { ...c, hp: Math.min(c.maxHp, p.hp) }; }), st.items, active()?.uid, finishCombatReport(st.team, st.xpReport)); return; }
     if (!await say("La fuga è fallita!", 700)) return;
     await enemyFreeTurn();
   };
@@ -260,6 +310,18 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         <span className="font-pixel text-[8px] text-slate-400 uppercase truncate mx-2">{encounter.kind === "boss" ? `BOSS: ${encounter.teamName}` : encounter.elite ? `ELITE: ${encounter.teamName}` : encounter.teamName || "Sfida"}</span>
         <Dots team={st.enemies} active={st.eIdx} />
       </div>
+
+      {st.activeSynergies.length > 0 && (
+        <div data-testid="battle-synergy-strip" className="px-3 py-1 bg-[#0b101d] border-b-2 border-amber-700 flex items-center gap-2 overflow-x-auto">
+          <span className="font-pixel text-[8px] text-amber-300 shrink-0">SINERGIE</span>
+          {st.activeSynergies.slice(0, 4).map((syn) => (
+            <span key={syn.teamId} className="font-pixel text-[7px] text-slate-200 border border-slate-600 px-1 py-0.5 shrink-0" title={syn.description}>
+              {syn.traitLabel} T{syn.tier}
+            </span>
+          ))}
+          {st.activeSynergies.length > 4 && <span className="font-pixel text-[7px] text-slate-400 shrink-0">+{st.activeSynergies.length - 4}</span>}
+        </div>
+      )}
 
       <div className="battle-pace" aria-label="Ritmo battaglia">
         <span className="battle-pace-status" role="status">{pace.state.blocked || st.important ? "Momento importante · x1" : pace.state.auto ? "AUTO attivo · puoi fermarlo" : "Controllo manuale"}</span>
@@ -319,6 +381,11 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
               <ElementIcon element={p.move.element} size={14} /> {p.move.name} <MatchupBadge attacker={p} defender={e} />
               <span className="text-[8px] opacity-70">POT {p.move.power}</span>
             </Btn>
+            {spiritFor(p) && (
+              <Btn data-testid="spirit-button" variant="fusion" className="col-span-2" disabled={!canSummonSpirit(p, st.spiritUsed) || st.phase !== "menu"} onClick={summon}>
+                {p.status.spirit ? `Spirito attivo: ${spiritFor(p).name}` : st.spiritUsed ? "Spirito Guerriero già usato" : `Spirito Guerriero: ${spiritFor(p).name}`}
+              </Btn>
+            )}
             <Btn data-testid="switch-button" onClick={() => { pace.stop(); sfx.select(); st.menu = "switch"; rr(); }}>Cambia</Btn>
             <Btn data-testid="item-button" onClick={() => { pace.stop(); sfx.select(); st.menu = "items"; rr(); }}>Zaino</Btn>
             <Btn data-testid="flee-button" variant="ghost" onClick={flee} className="col-span-2" disabled={encounter.kind === "boss"}>Fuggi</Btn>

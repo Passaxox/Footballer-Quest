@@ -3,6 +3,7 @@ import { initialOverworld, selectableOverworldNode, nodeRandom } from "./overwor
 import { CHARACTERS, canRecruitPlayer, canonicalCharacterId, ownedCharacterIds, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, SHOP_POOL } from "./data";
+import { spiritFor } from "./spirits";
 
 export const rand = (a, b, random = Math.random) => a + Math.floor(random() * (b - a + 1));
 export const pick = (arr, random = Math.random) => arr[Math.floor(random() * arr.length)];
@@ -45,7 +46,7 @@ export const createPlayer = (id, level = 1, random = Math.random) => {
   return { ...s, hp: s.maxHp };
 };
 
-export const freshStatus = () => ({ burn: 0, atkMod: 0, defMod: 0, guard: false, talisman: false });
+export const freshStatus = () => ({ burn: 0, atkMod: 0, defMod: 0, guard: false, talisman: false, spirit: false });
 
 export const gainXp = (p, amount) => {
   let q = { ...p, xp: p.xp + amount };
@@ -74,8 +75,8 @@ export const sustainHealing = (attacker, actualDamage) => attacker.hp <= 0 ? 0 :
 ));
 
 export const calcDamage = (att, def, move) => {
-  const atk = att.atk * modMult(att.status.atkMod);
-  const dfn = def.def * modMult(def.status.defMod);
+  const atk = att.atk * modMult(att.status.atkMod) * (att.status.spirit ? spiritFor(att)?.atkMult ?? 1 : 1);
+  const dfn = def.def * modMult(def.status.defMod) * (def.status.spirit ? spiritFor(def)?.defMult ?? 1 : 1);
   const mult = effectiveTypeMultiplier(att, def, move);
   const crit = chance(move.effect === "crit" ? 30 : 8);
   const stab = move.element === att.element ? 1.1 : 1;
@@ -145,11 +146,9 @@ export const fusePlayers = (a, b, moveFrom) => {
     throw new Error("Seleziona due giocatori diversi non ancora fusi e una tecnica valida.");
   }
   const src = moveFrom === "b" ? b : a;
-  const first = a.name.split(" ")[0];
-  const last = b.name.split(" ").slice(-1)[0];
   const lvl = Math.max(a.level, b.level);
   const p = {
-    uid: uid(), baseId: `${a.baseId}+${b.baseId}`, name: `${first} ${last}`, element: src.element, role: a.role, tier: Math.max(a.tier, b.tier), move: { ...src.move, moveId: src.move.moveId ?? null },
+    uid: uid(), baseId: `${a.baseId}+${b.baseId}`, name: a.name, donorName: b.name, element: a.element, role: a.role, tier: Math.max(a.tier, b.tier), move: { ...src.move, moveId: src.move.moveId ?? null },
     parentVersionIds: [resolveVersion(a.versionId || a.baseId)?.versionId ?? null, resolveVersion(b.versionId || b.baseId)?.versionId ?? null],
     level: lvl, xp: 0, fused: true, status: freshStatus(),
     base: { hp: Math.round((a.base.hp + b.base.hp) / 2 * 1.15), atk: Math.round((a.base.atk + b.base.atk) / 2 * 1.15), def: Math.round((a.base.def + b.base.def) / 2 * 1.15), spd: Math.round((a.base.spd + b.base.spd) / 2 * 1.15) },
@@ -284,9 +283,12 @@ export const generateShop = (wave, random = Math.random) => {
   return ids.map((id) => ({ id, price: Math.round(ITEMS[id].price * (1 + wave * 0.01)) }));
 };
 
-export const generateRewards = () => {
+export const fusionUsed = (run) => (run?.stats?.fusions || 0) > 0;
+
+// Cuneo DNA: rare wave reward, at most one per run.
+export const generateRewards = (run = null) => {
   const out = [];
-  const pool = [...REWARD_POOL];
+  const pool = REWARD_POOL.filter((r) => r.id !== "cuneo" || !run || (!fusionUsed(run) && !(run.items?.cuneo > 0)));
   while (out.length < 3 && pool.length) {
     const total = pool.reduce((s, r) => s + r.w, 0);
     let x = Math.random() * total;
@@ -446,6 +448,7 @@ export const completeNonCombatNode = (run) => {
 
 export const fuseRunPlayers = (run, a, b, moveFrom) => {
   if (!(run.items.cuneo > 0)) throw new Error("Serve un Cuneo DNA.");
+  if (fusionUsed(run)) throw new Error("La Fusione si può usare una sola volta per run.");
   const fused = fusePlayers(run.team[a], run.team[b], moveFrom);
   const activeUid = [run.team[a].uid, run.team[b].uid].includes(run.activeUid) ? fused.uid : run.activeUid;
   const team = run.team.filter((_, i) => i !== a && i !== b);

@@ -1,3 +1,4 @@
+import { spiritFor } from "@/game/spirits";
 import { resolveVersion } from "@/game/catalog";
 import { useState } from "react";
 import { ELEMENTS, ROLES, ITEMS, itemPresentation } from "@/game/data";
@@ -180,7 +181,7 @@ export const PlayerCard = ({ p, onClick, selected = false, testId, compact = fal
       <Avatar p={p} size={compact ? 40 : 52} ko={ko && !highlightTarget} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-1">
-          <span className="font-pixel text-[9px] text-white break-words">{p.name}{p.fused && <span className="text-pink-400"> ✦</span>}</span>
+          <span className="font-pixel text-[9px] text-white break-words">{p.name}{p.fused && <span className="text-pink-400"> ✦</span>}{spiritFor(p) && <span data-testid={`${testId || "player"}-spirit-badge`} title={`Spirito Guerriero: ${spiritFor(p).name}`} className="ml-1 text-[7px] px-1 border border-amber-400 text-amber-300">SG</span>}</span>
           <span className="font-pixel text-[8px] text-amber-300 shrink-0">Lv{p.level}</span>
         </div>
         <div className="flex items-center gap-1 mt-1">

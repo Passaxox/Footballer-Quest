@@ -3,3 +3,7 @@
 .battle-pace button[aria-pressed=true]{background:#25594e;border:2px solid #86e0b8;color:#e5fff0}.battle-pace button:disabled{opacity:.5}.battle-pace button:focus-visible{outline:3px solid #f5d58b;outline-offset:2px}.battle-pace-status{font-size:12px;line-height:1.3;min-width:0}
 .battle-moment{padding:12px;background:#192b40;border:2px solid #eac777;font-family:Arial,sans-serif}.battle-moment button{display:block;min-height:44px;padding:8px 16px;margin-top:8px;background:#eac777;color:#10202e;border-radius:6px;font-weight:bold}
 .battle-milestone .battle-lunge{animation-duration:calc(450ms / var(--battle-speed,1))}.battle-milestone .battle-impact,.battle-milestone .animate-shake{animation-duration:calc(350ms / var(--battle-speed,1))}
+
+.battle-spirit-aura { filter: drop-shadow(0 0 6px var(--spirit-color)) drop-shadow(0 0 14px var(--spirit-color)); animation: spirit-pulse 1.4s ease-in-out infinite; }
+@keyframes spirit-pulse { 50% { filter: drop-shadow(0 0 10px var(--spirit-color)) drop-shadow(0 0 22px var(--spirit-color)); } }
+.battle-spirit-tag { animation: spirit-pulse 1.4s ease-in-out infinite; }

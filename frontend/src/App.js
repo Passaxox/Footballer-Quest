@@ -103,7 +103,7 @@ function App() {
     let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? team.map((p) => ({ ...p, hp: p.maxHp })) : team, items, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : {}) } };
     // Final victory keeps earned growth/money, but has no next-node item phase.
     if (r.wave >= FINAL_WAVE) { finishRun(r, "win"); return; }
-    const rewards = generateRewards();
+    const rewards = generateRewards(r);
     const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport };
     const epsilonOffer = epsilonRecruitOffer(enc, r.team);
     if (epsilonOffer || (enc.kind === "wild" && canRecruitPlayer(r.team, enc.enemies[0]) && (r.fischietto || enc.forceRecruit || chance(40)))) {
@@ -198,7 +198,7 @@ function App() {
   };
 
   const onFuse = (a, b, moveFrom) => {
-    if (!(run.items.cuneo > 0) || a === b || !run.team[a] || !run.team[b] || run.team[a].fused || run.team[b].fused || !["a", "b"].includes(moveFrom)) return;
+    if (!(run.items.cuneo > 0) || run.stats.fusions > 0 || a === b || !run.team[a] || !run.team[b] || run.team[a].fused || run.team[b].fused || !["a", "b"].includes(moveFrom)) return;
     updateRun(fuseRunPlayers(run, a, b, moveFrom));
     setScreen("team");
   };

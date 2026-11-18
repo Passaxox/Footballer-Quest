@@ -82,7 +82,7 @@ const itemDefinitions = {
   barretta: { id: "barretta", rarity: "COMMON", shopWeight: 2, name: "Barretta Energetica", desc: "Recupera il 50% degli HP di un giocatore.", price: 40, battle: true },
   bibita: { id: "bibita", rarity: "UNCOMMON", dropFactor: 10/9, name: "Bibita Inazuma", desc: "Recupera tutti gli HP e cura le condizioni.", price: 90, battle: true },
   pallone: { id: "pallone", rarity: "RARE", name: "Pallone d'Oro", desc: "Rianima un giocatore KO con metà HP.", price: 150, battle: true },
-  cuneo: { id: "cuneo", rarity: "EPIC", name: "Cuneo DNA", desc: "Fonde due giocatori in uno solo, più forte.", price: 300, battle: false },
+  cuneo: { id: "cuneo", rarity: "EPIC", shopWeight: 0, name: "Cuneo DNA", desc: "Fusione: il giocatore base assorbe un donatore e può ereditarne la tecnica. Una sola volta per run.", price: 300, battle: false },
   fascia: { id: "fascia", rarity: "UNCOMMON", name: "Fascia del Capitano", desc: "+5 ATK permanente a un giocatore.", price: 120, battle: false },
   guanti: { id: "guanti", rarity: "UNCOMMON", name: "Guanti Rinforzati", desc: "+5 DIF permanente a un giocatore.", price: 120, battle: false },
   scarpini: { id: "scarpini", rarity: "UNCOMMON", name: "Scarpini Turbo", desc: "+6 VEL permanente a un giocatore.", price: 120, battle: false },
