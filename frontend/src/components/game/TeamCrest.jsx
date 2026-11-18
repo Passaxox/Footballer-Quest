@@ -2,14 +2,14 @@ import { useState } from "react";
 
 // Kit-inspired colours (dataset kit_colors where verified); neutral grey for declared selections.
 const COLORS = {
-  "royal-academy": ["#4338ca", "#e5e7eb"], occult: ["#6464A0", "#f1f5f9"], zeus: ["#f8fafc", "#854d0e"], epsilon: ["#7f1d1d", "#fca5a5"],
+  "royal-academy": ["#4338ca", "#e5e7eb"], occult: ["#6464A0", "#f1f5f9"], zeus: ["#f8fafc", "#854d0e"], epsilon: ["#1f2937", "#f87171"],
   prominence: ["#A00000", "#f8fafc"], genesis: ["#505050", "#e5e7eb"], "fire-dragon": ["#b91c1c", "#fde68a"], "knights-of-queen": ["#1e3a8a", "#f8fafc"],
   "the-empire": ["#7dd3fc", "#0c4a6e"], "rose-griffon": ["#1d4ed8", "#fecaca"], brockenborg: ["#111827", "#f8fafc"], unicorn: ["#2563eb", "#ef4444"],
   orpheus: ["#0ea5e9", "#f8fafc"], "little-gigant": ["#f59e0b", "#14532d"],
   // Dataset v3 measured kits.
   "dark-emperors": ["#1A1A1A", "#E0E0E0"], "diamond-dust": ["#283C64", "#508CA0"], brainwashing: ["#78B4F0", "#1e293b"], wild: ["#282828", "#3C8C64"],
 };
-const initials = (name) => name.replace(/^Selezione Alius · /, "Alius ").split(/\s+/).filter((w) => !/^(of|the|·)$/i.test(w)).map((w) => w[0]).join("").slice(0, 3).toUpperCase();
+const initials = (name) => name.replace(/^Selezione Alius · /, "Alius ").replace(/ · Ricognizione$/, "").split(/\s+/).filter((w) => !/^(of|the|·)$/i.test(w)).map((w) => w[0]).join("").slice(0, 3).toUpperCase();
 
 // Add a teamId here once /public/crests/<teamId>.png is imported; others use the readable placeholder.
 const CREST_FILES = new Set([]);

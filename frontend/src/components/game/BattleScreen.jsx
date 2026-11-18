@@ -124,7 +124,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     // Easy prologue: an enemy cannot KO a full-HP player with a single hit in early waves.
     const guard = getRules(run.rulesetId).oneShotGuardUntil;
     if (attackerSide === "enemy" && guard && run.wave <= guard && d.hp === d.maxHp && def.hp === 0) {
-      def = { ...def, hp: 1 }; msgs = [...msgs, `${d.name} resiste con 1 HP!`];
+      def = { ...def, hp: 1 }; msgs = [...msgs.filter((m) => !m.endsWith("è KO!")), `${d.name} resiste con 1 HP!`];
     }
     st.cue = { ...attackFeedback(a, d, def), side: attackerSide, stage: "windup" };
     st.log = [...st.log.slice(-5), msgs[0]]; rr();

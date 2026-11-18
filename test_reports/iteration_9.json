@@ -1,0 +1,29 @@
+{
+  "summary": "Frontend-only test of P1/P2/P3, done with Playwright at 400x860 on the preview URL plus a temporary Jest coverage probe (since deleted). PASS: (1) 6 fresh Easy runs all saved rulesetId 'easy-v3'. Act 1 was always Occult miniboss + Royal Academy boss, or Royal Academy · Ricognizione miniboss + Occult boss; Zeus never appeared. A runPlan sweep over 400 seeds agrees: W5 is only occult/royal-scout, W10 is only royal/occult, they are never the same team, and Zeus appears only at W20 (77%). (2) One-shot guard, with pending.enemies[0] set to atk/spd 999: at W1 easy Mark goes 108 -> 1 HP with 'Mark Evans resiste con 1 HP!' and the second hit KOs him. At W20 the guard applies; at W21, W25 and on normal-v1 W1 the player is one-shot. (3) Portraits: all 3 W5 Occult miniboss map nodes and the battle use /sprites/canon-burado-kiba.png (256px, loaded). The W30 Dark Emperors boss node, dialogue and battle use de-kevin.png. The W50 Little Gigant node and battle show rococo. The W45 miniboss nodes show portraits for Knights (edgar), Rose Griffon (canon-pierre-godin), Brockenborg (canon-thorsten-berger) and Orpheus (paolo). Collection cards for Burado Kiba (Occult) and Kevin (Dark Emperors) show their portraits once discovered. Jest probe: all 153 catalog versions have a spriteId; only bomber:prominence and andre-pinson:rose-griffon lack a file, as declared in the report, and they fall back to PixelAvatar. (4) Crests contain no <img>. Occult is rgb(100,100,160) = #6464A0, Prominence rgb(160,0,0) and Dark Emperors #1A1A1A/#E0E0E0, all with readable initials. (5) Dark Emperors appear as the W30 boss (branch B) in 3 of 8 act-3 seeds tested and in 56% of the sweep; they appear at W35 in 25 of 400 seeds. (6) Regression: a normal W1 battle (auto + FAST) ends on the reward modal with +23 Prestigio and 1.5x XP, bench 70%. Easy gives the same +23 Prestigio, 1.75x XP and bench 75% (matches easy-v2). The Vantaggi, Talenti and Sfide tabs all work. No page errors. Jest: 119 pass, 2 pre-existing failures. ONE BUG: the guarded hit still logs '<name> è KO!' just before 'resiste con 1 HP!' and plays the KO sound.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "BattleScreen doAttack (one-shot guard)", "issue": "When the guard triggers, the battle log shows 'Mark Evans è KO!' and then 'Mark Evans resiste con 1 HP!', and sfx.ko() plays. performAttack (engine.js:123) has already pushed the 'è KO!' message, and the guard only sets hp to 1 and appends its own message without removing it. Seen at W1 and W20 in Easy.", "selector": "[data-testid='battle-log']", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Act intro crests", "issues": ["'Royal Academy · Ricognizione' gets the initials 'RAR', which reads oddly. Consider 'RA' or a badge for scouts.", "The Epsilon Kai crest (#7f1d1d) and the Prominence crest (#A00000) are almost the same dark red when shown side by side in act 3.", "Long enemy names such as 'Kevin Dragonfly (Dark Emperors)' wrap to 2 lines in the battle enemy panel. This is acceptable but tight at 400px."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "BattleScreen.jsx doAttack: when the one-shot guard triggers, remove the `${d.name} è KO!` entry from msgs (for example msgs = msgs.filter(m => !m.endsWith('è KO!'))) before appending 'resiste con 1 HP!', so that no KO message or KO sound is produced."
+  ],
+  "critical_code_review_comments": [
+    "BattleScreen.jsx:67: enemySpeedMult is applied only when wave <= oneShotGuardUntil (W20), so in easy-v3 enemies are 15% slower only up to W20. The spec ('up to W20 ... and enemies are 15% slower') is ambiguous. Confirm this is intended, or give speed its own wave limit.",
+    "campaign.js runPlan: if W10 is the Occult boss and W20 is the Royal boss, W15 falls back to Occult (royal-scout is excluded as the same team as the W20 boss), so the same team appears again as the W15 miniboss straight after being the W10 boss. This happens in about 33% of seeds. Not wrong, but repetitive.",
+    "The one-shot guard checks d.hp === d.maxHp. A player whose maxHp was buffed mid-battle, or who entered with full HP after a heal, qualifies; one at 1 HP short of max does not. This is fine but worth a test.",
+    "There is no automated Jest test for the guard's message ordering. Add one alongside the fix."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "95% (1 medium log/sfx bug)"},
+  "seed_data_creation": "None. Only browser localStorage was used, in disposable Playwright contexts. A temporary Jest probe file was created and then deleted.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "To jump: start an easy run -> act-intro-start, then set run.overworld.contentSeed=S, wave=W, completedWave=W-1, path=[], introSeen=act-1 (to see the intro) or act (to skip it), pending=null, reload -> continue-run-btn. Seeds: 3008946100 gives an Occult W5 miniboss; 7919 gives W30 bosses epsilon-kai + dark-emperors (node map-node-act3:boss:dark-emperors). Click map nodes with force=True (they pulse), then map-enter, then boss-intro-next/boss-intro-start, then the 'MANTIENI' button, then battle-auto once it is enabled. To test the guard: after map-enter, edit pending.enemies[0].atk/spd=999 (and optionally run.wave), reload, then continue-run-btn -> next-wave-btn."
+}
