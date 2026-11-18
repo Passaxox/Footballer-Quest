@@ -1,0 +1,506 @@
+{
+ "matched": [
+  {
+   "spriteId": "canon-nata-juuzou",
+   "name": "Nata Juuzou",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/occult/nathanjones_01.png"
+  },
+  {
+   "spriteId": "canon-yuukoku-hiroyuki",
+   "name": "Yuukoku Hiroyuki",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/occult/johantassman_01.png"
+  },
+  {
+   "spriteId": "canon-burado-kiba",
+   "name": "Burado Kiba",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/occult/troymoon_01.png"
+  },
+  {
+   "spriteId": "canon-claude-beacons",
+   "name": "Claude Beacons",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/dragonesdefuego/claudebeacons_01.png"
+  },
+  {
+   "spriteId": "canon-drago-hill",
+   "name": "Drago Hill",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/littlegiants/dragohill_01.png"
+  },
+  {
+   "spriteId": "canon-nakata-hidetoshi",
+   "name": "Nakata Hidetoshi",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/orfeo/hidetoshinakata_01.png"
+  },
+  {
+   "spriteId": "de-nathan",
+   "name": "Nathan Swift",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/emperadoresoscuros/nathanswift_03.png"
+  },
+  {
+   "spriteId": "de-kevin",
+   "name": "Kevin Dragonfly",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/emperadoresoscuros/kevindragonfly_03.png"
+  },
+  {
+   "spriteId": "de-tod",
+   "name": "Tod Ironside",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/emperadoresoscuros/todironside_02.png"
+  },
+  {
+   "spriteId": "de-sam",
+   "name": "Sam Kincaid",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/emperadoresoscuros/samkincaid_02.png"
+  },
+  {
+   "spriteId": "de-steve",
+   "name": "Steve Grim",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/emperadoresoscuros/stevegrim_02.png"
+  },
+  {
+   "spriteId": "de-maxwell",
+   "name": "Maxwell Carson",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/emperadoresoscuros/maxwellcarson_02.png"
+  },
+  {
+   "spriteId": "de-tim",
+   "name": "Tim Saunders",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/emperadoresoscuros/timsaunders_02.png"
+  },
+  {
+   "spriteId": "de-malcolm",
+   "name": "Jim Wraith",
+   "source": "https://inazumasprites.netlify.app/icons/equipos/emperadoresoscuros/jimwraith_02.png"
+  },
+  {
+   "spriteId": "canon-grent",
+   "name": "Grent",
+   "team": "prominence",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/f/f5/%28C%29_Ooiwa_Kurando_sprite.png/revision/latest?cb=20230820091420"
+  },
+  {
+   "spriteId": "canon-bakurei",
+   "name": "Bakurei",
+   "team": "prominence",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/3e/%28P%29_Bakurei_portrait_%28X%29.png/revision/latest?cb=20261001132807"
+  },
+  {
+   "spriteId": "canon-satos",
+   "name": "Satos",
+   "team": "prominence",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/6d/%28P%29_Satou_Kazuo_sprite.png/revision/latest?cb=20230629122820"
+  },
+  {
+   "spriteId": "canon-rean",
+   "name": "Rean",
+   "team": "prominence",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/3c/%28P%29_Hasuike_An_sprite.png/revision/latest?cb=20230629123856"
+  },
+  {
+   "spriteId": "canon-bonitona",
+   "name": "Bonitona",
+   "team": "prominence",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/ba/%28C%29_Nitou_Honoka_sprite.png/revision/latest?cb=20260415232548"
+  },
+  {
+   "spriteId": "canon-siden",
+   "name": "Siden",
+   "team": "prominence",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/0/0c/%28P%29_Saiden_Jou_sprite.png/revision/latest?cb=20230629124643"
+  },
+  {
+   "spriteId": "canon-kevin-pinot",
+   "name": "Kévin Pinot",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/94/%28RG%29_K%C3%A9vin_Pinot_sprite.png/revision/latest?cb=20230907172904"
+  },
+  {
+   "spriteId": "canon-laurent-perec",
+   "name": "Laurent Pérec",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/8/8a/%28RG%29_Laurent_P%C3%A9rec_sprite.png/revision/latest?cb=20230907172955"
+  },
+  {
+   "spriteId": "canon-michel-morin",
+   "name": "Michel Morin",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/2/28/%28RG%29_Michel_Morin_sprite.png/revision/latest?cb=20230907173716"
+  },
+  {
+   "spriteId": "canon-ronny-weiss",
+   "name": "Ronny Weiss",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/a/a8/%28RG%29_Ronny_Weiss_sprite.png/revision/latest?cb=20230907173034"
+  },
+  {
+   "spriteId": "canon-emile-razzano",
+   "name": "Émile Razzano",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/4e/%28RG%29_%C3%89mile_Razzano_sprite.png/revision/latest?cb=20230907173440"
+  },
+  {
+   "spriteId": "canon-thorsten-berger",
+   "name": "Thorsten Berger",
+   "team": "brockenborg",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/5/52/%28B%29_Thorsten_Berger_sprite.png/revision/latest?cb=20230907134153"
+  },
+  {
+   "spriteId": "canon-alexander-hausen",
+   "name": "Alexander Hausen",
+   "team": "brockenborg",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/ec/%28B%29_Alexander_Hausen_sprite.png/revision/latest?cb=20230907134315"
+  },
+  {
+   "spriteId": "canon-kurt-zabel",
+   "name": "Kurt Zabel",
+   "team": "brockenborg",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/cd/%28B%29_Kurt_Zabel_sprite.png/revision/latest?cb=20230907134615"
+  },
+  {
+   "spriteId": "canon-luka-schmitt",
+   "name": "Luka Schmitt",
+   "team": "brockenborg",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/0/05/%28B%29_Luka_Schmitt_sprite.png/revision/latest?cb=20230907134715"
+  },
+  {
+   "spriteId": "canon-theodor-ulrich",
+   "name": "Theodor Ulrich",
+   "team": "brockenborg",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/b7/%28B%29_Theodor_Ulrich_sprite.png/revision/latest?cb=20230907134823"
+  },
+  {
+   "spriteId": "canon-sanzu-wataru",
+   "name": "Sanzu Wataru",
+   "team": "occult",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/7/70/%28O%29_Sanzu_Wataru_portrait_%28X%29.png/revision/latest?cb=20260828231039"
+  },
+  {
+   "spriteId": "canon-yanagida-shigeru",
+   "name": "Yanagida Shigeru",
+   "team": "occult",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/3f/%28O%29_Yanagida_Shigeru_portrait_%28X%29.png/revision/latest?cb=20260828231042"
+  },
+  {
+   "spriteId": "canon-furan-ken",
+   "name": "Furan Ken",
+   "team": "occult",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/4d/%28O%29_Furan_Ken_portrait_%28X%29.png/revision/latest?cb=20260828231035"
+  },
+  {
+   "spriteId": "canon-shikabane-fujimi",
+   "name": "Shikabane Fujimi",
+   "team": "occult",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/bf/%28O%29_Shikabane_Fujimi_portrait_%28X%29.png/revision/latest?cb=20260828231040"
+  },
+  {
+   "spriteId": "canon-reigen-michihisa",
+   "name": "Reigen Michihisa",
+   "team": "occult",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/46/%28O%29_Reigen_Michihisa_portrait_%28X%29.png/revision/latest?cb=20260828231037"
+  },
+  {
+   "spriteId": "canon-kinoi-mami",
+   "name": "Kinoi Mami",
+   "team": "occult",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/1/10/%28O%29_Kinoi_Mami_portrait_%28X%29.png/revision/latest?cb=20260828231036"
+  },
+  {
+   "spriteId": "canon-yatsuhaka-tataru",
+   "name": "Yatsuhaka Tataru",
+   "team": "occult",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/45/%28O%29_Yatsuhaka_Tataru_portrait_%28X%29.png/revision/latest?cb=20260828231111"
+  },
+  {
+   "spriteId": "canon-tsukimura-kenichi",
+   "name": "Tsukimura Kenichi",
+   "team": "occult",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/65/%28O%29_Tsukimura_Kenichi_portrait_%28X%29.png/revision/latest?cb=20260828231041"
+  },
+  {
+   "spriteId": "canon-barra",
+   "name": "Barra",
+   "team": "prominence",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/95/%28P%29_Barazono_Hana_sprite.png/revision/latest?cb=20230629122124"
+  },
+  {
+   "spriteId": "canon-heat",
+   "name": "Heat",
+   "team": "prominence",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/4f/%28C%29_Atsuishi_Shigeto_sprite.png/revision/latest?cb=20230820092031"
+  },
+  {
+   "spriteId": "canon-nepper",
+   "name": "Nepper",
+   "team": "prominence",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/be/%28P%29_Netsuha_Natsuhiko_sprite.png/revision/latest?cb=20230629130015"
+  },
+  {
+   "spriteId": "canon-gale",
+   "name": "Gale",
+   "team": "genesis",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/1/1d/%28TG%29_Kujirai_Takanori_sprite.png/revision/latest?cb=20230627174349"
+  },
+  {
+   "spriteId": "canon-wheeze",
+   "name": "Wheeze",
+   "team": "genesis",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/e0/%28TG%29_Izuno_Yuu_sprite.png/revision/latest?cb=20230627184730"
+  },
+  {
+   "spriteId": "canon-ulvida",
+   "name": "Ulvida",
+   "team": "genesis",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/5/5d/%28EE%29_Yagami_Reina_sprite.png/revision/latest?cb=20230523170541"
+  },
+  {
+   "spriteId": "canon-freddie-mcqueen",
+   "name": "Freddie McQueen",
+   "team": "knights-of-queen",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/64/%28KQ%29_Freddie_McQueen_sprite.png/revision/latest?cb=20230903070757"
+  },
+  {
+   "spriteId": "canon-johnny-gascoigne",
+   "name": "Johnny Gascoigne",
+   "team": "knights-of-queen",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/9f/%28KQ%29_Johnny_Gascoigne_sprite.png/revision/latest?cb=20230903070912"
+  },
+  {
+   "spriteId": "canon-david-buckingham",
+   "name": "David Buckingham",
+   "team": "knights-of-queen",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/1/19/%28KQ%29_David_Buckingham_sprite.png/revision/latest?cb=20230903071018"
+  },
+  {
+   "spriteId": "canon-lance-rotten",
+   "name": "Lance Rotten",
+   "team": "knights-of-queen",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/7/7e/%28KQ%29_Lance_Rotten_sprite.png/revision/latest?cb=20230903071108"
+  },
+  {
+   "spriteId": "canon-edge-ripper",
+   "name": "Edge Ripper",
+   "team": "knights-of-queen",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/39/%28KQ%29_Edge_Ripper_sprite.png/revision/latest?cb=20230903071218"
+  },
+  {
+   "spriteId": "canon-peter-cole",
+   "name": "Peter Cole",
+   "team": "knights-of-queen",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/94/%28KQ%29_Peter_Cole_sprite.png/revision/latest?cb=20230903071318"
+  },
+  {
+   "spriteId": "canon-gary-links",
+   "name": "Gary Links",
+   "team": "knights-of-queen",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/2/2e/%28KQ%29_Gary_Links_sprite.png/revision/latest?cb=20230903071538"
+  },
+  {
+   "spriteId": "canon-paul-appleton",
+   "name": "Paul Appleton",
+   "team": "knights-of-queen",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/38/%28KQ%29_Paul_Appleton_sprite.png/revision/latest?cb=20230903071637"
+  },
+  {
+   "spriteId": "canon-eric-purpleton",
+   "name": "Eric Purpleton",
+   "team": "knights-of-queen",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/b4/%28KQ%29_Eric_Purpleton_sprite.png/revision/latest?cb=20230903071749"
+  },
+  {
+   "spriteId": "canon-philip-owen",
+   "name": "Philip Owen",
+   "team": "knights-of-queen",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/9f/%28KQ%29_Philip_Owen_sprite.png/revision/latest?cb=20230903072600"
+  },
+  {
+   "spriteId": "canon-jorge-ortega",
+   "name": "Jorge Ortega",
+   "team": "the-empire",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/99/%28TE%29_Jorge_Ortega_sprite.png/revision/latest?cb=20230903074538"
+  },
+  {
+   "spriteId": "canon-julio-acosta",
+   "name": "Julio Acosta",
+   "team": "the-empire",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/2/2a/%28TE%29_Julio_Acosta_sprite.png/revision/latest?cb=20230903075151"
+  },
+  {
+   "spriteId": "canon-gordo-diaz",
+   "name": "Gordo Díaz",
+   "team": "the-empire",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/ef/%28TE%29_Gordo_D%C3%ADaz_sprite.png/revision/latest?cb=20230903075237"
+  },
+  {
+   "spriteId": "canon-ramon-martinez",
+   "name": "Ramón Martínez",
+   "team": "the-empire",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/b1/%28TE%29_Ram%C3%B3n_Mart%C3%ADnez_sprite.png/revision/latest?cb=20230903075343"
+  },
+  {
+   "spriteId": "canon-esteban-carlos",
+   "name": "Esteban Carlos",
+   "team": "the-empire",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/0/0c/%28TE%29_Esteban_Carlos_sprite.png/revision/latest?cb=20230903075534"
+  },
+  {
+   "spriteId": "canon-sergio-perez",
+   "name": "Sergio Pérez",
+   "team": "the-empire",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/45/%28TE%29_Sergio_P%C3%A9rez_sprite.png/revision/latest?cb=20230903075637"
+  },
+  {
+   "spriteId": "canon-pablo-castillo",
+   "name": "Pablo Castillo",
+   "team": "the-empire",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/c4/%28TE%29_Pablo_Castillo_sprite.png/revision/latest?cb=20230903075817"
+  },
+  {
+   "spriteId": "canon-roberto-torres",
+   "name": "Roberto Torres",
+   "team": "the-empire",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/31/%28TE%29_Roberto_Torres_sprite.png/revision/latest?cb=20230903075724"
+  },
+  {
+   "spriteId": "canon-leone-batigo",
+   "name": "Leone Batigo",
+   "team": "the-empire",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/42/%28TE%29_Leone_Batigo_sprite.png/revision/latest?cb=20230903075921"
+  },
+  {
+   "spriteId": "canon-diego-oro",
+   "name": "Diego Oro",
+   "team": "the-empire",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/f/f9/%28TE%29_Diego_Oro_sprite.png/revision/latest?cb=20230903080009"
+  },
+  {
+   "spriteId": "canon-ladji-paara",
+   "name": "Ladji Paara",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/f/f6/%28RG%29_Ladji_Paara_sprite.png/revision/latest?cb=20230907172528"
+  },
+  {
+   "spriteId": "canon-pierre-godin",
+   "name": "Pierre Godin",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/64/%28RG%29_Pierre_Godin_sprite.png/revision/latest?cb=20230907172632"
+  },
+  {
+   "spriteId": "canon-miguel-arron",
+   "name": "Miguel Arron",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/c9/%28RG%29_Miguel_Arron_sprite.png/revision/latest?cb=20230907172716"
+  },
+  {
+   "spriteId": "canon-franz-poujol",
+   "name": "Franz Poujol",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/3b/%28RG%29_Franz_Poujol_sprite.png/revision/latest?cb=20230907172810"
+  },
+  {
+   "spriteId": "canon-jean-gutain",
+   "name": "Jean Gutain",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/e8/%28RG%29_Jean_Gutain_sprite.png/revision/latest?cb=20230907173602"
+  },
+  {
+   "spriteId": "canon-claude-moreau",
+   "name": "Claude Moreau",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/2/28/%28RG%29_Claude_Moreau_sprite.png/revision/latest?cb=20230907173641"
+  },
+  {
+   "spriteId": "canon-julien-rousseau",
+   "name": "Julien Rousseau",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/5/52/%28RG%29_Julien_Rousseau_sprite.png/revision/latest?cb=20230907173209"
+  },
+  {
+   "spriteId": "canon-jerome-eloi",
+   "name": "Jérôme Éloi",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/e9/%28RG%29_J%C3%A9r%C3%B4me_%C3%89loi_sprite.png/revision/latest?cb=20230907173255"
+  },
+  {
+   "spriteId": "canon-alain-failliot",
+   "name": "Alain Failliot",
+   "team": "rose-griffon",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/f/fc/%28RG%29_Alain_Failliot_sprite.png/revision/latest?cb=20230907173345"
+  },
+  {
+   "spriteId": "canon-heinrich-fritz",
+   "name": "Heinrich Fritz",
+   "team": "brockenborg",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/8/81/%28B%29_Heinrich_Fritz_sprite.png/revision/latest?cb=20230907134458"
+  },
+  {
+   "spriteId": "canon-windy-fasta",
+   "name": "Windy Fasta",
+   "team": "little-gigant",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/f/f4/%28LG%29_Windy_Fasta_portrait_%28X%29.png/revision/latest?cb=20261001130556"
+  },
+  {
+   "spriteId": "canon-walter-mountain",
+   "name": "Walter Mountain",
+   "team": "little-gigant",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/c0/%28LG%29_Walter_Mountain_portrait_%28X%29.png/revision/latest?cb=20261001130622"
+  },
+  {
+   "spriteId": "canon-jinny-geino",
+   "name": "Jinny Geino",
+   "team": "little-gigant",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/8/8b/%28LG%29_Jinny_Geino_portrait_%28X%29.png/revision/latest?cb=20261001130747"
+  },
+  {
+   "spriteId": "canon-marron-ian",
+   "name": "Marron Ian",
+   "team": "little-gigant",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/5/5c/%28LG%29_Marron_Ian_portrait_%28X%29.png/revision/latest?cb=20261001130757"
+  },
+  {
+   "spriteId": "canon-shinti-hanpa",
+   "name": "Shinti Hanpa",
+   "team": "little-gigant",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/90/%28LG%29_Shinti_Hanpa_portrait_%28X%29.png/revision/latest?cb=20261001130848"
+  },
+  {
+   "spriteId": "canon-yuumu-rinjie",
+   "name": "Yuumu Rinjie",
+   "team": "little-gigant",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/2/29/%28LG%29_Yuumu_Rinjie_portrait_%28X%29.png/revision/latest?cb=20261001130911"
+  },
+  {
+   "spriteId": "canon-keat-liando",
+   "name": "Keat Liando",
+   "team": "little-gigant",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/5/50/%28LG%29_Keat_Liando_portrait_%28X%29.png/revision/latest?cb=20261001131126"
+  },
+  {
+   "spriteId": "canon-maxi-kuu",
+   "name": "Maxi Kuu",
+   "team": "little-gigant",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/5/59/%28LG%29_Maxi_Kuu_portrait_%28X%29.png/revision/latest?cb=20261001131145"
+  },
+  {
+   "spriteId": "canon-ghoshu-flare",
+   "name": "Ghoshu Flare",
+   "team": "little-gigant",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/a/ad/%28LG%29_Ghoshu_Flare_portrait_%28X%29.png/revision/latest?cb=20260828230942"
+  },
+  {
+   "spriteId": "canon-steve-woodmack",
+   "name": "Steve Woodmack",
+   "team": "unicorn",
+   "source": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/4e/%28U%29_Steve_Woodmack_sprite.png/revision/latest?cb=20230906114857"
+  }
+ ],
+ "unmatched": [
+  {
+   "spriteId": "canon-bomber",
+   "name": "Bomber",
+   "team": "prominence"
+  },
+  {
+   "spriteId": "canon-andre-pinson",
+   "name": "André Pinson",
+   "team": "rose-griffon"
+  }
+ ]
+}

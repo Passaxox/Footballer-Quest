@@ -1,7 +1,7 @@
 // Published profiles are immutable; future balance revisions get a new versioned ID.
 export const DIFFICULTIES = {
   normal: { rulesetId: "normal-v1", label: "NORMALE", description: "Esperienza bilanciata. Progressione e sfida standard." },
-  easy: { rulesetId: "easy-v2", label: "FACILE", description: "Progressione più rapida e avversari leggermente meno aggressivi." },
+  easy: { rulesetId: "easy-v3", label: "FACILE", description: "Progressione più rapida e avversari leggermente meno aggressivi." },
 };
 export const DEFAULT_RULESET = "normal-v1";
 export const RULESETS = {
@@ -35,6 +35,16 @@ RULESETS["easy-v2"] = {
     { fromWave: 26, offset: -4 },
   ],
   checkpoints: { ...RULESETS["easy-v1"].checkpoints, 20: { levelOffset: 0 }, 30: { levelOffset: -1 } },
+};
+// Easy v3: exploratory prologue. Lower enemy levels, rewards unchanged; early waves never one-shot and enemies are a bit slower.
+RULESETS["easy-v3"] = {
+  ...RULESETS["easy-v2"], version: 3,
+  ordinaryEnemyLevelOffset: -2,
+  defaultBossLevelOffset: 2,
+  ordinaryEnemyLevelSegments: [{ fromWave: 11, offset: -3 }, { fromWave: 21, offset: -4 }, { fromWave: 31, offset: -5 }],
+  checkpoints: { 10: { levelOffset: -1 }, 20: { levelOffset: -1 }, 30: { levelOffset: -2 } },
+  oneShotGuardUntil: 20,
+  enemySpeedMult: 0.85,
 };
 export const getRules = (rulesetId = DEFAULT_RULESET) => {
   const rules = RULESETS[rulesetId];

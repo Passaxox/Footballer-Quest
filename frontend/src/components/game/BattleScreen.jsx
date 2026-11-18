@@ -6,6 +6,7 @@ import { computeTeamSynergies, applySynergyBuffs, isTowerRuleset } from "@/game/
 import { canSummonSpirit, summonSpirit, spiritFor, spiritTeamId, tickSpirit } from "@/game/spirits";
 import { runPerkFx, applyPerkBuffs } from "@/game/perks";
 import { applyMixiBuffs } from "@/game/mixi";
+import { getRules } from "@/game/rules";
 import { sfx } from "@/game/audio";
 import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, ItemTargetCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
@@ -63,7 +64,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       team: applyMixiBuffs(applyPerkBuffs(buffed.team, perkFx)),
       items: { ...run.items },
       active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
-      enemies: buffed.enemies,
+      enemies: (() => { const r = getRules(run.rulesetId); return r.enemySpeedMult && run.wave <= r.oneShotGuardUntil ? buffed.enemies.map((e) => ({ ...e, spd: Math.max(1, Math.round(e.spd * r.enemySpeedMult)) })) : buffed.enemies; })(),
       eIdx: 0, log: [], phase: "intro", cue: null, hit: null, menu: "main", itemSel: null, xpReport: null,
       synergies, activeSynergies, synergyLogs: buffed.logs, synergyAnnounced: false, spiritUsed: false,
     };
@@ -119,7 +120,12 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const doAttack = async (attackerSide) => {
     const a = attackerSide === "player" ? active() : enemy();
     const d = attackerSide === "player" ? enemy() : active();
-    const { att, def, msgs } = performAttack(a, d);
+    let { att, def, msgs } = performAttack(a, d);
+    // Easy prologue: an enemy cannot KO a full-HP player with a single hit in early waves.
+    const guard = getRules(run.rulesetId).oneShotGuardUntil;
+    if (attackerSide === "enemy" && guard && run.wave <= guard && d.hp === d.maxHp && def.hp === 0) {
+      def = { ...def, hp: 1 }; msgs = [...msgs, `${d.name} resiste con 1 HP!`];
+    }
     st.cue = { ...attackFeedback(a, d, def), side: attackerSide, stage: "windup" };
     st.log = [...st.log.slice(-5), msgs[0]]; rr();
     if (!await pace.wait(450)) return false;

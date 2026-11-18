@@ -1,7 +1,7 @@
 import { buyTalent, talentFx, resetTalents, challengeResults, runTalentPoints } from "./talents";
 import { runPerkFx } from "./perks";
 import { runPlan } from "./campaign";
-import { PHASE_POOLS } from "./bossPools";
+import { PHASE_POOLS, POOL_BY_ID } from "./bossPools";
 import { newRun } from "./engine";
 
 test("talent tree: prerequisites, mastery, fx snapshot and refund", () => {
@@ -31,7 +31,9 @@ test("challenges and talent points", () => {
 test("no team appears as both miniboss and boss in the same act", () => {
   for (let s = 0; s < 400; s++) {
     const p = runPlan(s * 104729 + 1);
-    for (const w of [5, 15, 25, 35, 45]) p[w + 5].forEach((b) => expect(p[w]).not.toContain(b));
+    const team = (id) => POOL_BY_ID[id].teamId || id;
+    for (const w of [5, 15, 25, 35, 45]) p[w + 5].forEach((b) => expect(p[w].map(team)).not.toContain(team(b)));
+    for (const w of [5, 15]) p[w].forEach((id) => expect(POOL_BY_ID[id].difficulty).toBeLessThanOrEqual(2));
     expect(Object.keys(PHASE_POOLS).length).toBe(10);
   }
 });

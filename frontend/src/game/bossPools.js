@@ -12,6 +12,10 @@ export const BOSS_POOL = [
     leader: "burado-kiba:occult", members: v2("occult", ["nata-juuzou", "yuukoku-hiroyuki", "reigen-michihisa", "kinoi-mami", "sanzu-wataru", "yatsuhaka-tataru"]),
     intro: "L'Occult scende in campo tra nebbia e maledizioni.",
     dialogue: DIALOGUE("Le nostre maledizioni vi faranno tremare le gambe.", "Non crediamo ai fantasmi: crediamo nel calcio!") },
+  { id: "royal-scout", team: "Royal Academy · Ricognizione", teamId: "royal-academy", encounterType: "canonical-team", arc: "ie1", difficulty: 2,
+    leader: "david", members: ["joseph", "peter-drent:royal", "alan-master:royal", "gus-martin:royal"],
+    intro: "Una squadra di ricognizione della Royal Academy vi mette alla prova.",
+    dialogue: DIALOGUE("Il comandante Jude vuole un rapporto su di voi.", "Allora scrivete che siamo pronti!") },
   { id: "zeus", team: "Zeus", teamId: "zeus", encounterType: "canonical-team", arc: "ie1", difficulty: 4,
     leader: "byron", members: ["poseidon:zeus", "athena:zeus", "apollon:zeus", "hephais:zeus", "ares:zeus", "hermes:zeus"],
     intro: "Gli dèi dello stadio scendono in campo. Byron Love sorride con aria di superiorità.", unlock: "byron:base",
@@ -32,6 +36,10 @@ export const BOSS_POOL = [
   { id: "alius-sel", team: "Selezione Alius", teamId: null, encounterType: "special", arc: "ie2", difficulty: 4,
     leader: "xavier", members: ["jordan", "dvalin", "torch"], intro: "Selezione di rivali Alius: i capitani uniscono le forze.", unlock: "xavier:base",
     dialogue: DIALOGUE("Questa è una selezione dei migliori dell'Alius.", "E noi siamo la squadra che li ha battuti tutti!") },
+  { id: "dark-emperors", team: "Dark Emperors", teamId: "dark-emperors", encounterType: "canonical-team", arc: "ie2", difficulty: 4, reduced: "8 giocatori su 11 nel catalogo",
+    leader: "kevin:dark-emperors", members: ["nathan:dark-emperors", "tod:dark-emperors", "sam:dark-emperors", "steve:dark-emperors", "maxwell:dark-emperors", "tim:dark-emperors", "malcolm:dark-emperors"],
+    intro: "I Dark Emperors: ex compagni della Raimon corrotti dalla Pietra Alius.",
+    dialogue: DIALOGUE("Con la Pietra Alius siamo più forti di voi.", "Vi riporteremo indietro, a modo nostro: giocando!") },
   { id: "fire-dragon", team: "Fire Dragon", teamId: "fire-dragon", encounterType: "special", arc: "ie3", difficulty: 3, reduced: "Solo i giocatori chiave del dataset",
     leader: "chae", members: ["byron", "gazelle"], intro: "La Fire Dragon coreana, con Byron e Gazelle in prestito.",
     dialogue: DIALOGUE("Il drago di fuoco non perdona.", "Nemmeno il fulmine di Inazuma!") },
@@ -60,19 +68,19 @@ export const BOSS_POOL = [
 ];
 export const POOL_BY_ID = Object.fromEntries(BOSS_POOL.map((b) => [b.id, b]));
 
-// Per-wave pools. W50 is fixed. Picks avoid repeating a team already used earlier in the run.
+// Per-wave pools. W50 is fixed. W5/W15 minibosses only from difficulty 1-2 teams (Zeus is a boss from W20). Picks avoid repeating a team already used earlier in the run.
 export const PHASE_POOLS = {
-  5: { kind: "miniboss", pool: ["occult", "royal", "zeus"] },
+  5: { kind: "miniboss", pool: ["occult", "royal-scout"] },
   10: { kind: "boss", pool: ["royal", "occult"] },
-  15: { kind: "miniboss", pool: ["occult", "royal", "zeus"] },
+  15: { kind: "miniboss", pool: ["occult", "royal-scout"] },
   20: { kind: "boss", pool: ["zeus", "royal"] },
   25: { kind: "miniboss", pool: ["epsilon-kai", "prominence", "ghiaccio", "alius-sel"] },
-  30: { kind: "boss", pool: ["epsilon-kai", "prominence", "ghiaccio"], branches: 2 },
-  35: { kind: "miniboss", pool: ["prominence", "epsilon-kai", "ghiaccio", "alius-sel", "genesis", "fire-dragon"] },
+  30: { kind: "boss", pool: ["epsilon-kai", "prominence", "ghiaccio", "dark-emperors"], branches: 2 },
+  35: { kind: "miniboss", pool: ["prominence", "epsilon-kai", "ghiaccio", "alius-sel", "genesis", "fire-dragon", "dark-emperors"] },
   40: { kind: "boss", pool: ["genesis", "alius-sel", "fire-dragon", "knights", "empire", "rose-griffon", "unicorn", "orpheus"] },
   45: { kind: "miniboss", pool: ["orpheus", "knights", "empire", "brockenborg", "unicorn", "rose-griffon", "fire-dragon"] },
   50: { kind: "boss", pool: ["little-gigant"] },
 };
 
 // Data gaps from dataset v2, shown in the docs instead of inventing members.
-export const MISSING_TEAMS = ["Kirkwood", "Brainwashing", "Wild", "Dark Emperors", "Gemini Storm (solo Jordan)", "Diamond Dust", "The Kingdom", "Red Matador"];
+export const MISSING_TEAMS = ["Kirkwood (roster vuoto)", "Brainwashing (elementi non verificati)", "Wild (elementi non verificati)", "Gemini Storm (solo Jordan nel dataset)", "Diamond Dust (elementi non verificati)", "The Kingdom", "Red Matador"];

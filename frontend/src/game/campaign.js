@@ -112,7 +112,10 @@ export function runPlan(seed) {
     const rng = seededRandom(seed, `plan:${wave}`);
     const fresh = pool.filter((id) => !used.has(id));
     // Never the same team twice in one act (miniboss vs that act's boss), even when the pool runs dry.
-    const sameAct = PHASE_POOLS[wave].kind === "miniboss" ? plan[wave + 5] || [] : [];
+    // Compare by team (e.g. Royal scouts vs Royal boss), not only by pool entry.
+    const teamOf = (id) => POOL_BY_ID[id].teamId || id;
+    const actTeams = PHASE_POOLS[wave].kind === "miniboss" ? (plan[wave + 5] || []).map(teamOf) : [];
+    const sameAct = pool.filter((id) => actTeams.includes(teamOf(id)));
     const fallback = pool.filter((id) => !sameAct.includes(id));
     const picks = shuffle(fresh.filter((id) => !sameAct.includes(id)).length >= branches ? fresh.filter((id) => !sameAct.includes(id)) : fallback, rng).slice(0, branches);
     picks.forEach((id) => used.add(id));

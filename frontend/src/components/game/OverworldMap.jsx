@@ -27,8 +27,8 @@ function MapNode({ node, state, onPreview, nodeRef }) {
   const boss = node.type === "boss";
   const pos = nodePosition(node);
   const team = boss || node.type === "miniboss" ? bossDef(node.actId, node.bossId) : null;
-  // No DS sprite for the leader yet: show the team crest/placeholder instead of a procedural face.
-  const crest = team && String(resolveVersion(team.leader)?.spriteId).startsWith("canon-") ? team : null;
+  // Leaders without an imported portrait (see memory/sprite_import_report.json) show the team crest instead.
+  const crest = team && !resolveVersion(team.leader)?.spriteId ? team : null;
   const label = boss ? node.laneName : node.type === "miniboss" ? bossDef(node.actId, node.bossId).team : OVERWORLD_NODE_LABELS[node.type];
   return <div ref={nodeRef} className={`ow-stop ow-${state} ow-type-${node.type}`} style={{ left: `${pos.x}%`, top: pos.y }}>
     <button type="button" data-testid={`map-node-${node.nodeId}`} disabled={state !== "available"} aria-current={state === "current" ? "step" : undefined}

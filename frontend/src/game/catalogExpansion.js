@@ -1,4 +1,5 @@
 import { CANON_V2_ROWS } from "./catalogCanonV2";
+import { ROSTER } from "./data";
 // Portrait identities: user VERIFIED mapping in docs/royal-zeus-assets.json.
 // Roles follow the original Football Frontier lineup (see integration notes).
 // Elements, stats, tier and generic moves are authored gameplay balance, not DS stat data.
@@ -298,4 +299,16 @@ for (const [id, name, role, element, team, arcId, gameOrigin, tier] of CANON_V2_
     baseStats: { ...profiles[role] }, primaryMoveId: `${versionId}:primary`, secondaryMoveId: null, rarityId: null,
     variantId: "canon-v2", categoryId: null, arcId, eraId: "original", gameOrigin, encounterTier: tier });
   EXPANSION_MOVES.push({ moveId: `${versionId}:primary`, element, ...moveProfiles[role] });
+}
+
+// Dark Emperors (dataset v3, IE2): corrupted Raimon versions with their own DS portraits. Role/element from the base player.
+// Not in catalog yet (no verified JP↔EN mapping): Shadow Cimmerian, Malcolm Night, Thomas Feldt.
+for (const id of ["nathan", "kevin", "tod", "sam", "steve", "maxwell", "tim", "malcolm"]) {
+  const base = ROSTER.find((r) => r.id === id);
+  const versionId = `${id}:dark-emperors`;
+  EXPANSION_VERSIONS.push({ versionId, characterId: id, legacyRosterId: null, displayName: `${base.name} (Dark Emperors)`, kind: "player", role: base.role, gender: null,
+    spriteId: `de-${id}`, teamTags: ["dark-emperors"], primaryTeamId: "dark-emperors", legacyOnly: false, element: base.element, types: [base.element],
+    baseStats: { ...profiles[base.role] }, primaryMoveId: `${versionId}:primary`, secondaryMoveId: null, rarityId: null,
+    variantId: "dark-emperors", categoryId: null, arcId: "alius", eraId: "original", gameOrigin: "ie2", encounterTier: 3 });
+  EXPANSION_MOVES.push({ moveId: `${versionId}:primary`, element: base.element, ...moveProfiles[base.role] });
 }
