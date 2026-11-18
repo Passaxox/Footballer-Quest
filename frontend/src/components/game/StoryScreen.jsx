@@ -5,7 +5,8 @@ import { ACTS, bossDef, actBosses, actMiniboss } from "@/game/campaign";
 import { spiritFor, spiritEligible } from "@/game/spirits";
 import { canReceiveMixi, mixiPassive } from "@/game/mixi";
 import { Avatar, Btn, PlayerCard } from "./ui";
-import { MapPin, Swords, Flag, Sparkles, Zap } from "lucide-react";
+import { MapPin, Swords, Flag, Sparkles, Zap, Star } from "lucide-react";
+import { bonusChallenge } from "@/game/talents";
 import { TeamCrest } from "./TeamCrest";
 import "./story.css";
 
@@ -15,6 +16,12 @@ const Frame = ({ act, testId, children }) => (
   <div data-testid={testId} className={`story-screen story-${act?.palette || "act1"} flex flex-col flex-1`}>{children}</div>
 );
 
+export const BonusChallengeCard = ({ run }) => {
+  const b = bonusChallenge(run);
+  return <section className="story-card border-amber-500" data-testid="bonus-challenge-card"><Star size={16} /><div><b>Sfida bonus della run · Spirito ×2</b>
+    <p data-testid="bonus-challenge-name" className="text-amber-200">{b.name}</p><p>{b.desc} (+{b.spirit * 2} Spirito di squadra a fine run)</p></div></section>;
+};
+
 export function ActIntro({ run, act, onStart }) {
   const bosses = actBosses(run.overworld.contentSeed, act);
   const mini = actMiniboss(run.overworld.contentSeed, act);
@@ -23,11 +30,12 @@ export function ActIntro({ run, act, onStart }) {
     <Frame act={act} testId="act-intro">
       <div className="story-eyebrow">ATTO {act.index} / {ACTS.length} · W{act.fromWave}–{act.toWave}</div>
       <h1 className="story-title" data-testid="act-intro-title">{act.title}</h1>
-      <div className="story-rivals">{[mini, ...bosses].map((b, i) => <TeamCrest key={b.id} teamId={b.teamId} name={b.team} label={`${i === 0 ? "Miniboss" : "Boss"} · ${b.team}`} size={64} testId={`act-intro-crest-${i}`} />)}</div>
+      <div className="story-rivals">{[mini, ...bosses].map((b, i) => <TeamCrest key={b.id} teamId={b.crestId || b.teamId} name={b.team} label={`${i === 0 ? "Miniboss" : "Boss"} · ${b.team}`} size={64} testId={`act-intro-crest-${i}`} />)}</div>
       <section className="story-card"><MapPin size={16} /><div><b>Dove siamo</b><p>{act.where}</p></div></section>
       <section className="story-card"><Swords size={16} /><div><b>Chi affrontiamo</b><p>{act.who}</p>
         <p data-testid="act-intro-bosses" className="text-amber-200">Miniboss W{act.fromWave + 4}: {mini.team} · Boss W{act.toWave}: {bosses.map((b) => b.team).join(" oppure ")}</p></div></section>
       <section className="story-card"><Flag size={16} /><div><b>Perché conta</b><p data-testid="act-intro-why">{why}</p></div></section>
+      {act.index === 1 && <BonusChallengeCard run={run} />}
       <Btn data-testid="act-intro-start" variant="primary" className="w-full mt-auto" onClick={onStart}>Si parte!</Btn>
     </Frame>
   );

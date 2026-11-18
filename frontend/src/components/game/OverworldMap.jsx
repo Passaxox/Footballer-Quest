@@ -33,7 +33,7 @@ function MapNode({ node, state, onPreview, nodeRef }) {
   return <div ref={nodeRef} className={`ow-stop ow-${state} ow-type-${node.type}`} style={{ left: `${pos.x}%`, top: pos.y }}>
     <button type="button" data-testid={`map-node-${node.nodeId}`} disabled={state !== "available"} aria-current={state === "current" ? "step" : undefined}
       aria-label={`W${node.wave}, ${label}, ${node.laneName}, ${states[state]}`} className="ow-node" onClick={() => onPreview(node)}>
-      {crest ? <TeamCrest teamId={crest.teamId} name={crest.team} size={boss ? 52 : 38} showName={false} testId={`map-crest-${node.nodeId}`} />
+      {crest ? <TeamCrest teamId={crest.crestId || crest.teamId} name={crest.team} size={boss ? 52 : 38} showName={false} testId={`map-crest-${node.nodeId}`} />
         : face ? <Avatar p={face} size={boss ? 68 : 46} /> : <Icon size={boss ? 30 : 22} aria-hidden="true" />}
       {face && !boss && <span className="ow-badge"><Icon size={11} /></span>}
       {state === "completed" && <span className="ow-done-check"><Check size={20} /></span>}

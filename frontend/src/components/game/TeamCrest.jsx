@@ -12,7 +12,10 @@ const COLORS = {
 const initials = (name) => name.replace(/^Selezione Alius · /, "Alius ").replace(/ · Ricognizione$/, "").split(/\s+/).filter((w) => !/^(of|the|·)$/i.test(w)).map((w) => w[0]).join("").slice(0, 3).toUpperCase();
 
 // Add a teamId here once /public/crests/<teamId>.png is imported; others use the readable placeholder.
-const CREST_FILES = new Set([]);
+// Stemmi reali dall'asset pack (memory/assets_pack_index.json).
+const CREST_FILES = new Set(["raimon", "inazuma-japan", "royal-academy", "zeus", "occult", "gemini-storm", "epsilon", "epsilon-kai", "genesis", "dark-emperors",
+  "prominence", "diamond-dust", "fire-dragon", "orpheus", "knights-of-queen", "unicorn", "the-empire", "rose-griffon", "brockenborg", "little-gigant",
+  "kirkwood", "brainwashing", "wild", "jukai", "the-kingdom", "red-matador"]);
 export const TeamCrest = ({ teamId, name, label = name, size = 72, testId, showName = true }) => {
   const [missing, setMissing] = useState(!CREST_FILES.has(teamId));
   const [bg, fg] = COLORS[teamId] || ["#475569", "#f8fafc"];
@@ -23,7 +26,7 @@ export const TeamCrest = ({ teamId, name, label = name, size = 72, testId, showN
           style={{ width: size, height: size * 1.1, background: bg, color: fg, border: `3px solid ${fg}`, clipPath: "polygon(50% 100%, 0 70%, 0 0, 100% 0, 100% 70%)", fontSize: size / 5 }}>
           {initials(name)}
         </div>
-      ) : <img src={`/crests/${teamId}.png`} alt={`Stemma ${name}`} width={size} height={size} onError={() => setMissing(true)} style={{ imageRendering: "pixelated" }} />}
+      ) : <img src={`/crests/${teamId}.png`} alt={`Stemma ${name}`} width={size} height={size} onError={() => setMissing(true)} style={{ imageRendering: "pixelated", objectFit: "contain" }} />}
       {showName && <span className="font-body text-sm text-center leading-tight text-slate-100">{label}</span>}
     </div>
   );

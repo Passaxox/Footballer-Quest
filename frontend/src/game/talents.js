@@ -63,9 +63,22 @@ export const CHALLENGES = [
   { id: "pochi", name: "Pochi ma buoni", desc: "Vinci il FFI con 4 giocatori o meno", reward: "+80 Spirito" },
 ];
 
+// Sfida a rotazione: una per run, estratta dal seed della campagna; Spirito raddoppiato, nessuna penalità se fallita.
+export const ROTATING_CHALLENGES = [
+  { id: "doppio-boss", name: "Doppia corona", desc: "Batti almeno 2 boss checkpoint (supera la W20)", spirit: 25, ok: (run, c, reached) => reached >= 20 },
+  { id: "caccia-mini", name: "Caccia ai miniboss", desc: "Batti almeno 3 miniboss", spirit: 25, ok: (run, c) => (c.minis || 0) >= 3 },
+  { id: "muro", name: "Muro invalicabile", desc: "Vinci 2 boss senza giocatori KO", spirit: 30, ok: (run, c) => (c.perfect || 0) >= 2 },
+  { id: "compatti", name: "Rosa corta", desc: "Arriva alla W20 con 5 giocatori o meno", spirit: 25, ok: (run, c, reached) => reached >= 20 && run.team.length <= 5 },
+  { id: "dna", name: "Laboratorio DNA", desc: "Completa una Fusione e arriva alla W15", spirit: 20, ok: (run, c, reached) => reached >= 15 && (run.stats?.fusions || 0) >= 1 },
+  { id: "scout", name: "Occhio da talent scout", desc: "Recluta almeno 4 giocatori in una run", spirit: 20, ok: (run) => (run.stats?.recruits || 0) >= 4 },
+];
+export const bonusChallenge = (run) => ROTATING_CHALLENGES[(Number(run.overworld?.contentSeed ?? run.startedAt) >>> 0) % ROTATING_CHALLENGES.length];
+
 export function challengeResults(run, result) {
   const c = run.challenges || {};
   const reached = Math.max(0, (run.wave || 1) - 1) + (result === "win" ? 1 : 0);
+  const bonus = bonusChallenge(run);
+  const bonusOk = !!bonus.ok(run, c, reached);
   const raimon = run.team.filter((p) => resolveVersion(p.versionId)?.primaryTeamId === "raimon").length;
   const won = result === "win";
   return [
@@ -73,7 +86,8 @@ export function challengeResults(run, result) {
     { id: "nofuga", count: reached >= 10 && !c.fled ? 1 : 0, spirit: reached >= 10 && !c.fled ? 30 : 0, points: 0 },
     { id: "cuore-raimon", count: won && raimon >= 3 ? 1 : 0, spirit: won && raimon >= 3 ? 60 : 0, points: 0 },
     { id: "pochi", count: won && run.team.length <= 4 ? 1 : 0, spirit: won && run.team.length <= 4 ? 80 : 0, points: 0 },
-  ].map((r) => ({ ...r, ...CHALLENGES.find((x) => x.id === r.id) }));
+  ].map((r) => ({ ...r, ...CHALLENGES.find((x) => x.id === r.id) }))
+    .concat({ id: "bonus", bonus: true, name: `Sfida bonus · ${bonus.name}`, desc: bonus.desc, count: bonusOk ? 1 : 0, spirit: bonusOk ? bonus.spirit * 2 : 0, points: 0 });
 }
 
 // One talent point per checkpoint boss beaten, plus perfect checkpoints.

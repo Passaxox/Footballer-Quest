@@ -41,6 +41,7 @@ export function TalentsPanel({ meta, onUpdate }) {
 export const ChallengesPanel = () => (
   <div data-testid="challenges-panel" className="space-y-2">
     <p className="font-body text-base text-slate-300">Sfide sempre attive: completale durante la run per guadagnare Spirito di squadra extra a fine partita.</p>
+    <p data-testid="challenge-rotating-note" className="font-body text-base text-amber-200">In più, a ogni run viene estratta una Sfida bonus che vale il doppio dello Spirito (nessuna penalità se fallisce).</p>
     {CHALLENGES.map((c) => <div key={c.id} data-testid={`challenge-${c.id}`} className="p-2 border-2 border-slate-700 bg-[#121a2b]">
       <div className="font-pixel text-[8px] text-white">{c.name}</div>
       <div className="font-body text-base text-slate-300">{c.desc}</div>

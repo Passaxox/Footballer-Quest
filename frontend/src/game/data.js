@@ -4,6 +4,8 @@ export const ELEMENTS = {
   aria: { id: "aria", label: "Aria", beats: "terra", color: "#00d2ff", text: "text-sky-300", border: "border-sky-400", bg: "bg-sky-950" },
   terra: { id: "terra", label: "Terra", beats: "fuoco", color: "#e6a100", text: "text-amber-400", border: "border-amber-500", bg: "bg-amber-950" },
   natura: { id: "natura", label: "Natura", beats: "aria", color: "#10b981", text: "text-emerald-400", border: "border-emerald-500", bg: "bg-emerald-950" },
+  // Elemento non verificato nel dataset canon: nessun vantaggio/svantaggio.
+  neutro: { id: "neutro", label: "Neutro", beats: null, color: "#94a3b8", text: "text-slate-300", border: "border-slate-400", bg: "bg-slate-800" },
 };
 
 export const ROLES = { P: "Portiere", D: "Difensore", C: "Centrocampista", A: "Attaccante" };

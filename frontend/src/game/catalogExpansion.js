@@ -302,7 +302,6 @@ for (const [id, name, role, element, team, arcId, gameOrigin, tier] of CANON_V2_
 }
 
 // Dark Emperors (dataset v3, IE2): corrupted Raimon versions with their own DS portraits. Role/element from the base player.
-// Not in catalog yet (no verified JP↔EN mapping): Shadow Cimmerian, Malcolm Night, Thomas Feldt.
 for (const id of ["nathan", "kevin", "tod", "sam", "steve", "maxwell", "tim", "malcolm"]) {
   const base = ROSTER.find((r) => r.id === id);
   const versionId = `${id}:dark-emperors`;
@@ -311,4 +310,15 @@ for (const id of ["nathan", "kevin", "tod", "sam", "steve", "maxwell", "tim", "m
     baseStats: { ...profiles[base.role] }, primaryMoveId: `${versionId}:primary`, secondaryMoveId: null, rarityId: null,
     variantId: "dark-emperors", categoryId: null, arcId: "alius", eraId: "original", gameOrigin: "ie2", encounterTier: 3 });
   EXPANSION_MOVES.push({ moveId: `${versionId}:primary`, element: base.element, ...moveProfiles[base.role] });
+}
+
+// Dark Emperors ritrovati (asset pack, nomi ufficiali EU): elemento non verificato = neutro.
+for (const [id, name, role] of [["shadow-cimmerian", "Shadow Cimmerian", "A"], ["malcolm-night", "Malcolm Night", "D"], ["thomas-feldt", "Thomas Feldt", "P"]]) {
+  const versionId = `${id}:dark-emperors`;
+  EXPANSION_CHARACTERS.push({ characterId: id, displayName: name });
+  EXPANSION_VERSIONS.push({ versionId, characterId: id, legacyRosterId: null, displayName: name, kind: "player", role, gender: null,
+    spriteId: `de-${id}`, teamTags: ["dark-emperors"], primaryTeamId: "dark-emperors", legacyOnly: false, element: "neutro", types: ["neutro"],
+    baseStats: { ...profiles[role] }, primaryMoveId: `${versionId}:primary`, secondaryMoveId: null, rarityId: null,
+    variantId: "dark-emperors", categoryId: null, arcId: "alius", eraId: "original", gameOrigin: "ie2", encounterTier: 3 });
+  EXPANSION_MOVES.push({ moveId: `${versionId}:primary`, element: "neutro", ...moveProfiles[role] });
 }

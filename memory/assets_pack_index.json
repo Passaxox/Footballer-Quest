@@ -1,0 +1,705 @@
+{
+  "meta": {
+    "generated": "2026-11-18",
+    "scope": "IE1/IE2/IE3 FFI (DS/3DS) - Private fan game research",
+    "total_crests": 27,
+    "crests_found": 27,
+    "total_portraits": 43,
+    "portraits_found": 43,
+    "source_wiki": "inazuma-eleven.fandom.com"
+  },
+  "crests": {
+    "raimon_ie1": {
+      "id": "raimon_ie1",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/raimon_ie1.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/d/d0/Raimon_emblem.png/revision/latest?cb=20230907155258",
+      "wiki_filename": "Raimon_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "raimon_ie2": {
+      "id": "raimon_ie2",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/raimon_ie2.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/d/d0/Raimon_emblem.png/revision/latest?cb=20230907155258",
+      "wiki_filename": "Raimon_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "inazuma_japan_ie3": {
+      "id": "inazuma_japan_ie3",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/inazuma_japan_ie3.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/a/a1/Inazuma_Japan_emblem.png/revision/latest?cb=20230907155817",
+      "wiki_filename": "Inazuma_Japan_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "teikoku_royal_academy": {
+      "id": "teikoku_royal_academy",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/teikoku_royal_academy.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/92/Teikoku_Gakuen_emblem_%28S%29.png/revision/latest",
+      "wiki_filename": "Teikoku_Gakuen_emblem_(S).png",
+      "size": "256x256",
+      "status": "found",
+      "type": "crest"
+    },
+    "zeus_jh": {
+      "id": "zeus_jh",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/zeus_jh.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/e0/Zeus_emblem.png/revision/latest?cb=20230907151715",
+      "wiki_filename": "Zeus_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "kirkwood": {
+      "id": "kirkwood",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/kirkwood.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/a/ad/Kidokawa_Seishuu_emblem.png/revision/latest?cb=20230907155257",
+      "wiki_filename": "Kidokawa_Seishuu_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "occult": {
+      "id": "occult",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/occult.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/d/dd/Occult_emblem.png/revision/latest?cb=20240410110547",
+      "wiki_filename": "Occult_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "mikage_sennou": {
+      "id": "mikage_sennou",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/mikage_sennou.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/b7/Mikage_Sennou_emblem.png/revision/latest?cb=20240410110714",
+      "wiki_filename": "Mikage_Sennou_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "wild_nose": {
+      "id": "wild_nose",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/wild_nose.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/49/Nose_emblem_%28SD%29.png/revision/latest?cb=20230801214954",
+      "wiki_filename": "Nose_emblem_(SD).png",
+      "size": "(256, 256)",
+      "status": "found",
+      "type": "crest"
+    },
+    "jukai_team": {
+      "id": "jukai_team",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/jukai_team.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/e0/Jukai_Team_emblem.png/revision/latest?cb=20230907165608",
+      "wiki_filename": "Jukai_Team_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "gemini_storm": {
+      "id": "gemini_storm",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/gemini_storm.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/d/db/Gemini_Storm_emblem.png/revision/latest?cb=20230907161339",
+      "wiki_filename": "Gemini_Storm_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "epsilon": {
+      "id": "epsilon",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/epsilon.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/a/a8/Epsilon_emblem.png/revision/latest?cb=20230907162041",
+      "wiki_filename": "Epsilon_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "epsilon_kai": {
+      "id": "epsilon_kai",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/epsilon_kai.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/b4/Epsilon_Kai_emblem.png/revision/latest?cb=20230907164116",
+      "wiki_filename": "Epsilon_Kai_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "the_genesis": {
+      "id": "the_genesis",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/the_genesis.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/6f/The_Genesis_emblem.png/revision/latest?cb=20230907163539",
+      "wiki_filename": "The_Genesis_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "dark_emperors": {
+      "id": "dark_emperors",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/dark_emperors.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/62/Dark_Emperors_emblem.png/revision/latest?cb=20230907164524",
+      "wiki_filename": "Dark_Emperors_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "prominence": {
+      "id": "prominence",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/prominence.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/5/55/Prominence_emblem.png/revision/latest?cb=20230907165242",
+      "wiki_filename": "Prominence_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "diamond_dust": {
+      "id": "diamond_dust",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/diamond_dust.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/a/a2/Diamond_Dust_emblem.png/revision/latest?cb=20230907164908",
+      "wiki_filename": "Diamond_Dust_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "fire_dragon": {
+      "id": "fire_dragon",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/fire_dragon.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/0/09/Fire_Dragon_emblem.png/revision/latest?cb=20240410100114",
+      "wiki_filename": "Fire_Dragon_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "orpheus": {
+      "id": "orpheus",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/orpheus.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/8/82/Orpheus_emblem.png/revision/latest?cb=20240410102408",
+      "wiki_filename": "Orpheus_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "knights_of_queen": {
+      "id": "knights_of_queen",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/knights_of_queen.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/60/Knights_of_Queen_emblem.png/revision/latest?cb=20240410101802",
+      "wiki_filename": "Knights_of_Queen_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "unicorn": {
+      "id": "unicorn",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/unicorn.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/67/Unicorn_emblem.png/revision/latest?cb=20240410102230",
+      "wiki_filename": "Unicorn_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "the_empire": {
+      "id": "the_empire",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/the_empire.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/d/d1/The_Empire_emblem.png/revision/latest?cb=20240410102030",
+      "wiki_filename": "The_Empire_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "the_kingdom": {
+      "id": "the_kingdom",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/the_kingdom.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/2/21/The_Kingdom_emblem.png/revision/latest?cb=20240410102625",
+      "wiki_filename": "The_Kingdom_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "red_matador": {
+      "id": "red_matador",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/red_matador.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/3b/Red_Matador_emblem.png/revision/latest?cb=20240410103326",
+      "wiki_filename": "Red_Matador_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "rose_griffon": {
+      "id": "rose_griffon",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/rose_griffon.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/62/Rose_Griffon_emblem.png/revision/latest?cb=20240410103213",
+      "wiki_filename": "Rose_Griffon_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "brockenborg": {
+      "id": "brockenborg",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/brockenborg.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/7/76/Brockenborg_emblem.png/revision/latest?cb=20240410103448",
+      "wiki_filename": "Brockenborg_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    },
+    "little_gigant": {
+      "id": "little_gigant",
+      "file": "/root/workspace/background/research-canon-assets-crests/crests/little_gigant.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/f/fc/Little_Gigant_emblem.png/revision/latest?cb=20240410103009",
+      "wiki_filename": "Little_Gigant_emblem.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "crest"
+    }
+  },
+  "portraits": {
+    "endou_mamoru_ie1": {
+      "id": "endou_mamoru_ie1",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/endou_mamoru_ie1.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/8/89/%28R_IE%29_Endou_Mamoru_sprite.png/revision/latest?cb=20230911132553",
+      "wiki_filename": "(R IE) Endou Mamoru sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "endou_mamoru_ie2": {
+      "id": "endou_mamoru_ie2",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/endou_mamoru_ie2.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/32/%28R_IE2-IE3%29_Endou_Mamoru_sprite.png/revision/latest?cb=20230911132530",
+      "wiki_filename": "(R IE2-IE3) Endou Mamoru sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "endou_mamoru_ie3": {
+      "id": "endou_mamoru_ie3",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/endou_mamoru_ie3.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/0/00/%28IJ%29_Endou_Mamoru_sprite.png/revision/latest?cb=20230907174127",
+      "wiki_filename": "(IJ) Endou Mamoru sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "gouenji_shuuya_ie1": {
+      "id": "gouenji_shuuya_ie1",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/gouenji_shuuya_ie1.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/60/%28R_IE%29_Gouenji_Shuuya_sprite.png/revision/latest?cb=20230911145054",
+      "wiki_filename": "(R IE) Gouenji Shuuya sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "kidou_yuuto_teikoku": {
+      "id": "kidou_yuuto_teikoku",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/kidou_yuuto_teikoku.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/31/%28TG_IE%29_Kidou_Yuuto_sprite.png/revision/latest?cb=20230827093219",
+      "wiki_filename": "(TG IE) Kidou Yuuto sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "kidou_yuuto_raimon": {
+      "id": "kidou_yuuto_raimon",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/kidou_yuuto_raimon.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/a/a0/%28R_IE2-IE3%29_Kidou_Yuuto_sprite.png/revision/latest?cb=20230911152602",
+      "wiki_filename": "(R IE2-IE3) Kidou Yuuto sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "kidou_yuuto_ie3": {
+      "id": "kidou_yuuto_ie3",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/kidou_yuuto_ie3.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/0/03/%28IJ%29_Kidou_Yuuto_sprite.png/revision/latest?cb=20230907181630",
+      "wiki_filename": "(IJ) Kidou Yuuto sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "fubuki_shirou_raimon": {
+      "id": "fubuki_shirou_raimon",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/fubuki_shirou_raimon.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/a/ae/%28SR%29_Fubuki_Shirou_sprite.png/revision/latest?cb=20230909140643",
+      "wiki_filename": "(SR) Fubuki Shirou sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "hiroto_kiyama_genesis": {
+      "id": "hiroto_kiyama_genesis",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/hiroto_kiyama_genesis.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/c5/Kiyama_Hiroto_sprite_%281%29.png/revision/latest?cb=20230627192719",
+      "wiki_filename": "Kiyama Hiroto sprite (1).png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "hiroto_kiyama_raimon": {
+      "id": "hiroto_kiyama_raimon",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/hiroto_kiyama_raimon.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/a/ab/%28R%29_Kiyama_Hiroto_sprite.png/revision/latest?cb=20230911155122",
+      "wiki_filename": "(R) Kiyama Hiroto sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "midorikawa_ryuuji_gemini": {
+      "id": "midorikawa_ryuuji_gemini",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/midorikawa_ryuuji_gemini.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/90/%28GS%29_Reize_sprite.png/revision/latest?cb=20230628113506",
+      "wiki_filename": "(GS) Reize sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "midorikawa_ryuuji_raimon": {
+      "id": "midorikawa_ryuuji_raimon",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/midorikawa_ryuuji_raimon.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/d/d8/%28IJ%29_Midorikawa_Ryuuji_sprite.png/revision/latest?cb=20230907193351",
+      "wiki_filename": "(IJ) Midorikawa Ryuuji sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "saginuma_osamu_epsilon": {
+      "id": "saginuma_osamu_epsilon",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/saginuma_osamu_epsilon.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/b2/%28E%29_Desarm_sprite.png/revision/latest?cb=20230628141052",
+      "wiki_filename": "(E) Desarm sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "kazemaru_dark_emperors": {
+      "id": "kazemaru_dark_emperors",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/kazemaru_dark_emperors.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/e9/%28DE%29_Kazemaru_Ichirouta_sprite.png/revision/latest?cb=20230703112352",
+      "wiki_filename": "(DE) Kazemaru Ichirouta sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "ichinose_kazuya_unicorn": {
+      "id": "ichinose_kazuya_unicorn",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/ichinose_kazuya_unicorn.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/9b/%28U%29_Kazuya_Ichinose_sprite.png/revision/latest?cb=20230906115027",
+      "wiki_filename": "(U) Kazuya Ichinose sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "nagumo_haruya_genesis": {
+      "id": "nagumo_haruya_genesis",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/nagumo_haruya_genesis.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/6d/%28FD%29_Nagumo_Haruya_sprite.png/revision/latest?cb=20230901194848",
+      "wiki_filename": "(FD) Nagumo Haruya sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "rococo_ulpa_little_gigant": {
+      "id": "rococo_ulpa_little_gigant",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/rococo_ulpa_little_gigant.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/8/83/%28LG%29_Rococo_Ulpa_sprite.png/revision/latest?cb=20230827205722",
+      "wiki_filename": "(LG) Rococo Ulpa sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "edgar_valtinas_koq": {
+      "id": "edgar_valtinas_koq",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/edgar_valtinas_koq.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/cd/%28KQ%29_Edgar_Valtinas_sprite.png/revision/latest?cb=20230903071916",
+      "wiki_filename": "(KQ) Edgar Valtinas sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "fidio_aldena_orpheus": {
+      "id": "fidio_aldena_orpheus",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/fidio_aldena_orpheus.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/8/80/%28O%29_Fidio_Aldena_sprite.png/revision/latest?cb=20230826095101",
+      "wiki_filename": "(O) Fidio Aldena sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "endou_mamoru": {
+      "id": "endou_mamoru",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/endou_mamoru.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/5/5d/Endou.png/revision/latest?cb=20230918094727",
+      "wiki_filename": "Endou.png",
+      "size": "538x829",
+      "status": "found",
+      "type": "portrait"
+    },
+    "gouenji_shuuya": {
+      "id": "gouenji_shuuya",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/gouenji_shuuya.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/8/8b/Gouenji.png/revision/latest?cb=20230918094733",
+      "wiki_filename": "Gouenji.png",
+      "size": "804x841",
+      "status": "found",
+      "type": "portrait"
+    },
+    "kidou_yuuto": {
+      "id": "kidou_yuuto",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/kidou_yuuto.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/1/10/Kidou.png/revision/latest?cb=20230918094739",
+      "wiki_filename": "Kidou.png",
+      "size": "795x847",
+      "status": "found",
+      "type": "portrait"
+    },
+    "kazemaru_ichirouta": {
+      "id": "kazemaru_ichirouta",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/kazemaru_ichirouta.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/e0/Kazemaru.png/revision/latest?cb=20230918094737",
+      "wiki_filename": "Kazemaru.png",
+      "size": "765x825",
+      "status": "found",
+      "type": "portrait"
+    },
+    "kabeyama_heigorou": {
+      "id": "kabeyama_heigorou",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/kabeyama_heigorou.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/f/fc/Kabeyama_Heigorou.png/revision/latest?cb=20190629203833",
+      "wiki_filename": "Kabeyama Heigorou.png",
+      "size": "342x357",
+      "status": "found",
+      "type": "portrait"
+    },
+    "kurimatsu_teppei": {
+      "id": "kurimatsu_teppei",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/kurimatsu_teppei.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/e/ea/Kurimatsu_Teppei.png/revision/latest?cb=20130922145734",
+      "wiki_filename": "Kurimatsu Teppei.png",
+      "size": "701x701",
+      "status": "found",
+      "type": "portrait"
+    },
+    "someoka_ryuugo": {
+      "id": "someoka_ryuugo",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/someoka_ryuugo.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/7/7c/Someoka_Ryuugo.png/revision/latest?cb=20230722173118",
+      "wiki_filename": "Someoka Ryuugo.png",
+      "size": "398x454",
+      "status": "found",
+      "type": "portrait"
+    },
+    "fubuki_shirou": {
+      "id": "fubuki_shirou",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/fubuki_shirou.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/90/Fubuki_Shirou.png/revision/latest?cb=20230722170904",
+      "wiki_filename": "Fubuki Shirou.png",
+      "size": "370x569",
+      "status": "found",
+      "type": "portrait"
+    },
+    "hiroto_kiyama": {
+      "id": "hiroto_kiyama",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/hiroto_kiyama.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/c5/Kiyama_Hiroto_sprite_%281%29.png/revision/latest?cb=20230627192719",
+      "wiki_filename": "Kiyama Hiroto sprite (1).png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "midorikawa_ryuuji": {
+      "id": "midorikawa_ryuuji",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/midorikawa_ryuuji.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/bd/Midorikawa_sprite.png/revision/latest?cb=20240425121821",
+      "wiki_filename": "Midorikawa sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "saginuma_osamu": {
+      "id": "saginuma_osamu",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/saginuma_osamu.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/b2/%28E%29_Desarm_sprite.png/revision/latest?cb=20230628141052",
+      "wiki_filename": "(E) Desarm sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "tachimukai_yuuki": {
+      "id": "tachimukai_yuuki",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/tachimukai_yuuki.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/3/3c/%28SR%29_Tachimukai_Yuuki_sprite.png/revision/latest?cb=20230909125646",
+      "wiki_filename": "(SR) Tachimukai Yuuki sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "tsunami_jousuke": {
+      "id": "tsunami_jousuke",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/tsunami_jousuke.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/cf/%28SR%29_Tsunami_Jousuke_sprite.png/revision/latest?cb=20230909124659",
+      "wiki_filename": "(SR) Tsunami Jousuke sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "ichinose_kazuya": {
+      "id": "ichinose_kazuya",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/ichinose_kazuya.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/4/4a/%28R_IE%29_Ichinose_Kazuya_sprite.png/revision/latest?cb=20230911153559",
+      "wiki_filename": "(R IE) Ichinose Kazuya sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "fudou_akio": {
+      "id": "fudou_akio",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/fudou_akio.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/0/00/%28IJ%29_Fudou_Akio_sprite.png/revision/latest?cb=20230907175939",
+      "wiki_filename": "(IJ) Fudou Akio sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "nagumo_haruya": {
+      "id": "nagumo_haruya",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/nagumo_haruya.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/6/6d/%28FD%29_Nagumo_Haruya_sprite.png/revision/latest?cb=20230901194848",
+      "wiki_filename": "(FD) Nagumo Haruya sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "rococo_ulpa": {
+      "id": "rococo_ulpa",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/rococo_ulpa.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/8/83/%28LG%29_Rococo_Ulpa_sprite.png/revision/latest?cb=20230827205722",
+      "wiki_filename": "(LG) Rococo Ulpa sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "fidio_aldena": {
+      "id": "fidio_aldena",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/fidio_aldena.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/8/80/%28O%29_Fidio_Aldena_sprite.png/revision/latest?cb=20230826095101",
+      "wiki_filename": "(O) Fidio Aldena sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "edgar_valtinas": {
+      "id": "edgar_valtinas",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/edgar_valtinas.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/c/cd/%28KQ%29_Edgar_Valtinas_sprite.png/revision/latest?cb=20230903071916",
+      "wiki_filename": "(KQ) Edgar Valtinas sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "type": "portrait"
+    },
+    "shadow_cimmerian": {
+      "id": "shadow_cimmerian",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/shadow_cimmerian.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/7/78/%28DE%29_Yamino_Kageto_sprite.png/revision/latest?cb=20230703113018",
+      "wiki_filename": "(DE) Yamino Kageto sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "note": "",
+      "type": "portrait"
+    },
+    "malcolm_night": {
+      "id": "malcolm_night",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/malcolm_night.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/1/18/%28DE%29_Nishigaki_Mamoru_sprite.png/revision/latest?cb=20230703110753",
+      "wiki_filename": "(DE) Nishigaki Mamoru sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "note": "",
+      "type": "portrait"
+    },
+    "thomas_feldt": {
+      "id": "thomas_feldt",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/thomas_feldt.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/0/0d/%28MS%29_Sugimori_Takeshi_sprite.png/revision/latest?cb=20230910113318",
+      "wiki_filename": "(MS) Sugimori Takeshi sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "note": "",
+      "type": "portrait"
+    },
+    "bomber": {
+      "id": "bomber",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/bomber.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/b/b5/%28P%29_Honba_Geki_sprite.png/revision/latest?cb=20230629123123",
+      "wiki_filename": "(P) Honba Geki sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "note": "Prominence team (not Dark Emperors)",
+      "type": "portrait"
+    },
+    "andre_pinson": {
+      "id": "andre_pinson",
+      "file": "/root/workspace/background/research-canon-assets-crests/portraits/andre_pinson.png",
+      "source_url": "https://static.wikia.nocookie.net/inazuma-eleven/images/9/96/%28RG%29_Andr%C3%A9_Panzo_sprite.png/revision/latest?cb=20230907173521",
+      "wiki_filename": "(RG) André Panzo sprite.png",
+      "size": "64x64",
+      "status": "found",
+      "note": "",
+      "type": "portrait"
+    }
+  },
+  "missing_names_research": {
+    "shadow_cimmerian": {
+      "en": "Shadow Cimmerian",
+      "it": "Shadow Cimmerian",
+      "jp": "闇野 カゲト",
+      "jp_romaji": "Yamino Kageto",
+      "team": "Raimon / Dark Emperors",
+      "position": "FW",
+      "wiki_url": "https://inazuma-eleven.fandom.com/wiki/Yamino_Kageto",
+      "it_wiki_url": "https://inazumaeleven.fandom.com/it/wiki/Shadow_Cimmerian"
+    },
+    "malcolm_night": {
+      "en": "Malcolm Night",
+      "it": "Malcolm Night",
+      "jp": "西垣 守",
+      "jp_romaji": "Nishigaki Mamoru",
+      "team": "Kirkwood / Dark Emperors",
+      "position": "DF",
+      "wiki_url": "https://inazuma-eleven.fandom.com/wiki/Nishigaki_Mamoru",
+      "it_wiki_url": "https://inazumaeleven.fandom.com/it/wiki/Malcolm_Night"
+    },
+    "thomas_feldt": {
+      "en": "Thomas Feldt",
+      "it": "Thomas Feldt",
+      "jp": "杉森 威",
+      "jp_romaji": "Sugimori Takeshi",
+      "team": "Mikage Sennou (captain) / Dark Emperors",
+      "position": "GK",
+      "wiki_url": "https://inazuma-eleven.fandom.com/wiki/Sugimori_Takeshi",
+      "it_wiki_url": "https://inazumaeleven.fandom.com/it/wiki/Thomas_Feldt"
+    },
+    "bomber": {
+      "en": "Ben Blowton (nickname: Bomber)",
+      "it": "Ben Blowton (soprannome: Bomber)",
+      "jp": "本場 激",
+      "jp_romaji": "Honba Geki",
+      "jp_alien_name": "ボンバ (Bomba)",
+      "team": "Prominence / Chaos (NOTE: NOT Dark Emperors!)",
+      "position": "MF/DF",
+      "wiki_url": "https://inazuma-eleven.fandom.com/wiki/Honba_Geki",
+      "it_wiki_url": "https://inazumaeleven.fandom.com/it/wiki/Ben_Blowton",
+      "warning": "Bomber belongs to Prominence, not Dark Emperors"
+    },
+    "andre_pinson": {
+      "en": "André Pinson",
+      "it": "André Pinson",
+      "jp": "アンドレ・パンゾ",
+      "jp_romaji": "André Panzo",
+      "team": "Rose Griffon (France, IE3 FFI)",
+      "position": "DF",
+      "jersey_number": "13 (game) / 9 (anime)",
+      "wiki_url": "https://inazuma-eleven.fandom.com/wiki/André_Panzo",
+      "it_wikipedia": "https://it.wikipedia.org/wiki/Personaggi_minori_di_Inazuma_Eleven_3#André_Pinson"
+    }
+  }
+}

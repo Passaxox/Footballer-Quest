@@ -42,7 +42,7 @@ export default function EndScreen({ run, result, spiritGained = 0, talentGained 
         <div data-testid="end-spirit-gained" className="font-pixel text-[10px] text-amber-300 border-2 border-amber-600 p-2">+{spiritGained} Spirito di squadra · +{talentGained} Punti Talento</div>
         {challenges.length > 0 && <div data-testid="end-challenges" className="font-body text-base text-slate-200 border-2 border-slate-700 p-2 space-y-1">
           <div className="font-pixel text-[9px] text-amber-300">SFIDE</div>
-          {challenges.map((c) => <div key={c.id} data-testid={`end-challenge-${c.id}`} className={c.count ? "text-emerald-300" : "text-slate-400"}>{c.count ? "✓" : "·"} {c.name}{c.count > 1 ? ` ×${c.count}` : ""} {c.count ? `(+${c.spirit} Spirito${c.points ? `, +${c.points} PT` : ""})` : `— ${c.desc}`}</div>)}
+          {challenges.map((c) => <div key={c.id} data-testid={`end-challenge-${c.id}`} className={`${c.count ? "text-emerald-300" : "text-slate-400"} ${c.bonus ? "border-t-2 border-amber-600 pt-1 mt-1" : ""}`}>{c.bonus && <span className="font-pixel text-[8px] text-amber-300 mr-1">×2</span>}{c.count ? "✓" : "·"} {c.name}{c.count > 1 ? ` ×${c.count}` : ""} {c.count ? `(+${c.spirit} Spirito${c.points ? `, +${c.points} PT` : ""})` : `— ${c.desc}`}{c.bonus && !c.count ? " · non riuscita, nessuna penalità" : ""}</div>)}
         </div>}
         <div className="font-pixel text-[9px] text-slate-300 uppercase" data-testid="end-finalists-title">{result === "win" ? "Giocatori arrivati in finale" : "La vostra squadra"}</div>
         <div className="space-y-2">{run.team.map((p, i) => <PlayerCard key={p.uid} p={p} compact testId={`end-player-${i}`} />)}</div>

@@ -32,6 +32,8 @@ import TeamScreen from "@/components/game/TeamScreen";
 import EndScreen from "@/components/game/EndScreen";
 import CollectionScreen from "@/components/game/CollectionScreen";
 import RecordsScreen from "@/components/game/RecordsScreen";
+import RivalDiaryScreen from "@/components/game/RivalDiaryScreen";
+import { recordRival } from "@/game/rivals";
 
 function App() {
   const [screen, setScreen] = useState("title");
@@ -108,11 +110,11 @@ function App() {
     gotoPending(updateRun(nextRun));
   };
 
-  const finishRun = (r, result) => {
+  const finishRun = (r, result, baseMeta = meta) => {
     const challenges = challengeResults(r, result);
     const spiritGained = runSpiritReward(r, result) + challenges.reduce((n, c) => n + c.spirit, 0);
     const talentGained = runTalentPoints(r, result);
-    const recorded = recordFinishedRun(meta, r, result);
+    const recorded = recordFinishedRun(baseMeta, r, result);
     updateMeta({ ...recorded, teamSpirit: (recorded.teamSpirit || 0) + spiritGained, talentPoints: (recorded.talentPoints || 0) + talentGained });
     clearRun(); runRef.current = null; setRun(null);
     setCtx({ result, finalRun: r, spiritGained, talentGained, challenges });
@@ -138,7 +140,10 @@ function App() {
     let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? team.map((p) => ({ ...p, hp: p.maxHp })) : team, items, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : {}) } };
     // Final victory keeps earned growth/money, but has no next-node item phase.
     if (boss && team.every((p) => p.hp > 0)) r = { ...r, challenges: { ...(r.challenges || {}), perfect: (r.challenges?.perfect || 0) + 1 } };
-    if (r.wave >= FINAL_WAVE) { finishRun(completeOverworldNode(r), "win"); return; }
+    if (enc.miniboss) r = { ...r, challenges: { ...(r.challenges || {}), minis: (r.challenges?.minis || 0) + 1 } };
+    const rivalMeta = recordRival(meta, enc, run.wave, team.filter((p) => p.hp <= 0).length);
+    if (rivalMeta !== meta) updateMeta(rivalMeta);
+    if (r.wave >= FINAL_WAVE) { finishRun(completeOverworldNode(r), "win", rivalMeta); return; }
     const rewards = generateRewards(r);
     const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport };
     if (boss && enc.actId) {
@@ -326,8 +331,9 @@ function App() {
 
   const render = () => {
     switch (screen) {
-      case "title": return <TitleScreen hasRun={!!run} meta={meta} onNew={() => { if (!run || window.confirm("Esiste una run in corso. Iniziando una nuova run perderai quei progressi. Continuare?")) setScreen("select"); }} onContinue={() => setScreen("hub")} onRecords={() => setScreen("records")} onCollection={() => setScreen("collection")} onPerks={() => setScreen("perks")} onSaveCode={() => setScreen("savecode")} onToggleSound={toggleSound} />;
+      case "title": return <TitleScreen hasRun={!!run} meta={meta} onNew={() => { if (!run || window.confirm("Esiste una run in corso. Iniziando una nuova run perderai quei progressi. Continuare?")) setScreen("select"); }} onContinue={() => setScreen("hub")} onRecords={() => setScreen("records")} onCollection={() => setScreen("collection")} onPerks={() => setScreen("perks")} onSaveCode={() => setScreen("savecode")} onRivals={() => setScreen("rivals")} onToggleSound={toggleSound} />;
       case "select": return <TeamSelect meta={meta} onStart={startRun} onBack={() => setScreen("title")} />;
+      case "rivals": return <RivalDiaryScreen meta={meta} onBack={() => setScreen("title")} />;
       case "records": return <RecordsScreen meta={meta} onBack={() => setScreen("title")} />;
       case "collection": return <CollectionScreen meta={meta} onBack={() => setScreen("title")} />;
       case "perks": return <PerksScreen meta={meta} onUpdate={updateMeta} onBack={() => setScreen("title")} />;

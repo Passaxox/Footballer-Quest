@@ -6,6 +6,7 @@ import { actForWave } from "@/game/campaign";
 import { computeTeamSynergies } from "@/game/traits";
 import { Avatar } from "./ui";
 import { ActIntro, JourneyLog } from "./StoryScreen";
+import { bonusChallenge } from "@/game/talents";
 import { PERK_BY_ID, RARITIES, perkText } from "@/game/perks";
 import { XpReport } from "./ui";
 import OverworldMap from "./OverworldMap";
@@ -44,6 +45,7 @@ export default function OverworldHub({ run, onNext, onSelectNode, onTeam, onPaus
           <button type="button" ref={closeRef} className="ow-details-close" data-testid="details-close-btn" aria-label="Chiudi diario" onClick={closeToTrigger}><X size={22} /></button></div>
         <p data-testid="run-difficulty">{DIFFICULTIES[getRules(run.rulesetId).difficultyId].label}</p>
         <p>Gloria {glory(run)} · Vittorie {run.stats.wins} · Reclutati {run.stats.recruits}</p>
+        <p data-testid="hub-bonus-challenge">Sfida bonus (Spirito ×2): <b>{bonusChallenge(run).name}</b> · {bonusChallenge(run).desc}</p>
         <XpReport report={!run.pending ? run.lastProgression?.report : null} />
         <JourneyLog run={run} />
         <button type="button" data-testid="abandon-btn" className="ow-abandon" onClick={onAbandon}>Abbandona la run</button>
