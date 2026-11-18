@@ -7,7 +7,7 @@ export const ACTS = [
   { id: "act1", index: 1, fromWave: 1, toWave: 10, palette: "act1", title: "Raimon e Tokyo", macro: "Football Frontier",
     where: "Inazuma Town, Tokyo. Il vecchio campo della Raimon, la Torre di Ferro e l'argine del fiume.",
     who: "Rivali di Tokyo e del primo Football Frontier: chi vi aspetta cambia a ogni run.",
-    why: "Una squadra senza nome deve guadagnarsi il rispetto: battere la Royal apre le porte del Football Frontier.",
+    why: "Una squadra senza nome deve guadagnarsi il rispetto: superare {mini} e poi battere {boss} apre le porte del Football Frontier.",
     lanes: [
       { id: "campo", name: "Campo Raimon", scenarioId: RAIMON, env: "Campi Raimon", weights: { battle: 4, training: 3, recruit: 2, event: 1, shop: 1 }, hint: "Allenamenti e compagni di scuola" },
       { id: "argine", name: "Argine del fiume", scenarioId: "riverside", env: "Lungofiume", weights: { battle: 4, recruit: 3, event: 2, shop: 1, training: 1 }, hint: "Talenti di strada da reclutare" },
@@ -21,7 +21,7 @@ export const ACTS = [
   { id: "act2", index: 2, fromWave: 11, toWave: 20, palette: "act2", title: "Football Frontier", macro: "Football Frontier",
     where: "Il torneo nazionale: gironi, tribune piene e trasferte tra gli stadi.",
     who: "Le squadre del Football Frontier: il tabellone e la finale cambiano a ogni edizione.",
-    why: "Il tabellone cambia a ogni edizione: la strada per la finale dipende dalle sfide che scegliete.",
+    why: "Il tabellone cambia a ogni edizione: {mini} vi aspetta a metà torneo, {boss} in finale.",
     lanes: [
       { id: "gironi", name: "Gironi del torneo", scenarioId: "ff-qualifiers", env: "Stadi del torneo", weights: { battle: 5, recruit: 2, event: 1, shop: 1, training: 1 }, hint: "Più partite, più reclute" },
       { id: "rivincita", name: "Rivincita Royal", scenarioId: "royal-academy", env: "Territorio Royal", weights: { battle: 5, training: 2, event: 1, shop: 1, recruit: 1 }, hint: "La Royal cerca vendetta" },
@@ -35,7 +35,7 @@ export const ACTS = [
   { id: "act3", index: 3, fromWave: 21, toWave: 30, palette: "act3", title: "Alius, la risposta", macro: "Accademia Alius",
     where: "In viaggio con la Carovana Inazuma tra Nara, Osaka e Hokkaido.",
     who: "L'Accademia Alius: Epsilon, Prominence e i capitani del Ghiaccio. Il ramo scelto decide il checkpoint.",
-    why: "Ogni tappa cambia chi incontri e chi puoi reclutare. Il ramo scelto decide quale capitano Alius affronterete alla wave 30.",
+    why: "Ogni tappa cambia chi incontri e chi puoi reclutare. Dopo {mini}, il ramo scelto decide se alla W30 affronterete {boss}.",
     lanes: [
       { id: "hokkaido", name: "Hokkaido", scenarioId: "hokkaido", env: "Neve di Hokkaido", weights: { recruit: 4, battle: 4, event: 1, training: 1, shop: 1 }, hint: "Scouting locale: Shawn e Aiden Froste", boss: ["A"] },
       { id: "nara", name: "Nara", scenarioId: "nara", env: "Templi di Nara", weights: { battle: 5, event: 2, recruit: 1, training: 1, shop: 1 }, hint: "Gemini Storm all'attacco", boss: ["A", "B"] },
@@ -49,7 +49,7 @@ export const ACTS = [
   { id: "act4", index: 4, fromWave: 31, toWave: 40, palette: "act4", title: "Alius, resa dei conti", macro: "Accademia Alius",
     where: "Dalla Foresta di Jukai alle rovine di Tokyo, fino alla base dell'Alius sul Monte Fuji.",
     who: "Il rango supremo dell'Alius o una nazionale già in viaggio verso il mondiale.",
-    why: "Le scelte dell'atto precedente tornano a bussare. Vincere significa la convocazione per il mondiale.",
+    why: "Superare {mini} e poi {boss} significa la convocazione per il mondiale.",
     lanes: [
       { id: "fuji", name: "Base Alius · Monte Fuji", scenarioId: "alius-base", env: "Base Alius", weights: { battle: 5, event: 2, training: 1, shop: 1, recruit: 1 }, hint: "Avversari Alius ovunque" },
       { id: "epsilon", name: "Rivincita Epsilon", scenarioId: "epsilon-rematch", env: "Campo Epsilon", weights: { battle: 5, training: 2, recruit: 1, event: 1, shop: 1 }, hint: "Epsilon vuole la rivincita" },
@@ -63,7 +63,7 @@ export const ACTS = [
   { id: "act5", index: 5, fromWave: 41, toWave: 50, palette: "act5", title: "Football Frontier International", macro: "FFI",
     where: "Liocott Island: campus delle nazionali, stadi e quartieri a tema.",
     who: "Le nazionali del FFI e, in finale, i Piccoli Giganti di Rococo Urupa.",
-    why: "Ogni campus ha il suo stile di gioco. Arrivare in fondo significa diventare campioni del mondo.",
+    why: "Ogni campus ha il suo stile di gioco: dopo {mini}, la finale contro {boss} vale il titolo mondiale.",
     lanes: [
       { id: "europa", name: "Campus europei", scenarioId: "ffi-europe", env: "Campus europei", weights: { battle: 5, recruit: 2, training: 1, event: 1, shop: 1 }, hint: "Orpheus, Knights of Queen, The Empire" },
       { id: "usa", name: "Campus Unicorn", scenarioId: "ffi-unicorn", env: "Campus USA", weights: { battle: 4, recruit: 3, shop: 1, event: 1, training: 1 }, hint: "Velocità americana" },
@@ -111,7 +111,10 @@ export function runPlan(seed) {
     const { pool, branches = 1 } = PHASE_POOLS[wave];
     const rng = seededRandom(seed, `plan:${wave}`);
     const fresh = pool.filter((id) => !used.has(id));
-    const picks = shuffle(fresh.length >= branches ? fresh : pool, rng).slice(0, branches);
+    // Never the same team twice in one act (miniboss vs that act's boss), even when the pool runs dry.
+    const sameAct = PHASE_POOLS[wave].kind === "miniboss" ? plan[wave + 5] || [] : [];
+    const fallback = pool.filter((id) => !sameAct.includes(id));
+    const picks = shuffle(fresh.filter((id) => !sameAct.includes(id)).length >= branches ? fresh.filter((id) => !sameAct.includes(id)) : fallback, rng).slice(0, branches);
     picks.forEach((id) => used.add(id));
     plan[wave] = picks;
   }

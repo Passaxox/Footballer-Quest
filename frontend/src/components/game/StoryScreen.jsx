@@ -6,6 +6,7 @@ import { spiritFor, spiritEligible } from "@/game/spirits";
 import { canReceiveMixi, mixiPassive } from "@/game/mixi";
 import { Avatar, Btn, PlayerCard } from "./ui";
 import { MapPin, Swords, Flag, Sparkles, Zap } from "lucide-react";
+import { TeamCrest } from "./TeamCrest";
 import "./story.css";
 
 const portrait = (id) => createPlayer(id, 1);
@@ -17,16 +18,16 @@ const Frame = ({ act, testId, children }) => (
 export function ActIntro({ run, act, onStart }) {
   const bosses = actBosses(run.overworld.contentSeed, act);
   const mini = actMiniboss(run.overworld.contentSeed, act);
-  const rivalIds = [mini.leader, ...bosses.map((b) => b.leader)];
+  const why = act.why.replace("{mini}", mini.team).replace("{boss}", bosses.map((b) => b.team).join(" oppure "));
   return (
     <Frame act={act} testId="act-intro">
       <div className="story-eyebrow">ATTO {act.index} / {ACTS.length} · W{act.fromWave}–{act.toWave}</div>
       <h1 className="story-title" data-testid="act-intro-title">{act.title}</h1>
-      <div className="story-rivals">{rivalIds.map((id) => <Avatar key={id} p={portrait(id)} size={84} />)}</div>
+      <div className="story-rivals">{[mini, ...bosses].map((b, i) => <TeamCrest key={b.id} teamId={b.teamId} name={`${i === 0 ? "Miniboss" : "Boss"} · ${b.team}`} size={64} testId={`act-intro-crest-${i}`} />)}</div>
       <section className="story-card"><MapPin size={16} /><div><b>Dove siamo</b><p>{act.where}</p></div></section>
       <section className="story-card"><Swords size={16} /><div><b>Chi affrontiamo</b><p>{act.who}</p>
         <p data-testid="act-intro-bosses" className="text-amber-200">Miniboss W{act.fromWave + 4}: {mini.team} · Boss W{act.toWave}: {bosses.map((b) => b.team).join(" oppure ")}</p></div></section>
-      <section className="story-card"><Flag size={16} /><div><b>Perché conta</b><p>{act.why}</p></div></section>
+      <section className="story-card"><Flag size={16} /><div><b>Perché conta</b><p data-testid="act-intro-why">{why}</p></div></section>
       <Btn data-testid="act-intro-start" variant="primary" className="w-full mt-auto" onClick={onStart}>Si parte!</Btn>
     </Frame>
   );

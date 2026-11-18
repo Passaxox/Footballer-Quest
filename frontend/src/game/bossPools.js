@@ -62,7 +62,7 @@ export const POOL_BY_ID = Object.fromEntries(BOSS_POOL.map((b) => [b.id, b]));
 
 // Per-wave pools. W50 is fixed. Picks avoid repeating a team already used earlier in the run.
 export const PHASE_POOLS = {
-  5: { kind: "miniboss", pool: ["occult", "royal"] },
+  5: { kind: "miniboss", pool: ["occult", "royal", "zeus"] },
   10: { kind: "boss", pool: ["royal", "occult"] },
   15: { kind: "miniboss", pool: ["occult", "royal", "zeus"] },
   20: { kind: "boss", pool: ["zeus", "royal"] },

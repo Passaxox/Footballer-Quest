@@ -3,6 +3,7 @@ import { PERKS, PERK_CATEGORIES, PERK_BY_ID, RARITIES, PERK_CURRENCY, perkLevel,
 import { sfx } from "@/game/audio";
 import { Btn, Header } from "./ui";
 import { Flame } from "lucide-react";
+import { TalentsPanel, ChallengesPanel } from "./TalentsPanel";
 
 const ROMAN = ["I", "II", "III"];
 
@@ -33,12 +34,19 @@ function PerkRow({ perk, meta, onBuy }) {
 
 export default function PerksScreen({ meta, onUpdate, onBack }) {
   const [cat, setCat] = useState("off");
+  const [tab, setTab] = useState("perks");
   const total = PERKS.reduce((n, p) => n + maxLevel(p), 0);
   const owned = PERKS.reduce((n, p) => n + perkLevel(meta, p.id), 0);
   return (
     <div data-testid="perks-screen" className="flex flex-col flex-1">
-      <Header title="Vantaggi" sub={`Livelli sbloccati ${owned}/${total}`} right={<Btn variant="ghost" data-testid="perks-back-btn" onClick={onBack}>Menu</Btn>} />
-      <div className="px-3 pt-3">
+      <Header title="Spedizione" sub={`Vantaggi ${owned}/${total} · Talenti e Sfide`} right={<Btn variant="ghost" data-testid="perks-back-btn" onClick={onBack}>Menu</Btn>} />
+      <div className="px-3 pt-3 grid grid-cols-3 gap-1" role="tablist">
+        {[["perks", "Vantaggi"], ["talents", "Talenti"], ["challenges", "Sfide"]].map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={tab === id}
+          data-testid={`meta-tab-${id}`} onClick={() => setTab(id)} className={`font-pixel text-[8px] py-2 border-2 ${tab === id ? "border-amber-400 text-amber-200 bg-slate-800" : "border-slate-700 text-slate-400"}`}>{label}</button>)}
+      </div>
+      {tab === "talents" && <div className="p-3 flex-1 overflow-y-auto"><TalentsPanel meta={meta} onUpdate={onUpdate} /></div>}
+      {tab === "challenges" && <div className="p-3 flex-1 overflow-y-auto"><ChallengesPanel /></div>}
+      {tab === "perks" && <><div className="px-3 pt-3">
         <div data-testid="team-spirit-balance" className="flex items-center gap-2 font-pixel text-[10px] text-amber-300 border-2 border-amber-600 bg-amber-950/40 p-2">
           <Flame size={16} /> {meta.teamSpirit || 0} · {PERK_CURRENCY}
         </div>
@@ -55,8 +63,8 @@ export default function PerksScreen({ meta, onUpdate, onBack }) {
         {cat === "curse" && <p className="font-body text-base text-rose-200">Gratis, ma con un prezzo: in run sono facoltativi e aumentano lo Spirito di squadra guadagnato.</p>}
         {cat === "fusion" && <p className="font-body text-base text-fuchsia-200">Fondi due vantaggi al livello III in uno solo, più forte: occupa un unico posto in run.</p>}
         {PERKS.filter((p) => p.cat === cat).map((p) => <PerkRow key={p.id} perk={p} meta={meta} onBuy={(id) => onUpdate(buyPerk(meta, id))} />)}
-        <p className="font-body text-sm text-slate-400 pt-2">Guadagni Spirito di squadra a fine run: 2 per wave, 15 per checkpoint, 60 se vinci il FFI. I vantaggi sbloccati ti vengono offerti a inizio run e dopo ogni boss.</p>
-      </div>
+        <p className="font-body text-sm text-slate-400 pt-2">Guadagni Spirito di squadra a fine run: 2 per wave, 15 per checkpoint, 60 se vinci il FFI, più le Sfide. I vantaggi sbloccati ti vengono offerti a inizio run e dopo ogni boss.</p>
+      </div></>}
     </div>
   );
 }

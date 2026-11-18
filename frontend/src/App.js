@@ -5,6 +5,7 @@ import { hasOverworld, completeOverworldNode } from "@/game/overworld";
 import { unlockStarter } from "@/game/collection";
 import { spiritFor } from "@/game/spirits";
 import { applyMixi } from "@/game/mixi";
+import { talentFx, challengeResults, runTalentPoints } from "@/game/talents";
 import { perkOffer, addRunPerk, runPerkFx, runSpiritReward } from "@/game/perks";
 import PerkOfferScreen from "@/components/game/PerkOfferScreen";
 import MinibossRewardScreen from "@/components/game/MinibossRewardScreen";
@@ -55,7 +56,9 @@ function App() {
 
   const startRun = (ids, difficultyId) => {
     const offer = perkOffer(meta, null, Math.random, { start: true });
-    const fresh = newRun(ids, difficultyId);
+    const tfx = talentFx(meta);
+    const base = newRun(ids, difficultyId);
+    const fresh = { ...base, talentFx: tfx, challenges: { perfect: 0, fled: false }, money: base.money + (tfx.money || 0) };
     const r = updateRun(offer.normal.length || offer.cursed ? { ...fresh, pending: { type: "perk", offer, start: true, context: null } } : fresh);
     updateMeta(ids.reduce((nextMeta, id) => recruitVersion(nextMeta, id), meta));
     if (r.pending) gotoPending(r); else setScreen("hub");
@@ -106,11 +109,13 @@ function App() {
   };
 
   const finishRun = (r, result) => {
-    const spiritGained = runSpiritReward(r, result);
+    const challenges = challengeResults(r, result);
+    const spiritGained = runSpiritReward(r, result) + challenges.reduce((n, c) => n + c.spirit, 0);
+    const talentGained = runTalentPoints(r, result);
     const recorded = recordFinishedRun(meta, r, result);
-    updateMeta({ ...recorded, teamSpirit: (recorded.teamSpirit || 0) + spiritGained });
+    updateMeta({ ...recorded, teamSpirit: (recorded.teamSpirit || 0) + spiritGained, talentPoints: (recorded.talentPoints || 0) + talentGained });
     clearRun(); runRef.current = null; setRun(null);
-    setCtx({ result, finalRun: r, spiritGained });
+    setCtx({ result, finalRun: r, spiritGained, talentGained, challenges });
     setScreen("end");
   };
 
@@ -132,6 +137,7 @@ function App() {
     if (fx.healPct && !boss) team = team.map((p) => (p.hp > 0 ? { ...p, hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * fx.healPct / 100)) } : p));
     let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? team.map((p) => ({ ...p, hp: p.maxHp })) : team, items, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : {}) } };
     // Final victory keeps earned growth/money, but has no next-node item phase.
+    if (boss && team.every((p) => p.hp > 0)) r = { ...r, challenges: { ...(r.challenges || {}), perfect: (r.challenges?.perfect || 0) + 1 } };
     if (r.wave >= FINAL_WAVE) { finishRun(completeOverworldNode(r), "win"); return; }
     const rewards = generateRewards(r);
     const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport };
@@ -331,7 +337,7 @@ function App() {
       case "hub": return <HubScreen run={run} onSelectNode={selectNode} onPause={() => { saveRun(run); setCtx({}); setScreen("title"); }} onNext={next} onTeam={() => setScreen("team")} onIntroSeen={(i) => updateRun({ ...run, overworld: { ...run.overworld, introSeen: i } })} onAbandon={() => { if (window.confirm("Abbandonare la run? Il progresso andrà perso.")) finishRun(run, "lose"); }} />;
       case "team": return <TeamScreen run={run} onUpdate={(patch) => updateRun({ ...run, ...patch })} onFusion={() => setScreen("fusion")} onBack={() => setScreen("hub")} />;
       case "fusion": return <FusionScreen run={run} onFuse={onFuse} onBack={() => setScreen("team")} />;
-      case "battle": return <BattleScreen onDiscover={onDiscover} key={`${run.wave}-${run.pending.enemies[0].uid}`} run={run} encounter={run.pending} onWin={onWin} onActiveChange={(activeUid) => updateRun({ ...run, activeUid })} onLose={(team, items, activeUid, report) => finishRun({ ...run, team, items, activeUid, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } }, "lose")} onFlee={(team, items, activeUid, report) => advanceWave({ ...run, team, items, activeUid, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } })} />;
+      case "battle": return <BattleScreen onDiscover={onDiscover} key={`${run.wave}-${run.pending.enemies[0].uid}`} run={run} encounter={run.pending} onWin={onWin} onActiveChange={(activeUid) => updateRun({ ...run, activeUid })} onLose={(team, items, activeUid, report) => finishRun({ ...run, team, items, activeUid, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } }, "lose")} onFlee={(team, items, activeUid, report) => advanceWave({ ...run, challenges: { ...(run.challenges || {}), fled: true }, team, items, activeUid, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } })} />;
       case "reward": return <RewardScreen rewards={ctx.rewards} bonus={ctx.bonus} money={ctx.money} xpReport={ctx.xpReport} notice={ctx.notice} onPick={onPickReward} />;
       case "boss-intro": return <BossIntro run={run} encounter={run.pending} onStart={() => { const r = updateRun({ ...run, pending: { ...run.pending, introSeen: true } }); gotoPending(r); }} />;
       case "consequence": return <Consequence key={run.wave} run={run} pending={run.pending} onResolve={onConsequence} />;
@@ -346,7 +352,7 @@ function App() {
       }} onLeave={() => advanceWave({ ...run, pending: { ...run.pending, skipped: true } }, true)} />;
       case "training": return <TrainingScreen run={run} onDone={(team, hadOwnXp = false) => advanceWave({ ...run, team, pending: { ...run.pending, progression: { hadOwnXp, report: reportXpChanges(run.team, team, "node") } } }, true)} />;
       case "recruit": return <RecruitScreen onDiscover={onDiscover} run={run} player={ctx.offer} price={ctx.price} mode={ctx.mode} xpReport={ctx.xpReport} onChallenge={challengeRecruit} onJoin={joinTeam} onSkip={() => continueAfterRecruit(run)} />;
-      case "end": return <EndScreen run={ctx.finalRun} result={ctx.result} spiritGained={ctx.spiritGained} onRetry={() => { setCtx({}); setScreen("select"); }} onHome={() => setScreen("title")} />;
+      case "end": return <EndScreen run={ctx.finalRun} result={ctx.result} spiritGained={ctx.spiritGained} talentGained={ctx.talentGained} challenges={ctx.challenges} onRetry={() => { setCtx({}); setScreen("select"); }} onHome={() => setScreen("title")} />;
       default: return null;
     }
   };

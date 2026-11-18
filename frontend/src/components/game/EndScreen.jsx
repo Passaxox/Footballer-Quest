@@ -6,7 +6,7 @@ import { JourneyLog } from "./StoryScreen";
 
 const backendUrl = () => (process.env.REACT_APP_BACKEND_URL || "").trim().replace(/\/$/, "");
 
-export default function EndScreen({ run, result, spiritGained = 0, onHome, onRetry }) {
+export default function EndScreen({ run, result, spiritGained = 0, talentGained = 0, challenges = [], onHome, onRetry }) {
   const BACKEND = backendUrl();
   const [nick, setNick] = useState(localStorage.getItem("inazuma_rogue_nick") || "");
   const [sent, setSent] = useState(false);
@@ -39,7 +39,11 @@ export default function EndScreen({ run, result, spiritGained = 0, onHome, onRet
         </Panel>
         <XpReport report={run.lastProgression?.report} />
         <Panel><JourneyLog run={run} /></Panel>
-        <div data-testid="end-spirit-gained" className="font-pixel text-[10px] text-amber-300 border-2 border-amber-600 p-2">+{spiritGained} Spirito di squadra · spendilo in Vantaggi</div>
+        <div data-testid="end-spirit-gained" className="font-pixel text-[10px] text-amber-300 border-2 border-amber-600 p-2">+{spiritGained} Spirito di squadra · +{talentGained} Punti Talento</div>
+        {challenges.length > 0 && <div data-testid="end-challenges" className="font-body text-base text-slate-200 border-2 border-slate-700 p-2 space-y-1">
+          <div className="font-pixel text-[9px] text-amber-300">SFIDE</div>
+          {challenges.map((c) => <div key={c.id} data-testid={`end-challenge-${c.id}`} className={c.count ? "text-emerald-300" : "text-slate-500"}>{c.count ? "✓" : "·"} {c.name}{c.count > 1 ? ` ×${c.count}` : ""} {c.count ? `(+${c.spirit} Spirito${c.points ? `, +${c.points} PT` : ""})` : `— ${c.desc}`}</div>)}
+        </div>}
         <div className="font-pixel text-[9px] text-slate-300 uppercase" data-testid="end-finalists-title">{result === "win" ? "Giocatori arrivati in finale" : "La vostra squadra"}</div>
         <div className="space-y-2">{run.team.map((p, i) => <PlayerCard key={p.uid} p={p} compact testId={`end-player-${i}`} />)}</div>
         <Panel className="space-y-2">

@@ -57,7 +57,7 @@ export function buyPerk(meta, id) {
 }
 
 export function runPerkFx(run) {
-  const fx = {};
+  const fx = { ...(run?.talentFx || {}) };
   for (const { id, level } of run?.perks || []) {
     const p = PERK_BY_ID[id];
     if (!p) continue;
