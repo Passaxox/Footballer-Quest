@@ -1,0 +1,845 @@
+{
+  "meta": {
+    "title": "Canon Inazuma Eleven Dataset — IE1 to IE3 FFI",
+    "scope": "Inazuma Eleven 1 (DS) through Football Frontier International (IE3). Chrono Stones OUT OF SCOPE.",
+    "language": "Italian primary, Japanese originals, English EU secondaries",
+    "sources_primary": [
+      "https://inazuma-eleven.fandom.com",
+      "https://inazumaeleven.fandom.com/it",
+      "https://it.wikipedia.org/wiki/Personaggi_di_Inazuma_Eleven",
+      "https://es.wikipedia.org/wiki/Anexo:Fútbol_Frontera_Internacional_(FFI)",
+      "https://gamefaqs.gamespot.com/ds/943160-inazuma-eleven/faqs/54036",
+      "https://gamefaqs.gamespot.com/ds/961360-inazuma-eleven-2-blizzard/faqs/61887"
+    ],
+    "generated": "2026-11-18",
+    "warnings": [
+      "Jungle FC does NOT exist in IE canon; closest team is Jukai Team (Forest Team) in IE2.",
+      "Keshin, Armed, Mixi Max are absent from IE1/IE2/IE3 DS continuity.",
+      "Some roster entries are UNVERIFIED — flag before using."
+    ]
+  },
+  "teams": [
+    {
+      "id": "raimon_ie1",
+      "name_it": "Raimon",
+      "name_en": "Raimon Junior High",
+      "name_jp": "雷門中学校サッカー部",
+      "arc": "IE1 Football Frontier",
+      "game": "Inazuma Eleven 1 (DS)",
+      "kit_colors": {
+        "shirt": "gialla",
+        "shorts": "blu",
+        "socks": "bianco/arancio",
+        "verified": true,
+        "source_url": "https://inazuma-eleven.fandom.com/wiki/Raimon"
+      },
+      "emblem": {
+        "description": "fulmine stilizzato",
+        "verified": false,
+        "note": "Noto visivamente; nessuna descrizione testuale citata"
+      },
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Raimon",
+      "verified": true
+    },
+    {
+      "id": "raimon_ie2",
+      "name_it": "Raimon",
+      "name_en": "Raimon Junior High",
+      "name_jp": "雷門中学校サッカー部",
+      "arc": "IE2 Aliea Gakuen",
+      "game": "Inazuma Eleven 2 (DS)",
+      "kit_colors": {
+        "shirt": "gialla",
+        "shorts": "blu",
+        "socks": "bianco/arancio",
+        "verified": true,
+        "source_url": "https://inazuma-eleven.fandom.com/wiki/Raimon"
+      },
+      "note": "Roster ampliato rispetto IE1; aggiunge Fubuki, Hiroto, Midorikawa",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Raimon",
+      "verified": true
+    },
+    {
+      "id": "inazuma_japan_ie3",
+      "name_it": "Inazuma Japan",
+      "name_en": "Inazuma Japan",
+      "name_jp": "イナズマジャパン",
+      "arc": "IE3 FFI",
+      "game": "Inazuma Eleven 3 (DS/3DS)",
+      "kit_colors": {
+        "shirt": "UNVERIFIED",
+        "shorts": "UNVERIFIED",
+        "note": "Probabilmente bianco/blu (colori nazionali giapponesi); non trovato testo esplicito",
+        "verified": false
+      },
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Inazuma_Japan",
+      "verified": true
+    },
+    {
+      "id": "teikoku_royal_academy",
+      "name_it": "Teikoku",
+      "name_en": "Royal Academy",
+      "name_jp": "帝国学院",
+      "arc": "IE1 Football Frontier",
+      "game": "Inazuma Eleven 1 (DS)",
+      "kit_colors": {
+        "shirt": "blu navy scuro",
+        "shorts": "bianco",
+        "verified": false,
+        "note": "Colori noti dalla visione dell'anime/gioco, non trovato testo citabile"
+      },
+      "emblem": {"description": "UNVERIFIED", "verified": false},
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Teikoku_Gakuen",
+      "verified": true
+    },
+    {
+      "id": "zeus_jh",
+      "name_it": "Zeus",
+      "name_en": "Zeus Junior High",
+      "name_jp": "ゼウスJr.高校",
+      "arc": "IE1 Football Frontier — Finale",
+      "game": "Inazuma Eleven 1 (DS)",
+      "kit_colors": {
+        "shirt": "bianco con bordi blu",
+        "socks": "pervinca",
+        "verified": true,
+        "source_url": "https://inazuma-eleven.fandom.com/wiki/Zeus"
+      },
+      "emblem": {"description": "UNVERIFIED", "verified": false},
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Zeus",
+      "verified": true
+    },
+    {
+      "id": "kirkwood",
+      "name_it": "UNVERIFIED (nome IT non documentato)",
+      "name_en": "Kirkwood",
+      "name_jp": "Kidokawa Seishuu / 木戸川清修",
+      "arc": "IE1 Football Frontier — Semifinale",
+      "game": "Inazuma Eleven 1 (DS)",
+      "kit_colors": {"description": "UNVERIFIED", "verified": false},
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kidokawa_Seishuu",
+      "verified": true
+    },
+    {
+      "id": "jukai_team",
+      "name_it": "UNVERIFIED — probabilmente Squadra della Foresta",
+      "name_en": "Forest Team / Jukai Team",
+      "name_jp": "樹海チーム",
+      "arc": "IE2 Aliea Gakuen (squadra di battaglia, NON storia principale)",
+      "game": "Inazuma Eleven 2 (DS)",
+      "kit_colors": {"description": "UNVERIFIED", "verified": false},
+      "note": "ATTENZIONE: 'Jungle FC' NON esiste nel canon. Questa è la squadra più vicina.",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Jukai_Team",
+      "verified": true
+    },
+    {
+      "id": "gemini_storm",
+      "name_it": "Gemini Storm",
+      "name_en": "Gemini Storm",
+      "name_jp": "ジェミニストーム",
+      "arc": "IE2 Aliea Gakuen — 2° rango",
+      "game": "Inazuma Eleven 2 (DS)",
+      "kit_colors": {"shirt": "viola", "details": "bianco", "verified": false, "source_url": "inazuma-eleven.fandom.com/wiki/Gemini_Storm"},
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Gemini_Storm",
+      "verified": true
+    },
+    {
+      "id": "epsilon",
+      "name_it": "Epsilon",
+      "name_en": "Epsilon",
+      "name_jp": "イプシロン",
+      "arc": "IE2 Aliea Gakuen — 1° rango",
+      "game": "Inazuma Eleven 2 (DS)",
+      "kit_colors": {"shirt": "rosso", "details": "nero/bianco", "verified": false, "source_url": "inazuma-eleven.fandom.com/wiki/Epsilon"},
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Epsilon",
+      "verified": true
+    },
+    {
+      "id": "the_genesis",
+      "name_it": "The Genesis",
+      "name_en": "The Genesis",
+      "name_jp": "ザ・ジェネシス",
+      "arc": "IE2 Aliea Gakuen — Rango supremo",
+      "game": "Inazuma Eleven 2 (DS)",
+      "kit_colors": {"description": "UNVERIFIED", "verified": false},
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/The_Genesis",
+      "verified": true
+    },
+    {
+      "id": "dark_emperors",
+      "name_it": "Dark Star",
+      "name_en": "Dark Emperors",
+      "name_jp": "ダークエンペラーズ",
+      "arc": "IE2 Aliea Gakuen — Fine arco",
+      "game": "Inazuma Eleven 2 (DS)",
+      "kit_colors": {"description": "UNVERIFIED — probabilmente scuro/nero", "verified": false},
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Dark_Emperors",
+      "source_url_it": "https://inazumaeleven.fandom.com/it/wiki/Dark_Star",
+      "verified": true
+    },
+    {
+      "id": "orpheus",
+      "name_it": "Orpheus",
+      "name_en": "Orpheus",
+      "name_jp": "オルフェウス",
+      "arc": "IE3 FFI — Blocco A",
+      "game": "Inazuma Eleven 3 (DS/3DS)",
+      "country": "Italia",
+      "kit_colors": {"description": "UNVERIFIED", "verified": false},
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Orpheus",
+      "verified": true
+    },
+    {
+      "id": "little_gigant",
+      "name_it": "Little Gigant",
+      "name_en": "Little Gigant",
+      "name_jp": "リトルジャイアント",
+      "arc": "IE3 FFI — Blocco B (Finalisti)",
+      "game": "Inazuma Eleven 3 (DS/3DS)",
+      "country": "Cotoarl (isola fittizia)",
+      "kit_colors": {"description": "UNVERIFIED", "verified": false},
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Little_Gigant",
+      "verified": true
+    },
+    {
+      "id": "brockenborg",
+      "name_it": "Brockenborg",
+      "name_en": "Brockenborg",
+      "name_jp": "ブロッケンボルグ",
+      "arc": "IE3 FFI — Blocco B",
+      "game": "Inazuma Eleven 3 (DS/3DS)",
+      "country": "Germania",
+      "kit_colors": {"description": "UNVERIFIED", "verified": false},
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Brockenborg",
+      "verified": true
+    }
+  ],
+  "character_versions": [
+    {
+      "id": "endou_mamoru_ie1",
+      "character_id": "endou_mamoru",
+      "name_it": "Mark Evans",
+      "name_en": "Mark Evans",
+      "name_jp": "Endou Mamoru / 円堂守",
+      "team_id": "raimon_ie1",
+      "game": "IE1",
+      "role": "PO",
+      "element": "Fuoco",
+      "jersey_number": 1,
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Endou_Mamoru",
+      "verified": true
+    },
+    {
+      "id": "endou_mamoru_ie2",
+      "character_id": "endou_mamoru",
+      "name_it": "Mark Evans",
+      "name_en": "Mark Evans",
+      "name_jp": "Endou Mamoru",
+      "team_id": "raimon_ie2",
+      "game": "IE2",
+      "role": "PO",
+      "element": "Fuoco",
+      "jersey_number": 1,
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Endou_Mamoru",
+      "verified": true
+    },
+    {
+      "id": "endou_mamoru_ie3",
+      "character_id": "endou_mamoru",
+      "name_it": "Mark Evans",
+      "name_en": "Mark Evans",
+      "name_jp": "Endou Mamoru",
+      "team_id": "inazuma_japan_ie3",
+      "game": "IE3",
+      "role": "PO",
+      "element": "Fuoco",
+      "jersey_number": "1 o 15",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Endou_Mamoru",
+      "verified": true
+    },
+    {
+      "id": "gouenji_shuuya_ie1",
+      "character_id": "gouenji_shuuya",
+      "name_it": "Axel Blaze",
+      "name_en": "Axel Blaze",
+      "name_jp": "Gouenji Shuuya / 豪炎寺修也",
+      "team_id": "raimon_ie1",
+      "game": "IE1",
+      "role": "AT",
+      "element": "Fuoco",
+      "jersey_number": 10,
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Gouenji_Shuuya",
+      "verified": true
+    },
+    {
+      "id": "kidou_yuuto_teikoku",
+      "character_id": "kidou_yuuto",
+      "name_it": "Jude Sharp",
+      "name_en": "Jude Sharp",
+      "name_jp": "Kidou Yuuto / 鬼道有人",
+      "team_id": "teikoku_royal_academy",
+      "game": "IE1",
+      "role": "CC",
+      "element": "Legno",
+      "jersey_number": 14,
+      "note": "Prima apparizione come avversario; poi passa a Raimon",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kidou_Yuuto",
+      "verified": true
+    },
+    {
+      "id": "kidou_yuuto_raimon",
+      "character_id": "kidou_yuuto",
+      "name_it": "Jude Sharp",
+      "name_en": "Jude Sharp",
+      "name_jp": "Kidou Yuuto",
+      "team_id": "raimon_ie1",
+      "game": "IE1 (seconda parte) → IE2",
+      "role": "CC",
+      "element": "Legno",
+      "jersey_number": 14,
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kidou_Yuuto",
+      "verified": true
+    },
+    {
+      "id": "kidou_yuuto_ie3",
+      "character_id": "kidou_yuuto",
+      "name_it": "Jude Sharp",
+      "name_en": "Jude Sharp",
+      "name_jp": "Kidou Yuuto",
+      "team_id": "inazuma_japan_ie3",
+      "game": "IE3",
+      "role": "CC",
+      "element": "Legno",
+      "jersey_number": 14,
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kidou_Yuuto",
+      "verified": true
+    },
+    {
+      "id": "fubuki_shirou_raimon",
+      "character_id": "fubuki_shirou",
+      "name_it": "Shawn Frost",
+      "name_en": "Shawn Frost",
+      "name_jp": "Fubuki Shirou / 吹雪士郎",
+      "team_id": "raimon_ie2",
+      "game": "IE2→IE3",
+      "role": "AT/DC",
+      "element": "Legno",
+      "jersey_number": 9,
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Fubuki_Shirou",
+      "verified": true
+    },
+    {
+      "id": "hiroto_kiyama_gemini",
+      "character_id": "hiroto_kiyama",
+      "name_it": "Xavier Foster",
+      "name_en": "Xavier Foster",
+      "name_jp": "Kiyama Hiroto / 木山ヒロト",
+      "team_id": "gemini_storm",
+      "game": "IE2",
+      "role": "AT/CC",
+      "element": "Legno",
+      "note": "Alias 'Reize' in Gemini Storm — UNVERIFIED: alcune fonti danno Reize = Midorikawa, altre = Hiroto",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kiyama_Hiroto",
+      "verified": false
+    },
+    {
+      "id": "hiroto_kiyama_raimon",
+      "character_id": "hiroto_kiyama",
+      "name_it": "Xavier Foster",
+      "name_en": "Xavier Foster",
+      "name_jp": "Kiyama Hiroto",
+      "team_id": "raimon_ie2",
+      "game": "IE2→IE3",
+      "role": "AT/CC",
+      "element": "Legno",
+      "jersey_number": 18,
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kiyama_Hiroto",
+      "verified": true
+    },
+    {
+      "id": "midorikawa_ryuuji_gemini",
+      "character_id": "midorikawa_ryuuji",
+      "name_it": "Jordan Greenway",
+      "name_en": "Jordan Greenway",
+      "name_jp": "Midorikawa Ryuuji / 緑川龍二",
+      "team_id": "gemini_storm",
+      "game": "IE2",
+      "role": "CC",
+      "element": "Legno",
+      "note": "Capitano di Gemini Storm",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Midorikawa_Ryuuji",
+      "verified": true
+    },
+    {
+      "id": "midorikawa_ryuuji_raimon",
+      "character_id": "midorikawa_ryuuji",
+      "name_it": "Jordan Greenway",
+      "name_en": "Jordan Greenway",
+      "name_jp": "Midorikawa Ryuuji",
+      "team_id": "raimon_ie2",
+      "game": "IE2→IE3",
+      "role": "CC",
+      "element": "Legno",
+      "jersey_number": 13,
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Midorikawa_Ryuuji",
+      "verified": true
+    },
+    {
+      "id": "saginuma_osamu_epsilon",
+      "character_id": "saginuma_osamu",
+      "name_it": "Desarm / Dvalin",
+      "name_en": "Desarm",
+      "name_jp": "Saginuma Osamu / 鷺沼治",
+      "team_id": "epsilon",
+      "game": "IE2",
+      "role": "PO (Epsilon) / AT (Epsilon Kai)",
+      "element": "UNVERIFIED",
+      "note": "Capitano di Epsilon; muta ruolo in Epsilon Kai",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Saginuma_Osamu",
+      "verified": true
+    },
+    {
+      "id": "kazemaru_dark_emperors",
+      "character_id": "kazemaru_ichirouta",
+      "name_it": "Nathan Swift",
+      "name_en": "Nathan Swift",
+      "name_jp": "Kazemaru Ichirouta / 風丸一郎太",
+      "team_id": "dark_emperors",
+      "game": "IE2",
+      "role": "DC",
+      "element": "Vento",
+      "note": "Capitano dei Dark Emperors (sotto controllo Aliea)",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Dark_Emperors",
+      "verified": true
+    }
+  ],
+  "characters": [
+    {
+      "id": "endou_mamoru",
+      "name_jp": "Endou Mamoru",
+      "name_it": "Mark Evans",
+      "name_en": "Mark Evans",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Endou_Mamoru",
+      "verified": true
+    },
+    {
+      "id": "gouenji_shuuya",
+      "name_jp": "Gouenji Shuuya",
+      "name_it": "Axel Blaze",
+      "name_en": "Axel Blaze",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Gouenji_Shuuya",
+      "verified": true
+    },
+    {
+      "id": "kidou_yuuto",
+      "name_jp": "Kidou Yuuto",
+      "name_it": "Jude Sharp",
+      "name_en": "Jude Sharp",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kidou_Yuuto",
+      "verified": true
+    },
+    {
+      "id": "kazemaru_ichirouta",
+      "name_jp": "Kazemaru Ichirouta",
+      "name_it": "Nathan Swift",
+      "name_en": "Nathan Swift",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kazemaru_Ichirouta",
+      "verified": true
+    },
+    {
+      "id": "kabeyama_heigorou",
+      "name_jp": "Kabeyama Heigorou",
+      "name_it": "Jack Wallside",
+      "name_en": "Jack Wallside",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kabeyama_Heigorou",
+      "verified": true
+    },
+    {
+      "id": "kurimatsu_teppei",
+      "name_jp": "Kurimatsu Teppei",
+      "name_it": "Tod Ironside",
+      "name_en": "Tod Ironside",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kurimatsu_Teppei",
+      "verified": true
+    },
+    {
+      "id": "someoka_ryuugo",
+      "name_jp": "Someoka Ryuugo",
+      "name_it": "Kevin Dragonfly",
+      "name_en": "Kevin Dragonfly",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Someoka_Ryuugo",
+      "verified": true
+    },
+    {
+      "id": "fubuki_shirou",
+      "name_jp": "Fubuki Shirou",
+      "name_it": "Shawn Frost",
+      "name_en": "Shawn Frost",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Fubuki_Shirou",
+      "verified": true
+    },
+    {
+      "id": "hiroto_kiyama",
+      "name_jp": "Kiyama Hiroto",
+      "name_it": "Xavier Foster",
+      "name_en": "Xavier Foster",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kiyama_Hiroto",
+      "verified": true
+    },
+    {
+      "id": "midorikawa_ryuuji",
+      "name_jp": "Midorikawa Ryuuji",
+      "name_it": "Jordan Greenway",
+      "name_en": "Jordan Greenway",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Midorikawa_Ryuuji",
+      "verified": true
+    },
+    {
+      "id": "saginuma_osamu",
+      "name_jp": "Saginuma Osamu",
+      "name_it": "Dvalin / Desarm",
+      "name_en": "Desarm",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Saginuma_Osamu",
+      "verified": true
+    },
+    {
+      "id": "tachimukai_yuuki",
+      "name_jp": "Tachimukai Yuuki",
+      "name_it": "Darren LaChance",
+      "name_en": "Darren LaChance",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Tachimukai_Yuuki",
+      "verified": true
+    },
+    {
+      "id": "tsunami_jousuke",
+      "name_jp": "Tsunami Jousuke",
+      "name_it": "Hurley Kane",
+      "name_en": "Hurley Kane",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Tsunami_Jousuke",
+      "verified": true
+    },
+    {
+      "id": "ichinose_kazuya",
+      "name_jp": "Ichinose Kazuya",
+      "name_it": "Caleb Stonewall (UNVERIFIED — questo nome EN è anche di Fudou in IE3)",
+      "name_en": "CONFLITTANTE — verificare",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Ichinose_Kazuya",
+      "verified": false
+    },
+    {
+      "id": "fudou_akio",
+      "name_jp": "Fudou Akio",
+      "name_it": "UNVERIFIED nome IT",
+      "name_en": "Caleb Stonewall (IE3 Inazuma Japan)",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Fudou_Akio",
+      "verified": false
+    }
+  ],
+  "techniques": [
+    {
+      "id": "god_hand",
+      "name_it": "Mano di Dio",
+      "name_en": "God Hand",
+      "name_jp": "ゴッドハンド",
+      "type": "parata",
+      "character_id": "endou_mamoru",
+      "first_appearance_game": "IE1",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/God_Hand",
+      "verified": true
+    },
+    {
+      "id": "majin_the_hand",
+      "name_it": "Majin The Hand",
+      "name_en": "Majin The Hand",
+      "name_jp": "魔神ザハンド",
+      "type": "parata",
+      "character_id": "endou_mamoru",
+      "first_appearance_game": "IE1",
+      "source_url": "https://en.wikipedia.org/wiki/Inazuma_Eleven_(TV_series)",
+      "verified": true
+    },
+    {
+      "id": "fire_tornado",
+      "name_it": "Tornado di Fuoco",
+      "name_en": "Fire Tornado",
+      "name_jp": "ファイアトルネード",
+      "type": "tiro",
+      "character_id": "gouenji_shuuya",
+      "first_appearance_game": "IE1",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Fire_Tornado",
+      "verified": true
+    },
+    {
+      "id": "eternal_blizzard",
+      "name_it": "Blizzard Eterno",
+      "name_en": "Eternal Blizzard",
+      "name_jp": "エターナルブリザード",
+      "type": "tiro",
+      "character_id": "fubuki_shirou",
+      "first_appearance_game": "IE2",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Eternal_Blizzard",
+      "verified": true
+    },
+    {
+      "id": "ryuusei_blade",
+      "name_it": "Lama Meteora",
+      "name_en": "Meteor Blade / Ryuusei Blade",
+      "name_jp": "流星ブレード",
+      "type": "tiro",
+      "character_id": "hiroto_kiyama",
+      "first_appearance_game": "IE2",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kiyama_Hiroto",
+      "verified": true
+    },
+    {
+      "id": "astro_break",
+      "name_it": "UNVERIFIED nome IT",
+      "name_en": "Astro Break",
+      "name_jp": "アストロブレイク",
+      "type": "tiro",
+      "character_id": "midorikawa_ryuuji",
+      "first_appearance_game": "IE2",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Astro_Break",
+      "verified": true
+    },
+    {
+      "id": "twin_boost",
+      "name_it": "UNVERIFIED nome IT",
+      "name_en": "Twin Boost",
+      "name_jp": "ツインブースト",
+      "type": "dribbling (combinata)",
+      "character_id": "kidou_yuuto",
+      "first_appearance_game": "IE1",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Twin_Boost_F",
+      "verified": true
+    },
+    {
+      "id": "drill_smasher",
+      "name_it": "Trivella Spaziale",
+      "name_en": "Drill Smasher",
+      "name_jp": "ドリルスマッシャー",
+      "type": "parata",
+      "character_id": "saginuma_osamu",
+      "first_appearance_game": "IE2",
+      "source_url": "https://it.wikipedia.org/wiki/Personaggi_minori_di_Inazuma_Eleven_2",
+      "verified": true
+    },
+    {
+      "id": "worm_hole",
+      "name_it": "UNVERIFIED nome IT",
+      "name_en": "Worm Hole",
+      "name_jp": "ワームホール",
+      "type": "parata",
+      "character_id": "saginuma_osamu",
+      "first_appearance_game": "IE2",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Saginuma_Osamu",
+      "verified": true
+    },
+    {
+      "id": "gungnir",
+      "name_it": "Gungnir",
+      "name_en": "Gungnir",
+      "name_jp": "グングニル",
+      "type": "tiro",
+      "character_id": "saginuma_osamu",
+      "first_appearance_game": "IE2 (Epsilon Kai)",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Saginuma_Osamu",
+      "verified": true
+    },
+    {
+      "id": "the_birth",
+      "name_it": "UNVERIFIED nome IT",
+      "name_en": "The Birth",
+      "name_jp": "ザ・バース",
+      "type": "tiro (combinata — Gouenji + Fubuki)",
+      "first_appearance_game": "IE2",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Fubuki_Shirou",
+      "verified": true
+    },
+    {
+      "id": "grand_fire",
+      "name_it": "UNVERIFIED nome IT",
+      "name_en": "Grand Fire",
+      "name_jp": "グランドファイア",
+      "type": "tiro (combinata — Gouenji + Hiroto + Toramaru)",
+      "first_appearance_game": "IE3",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Kiyama_Hiroto",
+      "verified": true
+    }
+  ],
+  "forms": [
+    {
+      "id": "keshin",
+      "name_it": "Spirito Guerriero",
+      "name_en": "Keshin / Fighting Spirit",
+      "name_jp": "化身",
+      "present_in_ie1": false,
+      "present_in_ie2": false,
+      "present_in_ie3": false,
+      "first_game": "Inazuma Eleven GO (3DS, 2011)",
+      "first_anime_episode": "IE GO ep. 2",
+      "note": "ASSENTE in IE1-IE3 DS. Solo GO e successivi.",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Keshin",
+      "verified": true
+    },
+    {
+      "id": "keshin_armed",
+      "name_it": "Keshin Armato",
+      "name_en": "Keshin Armed",
+      "name_jp": "化身アームド",
+      "present_in_ie1": false,
+      "present_in_ie2": false,
+      "present_in_ie3": false,
+      "first_game": "Inazuma Eleven GO 2: Chrono Stone (3DS, 2013)",
+      "first_anime_episode": "Chrono Stone ep. 1",
+      "note": "ASSENTE in IE1-IE3. Introdotto in Chrono Stones (FUORI SCOPE).",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Keshin_Armed",
+      "verified": true
+    },
+    {
+      "id": "mixi_max",
+      "name_it": "Mixi Max",
+      "name_en": "Mixi Max",
+      "name_jp": "ミキシマックス",
+      "present_in_ie1": false,
+      "present_in_ie2": false,
+      "present_in_ie3": false,
+      "first_game": "Inazuma Eleven GO 2: Chrono Stone (3DS, 2013)",
+      "first_anime_episode": "Chrono Stone ep. 2",
+      "note": "ASSENTE in IE1-IE3. Introdotto in Chrono Stones (FUORI SCOPE).",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Mixi_Max",
+      "verified": true
+    }
+  ],
+  "locations": [
+    {
+      "id": "inazuma_town",
+      "name_it": "Inazuma Town",
+      "name_en": "Inazuma Town",
+      "name_jp": "イナズマタウン",
+      "arc": "IE1 / IE2 / IE3",
+      "description": "Città principale; sede di Raimon Jr. High e della Steel Tower (Torre di Ferro)",
+      "opponents_encountered": ["Raimon base", "vari battle team"],
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Inazuma_Town",
+      "verified": true
+    },
+    {
+      "id": "riverside",
+      "name_it": "Argine / Riverside",
+      "name_en": "Riverside",
+      "name_jp": "UNVERIFIED",
+      "arc": "IE1",
+      "description": "Area fluviale per allenamento; usata per trovare giocatori nel gioco",
+      "note": "Etichetta di area nella mappa di gioco IE1, non città separata",
+      "source_url": "https://gamefaqs.gamespot.com/ds/943160-inazuma-eleven/faqs/54036",
+      "verified": true
+    },
+    {
+      "id": "iron_tower",
+      "name_it": "Torre di Ferro / Steel Tower",
+      "name_en": "Steel Tower / Iron Tower",
+      "name_jp": "UNVERIFIED",
+      "arc": "IE1",
+      "description": "Torre iconica di Inazuma Town; area di training vicina",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Inazuma_Town",
+      "verified": true
+    },
+    {
+      "id": "nara",
+      "name_it": "Nara",
+      "name_en": "Nara",
+      "name_jp": "奈良",
+      "arc": "IE3",
+      "description": "Città sbloccabile; mappa trovata in un forziere (posizione varia per versione gioco)",
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Nara",
+      "verified": true
+    },
+    {
+      "id": "osaka",
+      "name_it": "Osaka",
+      "name_en": "Osaka",
+      "name_jp": "大阪",
+      "arc": "IE3",
+      "description": "Città sbloccabile; forziere vicino al ristorante di Toramaru",
+      "source_url": "https://gamefaqs.gamespot.com/ds/610269-inazuma-eleven-3-sekai-e-no-chousen-the-ogre/faqs/64646",
+      "verified": true
+    },
+    {
+      "id": "hokkaido",
+      "name_it": "Hokkaido",
+      "name_en": "Hokkaido",
+      "name_jp": "北海道",
+      "arc": "IE3",
+      "description": "Regione sbloccabile; metodo di sblocco diverso per versione Spark/Bomber vs The Ogre",
+      "source_url": "https://gamefaqs.gamespot.com/ds/610269-inazuma-eleven-3-sekai-e-no-chousen-the-ogre/faqs/64646",
+      "verified": true
+    },
+    {
+      "id": "jukai_ground",
+      "name_it": "UNVERIFIED nome IT",
+      "name_en": "Jukai Ground / Forest Ground",
+      "name_jp": "樹海グラウンド",
+      "arc": "IE2",
+      "description": "Area di battaglia nella foresta; sede della Jukai Team",
+      "opponents_encountered": ["Jukai Team"],
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Jukai_Ground",
+      "verified": true
+    },
+    {
+      "id": "ffi_stadium",
+      "name_it": "Stadio FFI (Liocott Island)",
+      "name_en": "FFI Stadium / Liocott Island",
+      "name_jp": "UNVERIFIED",
+      "arc": "IE3 FFI",
+      "description": "Sede del torneo Football Frontier International",
+      "opponents_encountered": ["Orpheus", "Brockenborg", "Little Gigant", "Unicorn", "Knights of Queen", "The Empire", "The Kingdom", "Red Matador", "Rose Griffon"],
+      "source_url": "https://inazuma-eleven.fandom.com/wiki/Football_Frontier_International",
+      "verified": true
+    }
+  ],
+  "asset_sources": [
+    {
+      "id": "spriters_resource_ie1",
+      "type": ["sprite DS", "ritratti", "emblemi squadre"],
+      "url": "https://www.spriters-resource.com/ds_dsi/inazumaeleven/",
+      "bulk_download": "Realistico con scraping; nessuna API ufficiale",
+      "licensing_note": "Asset estratti da ROM Level-5; uso privato non commerciale a basso rischio",
+      "verified": true
+    },
+    {
+      "id": "spriters_resource_ie2",
+      "type": ["sprite 3D IE2"],
+      "url": "https://models.spriters-resource.com/ds_dsi/inazumaeleven2firestormblizzard/",
+      "bulk_download": "Come sopra",
+      "verified": true
+    },
+    {
+      "id": "spriters_resource_ie3",
+      "type": ["sprite IE3", "emblemi"],
+      "url": "https://www.spriters-resource.com/ds_dsi/inazumaeleven3sekaienochousensparkbombertheogre/asset/45073/",
+      "bulk_download": "Come sopra",
+      "verified": true
+    },
+    {
+      "id": "inazuma_sprites_site",
+      "type": ["icone personaggi", "filtro per squadra/stagione"],
+      "url": "https://inazumasprites.netlify.app/",
+      "bulk_download": "Sì con scraping; filtri disponibili",
+      "verified": true
+    },
+    {
+      "id": "fandom_wiki_sprites",
+      "type": ["sprite categorizzati", "ritratti"],
+      "url": "https://inazuma-eleven.fandom.com/wiki/Category:Original_series_sprites",
+      "bulk_download": "Download singolo immagini da CDN Fandom; automatizzabile",
+      "verified": true
+    },
+    {
+      "id": "buscador_inazuma",
+      "type": ["tool localizzatore sprite/modelli in ROM"],
+      "url": "https://github.com/migueleven/Buscador-Inazuma",
+      "bulk_download": "Estrazione diretta da ROM; richiede ROM originale",
+      "verified": true
+    }
+  ]
+}

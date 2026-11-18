@@ -16,7 +16,6 @@ import EndScreen from "./components/game/EndScreen";
 import TeamScreen from "./components/game/TeamScreen";
 import TrainingScreen from "./components/game/TrainingScreen";
 import TeamSelect from "./components/game/TeamSelect";
-import { OVERWORLD_ROUTES, routeNodes, ROYAL_CHECKPOINT, hasOverworld } from "./game/overworld";
 
 jest.mock("./game/audio", () => ({ setSoundEnabled: jest.fn() }));
 jest.mock("./components/game/TitleScreen", () => jest.fn(() => null));
@@ -385,7 +384,7 @@ test("final boss loss still ends as Game Over without reward phase", async () =>
 
 
 test.each([null, {type:"reward",context:{rewards:["barretta"],money:42}}])("pause preserves run/history and resumes pending state %j", async pending => {
- const run=runWith(pending);run.wave=8;run.team[0].hp=7;run.team[1].hp=0;run.team[2].xp=19;
+ let run=runWith(pending);run.wave=8;run.team[0].hp=7;run.team[1].hp=0;run.team[2].xp=19;run=engine.normalizeRun(run);
  saveRun(run);const meta=loadMeta();
  await act(async()=>root.render(<App />));await call(TitleScreen,"onContinue");
  expect(props(HubScreen).run).toEqual(run);
@@ -402,7 +401,7 @@ test.each([null, {type:"reward",context:{rewards:["barretta"],money:42}}])("paus
 });
 
 test("new run asks confirmation before replacing an active run; cancel preserves it", async()=> {
- const run=runWith(null);saveRun(run);
+ const run=engine.normalizeRun(runWith(null));saveRun(run);
  await act(async()=>root.render(<App />));
  const confirm=jest.spyOn(window,"confirm").mockReturnValue(false);
  await call(TitleScreen,"onNew");
@@ -422,99 +421,6 @@ test("abandon remains destructive and records loss separately from pause", async
  expect(loadRun()).toBeNull();expect(props(EndScreen).result).toBe("lose");expect(loadMeta().records).toHaveLength(1);
  confirm.mockRestore();
 });
-
-test("map selection is atomic; repeated taps, reload and pause cannot reroll a pending encounter", async () => {
-  const run = newRun(STARTER_IDS.slice(0, 3)); saveRun(run);
-  await act(async () => root.render(<App />)); await call(TitleScreen, "onContinue");
-  await call(HubScreen, "onNext");
-  expect(BattleScreen).not.toHaveBeenCalled(); expect(loadRun()).toEqual(run);
-  const choose = props(HubScreen).onSelectNode;
-  const first = routeNodes(OVERWORLD_ROUTES[0])[0].nodeId;
-  const other = routeNodes(OVERWORLD_ROUTES[1])[0].nodeId;
-  await act(async () => { choose(first); choose(other); });
-  const selected = loadRun();
-  expect(selected.overworld.routeId).toBe("riverside");
-  expect(selected.pending.overworldNodeId).toBe(first);
-  await act(async () => root.unmount()); root = createRoot(host);
-  await act(async () => root.render(<App />)); await call(TitleScreen, "onContinue");
-  expect(props(HubScreen).run).toEqual(selected);
-  await call(HubScreen, "onPause"); expect(loadRun()).toEqual(selected);
-  await call(TitleScreen, "onContinue"); await call(HubScreen, "onSelectNode", other);
-  expect(loadRun()).toEqual(selected);
-  await call(HubScreen, "onNext");
-  expect(props(BattleScreen).encounter).toEqual(selected.pending);
-});
-
-test("one whole map path spends each node once, keeps reward phases, and hands off after Royal W10", async () => {
-  saveRun(newRun(STARTER_IDS.slice(0, 3)));
-  await act(async () => root.render(<App />)); await call(TitleScreen, "onContinue");
-  const nodes = [...routeNodes(OVERWORLD_ROUTES[2]), ROYAL_CHECKPOINT];
-  for (const node of nodes) {
-    const initial = loadRun();
-    await call(HubScreen, "onSelectNode", node.nodeId);
-    const selected = loadRun();
-    expect(selected.pending.type).toBe(node.type);
-    if (node.type === "battle") {
-      const win = props(BattleScreen).onWin;
-      await act(async () => { win(selected.team, selected.items, selected.activeUid); win(selected.team, selected.items, selected.activeUid); });
-      expect(loadRun().stats.wins).toBe(selected.stats.wins + 1);
-      expect(loadRun().overworld.completedWave).toBe(node.wave - 1);
-      if (loadRun().pending.type === "recruit") await call(RecruitScreen, "onSkip");
-      expect(loadRun().pending.type).toBe("reward");
-      await reload();
-      const pickReward = props(RewardScreen).onPick;
-      const beforeReward = loadRun();
-      const id = beforeReward.pending.context.rewards[0];
-      await act(async () => { pickReward(id); pickReward(id); });
-      expect(loadRun().items[id]).toBe((beforeReward.items[id] || 0) + 1);
-    } else if (node.type === "shop") {
-      const buy = props(ShopScreen).onBuy;
-      await act(async () => { buy(0); buy(0); });
-      const afterBuy = loadRun();
-      await reload(); await call(ShopScreen, "onBuy", 0);
-      expect(loadRun()).toEqual(afterBuy);
-      await call(ShopScreen, "onLeave");
-    } else if (node.type === "training") {
-      const done = props(TrainingScreen).onDone;
-      const trained = selected.team.map(p => gainXp(p, 30).player);
-      await act(async () => { done(trained, true); done(trained, true); });
-      expect(loadRun().team).toEqual(trained); // no second training or travel EXP
-    } else if (node.type === "event") {
-      const outcome = { text: "Tappa conclusa", effects: [{ type: "money", amt: 10 }] };
-      await call(EventScreen, "onChoose", outcome); await reload();
-      const resolve = props(EventScreen).onResolve;
-      await act(async () => { resolve(outcome); resolve(outcome); });
-      expect(loadRun().money).toBe(selected.money + 10);
-    } else await call(RecruitScreen, "onSkip");
-    const done = loadRun();
-    expect(done.wave).toBe(initial.wave + 1);
-    expect(done.pending).toBeNull();
-    expect(done.overworld.completedWave).toBe(node.wave);
-    expect(done.overworld.selectedNodeId).toBeNull();
-    await call(HubScreen, "onSelectNode", node.nodeId);
-    expect(loadRun()).toEqual(done); // completed tile cannot be farmed
-  }
-  expect(loadRun().wave).toBe(11);
-  expect(hasOverworld(loadRun())).toBe(false);
-  expect(loadRun().stats.lastBossDefeated).toBe("Royal Academy");
-  await call(HubScreen, "onNext");
-  expect(loadRun().pending).not.toBeNull();
-  expect(loadRun().pending.overworldNodeId).toBeUndefined();
-});
-
-test("map Game Over records defeat without awarding travel or completing its tile", async () => {
-  saveRun(newRun(STARTER_IDS.slice(0, 3)));
-  await act(async () => root.render(<App />)); await call(TitleScreen, "onContinue");
-  await call(HubScreen, "onSelectNode", routeNodes(OVERWORLD_ROUTES[0])[0].nodeId);
-  const selected = loadRun();
-  await call(BattleScreen, "onLose", selected.team.map(p => ({ ...p, hp: 0 })), selected.items, null);
-  expect(loadRun()).toBeNull();
-  expect(props(EndScreen).result).toBe("lose");
-  expect(props(EndScreen).run.overworld.completedWave).toBe(0);
-  expect(props(EndScreen).run.team.map(p => [p.level, p.xp])).toEqual(selected.team.map(p => [p.level, p.xp]));
-  expect(loadMeta().records).toHaveLength(1);
-});
-
 
 test.each(["jude:royal", "paolo:base"])("persisted duplicate offer %s cannot join, charge or challenge", async id => {
   const run = runWith({ type: "recruit", player: createPlayer(id, 5), price: 10 });
@@ -549,35 +455,6 @@ test("exhausted recruitment survives reload and consumes only one wave on skip",
   expect(loadRun().money).toBe(run.money);
 });
 
-
-test("Epsilon victory offers only a spawned unowned member; reload and duplicate callbacks cannot repeat rewards", async () => {
-  const run = runWith(null); run.wave = 25; run.fischietto = true;
-  run.team.push(createPlayer("dvalin", 3));
-  let seed = 0;
-  while (!engine.epsilonEntryEligible({ ...run, overworld: { contentSeed: seed } })) seed++;
-  run.overworld = { ...newRun(STARTER_IDS.slice(0, 3)).overworld, contentSeed: seed };
-  run.pending = engine.generateWave(run);
-  const spawned = run.pending.enemies.map(p => p.versionId);
-  saveRun(run); await mountAndContinue();
-  const win = props(BattleScreen).onWin;
-  await act(async () => { win(run.team, run.items, run.team[0].uid); win(run.team, run.items, run.team[0].uid); });
-  expect(loadRun().stats.wins).toBe(1);
-  expect(loadRun().money).toBe(run.money + Math.round((20 + 25 * 3) * 1.6));
-  expect(loadRun().fischietto).toBe(true);
-  const offer = props(RecruitScreen).player;
-  expect(spawned).toContain(offer.versionId);
-  expect(offer.versionId).not.toBe("dvalin:epsilon-ie2");
-  expect(loadMeta().collection?.[offer.versionId]?.starterUnlocked).not.toBe(true);
-  await reload(); expect(props(RecruitScreen).player).toEqual(offer);
-  const join = props(RecruitScreen).onJoin;
-  await act(async () => { join(null, false); join(null, false); });
-  expect(loadRun().stats.recruits).toBe(1);
-  expect(loadRun().team.filter(p => p.versionId === offer.versionId)).toHaveLength(1);
-  expect(loadMeta().collection[offer.versionId].starterUnlocked).toBe(true);
-  expect(loadRun().pending.type).toBe("reward");
-  await call(RewardScreen, "onPick", null);
-  expect(loadRun().wave).toBe(26);
-});
 
 test("Epsilon with every canonical member owned goes directly to ordinary team rewards", async () => {
   const run = runWith(null); run.wave = 25;

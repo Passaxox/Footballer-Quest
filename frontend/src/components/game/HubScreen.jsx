@@ -7,8 +7,8 @@ import { Coins, Backpack } from "lucide-react";
 import { hasOverworld } from "@/game/overworld";
 import OverworldHub from "./OverworldHub";
 
-export default function HubScreen({ run, onNext, onSelectNode, onTeam, onPause, onAbandon }) {
-  if (hasOverworld(run)) return <OverworldHub {...{ run, onNext, onSelectNode, onTeam, onPause, onAbandon }} />;
+export default function HubScreen({ run, onNext, onSelectNode, onTeam, onPause, onAbandon, onIntroSeen }) {
+  if (hasOverworld(run)) return <OverworldHub {...{ run, onNext, onSelectNode, onTeam, onPause, onAbandon, onIntroSeen }} />;
   const nextBoss = Object.keys(BOSSES).map(Number).find((w) => w >= run.wave);
   const isBoss = !!BOSSES[run.wave];
   const itemCount = Object.values(run.items).reduce((a, b) => a + b, 0);

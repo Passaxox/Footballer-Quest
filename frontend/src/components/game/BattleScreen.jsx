@@ -3,7 +3,7 @@ import { attackFeedback } from "@/game/battleFeedback";
 import { ITEMS, WILD_INTROS, ELEMENTS } from "@/game/data";
 import { performAttack, applyBurn, turnOrder, resetBattleStatus, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, removeItem, pick, chance, resolveActiveUid, xpProgress, recalcStats } from "@/game/engine";
 import { computeTeamSynergies, applySynergyBuffs, isTowerRuleset } from "@/game/traits";
-import { canSummonSpirit, summonSpirit, spiritFor, spiritTeamId } from "@/game/spirits";
+import { canSummonSpirit, summonSpirit, spiritFor, spiritTeamId, tickSpirit } from "@/game/spirits";
 import { sfx } from "@/game/audio";
 import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, ItemTargetCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
@@ -25,7 +25,7 @@ const Fighter = ({ p, side, hit, cue }) => (
       </div>
       <div className="flex flex-wrap items-center gap-1 my-1">
         <ElementBadge element={p.element} />
-        {p.status.spirit && <span data-testid={`${side}-spirit-status`} className="font-pixel text-[7px] text-amber-200 border border-amber-400 px-1 battle-spirit-tag">SPIRITO: {spiritFor(p)?.name}</span>}
+        {p.status.spirit && <span data-testid={`${side}-spirit-status`} className="font-pixel text-[7px] text-amber-200 border border-amber-400 px-1 battle-spirit-tag">SPIRITO: {spiritFor(p)?.name} · {p.status.spiritTurns ?? 0}</span>}
         {p.status.burn > 0 && <span className="font-pixel text-[7px] text-orange-400 border border-orange-500 px-1">BRUCIA</span>}
         {p.status.guard && <span className="font-pixel text-[7px] text-sky-300 border border-sky-500 px-1">PARATA</span>}
         {p.status.atkMod !== 0 && <span className="font-pixel text-[7px] text-slate-300">ATK{p.status.atkMod > 0 ? "+" : ""}{p.status.atkMod}</span>}
@@ -92,7 +92,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
       return;
     }
     (async () => {
-      if (encounter.kind === "boss" || encounter.elite) await say(encounter.intro, 1600, true);
+      if (encounter.kind === "boss" || encounter.elite || encounter.kind === "anomaly") await say(encounter.intro, 1600, true);
       else if (encounter.kind === "team") await say(`La squadra ${encounter.teamName} vi sfida!`, 1000);
       else await say(pick(WILD_INTROS), 1000);
       if (cancelled) return;
@@ -130,6 +130,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   };
 
   const endOfTurn = async () => {
+    const t = tickSpirit(active());
+    if (t.p !== active()) { setActive(t.p); if (t.msg && !await say(t.msg, 800)) return; }
     for (const side of ["player", "enemy"]) {
       const p = side === "player" ? active() : enemy();
       if (p.hp === 0) continue;
@@ -383,7 +385,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
             </Btn>
             {spiritFor(p) && (
               <Btn data-testid="spirit-button" variant="fusion" className={`col-span-2 ${p.status.spirit ? "!opacity-100 !text-amber-200 !bg-amber-900/60 !border-amber-500" : ""}`} disabled={!canSummonSpirit(p, st.spiritUsed) || st.phase !== "menu"} onClick={summon}>
-                {p.status.spirit ? `Spirito attivo: ${spiritFor(p).name}` : st.spiritUsed ? "Spirito Guerriero già usato" : `Spirito Guerriero: ${spiritFor(p).name}`}
+                {p.status.spirit ? `Spirito attivo: ${spiritFor(p).name} (${p.status.spiritTurns} turni)` : st.spiritUsed ? "Spirito Guerriero già usato" : !p.spiritUnlocked ? `${spiritFor(p).name} · da sbloccare in un'anomalia` : `Spirito Guerriero: ${spiritFor(p).name} (${3} turni)`}
               </Btn>
             )}
             <Btn data-testid="switch-button" onClick={() => { pace.stop(); sfx.select(); st.menu = "switch"; rr(); }}>Cambia</Btn>

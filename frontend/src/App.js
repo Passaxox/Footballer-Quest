@@ -2,6 +2,9 @@ import { discoverVersion, recruitVersion } from "@/game/collection";
 import { canRecruitPlayer, ownedCharacterIds } from "@/game/catalog";
 import { useCallback, useRef, useState } from "react";
 import { hasOverworld, completeOverworldNode } from "@/game/overworld";
+import { unlockStarter } from "@/game/collection";
+import { spiritFor } from "@/game/spirits";
+import { BossIntro, Consequence, Anomaly } from "@/components/game/StoryScreen";
 import { beginOverworldNode } from "@/game/engine";
 import "@/App.css";
 import { EVENTS, FINAL_WAVE } from "@/game/data";
@@ -54,8 +57,9 @@ function App() {
     const p = r.pending;
     if (p.type === "battle") {
       if (!resolveActiveUid(r.team, r.activeUid)) { finishRun(r, "lose"); return; }
-      setScreen("battle");
+      setScreen(p.kind === "boss" && p.introSeen === false ? "boss-intro" : "battle");
     }
+    else if (p.type === "consequence") { setCtx(p.context); setScreen("consequence"); }
     else if (p.type === "recruit") { setCtx({ mode: "encounter", offer: p.player, price: p.price, after: "advance", ...p.context }); setScreen("recruit"); }
     else if (p.type === "reward") { setCtx(p.context); setScreen("reward"); }
     else setScreen(p.type);
@@ -105,6 +109,25 @@ function App() {
     if (r.wave >= FINAL_WAVE) { finishRun(r, "win"); return; }
     const rewards = generateRewards(r);
     const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport };
+    if (boss && enc.actId) {
+      updateRun({ ...r, pending: { type: "consequence", actId: enc.actId, bossId: enc.bossId, context: base, overworldNodeId: enc.overworldNodeId } });
+      setCtx(base); setScreen("consequence"); return;
+    }
+    if (enc.kind === "anomaly") {
+      const target = r.team.find((p) => p.uid === enc.spiritUid && spiritFor(p));
+      let notice = "Lo squarcio si richiude. Avete ottenuto un premio raro.";
+      let bonus = enc.spiritUid ? null : "pallone";
+      if (target) {
+        r = { ...r, team: r.team.map((p) => (p.uid === target.uid ? { ...p, spiritUnlocked: true } : p)) };
+        notice = `Spirito Guerriero sbloccato: ${target.name} può evocare ${spiritFor(target).name} in partita!`;
+        const forms = meta.forms || [];
+        const formId = `${target.characterId || target.baseId}:keshin`;
+        if (!forms.some((f) => f.formId === formId)) updateMeta({ ...meta, forms: [...forms, { formId, kind: "keshin", name: spiritFor(target).name, owner: target.name }] });
+      }
+      const context = { ...base, notice, bonus };
+      updateRun({ ...r, pending: { type: "reward", context } });
+      setCtx(context); setScreen("reward"); return;
+    }
     const epsilonOffer = epsilonRecruitOffer(enc, r.team);
     if (epsilonOffer || (enc.kind === "wild" && canRecruitPlayer(r.team, enc.enemies[0]) && (r.fischietto || enc.forceRecruit || chance(40)))) {
       const e = epsilonOffer || enc.enemies[0];
@@ -203,6 +226,33 @@ function App() {
     setScreen("team");
   };
 
+  const onConsequence = (choice, offer, idx) => {
+    if (!isCurrentAction() || run.pending?.type !== "consequence") return;
+    const unlockId = offer?.versionId;
+    let r = { ...run, overworld: { ...run.overworld, unlocks: unlockId && !run.overworld.unlocks.includes(unlockId) ? [...run.overworld.unlocks, unlockId] : run.overworld.unlocks } };
+    if (unlockId) updateMeta(unlockStarter(meta, unlockId));
+    if (choice === "recruit" && run.team.length < 6 && canRecruitPlayer(run.team, offer)) {
+      r = { ...r, team: [...r.team, offer], stats: { ...r.stats, recruits: r.stats.recruits + 1 } };
+      updateMeta(recruitVersion(unlockStarter(meta, unlockId), unlockId));
+    }
+    if (choice === "swap" && r.team[idx]) {
+      const old = r.team[idx];
+      const swapped = recalcStats({ ...createPlayer(unlockId, old.level), uid: old.uid, xp: old.xp, bonus: old.bonus, spiritUnlocked: old.spiritUnlocked });
+      r = { ...r, team: r.team.map((p, i) => (i === idx ? { ...swapped, hp: swapped.maxHp } : p)) };
+      updateMeta(recruitVersion(unlockStarter(meta, unlockId), unlockId));
+    }
+    const context = run.pending.context;
+    updateRun({ ...r, pending: { type: "reward", context } });
+    setCtx(context); setScreen("reward");
+  };
+
+  const acceptAnomaly = (spiritUid) => {
+    if (!isCurrentAction() || run.pending?.type !== "anomaly") return;
+    const cameo = run.pending.cameo;
+    gotoPending(updateRun({ ...run, pending: { ...run.pending, type: "battle", kind: "anomaly", elite: true, spiritUid, teamName: "Anomalia temporale",
+      intro: `Il tempo si piega: ${cameo.name} esce dallo squarcio e vi sfida!`, enemies: [cameo] } }));
+  };
+
   const toggleSound = () => { const m = { ...meta, sound: !meta.sound }; updateMeta(m); setSoundEnabled(m.sound); };
 
   const render = () => {
@@ -211,11 +261,14 @@ function App() {
       case "select": return <TeamSelect meta={meta} onStart={startRun} onBack={() => setScreen("title")} />;
       case "records": return <RecordsScreen meta={meta} onBack={() => setScreen("title")} />;
       case "collection": return <CollectionScreen meta={meta} onBack={() => setScreen("title")} />;
-      case "hub": return <HubScreen run={run} onSelectNode={selectNode} onPause={() => { saveRun(run); setCtx({}); setScreen("title"); }} onNext={next} onTeam={() => setScreen("team")} onAbandon={() => { if (window.confirm("Abbandonare la run? Il progresso andrà perso.")) finishRun(run, "lose"); }} />;
+      case "hub": return <HubScreen run={run} onSelectNode={selectNode} onPause={() => { saveRun(run); setCtx({}); setScreen("title"); }} onNext={next} onTeam={() => setScreen("team")} onIntroSeen={(i) => updateRun({ ...run, overworld: { ...run.overworld, introSeen: i } })} onAbandon={() => { if (window.confirm("Abbandonare la run? Il progresso andrà perso.")) finishRun(run, "lose"); }} />;
       case "team": return <TeamScreen run={run} onUpdate={(patch) => updateRun({ ...run, ...patch })} onFusion={() => setScreen("fusion")} onBack={() => setScreen("hub")} />;
       case "fusion": return <FusionScreen run={run} onFuse={onFuse} onBack={() => setScreen("team")} />;
       case "battle": return <BattleScreen onDiscover={onDiscover} key={`${run.wave}-${run.pending.enemies[0].uid}`} run={run} encounter={run.pending} onWin={onWin} onActiveChange={(activeUid) => updateRun({ ...run, activeUid })} onLose={(team, items, activeUid, report) => finishRun({ ...run, team, items, activeUid, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } }, "lose")} onFlee={(team, items, activeUid, report) => advanceWave({ ...run, team, items, activeUid, lastProgression: { wave: run.wave, report: mergeXpReports(run.pending.progression?.report, report) } })} />;
-      case "reward": return <RewardScreen rewards={ctx.rewards} bonus={ctx.bonus} money={ctx.money} xpReport={ctx.xpReport} onPick={onPickReward} />;
+      case "reward": return <RewardScreen rewards={ctx.rewards} bonus={ctx.bonus} money={ctx.money} xpReport={ctx.xpReport} notice={ctx.notice} onPick={onPickReward} />;
+      case "boss-intro": return <BossIntro run={run} encounter={run.pending} onStart={() => { const r = updateRun({ ...run, pending: { ...run.pending, introSeen: true } }); gotoPending(r); }} />;
+      case "consequence": return <Consequence key={run.wave} run={run} pending={run.pending} onResolve={onConsequence} />;
+      case "anomaly": return <Anomaly key={run.wave} run={run} pending={run.pending} onAccept={acceptAnomaly} onLeave={() => advanceWave(run, true)} />;
       case "event": return <EventScreen key={run.wave} run={run} event={EVENTS.find((e) => e.id === run.pending.eventId)} onChoose={(result) => updateRun({ ...run, pending: { ...run.pending, result } })} onResolve={onEventResolve} />;
       case "shop": return <ShopScreen run={run} stock={run.pending.stock} onBuy={(index) => {
         if (!isCurrentAction()) return;

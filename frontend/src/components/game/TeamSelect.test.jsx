@@ -60,7 +60,7 @@ test("300 synthetic versions group deterministically into 150 tiles with bounded
 
 test("one Jude tile, inline switch updates the same slot, correct versions enter the run", async () => {
   const onStart = jest.fn();
-  const oldRun = newRun(["mark", "axel", "jude"]); delete oldRun.overworld; saveRun(oldRun);
+  const oldRun = newRun(["mark", "axel", "jude"]); saveRun(oldRun);
   await act(async () => root.render(<TeamSelect meta={meta} onStart={onStart} />));
   expect(host.querySelectorAll('[data-testid="starter-jude"]')).toHaveLength(1);
   await click("starter-jude"); await click("version-jude:royal"); await click("starter-confirm");

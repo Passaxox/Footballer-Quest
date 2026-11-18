@@ -1,58 +1,46 @@
-import { OVERWORLD_ROUTES, routeNodes, ROYAL_CHECKPOINT, selectableOverworldNode } from "./overworld";
+import { actForWave, edgesFrom, findNode, bossDef } from "./campaign";
+import { currentActMap, selectableOverworldNode } from "./overworld";
+import { scenarioPool } from "./scenarios";
+import { resolveVersion } from "./catalog";
 
-// Presentation only. Tags are extension points, not extra pool weights or rewards.
-export const ENVIRONMENTS = {
-  crossroads: { name: "Il bivio", palette: ["#19382e", "#82d4a1"], decoration: "district", tags: ["school", "urban"], description: "Tre strade. Una squadra. La Royal vi aspetta." },
-  riverside: { name: "Lungofiume", palette: ["#143e38", "#86e4cc"], decoration: "river", tags: ["riverside", "urban"], description: "Tra argini e campetti, il talento gioca all'aperto." },
-  training: { name: "Campi Raimon", palette: ["#203d2c", "#c6e69a"], decoration: "pitch", tags: ["school", "academy"], description: "Fischi, scatti e palloni: qui si cresce insieme." },
-  metropolitan: { name: "Distretto sportivo", palette: ["#303747", "#ffc38c"], decoration: "streets", tags: ["urban", "street-football"], description: "Sotto i lampioni, ogni piazzale diventa uno stadio." },
-  academy: { name: "Territorio Royal", palette: ["#30304b", "#e8cb86"], decoration: "academy", tags: ["academy", "stadium"], description: "Oltre i cancelli, il calcio diventa una sfida vera." },
+export const ROW_GAP = 116;
+export const MAP_TOP = 150;
+const laneX = (lane) => 18 + lane * 32;
+
+export const mapHeight = (map) => MAP_TOP + (map.act.toWave - map.act.fromWave) * ROW_GAP + 120;
+export const nodePosition = (node) => ({ x: laneX(node.lane) + node.jitter * 0.4, y: MAP_TOP + node.row * ROW_GAP });
+
+const hash = (s) => [...s].reduce((h, c) => (Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0), 2166136261);
+const asPortrait = (v) => v && { uid: v.versionId, name: v.displayName, element: v.element, versionId: v.versionId, baseId: v.legacyRosterId || v.versionId, status: {} };
+
+// Visual hint only: a deterministic face from the location pool, never the generated opponent.
+export const nodePortrait = (node) => {
+  if (node.type === "boss") return asPortrait(resolveVersion(bossDef(node.actId, node.bossId).leader));
+  if (node.type === "rival") return asPortrait(resolveVersion(actForWave(node.wave).rival.pool[0]));
+  if (node.type !== "battle") return null;
+  const pool = scenarioPool(node.locationId, node.wave, 4);
+  return pool.length ? asPortrait(pool[hash(node.nodeId) % pool.length].version) : null;
 };
-const places = {
-  riverside: ["Campetto sull'argine", "Panchina degli scout", "Ponte della ferrovia", "Chiosco sportivo", "Campo del parco", "Vecchio pontile", "Sfida sull'argine", "Centro tecnico Royal", "Tunnel dell'accademia"],
-  grounds: ["Piazzale Raimon", "Campo di allenamento", "Campo sintetico", "Spogliatoi", "Campo delle riserve", "Tribuna degli scout", "Campo centrale", "Emporio Royal", "Tunnel dell'accademia"],
-  town: ["Piazza del quartiere", "Negozio sportivo", "Sottopasso", "Centro tecnico", "Campo tra i palazzi", "Stazione degli scout", "Arena di strada", "Cortile Royal", "Tunnel dell'accademia"],
-};
-const flavour = {
-  battle: "Un pallone rotola verso di voi. Dall'altra parte, qualcuno aspetta una sfida.",
-  recruit: "Una promessa si allena da sola. Potrebbe esserci posto nella vostra squadra.",
-  training: "Coni allineati e porte libere. È il momento di affinare la tecnica.",
-  shop: "Scarpini in vetrina e scorte per il viaggio. Date un'occhiata prima di ripartire.",
-  event: "Voci a bordo campo. Qualcosa di inatteso sta per succedere.",
-};
-export const MAP_LAYOUT = { width: 360, height: 1530, start: { x: 50, y: 62 }, checkpoint: { x: 50, y: 1410 } };
-const winding = [50, 27, 43, 73, 57, 26, 42, 72, 54];
-const overview = {
-  riverside: [19, 14, 26, 17, 23, 13, 25, 20, 32],
-  grounds: [50, 48, 57, 46, 53, 47, 55, 49, 51],
-  town: [81, 86, 78, 84, 76, 87, 79, 83, 71],
-};
-export function placeFor(node) {
-  const checkpoint = node.nodeId === ROYAL_CHECKPOINT.nodeId;
-  return { ...node, name: checkpoint ? "Royal Academy" : places[node.routeId][node.wave - 1],
-    environment: ENVIRONMENTS[node.environmentId], risk: checkpoint ? "Boss" : node.type === "battle" ? "Sfida" : node.type === "event" ? "Esito incerto" : node.type === "recruit" ? "Scelta libera" : "Nessuno scontro",
-    description: checkpoint ? "I cancelli si aprono. La Royal vi sbarra la strada verso il Football Frontier." : flavour[node.type] };
-}
-export function mapNodes(run) {
-  const route = OVERWORLD_ROUTES.find(r => r.id === run.overworld.routeId);
-  return [...(route ? [route] : OVERWORLD_ROUTES).flatMap(r => routeNodes(r).map((n, i) => ({ ...placeFor(n),
-    position: { x: route ? winding[i] : overview[r.id][i], y: 220 + i * 126 } }))),
-    { ...placeFor(ROYAL_CHECKPOINT), position: MAP_LAYOUT.checkpoint }];
-}
+
 export function nodeState(run, node) {
-  if (run.overworld.selectedNodeId === node.nodeId) return "current";
-  if ((node.routeId === run.overworld.routeId || !node.routeId) && node.wave <= run.overworld.completedWave) return "completed";
+  const ow = run.overworld;
+  if (ow.selectedNodeId === node.nodeId) return "current";
+  if (ow.path.includes(node.nodeId)) return "completed";
   if (selectableOverworldNode(run, node.nodeId)) return "available";
-  if (node.wave > run.wave + 1 && node.routeId) return "unknown";
+  if (node.wave < run.wave) return "skipped";
   return "locked";
 }
-export function markerNode(run, nodes = mapNodes(run)) {
-  return nodes.find(n => n.nodeId === run.overworld.selectedNodeId)
-    || nodes.find(n => n.routeId === run.overworld.routeId && n.wave === run.overworld.completedWave)
-    || { nodeId: "departure", name: "Partenza · Raimon", position: MAP_LAYOUT.start };
-}
-export function environmentFor(run) {
-  if (run.overworld.environmentId) return ENVIRONMENTS[run.overworld.environmentId] || ENVIRONMENTS.crossroads;
-  const route = OVERWORLD_ROUTES.find(r => r.id === run.overworld.routeId);
-  return ENVIRONMENTS[run.wave >= 8 && route ? "academy" : route?.environmentId || "crossroads"];
-}
+
+export const edgeState = (run, from, to) => {
+  const ow = run.overworld;
+  if (ow.path.includes(from.nodeId) && (ow.path.includes(to.nodeId) || ow.selectedNodeId === to.nodeId)) return "done";
+  if (ow.path.at(-1) === from.nodeId && selectableOverworldNode(run, to.nodeId)) return "open";
+  return "idle";
+};
+
+export const allEdges = (map) => map.nodes.flatMap((n) => edgesFrom(map, n).map((to) => [n, to]));
+
+export const markerNode = (run, map) => findNode(run.overworld.contentSeed, run.overworld.selectedNodeId)
+  || map.nodes.find((n) => n.nodeId === run.overworld.path.at(-1)) || null;
+
+export const actMapFor = currentActMap;

@@ -3,13 +3,14 @@ import { sfx } from "@/game/audio";
 import { Btn, Header, Panel, XpReport, ItemInfo } from "./ui";
 import { Gift } from "lucide-react";
 
-export default function RewardScreen({ rewards, bonus, money, xpReport, onPick }) {
+export default function RewardScreen({ rewards, bonus, money, xpReport, notice, onPick }) {
   return (
     <div data-testid="reward-selection-modal" className="flex flex-col flex-1">
       <Header title="Ricompensa" sub="Scegli un solo premio" />
       <div className="p-3 space-y-3 flex-1">
         <Panel className="font-body text-lg text-slate-200 leading-tight">
           Vittoria! Guadagni <span className="text-amber-300">+{money} Prestigio</span>.
+          {notice && <div data-testid="reward-notice" className="text-amber-300 mt-1">{notice}</div>}
           {bonus && <div className="text-emerald-400 mt-1">Bonus: {ITEMS[bonus].name} aggiunto allo zaino!</div>}
         </Panel>
         <XpReport report={xpReport} />

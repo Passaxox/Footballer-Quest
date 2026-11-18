@@ -13,7 +13,23 @@ export const SCENARIOS = [
   { ...common, id: "raimon-training", displayName: "Campo Raimon", locationType: "field", allowedTeamTags: ["raimon"], preferredTeamTags: ["raimon"], waveRange: { from: 1, to: null } },
   { ...common, id: "urban", displayName: "Sfide in città", locationType: "city", allowedVersionIds: ["shawn", "darren", "sam", "steve", "bobby", "maxwell", "erik", "caleb", "hurley", "scotty", "thor", "archer", "canon", "hector", "silvia", "aiden", "david", "paolo", "fidio"].map(id => id + ":base"), waveRange: { from: 1, to: null } },
   { ...common, id: "royal-academy", displayName: "Royal Academy", locationType: "field", minTier: 2, arcId: "football-frontier", allowedTeamTags: ["royal-academy"], preferredTeamTags: ["royal-academy"], waveRange: { from: 8, to: null } },
-  { ...common, id: "zeus", displayName: "Stadio Zeus", locationType: "stadium", minTier: 3, arcId: "football-frontier", allowedTeamTags: ["zeus"], preferredTeamTags: ["zeus"], waveRange: { from: 18, to: null } },
+  { ...common, id: "zeus", displayName: "Stadio Zeus", locationType: "stadium", minTier: 3, arcId: "football-frontier", allowedTeamTags: ["zeus"], preferredTeamTags: ["zeus"], waveRange: { from: 14, to: null } },
+  ...[
+    ["riverside", "Argine del fiume", "field", "football-frontier", ["sam", "steve", "bobby", "maxwell", "silvia", "tim", "willy", "malcolm", "hector"]],
+    ["iron-tower", "Torre di Ferro", "field", "football-frontier", ["nathan", "jack", "kevin", "tod", "tim", "willy", "darren", "caleb", "scotty", "thor"]],
+    ["ff-qualifiers", "Gironi del Football Frontier", "stadium", "football-frontier", ["darren", "erik", "austin", "caleb", "hurley", "scotty", "thor", "archer", "joseph", "david", "canon"]],
+    ["nara", "Nara", "city", "alius", ["jordan", "joseph", "david", "archer", "austin", "steve"]],
+    ["osaka", "Osaka", "city", "alius", ["hurley", "scotty", "thor", "erik", "caleb", "darren", "dvalin"]],
+    ["hokkaido", "Hokkaido", "field", "alius", ["shawn", "aiden", "archer", "austin", "thor"]],
+    ["alius-base", "Base Alius", "hq", "alius", ["tytan:epsilon-ie2", "krypto:epsilon-ie2", "zell:epsilon-ie2", "dvalin:epsilon-ie2", "jordan", "dvalin", "torch", "gazelle", "xavier"]],
+    ["jukai", "Foresta di Jukai", "special", "alius", ["austin", "archer", "thor", "scotty", "erik", "jordan", "shawn"]],
+    ["ffi-europe", "Campus europei", "facility", "ffi", ["edgar", "teres", "fidio", "paolo"]],
+    ["ffi-unicorn", "Campus Unicorn", "facility", "ffi", ["kruger", "dylan", "erik", "bobby"]],
+    ["ffi-dragon", "Campus Fire Dragon", "facility", "ffi", ["chae", "torch", "gazelle"]],
+    ["ffi-gigant", "Isola Cotarl", "stadium", "ffi", ["rococo", "fidio", "edgar", "kruger"]],
+  ].map(([id, displayName, locationType, arcId, ids]) => ({ ...common, id, displayName, locationType, arcId,
+    allowedVersionIds: ids.map(v => v.includes(":") ? v : v + ":base"), waveRange: { from: 1, to: null } })),
+  { ...common, id: "epsilon-rematch", displayName: "Campo Epsilon", locationType: "field", arcId: "alius", allowedTeamTags: ["epsilon"], preferredTeamTags: ["epsilon"], waveRange: { from: 1, to: null } },
   { ...common, id: "international", displayName: "Incontri internazionali", macroScenarioId: "ffi", minTier: 3, arcId: "ffi", allowedTeamTags: ["unicorn", "knights-of-queen", "the-empire", "fire-dragon", "little-gigant"], preferredTeamTags: ["unicorn"], waveRange: { from: 18, to: null } },
 ];
 export function validateScenarios(scenarios = SCENARIOS) {
@@ -47,12 +63,12 @@ export const getScenario = id => SCENARIOS.find(s => s.id === id) || SCENARIOS.f
 const eligible = (s, wave) => s.availability && wave >= s.waveRange.from && (s.waveRange.to == null || wave <= s.waveRange.to);
 // Compatibility records stay resolvable, but must never enter a new encounter or draft.
 export const isFreshPlayerVersion = v => v?.kind === "player" && !v.legacyOnly && v.versionId !== "jonas:base";
-export function scenarioPool(scenarioId, wave, maxTier, exclude = []) {
+export function scenarioPool(scenarioId, wave, maxTier, exclude = [], locked = []) {
   const s = getScenario(scenarioId);
   const excludedCharacters = new Set(exclude.map(canonicalCharacterId));
   if (!eligible(s, wave) || maxTier < s.minTier) return [];
   return Object.values(CHARACTER_VERSIONS).filter(v => isFreshPlayerVersion(v) && v.encounterTier <= maxTier
-    && !exclude.includes(v.versionId) && !exclude.includes(v.legacyRosterId)
+    && !exclude.includes(v.versionId) && !exclude.includes(v.legacyRosterId) && !locked.includes(v.versionId)
     && !excludedCharacters.has(canonicalCharacterId(v.versionId))
     && (!s.allowedVersionIds || s.allowedVersionIds.includes(v.versionId))
     && (!s.allowedTeamTags.length || s.allowedTeamTags.includes(v.primaryTeamId))
@@ -64,7 +80,7 @@ function weighted(rows, rng) {
   let n = rng() * rows.reduce((sum, row) => sum + row.weight, 0);
   return rows.find(row => (n -= row.weight) < 0) || rows.at(-1);
 }
-export const selectEncounterVersion = (scenarioId, wave, maxTier, exclude = [], rng = Math.random) => weighted(scenarioPool(scenarioId, wave, maxTier, exclude), rng)?.version ?? null;
+export const selectEncounterVersion = (scenarioId, wave, maxTier, exclude = [], rng = Math.random, locked = []) => weighted(scenarioPool(scenarioId, wave, maxTier, exclude, locked), rng)?.version ?? null;
 
 export const teamReadiness = (versions = Object.values(CHARACTER_VERSIONS), size = 3) => TEAMS.map(team => {
   const members = versions.filter(v => isFreshPlayerVersion(v) && v.primaryTeamId === team.teamId);
@@ -73,8 +89,8 @@ export const teamReadiness = (versions = Object.values(CHARACTER_VERSIONS), size
 });
 
 // Team choice precedes member choice. No positional rules exist in sequential combat.
-export function selectEncounterLineup(scenarioId, wave, maxTier, size, rng = Math.random) {
-  const rows = scenarioPool(scenarioId, wave, maxTier);
+export function selectEncounterLineup(scenarioId, wave, maxTier, size, rng = Math.random, locked = []) {
+  const rows = scenarioPool(scenarioId, wave, maxTier, [], locked);
   const ready = teamReadiness(rows.map(r => r.version), size).filter(t => t.ready);
   const team = weighted(ready.map(t => ({ ...t, weight: rows.filter(r => r.version.primaryTeamId === t.teamId).reduce((sum, r) => sum + r.weight, 0) })), rng);
   let candidates = team ? rows.filter(r => r.version.primaryTeamId === team.teamId) : rows;

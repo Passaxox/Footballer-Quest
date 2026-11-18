@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { Coins, Map as MapIcon, Backpack, BookOpen, Save, X } from "lucide-react";
 import { DIFFICULTIES, getRules } from "@/game/rules";
 import { glory } from "@/game/engine";
-import { environmentFor } from "@/game/overworldPresentation";
+import { actForWave } from "@/game/campaign";
+import { computeTeamSynergies } from "@/game/traits";
+import { Avatar } from "./ui";
+import { ActIntro, JourneyLog } from "./StoryScreen";
 import { XpReport } from "./ui";
 import OverworldMap from "./OverworldMap";
 
-export default function OverworldHub({ run, onNext, onSelectNode, onTeam, onPause, onAbandon }) {
+export default function OverworldHub({ run, onNext, onSelectNode, onTeam, onPause, onAbandon, onIntroSeen }) {
   const [open, setOpen] = useState(false), closeRef = useRef(null), triggerRef = useRef(null);
   const close = () => setOpen(false);
   const closeToTrigger = () => { setOpen(false); triggerRef.current?.focus({ preventScroll: true }); };
@@ -17,12 +20,16 @@ export default function OverworldHub({ run, onNext, onSelectNode, onTeam, onPaus
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
-  const living = run.team.filter(p => p.hp > 0).length;
-  return <div className="ow-hub" data-testid="hub-screen">
+  const act = actForWave(run.wave);
+  if (!run.pending && (run.overworld.introSeen || 0) < act.index) return <ActIntro run={run} act={act} onStart={() => onIntroSeen(act.index)} />;
+  const synergies = computeTeamSynergies(run.team).slice(0, 4);
+  return <div className={`ow-hub ow-${act.palette}`} data-testid="hub-screen">
     <header className="ow-hud">
-      <div><strong>W{run.wave} / 10</strong><small data-testid="run-scenario">{environmentFor(run).name}</small></div>
+      <div><strong data-testid="hub-wave">W{run.wave} / 50</strong><small data-testid="run-scenario">Atto {act.index} · {act.title}</small></div>
       <span className="ow-hud-money" data-testid="money-display"><Coins size={16} />{run.money}</span>
-      <div><strong>{living}/{run.team.length}</strong><small>in campo</small></div>
+      <div className="ow-teambar" data-testid="hud-team">{run.team.map((p) => <div key={p.uid} className="ow-teambar-slot" title={`${p.name} Lv${p.level}`}>
+        <Avatar p={p} size={32} ko={p.hp === 0} /><div className="ow-teambar-hp"><i style={{ width: `${p.hp / p.maxHp * 100}%`, background: p.hp / p.maxHp < 0.3 ? "#ef4444" : "#22c55e" }} /></div></div>)}</div>
+      {synergies.length > 0 && <div className="ow-traits" data-testid="hud-traits">{synergies.map((x) => <span key={x.teamId} className={x.tier ? "on" : ""}>{x.traitLabel} {x.points}/{x.nextThreshold ?? x.points} T{x.tier}</span>)}</div>}
     </header>
     <div className="ow-stage">
       <OverworldMap run={run} onSelect={onSelectNode} onResume={onNext} />
@@ -32,6 +39,7 @@ export default function OverworldHub({ run, onNext, onSelectNode, onTeam, onPaus
         <p data-testid="run-difficulty">{DIFFICULTIES[getRules(run.rulesetId).difficultyId].label}</p>
         <p>Gloria {glory(run)} · Vittorie {run.stats.wins} · Reclutati {run.stats.recruits}</p>
         <XpReport report={!run.pending ? run.lastProgression?.report : null} />
+        <JourneyLog run={run} />
         <button type="button" data-testid="abandon-btn" className="ow-abandon" onClick={onAbandon}>Abbandona la run</button>
       </aside>
     </div>

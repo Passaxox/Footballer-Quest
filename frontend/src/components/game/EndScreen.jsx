@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { glory, playtestSummary } from "@/game/engine";
 import { Btn, Header, Panel, PlayerCard, XpReport } from "./ui";
+import { JourneyLog } from "./StoryScreen";
 
 const backendUrl = () => (process.env.REACT_APP_BACKEND_URL || "").trim().replace(/\/$/, "");
 
@@ -37,6 +38,8 @@ export default function EndScreen({ run, result, onHome, onRetry }) {
           <div className="font-pixel text-[10px] text-purple-300 self-center">GLORIA</div><div className="text-right font-pixel text-purple-300 text-lg" data-testid="end-glory">{g}</div>
         </Panel>
         <XpReport report={run.lastProgression?.report} />
+        <Panel><JourneyLog run={run} /></Panel>
+        <div className="font-pixel text-[9px] text-slate-300 uppercase" data-testid="end-finalists-title">{result === "win" ? "Giocatori arrivati in finale" : "La vostra squadra"}</div>
         <div className="space-y-2">{run.team.map((p, i) => <PlayerCard key={p.uid} p={p} compact testId={`end-player-${i}`} />)}</div>
         <Panel className="space-y-2">
           <div className="font-pixel text-[9px] text-slate-300 uppercase">Albo d'Oro Globale</div>

@@ -134,7 +134,7 @@ test("starter difficulty selection only affects the new run and clearly labels t
 
 test("Hub labels the persisted difficulty and EndScreen shows local playtest figures", async () => {
   const run = newRun(STARTER_IDS.slice(0, 3), "easy");
-  run.stats.wins = 5; run.stats.recruits = 3; run.stats.fusions = 1;
+  run.stats.wins = 5; run.stats.recruits = 3; run.stats.fusions = 1; run.overworld.introSeen = 1;
   await act(async () => root.render(<HubScreen run={run} />));
   expect(find("run-difficulty").textContent).toBe("FACILE");
   await act(async () => root.render(<EndScreen run={run} result="lose" />));

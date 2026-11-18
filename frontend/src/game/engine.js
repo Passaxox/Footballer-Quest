@@ -1,5 +1,6 @@
 import { selectEncounterVersion, selectEncounterLineup, scenarioForWave, normalizeScenarioState, isFreshPlayerVersion } from "./scenarios";
-import { initialOverworld, selectableOverworldNode, nodeRandom } from "./overworld";
+import { initialOverworld, selectableOverworldNode, nodeRandom, migrateOverworld, actsCleared } from "./overworld";
+import { STORY_LOCKS, bossDef, actForWave } from "./campaign";
 import { CHARACTERS, canRecruitPlayer, canonicalCharacterId, ownedCharacterIds, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, SHOP_POOL } from "./data";
@@ -150,7 +151,7 @@ export const fusePlayers = (a, b, moveFrom) => {
   const p = {
     uid: uid(), baseId: `${a.baseId}+${b.baseId}`, name: a.name, donorName: b.name, element: a.element, role: a.role, tier: Math.max(a.tier, b.tier), move: { ...src.move, moveId: src.move.moveId ?? null },
     parentVersionIds: [resolveVersion(a.versionId || a.baseId)?.versionId ?? null, resolveVersion(b.versionId || b.baseId)?.versionId ?? null],
-    level: lvl, xp: 0, fused: true, status: freshStatus(),
+    level: lvl, xp: 0, fused: true, status: freshStatus(), ...(a.spiritUnlocked ? { spiritUnlocked: true } : {}),
     base: { hp: Math.round((a.base.hp + b.base.hp) / 2 * 1.15), atk: Math.round((a.base.atk + b.base.atk) / 2 * 1.15), def: Math.round((a.base.def + b.base.def) / 2 * 1.15), spd: Math.round((a.base.spd + b.base.spd) / 2 * 1.15) },
     bonus: { hp: a.bonus.hp + b.bonus.hp, atk: a.bonus.atk + b.bonus.atk, def: a.bonus.def + b.bonus.def, spd: a.bonus.spd + b.bonus.spd },
     maxHp: 0, hp: 0,
@@ -194,11 +195,15 @@ export const randomRosterId = (maxTier, exclude = []) => {
   return pick(pool);
 };
 
-const tierForWave = (wave) => (wave < 8 ? 1 : wave < 18 ? 2 : 3);
+const tierForWave = (wave) => (wave < 8 ? 1 : wave < 18 ? 2 : wave < 32 ? 3 : 4);
+export const storyLockedVersions = (run) => Object.keys(STORY_LOCKS).filter((v) => !(run.overworld?.unlocks || []).includes(v) && actsCleared(run) < STORY_LOCKS[v]);
+const levelFor = (run, random, kind = "ordinary", bonus = 0) => cappedEnemyLevel(enemyLevel(run.wave, run.rulesetId, random) + bonus, run.team, run.rulesetId, kind);
 
 const generateWaveNode = (run, forcedType = null, random = Math.random) => {
   const wave = run.wave;
-  const pickOpponent = (tier, exclude = []) => selectEncounterVersion(run.scenarioState.id, wave, tier, exclude, random)?.versionId;
+  const locked = storyLockedVersions(run);
+  const pickOpponent = (tier, exclude = []) => (selectEncounterVersion(run.scenarioState.id, wave, tier, exclude, random, locked)
+    || selectEncounterVersion("urban", wave, tier, exclude, random, locked))?.versionId;
   const boss = BOSSES[wave];
   if (boss) {
     const rules = getRules(run.rulesetId);
@@ -211,11 +216,15 @@ const generateWaveNode = (run, forcedType = null, random = Math.random) => {
     const solo = chance(60, random);
     if (solo) return { type: "battle", kind: "wild", encounterType: "solo", enemies: [createPlayer(pickOpponent(tierForWave(wave)), cappedEnemyLevel(enemyLevel(wave, run.rulesetId, random), run.team, run.rulesetId), random)] };
     const n = wave < 5 ? 2 : rand(2, 3, random);
-    const { versions, ...identity } = selectEncounterLineup(run.scenarioState.id, wave, tierForWave(wave), n, random);
+    let lineup = selectEncounterLineup(run.scenarioState.id, wave, tierForWave(wave), n, random, locked);
+    if (lineup.versions.length < 2) lineup = selectEncounterLineup(wave > 40 ? "international" : "urban", wave, tierForWave(wave), n, random, locked);
+    const { versions, ...identity } = lineup;
     return { type: "battle", kind: "team", ...identity, enemies: versions.map(v => createPlayer(v.versionId, cappedEnemyLevel(enemyLevel(wave, run.rulesetId, random), run.team, run.rulesetId), random)) };
   }
   if (forcedType === "recruit" || (!forcedType && roll < 62)) {
-    const id = pickOpponent(tierForWave(wave) + (chance(20, random) ? 1 : 0), [...ownedCharacterIds(run.team)]);
+    const owned = ownedCharacterIds(run.team);
+    const scouted = (run.overworld?.unlocks || []).filter((v) => !owned.has(canonicalCharacterId(v)));
+    const id = scouted.length && chance(60, random) ? pick(scouted, random) : pickOpponent(tierForWave(wave) + (chance(20, random) ? 1 : 0), [...owned]);
     return { type: "recruit", player: id ? createPlayer(id, Math.max(1, wave - 1), random) : null, price: 60 + wave * 4 };
   }
   if (forcedType === "shop" || (!forcedType && roll < 74)) return { type: "shop", stock: generateShop(wave, random) };
@@ -265,16 +274,39 @@ export const generateWave = (run, random = Math.random) => {
   return { ...generateWaveNode({ ...run, scenarioState }, null, random), scenarioState };
 };
 
+const ANOMALY_CAMEOS = ["byron", "xavier", "rococo", "torch", "gazelle", "kruger", "fidio"];
+const specialNode = (run, node, random) => {
+  const act = actForWave(run.wave);
+  if (node.type === "boss") {
+    const boss = bossDef(node.actId, node.bossId);
+    const rules = getRules(run.rulesetId);
+    const level = cappedEnemyLevel(run.wave + (rules.checkpoints[run.wave]?.levelOffset ?? rules.defaultBossLevelOffset), run.team, run.rulesetId, "boss");
+    return { type: "battle", kind: "boss", encounterType: boss.encounterType, teamId: boss.teamId, teamName: boss.team, intro: boss.intro,
+      actId: node.actId, bossId: boss.id, introSeen: false, enemies: boss.ids.map((id) => createPlayer(id, level, random)) };
+  }
+  if (node.type === "rival") {
+    const ids = [...act.rival.pool].sort(() => random() - 0.5).slice(0, act.rival.count);
+    const level = levelFor(run, random, "challenge", 1);
+    return { type: "battle", kind: "team", elite: true, rival: true, encounterType: act.rival.teamId ? "canonical-team" : "special", teamId: act.rival.teamId,
+      teamName: act.rival.teamName, intro: act.rival.intro, enemies: ids.map((id) => createPlayer(id, level, random)) };
+  }
+  if (node.type === "anomaly") {
+    const owned = ownedCharacterIds(run.team);
+    const cameo = pick(ANOMALY_CAMEOS.filter((id) => !owned.has(canonicalCharacterId(id))), random) || "byron";
+    return { type: "anomaly", cameo: createPlayer(cameo, levelFor(run, random, "challenge", 3), random) };
+  }
+  return null;
+};
+
 // Selecting a tile commits path + location + generated content in one saved run.
 export const beginOverworldNode = (run, nodeId) => {
   const node = selectableOverworldNode(run, nodeId);
   if (!node) return run;
   const scenarioState = { id: node.locationId, revision: 1, segmentStart: run.wave, segmentEnd: run.wave };
-  const contentSeed = run.overworld.contentSeed ?? (Number(run.startedAt) >>> 0);
-  const pending = { ...generateWaveNode({ ...run, scenarioState }, node.type, nodeRandom(contentSeed, node.nodeId)),
-    scenarioState, overworldNodeId: node.nodeId, environmentId: node.environmentId };
-  return { ...run, scenarioState, pending, overworld: { ...run.overworld,
-    contentSeed, environmentId: node.environmentId, routeId: run.overworld.routeId || node.routeId, selectedNodeId: node.nodeId } };
+  const random = nodeRandom(run.overworld.contentSeed, node.nodeId);
+  const content = specialNode({ ...run, scenarioState }, node, random) || generateWaveNode({ ...run, scenarioState }, node.type, random);
+  const pending = { ...content, scenarioState, overworldNodeId: node.nodeId, environmentId: node.environment };
+  return { ...run, scenarioState, pending, overworld: { ...run.overworld, selectedNodeId: node.nodeId } };
 };
 
 export const generateShop = (wave, random = Math.random) => {
@@ -342,7 +374,7 @@ export const normalizeRun = (run) => {
     ...(run.pending.player ? { player: withPlayerIdentity(run.pending.player) } : {}),
     ...(run.pending.context?.offer ? { context: { ...run.pending.context, offer: withPlayerIdentity(run.pending.context.offer) } } : {}),
   };
-  return { ...run, ...(run.pending ? { pending } : {}), scenarioState: normalizeScenarioState(run.scenarioState, run.wave), team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
+  return { ...run, overworld: migrateOverworld(run), ...(run.pending ? { pending } : {}), scenarioState: normalizeScenarioState(run.scenarioState, run.wave), team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
     rulesetVersion: run.rulesetVersion ?? rules.version,
     activeUid: resolveActiveUid(run.team, run.activeUid) };
 };
@@ -435,7 +467,7 @@ export const finishCombatReport = (team, report) => {
 // Call only on resolution. Save the result atomically with the wave advance.
 export const completeNonCombatNode = (run) => {
   const pending = run.pending;
-  if (!pending || !["shop", "event", "training", "recruit"].includes(pending.type)
+  if (!pending || !["shop", "event", "training", "recruit", "anomaly"].includes(pending.type)
       || pending.context?.after === "rewards" || pending.progression?.hadCombat
       || run.lastProgression?.wave === run.wave) return run;
   const hadOwnXp = pending.progression?.hadOwnXp
