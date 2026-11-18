@@ -1,0 +1,20 @@
+{
+  "summary": "Frontend-only retest of the iteration_9 fixes, run with Playwright at 400x860 on the preview URL. PASS (1) One-shot guard: in a fresh Easy run (rulesetId easy-v3), at W1 I entered a battle, set pending.enemies[0].atk/spd to 999, reloaded, then continue -> MANTIENI -> auto. The log read: 'Jim Wraith usa Tiro Fantasma!' -> 'Mark Evans resiste con 1 HP!' (no 'è KO!' for that hit) -> Mark uses Mano di Luce -> second enemy hit -> 'Mark Evans para parte del colpo!' -> 'Mark Evans è KO!' (0/108 HP). BattleScreen.jsx:127 now filters the 'è KO!' message, so sfx.ko is no longer triggered for the guarded hit. PASS (2) Crests: the 'Royal Academy · Ricognizione' miniboss crest shows 'RA' (bg rgb(67,56,202)). In act 3 with seed 7919, Epsilon Kai is rgb(31,41,55) with red initials 'EK' (rgb(248,113,113)), clearly distinct from Prominence rgb(160,0,0) with white 'P'. Dark Emperors is #1A1A1A with 'DE'. No page errors.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Act 3 intro crests", "issues": ["Optional: the Epsilon Kai (#1f2937) and Dark Emperors (#1A1A1A) backgrounds are both near-black. The red versus light-grey initials and borders still tell them apart, so this is acceptable."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": ["The guard filter uses m.endsWith('è KO!'). This is correct for the current engine.js message format. If that message text changes, the filter breaks silently, so consider a Jest test for it."],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "seed_data_creation": "None. Only browser localStorage was used, in disposable Playwright contexts.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "To reach the act 3 intro: start an Easy run, click act-intro-start, then set run.overworld.contentSeed=7919, wave=21, completedWave=20, path=[], introSeen=2 and pending=null. Reload, then continue-run-btn. The guard test flow is in the summary."
+}

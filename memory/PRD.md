@@ -48,8 +48,14 @@ Gioco mobile-first, misto Pokerogue x Pokelike, a tema Inazuma Eleven: lotta 1v1
 - Sfide: Checkpoint perfetto, Nessuna fuga, Cuore Raimon, Pochi ma buoni → Spirito extra a fine run (EndScreen).
 - Rimandati alla versione 100 wave: personaggi GO, Armatura Spirito.
 
+## Iterazione 06/2026 · Sprite canon, Facile esplorativo, Dark Emperors
+- Sprite: `scripts/import_sprites.py` (inazumasprites.netlify.app) + `scripts/import_sprites_fandom.py` (Fandom, solo portrait/sprite) → 84/86 ritratti in public/sprites (canon-*, de-*). Mancano: Bomber (Prominence), André Pinson (Rose Griffon). Report: memory/sprite_import_report.json. Stemmi reali non trovati: placeholder TeamCrest con colori kit v3.
+- Facile = ruleset easy-v3: livelli nemici più bassi, ricompense invariate, fino a W20 nessun KO in un colpo da HP pieni (resta a 1 HP), nemici -15% VEL. Miniboss W5/W15 solo difficoltà 1-2 (Occult, Royal Ricognizione); Zeus solo boss da W20. Dedupe per squadra.
+- Dark Emperors (8/11 nel catalogo, ritratti reali) nei pool W30 boss / W35 miniboss.
+
 ## Backlog
-- P1: sprite DS per i giocatori canon v2
+- P1: Diario Rivali (registro boss/miniboss battuti con miglior risultato)
+- P2: Brainwashing, Wild, Diamond Dust quando gli elementi saranno verificati; Kirkwood quando il roster esiste
 - P1: Armatura (Armed) dello Spirito Guerriero
 - P2: aggiungere personaggi GO (Tenma, Tsurugi, Shindou) con sprite per più Spiriti canon
 - P1: Torre delle Sfide (dopo prima run vinta, roster scoperto, record separato, sinergie x1.5)
