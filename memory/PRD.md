@@ -28,8 +28,18 @@ Gioco mobile-first, misto Pokerogue x Pokelike, a tema Inazuma Eleven: lotta 1v1
 - Fusione (Cuneo DNA): ricompensa rara (non più in negozio), 1 volta per run; A = base mantenuto (nome, ruolo, elemento, squadra-sinergia), B = donatore; tecnica ereditabile; slot liberato
 - Spirito Guerriero (`game/spirits.js`): solo personaggi canonici (Mark = Gran Majin, Axel = Enma Gazard), pulsante in battaglia 1 volta per match, azione gratuita, moltiplicatori ATK/DIF finché resta in campo, +1 punto sinergia temporaneo per il match; badge "SG"
 
+## Iterazione 06/2026 · Campagna 50 wave + Vantaggi
+- Campagna (`game/campaign.js`): 5 atti (Raimon/Tokyo, Football Frontier, Alius risposta, Alius resa dei conti, FFI), mappa a nodi Pokelike per atto (3 corsie = location, bivi, rivali, anomalie temporali), boss W10/20/30/40/50 (W30 Fuoco/Ghiaccio da ramo), intro atto, dialogo boss con ritratti, conseguenze + sblocco versione (Jude Raimon, Byron, Gazelle/Torch, Xavier) con cambio versione sullo stesso slot, riepilogo percorso a fine run. STORY_LOCKS per versioni narrative.
+- Spirito Guerriero sbloccabile in anomalia (3 turni di energia, cut-in a schermo intero). Mixi Max come variante anomalia (passiva per ruolo donatore A/C/D/P, doppio ritratto). Forme nel Dex (Collezione).
+- Selezione titolari: griglia volti, chip filtri, dock con squadra.
+- Vantaggi (`game/perks.js`, PerksScreen, PerkOfferScreen): 9 categorie, rarità + livelli I-III, valuta Spirito di squadra (fine run), maledetti, fusioni, offerta a inizio run e dopo ogni boss, banner HUD al tocco.
+- Codice salvataggio copia/incolla (SaveCodeScreen).
+- Limite canon: solo Mark (Gran Majin) e Axel (Enma Gazard) hanno Spirito nel catalogo attuale; Dark Emperors e Gemini Storm (membri) non presenti nel catalogo.
+
 ## Backlog
-- P1: Mixi Max (donatore aura, passiva ereditata, doppio ritratto)
+- P1: Talenti (albero abilità, secondo giro meta-progressione)
+- P1: Armatura (Armed) dello Spirito Guerriero
+- P2: aggiungere personaggi GO (Tenma, Tsurugi, Shindou) con sprite per più Spiriti canon
 - P1: Torre delle Sfide (dopo prima run vinta, roster scoperto, record separato, sinergie x1.5)
 - P2: test salvataggio/refresh durante scelta ricompensa; playtest fino a wave 50
 - P2: ampliare lista Spiriti Guerrieri

@@ -70,7 +70,9 @@ export function runPerkFx(run) {
 export function perkOffer(meta, run, rng = Math.random, { start = false } = {}) {
   const active = new Set((run?.perks || []).map((p) => p.id));
   // A fusion and its own components never stack.
-  const blocked = new Set(PERKS.filter((p) => p.requires && (active.has(p.id) || p.requires.some((r) => active.has(r)))).flatMap((p) => [p.id, ...p.requires]));
+  const fusions = PERKS.filter((p) => p.requires);
+  const blocked = new Set([...fusions.filter((p) => p.requires.some((r) => active.has(r))).map((p) => p.id),
+    ...fusions.filter((p) => active.has(p.id)).flatMap((p) => p.requires)]);
   const owned = PERKS.filter((p) => perkLevel(meta, p.id) > 0 && !active.has(p.id) && !blocked.has(p.id) && (start || p.id !== "quaderno"));
   const shuffle = (a) => a.map((x) => [rng(), x]).sort((x, y) => x[0] - y[0]).map((x) => x[1]);
   const normal = shuffle(owned.filter((p) => p.cat !== "curse")).slice(0, 3).map((p) => p.id);

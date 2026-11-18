@@ -1,0 +1,20 @@
+{
+  "summary": "Frontend-only retest of the iteration_4 fixes (Playwright 400x860 on the preview URL + a temporary jest check of perkOffer/mixiPassive/normalizeMeta, since deleted). All 5 fixes PASS. (1) Mixi Max role passive: an attacker donor (Mark Kruger, role A, real W14 anomaly) shows '+10% ATK' in the anomaly intro, in reward-notice and in run.mixi.label. A goalkeeper donor (cameo injected as mark:base, role P) shows '+12% HP massimi' in the intro, the notice and the TeamScreen <uid>-mixi-info ('Mixi Max · aura di Mark Evans (+12% HP massimi)'). Unit check: torch A -> +10% ATK, nathan/jack D -> +10% DIF. (2) HP with Ray Dark I: stored team 253/373/290 (Jack has Mixi +12% HP too). In battle Nathan shows 215/215 (=253*0.85). After an undamaged win the stored HP is back to 253/373/290. A second battle (W15 -> W17) gives the same result, so there is no drain or stacking. (3) Importing the save code {v:1, meta:{teamSpirit:5}, run:null} gives no pageerror: the title renders, meta is normalized (unlocked/records/collection defaults) and the Perks screen shows a balance of 5. (4) perkOffer: with tiro active, inazumabreak is never offered (50 draws). With inazumabreak active, tiro and scatto are never offered. (5) The cursed offer card reads 'Patto di Ray Dark I / Maledetto' (once). The consequence swap hint reads 'Hai già Jude Sharp (Royal): puoi passare a questa versione...' with no extra parentheses. hud-perk-banner is position:absolute and the overworld-map y stays at 159 before and after opening it (overlay).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Perk offer (perks.js perkOffer blocked set)", "issues": ["Over-blocking side effect: when one fusion component is active (e.g. Tiro Potente), the blocked set also contains the other component (Scatto Bruciante), because flatMap adds all requires. A player with Tiro active is never offered Scatto, even though they stack legitimately and only the fusion should be excluded. Verified: with tiro active and scatto III unlocked, the offer was always [muro, vento] + raydark. Suggested change: block the fusion if any component is active, and block the components only if the fusion is active."]}
+    ]
+  },
+  "test_report_links": ["/app/tests/ui_helpers.md"],
+  "action_items": ["Optional/minor: in perkOffer only exclude the fusion when a component is active and the components when the fusion is active. Do not exclude sibling components of each other."],
+  "critical_code_review_comments": ["perks.js perkOffer: the blocked set is too wide (see design issue).", "BattleScreen settleHp converts battle HP back correctly with p.hp*clean.maxHp/p.maxHp and clamps to [1, clean.maxHp]. OK."],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100% (5/5 fixes verified)"},
+  "seed_data_creation": "None; only browser localStorage in fresh Playwright contexts.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Anomaly at W14 with contentSeed=1, path=[], completedWave=13, introSeen=2: node map-node-act2:14:0 -> map-enter (use force=True, the nodes pulse). After a reload with pending set, click next-wave-btn ('Riprendi la tappa'). To win reliably, set team base.atk/def and atk/def to 3000/5000, and set level 40 to avoid level-up masking HP. The starter version picker is dialog.ss-picker with choice-jude:royal. W10 boss flow: boss-intro-next repeatedly, then the battle, then consequence-screen. After a battle, reward-skip / recruit-skip-btn."
+}
