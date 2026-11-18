@@ -323,7 +323,7 @@ export const generateShop = (wave, random = Math.random) => {
 };
 
 // Miniboss: choice between two of {specific recruit, rare non-exclusive item, Warrior Spirit awakening}.
-const MINIBOSS_ITEMS = ["pallone", "fischietto", "talismano", "azzardo", "bibita"];
+const MINIBOSS_ITEMS = ["pallone", "fischietto", "talismano", "azzardo"];
 export function minibossOptions(run, enc, random = Math.random) {
   const boss = bossDef(null, enc.bossId);
   const owned = ownedCharacterIds(run.team);
@@ -397,7 +397,7 @@ export const normalizeRun = (run) => {
     ...(run.pending.player ? { player: withPlayerIdentity(run.pending.player) } : {}),
     ...(run.pending.context?.offer ? { context: { ...run.pending.context, offer: withPlayerIdentity(run.pending.context.offer) } } : {}),
   };
-  return { ...run, overworld: migrateOverworld(run), ...(run.pending ? { pending } : {}), scenarioState: normalizeScenarioState(run.scenarioState, run.wave), team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
+  return { ...run, perks: run.perks || [], overworld: migrateOverworld(run), ...(run.pending ? { pending } : {}), scenarioState: normalizeScenarioState(run.scenarioState, run.wave), team: run.team.map(withPlayerIdentity), saveVersion: 2, rulesetId, difficultyId: rules.difficultyId,
     rulesetVersion: run.rulesetVersion ?? rules.version,
     activeUid: resolveActiveUid(run.team, run.activeUid) };
 };

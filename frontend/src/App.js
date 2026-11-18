@@ -65,7 +65,7 @@ function App() {
   const onPickPerks = (ids) => {
     if (!isCurrentAction() || run.pending?.type !== "perk") return;
     let r = ids.reduce((acc, id) => addRunPerk(acc, meta, id), run);
-    const fx = runPerkFx({ perks: r.perks.filter((p) => ids.includes(p.id)) });
+    const fx = runPerkFx({ perks: (r.perks || []).filter((p) => ids.includes(p.id)) });
     if (run.pending.start && fx.startLevels) r = { ...r, team: r.team.map((p) => recalcStats({ ...p, level: p.level + fx.startLevels, hp: p.maxHp })).map((p) => ({ ...p, hp: p.maxHp })) };
     const context = run.pending.context;
     if (!context) { updateRun({ ...r, pending: null }); setScreen("hub"); return; }

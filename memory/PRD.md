@@ -36,7 +36,14 @@ Gioco mobile-first, misto Pokerogue x Pokelike, a tema Inazuma Eleven: lotta 1v1
 - Codice salvataggio copia/incolla (SaveCodeScreen).
 - Limite canon: solo Mark (Gran Majin) e Axel (Enma Gazard) hanno Spirito nel catalogo attuale; Dark Emperors e Gemini Storm (membri) non presenti nel catalogo.
 
+## Iterazione 06/2026 · Percorsi Pokelike, boss variabili, miniboss
+- Mappa: a ogni wave si resta in corsia o si passa a quella vicina (edgesFrom ±1); corsie con carattere/pool propri.
+- Boss W10/20/30/40 estratti col seed da `game/bossPools.js` (PHASE_POOLS, tag arc/difficulty per futura campagna 100 wave); W50 FISSA Little Gigant. W30 = due boss di ramo.
+- Miniboss W5/15/25/35/45 (tutte le corsie), premio a scelta tra due: reclutamento specifico, oggetto raro, risveglio Spirito. Boss: Medaglia del Checkpoint esclusiva.
+- Dataset canon v2: 78 giocatori con posizione verificata (`catalogCanonV2.js`, avatar pixel senza sprite DS). Squadre mancanti/ridotte: Kirkwood, Brainwashing, Wild, Dark Emperors, Gemini Storm (solo Jordan), Diamond Dust, The Kingdom, Red Matador; Genesis/Unicorn/Orpheus ridotte.
+
 ## Backlog
+- P1: sprite DS per i giocatori canon v2
 - P1: Talenti (albero abilità, secondo giro meta-progressione)
 - P1: Armatura (Armed) dello Spirito Guerriero
 - P2: aggiungere personaggi GO (Tenma, Tsurugi, Shindou) con sprite per più Spiriti canon

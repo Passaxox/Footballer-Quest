@@ -126,7 +126,6 @@ export function actMap(seed, act) {
   const rng = seededRandom(seed, `map:${act.id}`);
   const lanes = shuffle(act.lanes, rng).slice(0, 3);
   const rows = act.toWave - act.fromWave;
-  const junctions = new Set(shuffle([2, 3, 4, 5, 6, 7], rng).slice(0, 3));
   const rivalRows = lanes.map(() => 5 + Math.floor(rng() * 3));
   const MINI_ROW = 4;
   let anomaly = anomalyActs(seed).includes(act.index) ? { row: [1, 2, 3, 5, 6, 7][Math.floor(rng() * 6)], lane: Math.floor(rng() * 3) } : null;
@@ -152,7 +151,7 @@ export function actMap(seed, act) {
   const bosses = planned.map((b, i) => ({ b, i })).filter(({ i }) => bossLanes(i).length).map(({ b, i }, k, all) => ({ nodeId: `${act.id}:boss:${b.id}`, actId: act.id, wave: act.toWave, row: rows,
     lane: all.length === 1 ? 1 : k === 0 ? 0.5 : 1.5, type: "boss", bossId: b.id, laneName: b.team, locationId: lanes[bossLanes(i)[0]].scenarioId,
     environment: b.team, fromLanes: bossLanes(i), jitter: 0 }));
-  return { act, lanes, junctions: [...junctions], nodes: [...nodes, ...bosses] };
+  return { act, lanes, nodes: [...nodes, ...bosses] };
 }
 
 // Pokelike-style: every row you can stay on your lane or move to a neighbouring one.

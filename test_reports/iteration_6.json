@@ -1,0 +1,31 @@
+{
+  "summary": "Frontend-only test of the Pokelike lanes, seeded boss/miniboss pools, miniboss rewards, Medaglia del Checkpoint and the canon v2 roster. Tested with Playwright at 400x860 on the preview URL, plus a node check that ran runPlan/actMap/edgesFrom on 3000 seeds. Everything requested passes except one crash, found and fixed. The crash: tapping perk-offer-skip ('Nessun vantaggio') threw 'TypeError: Cannot read properties of undefined (reading filter)' in App.js onPickPerks whenever run.perks was undefined, which is the case for every fresh run. It happened both on the start-of-run offer and on the offer after the boss consequence, so a player who skipped the perk was stuck on the perk screen. I fixed it with (r.perks || []) and retested: both cases now pass. Verified: (1) act-intro-bosses shows 'Miniboss W5: X · Boss W10: Y'. W1 has 3 enabled nodes. After each node only the same and adjacent lanes are enabled at the next wave (W2 [1,2], W3 [0,1,2], W4 [1,2], W5 [0,1,2]). After a reload the enabled nodes, aria-labels and overworld.path are identical. (2) All 3 W5 nodes are type miniboss (ow-type-miniboss, aria-label shows the team name 'Occult'), and map-miniboss-team shows in the preview. After the win, miniboss-reward-screen shows exactly 2 options plus miniboss-skip, and the options are the same after a reload. Picking the recruit added Nata Juuzou (pixel avatar). The spirit pick set spiritUnlocked=true on Mark. The item pick added fischietto. reward-notice is correct in all 3 cases. The natural W15 offer was spirit + recruit Ares. (3) The W10 boss node showed the seeded team (Royal Academy, matching the intro), with boss-intro, battle and consequence-exclusive text. items.medaglia=1 and the notice reads 'Ricompensa esclusiva del boss: Medaglia del Checkpoint.' Using the medal in TeamScreen gave bonus +4/+4/+4/+12 and maxHp 361->373. (4) 5 new runs gave 2 distinct intros (4x Occult/Royal, 1x Royal/Occult). Seed check over 3000 seeds: W10 is ~50/50, W20 never equals W10, W30 always has 2 distinct branch bosses, W50 is always little-gigant, every miniboss row has 3 miniboss nodes, every non-final node has 2-3 edges and each act has 3 rivals. Across those seeds W40 drew all 8 pool teams with roughly equal frequency. (5) W30 shows 2 boss nodes (Prominence / Epsilon Kai). The W40 boss was Fire Dragon. W50 is 'Little Gigant' with Rococo Urupa + Maxi Kuu + Shinti Hanpa, and the second enemy, Ghoshu Flare, renders a procedural pixel avatar. Winning W50 goes to game-over-screen 'CAMPIONI!' with journey-log. (6) Regression: the rival node (act1 W6, Royal Academy, rival=true) leads to the reward screen. The perk offer appears after the boss consequence and the pick is saved. The anomaly (contentSeed=1, W13 act2:13:0) Mixi Max with Torch gives notice +10% ATK. Jest: 116 passed, 2 failed (same 2 unrelated failures as before).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "App.js onPickPerks", "issue": "FIXED BY TESTING AGENT: runPerkFx({perks: r.perks.filter(...)}) crashed when run.perks was undefined (newRun does not initialise perks). The trigger was perk-offer-skip, or confirm with zero picks, at run start or after the boss consequence. The perk screen stayed frozen and a runtime overlay appeared. Changed to (r.perks || []).", "selector": "[data-testid='perk-offer-skip']", "priority": "HIGH"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "BattleScreen log (dev only)", "issues": ["The boss/elite intro line appears twice in battle-log, for example 'Finale del FFI...' twice. This comes from the React StrictMode double-run of the intro useEffect. It only happens in dev, but it can be avoided with a ref guard."]}
+    ]
+  },
+  "test_report_links": ["/app/tests/ui_helpers.md"],
+  "action_items": [
+    "Initialise perks: [] in newRun/normalizeRun so other code paths that read run.perks without a guard cannot crash. App.js onPickPerks is already guarded.",
+    "Optional: MINIBOSS_ITEMS includes 'bibita' (UNCOMMON) although the spec says 'rare item'. Consider limiting the list to RARE/EPIC non-exclusive items.",
+    "Optional: guard against the double battle intro line under StrictMode."
+  ],
+  "critical_code_review_comments": [
+    "newRun() does not create run.perks. Every read must use (run.perks || []); onPickPerks was the one that did not.",
+    "runPlan: the W25 miniboss is always the act-3 team that is NOT a W30 branch boss, because both share the same 3-team pool. The W5 miniboss is the W10 team's opposite unless W20 used it. The W35 miniboss is alius-sel about 90% of the time. This is consistent with the 'avoid repeats' rule, but there is little variety.",
+    "In actMap the junctions set is computed but no longer used (dead code since the change to Pokelike edges).",
+    "Act 5 rival (Unicorn), W40 boss and W45 miniboss can all be Unicorn in the same run, because the rival pool is not considered in runPlan. Minor."
+  ],
+  "updated_files": ["/app/frontend/src/App.js"],
+  "success_rate": {"backend": "N/A", "frontend": "100% after the 1-line fix (all 6 requested feature groups verified)"},
+  "seed_data_creation": "None; only browser localStorage in fresh Playwright contexts.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Jump: edit inazuma_rogue_run wave=N, pending=null, overworld.completedWave=N-1, path=[], selectedNodeId=null, introSeen=act index, then reload and click continue-run-btn. Boost the team with level 40, base.atk/def and atk/def set to 3000/5000. The boss node testid is map-node-actX:boss:<bossId>, and miniboss nodes are row 4 (W5/15/25/35/45, testid map-node-actX:W:lane). The anomaly for contentSeed=1 is now at act2:13:0 (it was W14 before). The training node has training-team-xp. Unlock perks in a test with meta.perks={tiro:1,muro:1,vento:1}. The perk card testid is perk-offer-<id>. The miniboss-reward options can be injected through pending.options to test spirit/item picks."
+}
