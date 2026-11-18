@@ -4,7 +4,7 @@ import { STORY_LOCKS, bossDef, actForWave } from "./campaign";
 import { CHARACTERS, canRecruitPlayer, canonicalCharacterId, ownedCharacterIds, PRIMARY_MOVES, resolveVersion, withPlayerIdentity } from "./catalog";
 import { DEFAULT_RULESET, DIFFICULTIES, getRules, ENEMY_GUARDRAILS } from "./rules";
 import { ROSTER, ELEMENTS, BOSSES, ITEMS, REWARD_POOL, EVENTS, FINAL_WAVE, SHOP_POOL } from "./data";
-import { spiritFor } from "./spirits";
+import { spiritFor, spiritEligible } from "./spirits";
 
 export const rand = (a, b, random = Math.random) => a + Math.floor(random() * (b - a + 1));
 export const pick = (arr, random = Math.random) => arr[Math.floor(random() * arr.length)];
@@ -79,7 +79,7 @@ export const calcDamage = (att, def, move) => {
   const atk = att.atk * modMult(att.status.atkMod) * (att.status.spirit ? spiritFor(att)?.atkMult ?? 1 : 1);
   const dfn = def.def * modMult(def.status.defMod) * (def.status.spirit ? spiritFor(def)?.defMult ?? 1 : 1);
   const mult = effectiveTypeMultiplier(att, def, move);
-  const crit = chance(move.effect === "crit" ? 30 : 8);
+  const crit = chance((move.effect === "crit" ? 30 : 8) + (att.critBonus || 0));
   const stab = move.element === att.element ? 1.1 : 1;
   let dmg = (((2 * att.level) / 5 + 2) * move.power * atk / dfn) / 9 + 2;
   dmg *= mult * stab * (0.88 + Math.random() * 0.12) * (crit ? 1.5 : 1);
@@ -293,7 +293,8 @@ const specialNode = (run, node, random) => {
   if (node.type === "anomaly") {
     const owned = ownedCharacterIds(run.team);
     const cameo = pick(ANOMALY_CAMEOS.filter((id) => !owned.has(canonicalCharacterId(id))), random) || "byron";
-    return { type: "anomaly", cameo: createPlayer(cameo, levelFor(run, random, "challenge", 3), random) };
+    const variant = run.team.some(spiritEligible) && random() < 0.6 ? "spirit" : "mixi";
+    return { type: "anomaly", variant, cameo: createPlayer(cameo, levelFor(run, random, "challenge", 3), random) };
   }
   return null;
 };
@@ -426,10 +427,10 @@ export const mergeXpReports = (previous, next) => {
   return { source: next.source, rows };
 };
 
-export const grantCombatXp = (team, activeUid, defeatedLevel, boss = false, rulesetId) => {
+export const grantCombatXp = (team, activeUid, defeatedLevel, boss = false, rulesetId, xpMult = 1) => {
   const rules = getRules(rulesetId);
   // Round the full award first, then the bench share, including boss encounters.
-  const full = Math.round((18 + defeatedLevel * 6) * rules.combatXpMultiplier * (boss ? rules.bossXpMultiplier : 1));
+  const full = Math.round((18 + defeatedLevel * 6) * rules.combatXpMultiplier * (boss ? rules.bossXpMultiplier : 1) * xpMult);
   // Integer percentage avoids 45 * 0.7 becoming 31.499999999999996 in JS.
   const bench = Math.round(full * (rules.benchXpShare * 100) / 100);
   const updated = team.map((p) => p.hp === 0 ? p : gainXp(p, p.uid === activeUid ? full : bench).player);

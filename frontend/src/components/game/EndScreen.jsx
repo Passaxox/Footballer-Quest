@@ -6,7 +6,7 @@ import { JourneyLog } from "./StoryScreen";
 
 const backendUrl = () => (process.env.REACT_APP_BACKEND_URL || "").trim().replace(/\/$/, "");
 
-export default function EndScreen({ run, result, onHome, onRetry }) {
+export default function EndScreen({ run, result, spiritGained = 0, onHome, onRetry }) {
   const BACKEND = backendUrl();
   const [nick, setNick] = useState(localStorage.getItem("inazuma_rogue_nick") || "");
   const [sent, setSent] = useState(false);
@@ -39,6 +39,7 @@ export default function EndScreen({ run, result, onHome, onRetry }) {
         </Panel>
         <XpReport report={run.lastProgression?.report} />
         <Panel><JourneyLog run={run} /></Panel>
+        <div data-testid="end-spirit-gained" className="font-pixel text-[10px] text-amber-300 border-2 border-amber-600 p-2">+{spiritGained} Spirito di squadra · spendilo in Vantaggi</div>
         <div className="font-pixel text-[9px] text-slate-300 uppercase" data-testid="end-finalists-title">{result === "win" ? "Giocatori arrivati in finale" : "La vostra squadra"}</div>
         <div className="space-y-2">{run.team.map((p, i) => <PlayerCard key={p.uid} p={p} compact testId={`end-player-${i}`} />)}</div>
         <Panel className="space-y-2">

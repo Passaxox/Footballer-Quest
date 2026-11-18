@@ -4,6 +4,8 @@ import { ITEMS, WILD_INTROS, ELEMENTS } from "@/game/data";
 import { performAttack, applyBurn, turnOrder, resetBattleStatus, settleCombatProgression, grantCombatXp, mergeXpReports, finishCombatReport, applyItemTo, removeItem, pick, chance, resolveActiveUid, xpProgress, recalcStats } from "@/game/engine";
 import { computeTeamSynergies, applySynergyBuffs, isTowerRuleset } from "@/game/traits";
 import { canSummonSpirit, summonSpirit, spiritFor, spiritTeamId, tickSpirit } from "@/game/spirits";
+import { runPerkFx, applyPerkBuffs } from "@/game/perks";
+import { applyMixiBuffs } from "@/game/mixi";
 import { sfx } from "@/game/audio";
 import { Btn, HpBar, Avatar, ElementBadge, ElementIcon, PlayerCard, ItemTargetCard, MatchupBadge, MoveInfo, XpBar } from "./ui";
 
@@ -47,14 +49,15 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   const pace = useBattlePace(manualMoment);
   const s = useRef(null);
   if (!s.current) {
-    const synergies = computeTeamSynergies(run.team, { duringMatch: true, towerMode: isTowerRuleset(run.rulesetId) });
+    const perkFx = runPerkFx(run);
+    const synergies = computeTeamSynergies(run.team, { duringMatch: true, towerMode: isTowerRuleset(run.rulesetId), extraPoints: perkFx.synergyPoints || 0 });
     const activeSynergies = synergies.filter((syn) => syn.tier > 0);
     const baseTeam = resetBattleStatus(run.team);
     const baseEnemies = encounter.enemies.map((e) => ({ ...e }));
     const buffed = applySynergyBuffs(baseTeam, baseEnemies, activeSynergies);
     s.current = {
-      initialTeam: run.team.map((p) => ({ ...p })),
-      team: buffed.team,
+      initialTeam: run.team.map((p) => ({ ...p })), perkFx,
+      team: applyMixiBuffs(applyPerkBuffs(buffed.team, perkFx)),
       items: { ...run.items },
       active: run.team.findIndex((p) => p.uid === resolveActiveUid(run.team, run.activeUid)),
       enemies: buffed.enemies,
@@ -141,7 +144,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
   };
 
   const grantXp = (defeated) => {
-    const result = grantCombatXp(st.team, active()?.uid, defeated.level, encounter.kind === "boss", run.rulesetId);
+    const result = grantCombatXp(st.team, active()?.uid, defeated.level, encounter.kind === "boss", run.rulesetId, Math.max(0, 1 + (st.perkFx.xpPct || 0) / 100));
     st.team = result.team;
     st.xpReport = mergeXpReports(st.xpReport, result.report);
     if (result.report.rows.some((row) => row.after.level > row.before.level)) sfx.levelup();
@@ -217,9 +220,12 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     const teamId = spiritTeamId(user);
     setActive(summonSpirit(user));
     sfx.fusion();
-    if (!await say(`${user.name} evoca lo Spirito Guerriero ${spirit.name}!`, 1200, true)) return;
+    st.cutin = { name: spirit.name, color: spirit.color, owner: user.name, desc: spirit.desc }; rr();
+    const shown = await say(`${user.name} evoca lo Spirito Guerriero ${spirit.name}!`, 1600, true);
+    st.cutin = null; rr();
+    if (!shown) return;
     if (teamId) {
-      const opts = { duringMatch: true, towerMode: isTowerRuleset(run.rulesetId) };
+      const opts = { duringMatch: true, towerMode: isTowerRuleset(run.rulesetId), extraPoints: st.perkFx.synergyPoints || 0 };
       const before = st.synergies.find((x) => x.teamId === teamId);
       const synergies = computeTeamSynergies(st.team.map((q) => q.uid === user.uid ? { ...q, spiritTeamId: teamId } : q), opts);
       const after = synergies.find((x) => x.teamId === teamId);
@@ -307,6 +313,9 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
 
   return (
     <div data-testid="battle-screen" className="battle-milestone flex flex-col flex-1" style={{ "--battle-speed": st.important || pace.state.blocked ? 1 : pace.state.speed }}>
+      {st.cutin && <div data-testid="spirit-cutin" className="spirit-cutin" style={{ "--spirit-color": st.cutin.color }} aria-live="assertive">
+        <div className="spirit-cutin-rays" /><div className="spirit-cutin-text"><small>{st.cutin.owner} evoca</small><strong>{st.cutin.name}</strong><span>{st.cutin.desc}</span></div>
+      </div>}
       <div className="flex items-center justify-between px-3 py-2 bg-[#111827] border-b-4 border-slate-800">
         <span data-testid="wave-counter-badge" className="font-pixel text-[9px] text-amber-300">ONDATA {run.wave}</span>
         <span className="font-pixel text-[8px] text-slate-400 uppercase truncate mx-2">{encounter.kind === "boss" ? `BOSS: ${encounter.teamName}` : encounter.elite ? `ELITE: ${encounter.teamName}` : encounter.teamName || "Sfida"}</span>
@@ -385,7 +394,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
             </Btn>
             {spiritFor(p) && (
               <Btn data-testid="spirit-button" variant="fusion" className={`col-span-2 ${p.status.spirit ? "!opacity-100 !text-amber-200 !bg-amber-900/60 !border-amber-500" : ""}`} disabled={!canSummonSpirit(p, st.spiritUsed) || st.phase !== "menu"} onClick={summon}>
-                {p.status.spirit ? `Spirito attivo: ${spiritFor(p).name} (${p.status.spiritTurns} turni)` : st.spiritUsed ? "Spirito Guerriero già usato" : !p.spiritUnlocked ? `${spiritFor(p).name} · da sbloccare in un'anomalia` : `Spirito Guerriero: ${spiritFor(p).name} (${3} turni)`}
+                {p.status.spirit ? `Spirito attivo: ${spiritFor(p).name} (${p.status.spiritTurns} ${p.status.spiritTurns === 1 ? "turno" : "turni"})` : st.spiritUsed ? "Spirito Guerriero già usato" : !p.spiritUnlocked ? `${spiritFor(p).name} · da sbloccare in un'anomalia` : `Spirito Guerriero: ${spiritFor(p).name} (${3} turni)`}
               </Btn>
             )}
             <Btn data-testid="switch-button" onClick={() => { pace.stop(); sfx.select(); st.menu = "switch"; rr(); }}>Cambia</Btn>

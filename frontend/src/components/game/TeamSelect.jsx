@@ -95,33 +95,40 @@ export default function TeamSelect({ meta, onStart, onBack }) {
   };
   return <div className="ss-screen" data-testid="team-selection-screen">
     <header className="ss-heading"><div><span className="ss-eyebrow">LA TUA SQUADRA, IL TUO VIAGGIO</span><h1>Scegli i titolari</h1></div><button data-testid="select-back-btn" onClick={onBack}>Menu</button></header>
-    <div className="ss-controls">
-      <label className="ss-search">Cerca nel roster<input aria-label="Cerca personaggio o squadra" placeholder="Nome, alias o squadra…" value={filters.search} onChange={e => setFilters(f => ({ ...f, search: e.target.value }))} /></label>
-      <div className="ss-filters">
-        {[["team", "Squadra"], ["role", "Ruolo"], ["element", "Elemento"]].map(([key, label]) => <div className="ss-filter" key={key}><span>{label}</span><button aria-label={label} aria-haspopup="dialog" onClick={() => setPicker({ title: label, options: filterOptions[key], value: filters[key], onChoose: id => { setFilters(f => ({ ...f, [key]: id })); setPicker(null); } })}>{filterOptions[key].find(o => o.id === filters[key])?.label} ▾</button></div>)}
-      </div>
-      <div className="ss-count" aria-live="polite">{visible.length} personaggi disponibili <button onClick={() => setFilters({ search: "", team: "", role: "", element: "" })}>Azzera filtri</button></div>
+    <div className="ss-controls ss-chips" data-testid="starter-filters">
+      <input className="ss-chip-search" aria-label="Cerca personaggio o squadra" placeholder="Cerca…" value={filters.search} onChange={e => setFilters(f => ({ ...f, search: e.target.value }))} />
+      {[["team", "Squadra"], ["role", "Ruolo"], ["element", "Elemento"]].map(([key, label]) => <button key={key} className="ss-chip" data-active={!!filters[key]} aria-label={label} aria-haspopup="dialog"
+        onClick={() => setPicker({ title: label, options: filterOptions[key], value: filters[key], onChoose: id => { setFilters(f => ({ ...f, [key]: id })); setPicker(null); } })}>
+        {filters[key] ? filterOptions[key].find(o => o.id === filters[key])?.label : label} ▾</button>)}
+      {(filters.search || filters.team || filters.role || filters.element) && <button className="ss-chip ss-chip-reset" data-testid="filters-reset" onClick={() => setFilters({ search: "", team: "", role: "", element: "" })}>✕</button>}
+      <span className="ss-count" aria-live="polite">{visible.length} giocatori · tocca un volto per le versioni</span>
     </div>
     <div className="ss-roster" aria-label="Roster personaggi">
-      <div className="ss-grid">{visible.map(g => {
+      <div className="ss-faces">{visible.map(g => {
         const v = displayVersion(g), chosen = selectedFor(g.characterId);
-        return <div className="ss-tile" key={g.characterId} data-selected={!!chosen}><button className="ss-tile-body" data-testid={`starter-${g.characterId}`} aria-label={`${g.name}, ${starterVersionName(v)}${chosen ? ", titolare" : ""}`} aria-pressed={!!chosen} onClick={() => inspect(g)}>
-          <span className="ss-tile-top"><Avatar p={portrait(v)} size={48} /></span>
-          <strong>{g.name}</strong><span>{ELEMENTS[v.element].label} · {ROLES[v.role]}</span><span className="ss-team">{v.primaryTeamId ? starterTeamName(v) : "Base"}</span>
-          {g.versions.length > 1 && <span className="ss-version-count">{g.versions.length} versioni</span>}
-        </button><button className="ss-add" data-testid={`add-${g.characterId}`} aria-label={`${chosen ? "Conferma" : "Aggiungi"} ${g.name}`} aria-pressed={!!chosen} onClick={e => { e.stopPropagation(); directAdd(g); }}>{chosen ? "✓" : "+"}</button></div>;
+        return <div className="ss-face" key={g.characterId} data-selected={!!chosen}>
+          <button className="ss-face-body" data-testid={`starter-${g.characterId}`} aria-label={`${g.name}, ${starterVersionName(v)}${chosen ? ", titolare" : ""}`} aria-pressed={!!chosen} onClick={() => inspect(g)}>
+            <Avatar p={portrait(v)} size={58} />
+            <strong>{g.name}</strong>
+            {g.versions.length > 1 && <span className="ss-face-versions">{g.versions.length}</span>}
+          </button>
+          <button className="ss-face-add" data-testid={`add-${g.characterId}`} aria-label={`${chosen ? "Conferma" : "Aggiungi"} ${g.name}`} aria-pressed={!!chosen} onClick={e => { e.stopPropagation(); directAdd(g); }}>{chosen ? "✓" : "+"}</button>
+        </div>;
       })}</div>
       {!visible.length && <p className="ss-empty">Nessun titolare con questi filtri. Prova un'altra ricerca.</p>}
     </div>
-    <footer className="ss-footer">
+    <footer className="ss-footer ss-dock">
       {notice && <p role="status" className="ss-notice">{notice}</p>}
-      <div className="ss-summary-title"><strong>TITOLARI · {selected.length}/3</strong><span>Tocca per cambiare</span></div>
-      <div className="ss-summary">{[0, 1, 2].map(i => {
+      <div className="ss-dock-slots">{[0, 1, 2].map(i => {
         const v = resolveVersion(selected[i]); const g = v && groups.find(g => g.characterId === canonicalCharacterId(v));
-        return v ? <button key={i} data-testid={`starter-slot-${i}`} aria-label={`Modifica ${g.name}`} onClick={() => inspect(g, v)}><Avatar p={portrait(v)} size={32} /><span><strong>{g.name}</strong><small>{starterVersionName(v)}</small></span></button> : <div key={i} className="ss-slot-empty">{i + 1}<span>Da scegliere</span></div>;
+        return v ? <button key={i} data-testid={`starter-slot-${i}`} aria-label={`Modifica ${g.name}`} onClick={() => inspect(g, v)}><Avatar p={portrait(v)} size={34} /><span><strong>{g.name}</strong><small>{v.primaryTeamId ? starterTeamName(v) : "Base"}</small></span></button>
+          : <div key={i} className="ss-slot-empty">{i + 1}</div>;
       })}</div>
-      <div className="ss-launch"><fieldset><legend>Difficoltà</legend>{Object.entries(DIFFICULTIES).map(([id, d]) => <label key={id} title={d.description}><input data-testid={`difficulty-${id}`} type="radio" name="difficulty" checked={difficultyId === id} onChange={() => setDifficultyId(id)} />{d.label}</label>)}</fieldset>
-        <button className="ss-action" data-testid="start-run-btn" disabled={selected.length !== 3} onClick={() => { sfx.win(); onStart(selected, difficultyId); }}>Inizia · {DIFFICULTIES[difficultyId].label}</button></div>
+      <div className="ss-dock-launch">
+        <div className="ss-segment" role="radiogroup" aria-label="Difficoltà">{Object.entries(DIFFICULTIES).map(([id, d]) => <label key={id} title={d.description} data-on={difficultyId === id}>
+          <input data-testid={`difficulty-${id}`} type="radio" name="difficulty" checked={difficultyId === id} onChange={() => setDifficultyId(id)} />{d.label}</label>)}</div>
+        <button className="ss-action" data-testid="start-run-btn" disabled={selected.length !== 3} onClick={() => { sfx.win(); onStart(selected, difficultyId); }}>Inizia · {DIFFICULTIES[difficultyId].label}{selected.length !== 3 ? ` (${selected.length}/3)` : ""}</button>
+      </div>
     </footer>
     {group && <StarterInspector group={group} version={version} selected={selectedFor(open)} full={selected.length === 3} onVersion={switchVersion} onSelect={confirm} onClose={() => setOpen(null)} />}
     {picker && <ChoicePanel {...picker} onClose={() => setPicker(null)} />}

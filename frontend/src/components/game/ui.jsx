@@ -178,12 +178,17 @@ export const PlayerCard = ({ p, onClick, selected = false, testId, compact = fal
       onClick={onClick}
       className={`flex items-center gap-2 bg-[#141c2e] border-2 ${selected ? "border-amber-400" : "border-slate-700"} ${onClick ? "cursor-pointer active:translate-y-[2px]" : ""} p-2 ${ko && !highlightTarget ? "opacity-60" : ""}`}
     >
-      <Avatar p={p} size={compact ? 40 : 52} ko={ko && !highlightTarget} />
+      <div className="relative shrink-0">
+        <Avatar p={p} size={compact ? 40 : 52} ko={ko && !highlightTarget} />
+        {p.mixi && <span className="absolute -right-2 -bottom-2 rounded-full border-2 border-cyan-300 overflow-hidden bg-slate-900" data-testid={`${testId || "player"}-mixi-donor`}>
+          <Avatar p={{ versionId: p.mixi.donorVersionId, element: p.mixi.donorElement, uid: p.mixi.donorVersionId, name: p.mixi.donorName, baseId: p.mixi.donorVersionId }} size={22} /></span>}
+      </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-1">
           <span className="font-pixel text-[9px] text-white break-words">{p.name}{p.fused && <span className="text-pink-400"> ✦</span>}{spiritFor(p) && p.spiritUnlocked && <span data-testid={`${testId || "player"}-spirit-badge`} title={`Spirito Guerriero: ${spiritFor(p).name}`} className="ml-1 text-[7px] px-1 border border-amber-400 text-amber-300">SG</span>}</span>
           <span className="font-pixel text-[8px] text-amber-300 shrink-0">Lv{p.level}</span>
         </div>
+        {p.mixi && <div data-testid={`${testId || "player"}-mixi-info`} className="font-body text-sm text-cyan-300 leading-tight">Mixi Max · aura di {p.mixi.donorName} ({p.mixi.label})</div>}
         <div className="flex items-center gap-1 mt-1">
           <ElementBadge element={p.element} />
           <span className="font-body text-slate-400 text-sm leading-none">{ROLES[p.role]}</span>

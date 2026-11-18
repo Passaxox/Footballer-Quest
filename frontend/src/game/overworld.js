@@ -39,10 +39,10 @@ export function completeOverworldNode(run) {
   if (!hasOverworld(run)) return run;
   const ow = run.overworld;
   // Legacy pending content (pre-campaign saves) has no tile: advance without a path entry.
-  if (!ow.selectedNodeId && ow.completedWave === run.wave - 1) return { ...run, overworld: { ...ow, completedWave: run.wave } };
+  if (!ow.selectedNodeId) return { ...run, overworld: { ...ow, completedWave: run.wave } };
   const node = findNode(ow.contentSeed, ow.selectedNodeId);
   if (!node || node.wave !== run.wave || ow.completedWave !== run.wave - 1) throw new Error("Tappa della mappa non valida.");
-  const entry = { wave: node.wave, actId: node.actId, type: node.type, lane: node.laneName };
+  const entry = { wave: node.wave, actId: node.actId, type: node.type, lane: node.laneName, ...(run.pending?.skipped ? { skipped: true } : {}) };
   return { ...run, overworld: { ...ow, completedWave: run.wave, selectedNodeId: null, path: [...ow.path, node.nodeId], journey: [...ow.journey, entry] } };
 }
 

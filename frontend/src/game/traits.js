@@ -114,8 +114,11 @@ const describe = (meta, value) => {
 };
 
 // Returns array of active synergies (with points, tier, description), sorted by tier desc.
-export const computeTeamSynergies = (team = [], { duringMatch = false, towerMode = false } = {}) => {
+export const computeTeamSynergies = (team = [], { duringMatch = false, towerMode = false, extraPoints = 0 } = {}) => {
   const points = computeSynergyPoints(team, { duringMatch });
+  // Perk "Spirito di Gruppo": bonus points to the most represented team.
+  const top = Object.entries(points).filter(([id]) => TEAM_TRAIT_META[id]).sort((a, b) => b[1] - a[1])[0];
+  if (extraPoints > 0 && top) points[top[0]] += extraPoints;
   const out = [];
   for (const [teamId, pts] of Object.entries(points)) {
     if (!TEAM_TRAIT_META[teamId]) continue;

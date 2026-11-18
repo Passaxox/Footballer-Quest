@@ -126,7 +126,8 @@ export function actMap(seed, act) {
   const rows = act.toWave - act.fromWave;
   const junctions = new Set(shuffle([2, 3, 4, 5, 6, 7], rng).slice(0, 3));
   const rivalRows = lanes.map(() => 4 + Math.floor(rng() * 4));
-  const anomaly = anomalyActs(seed).includes(act.index) ? { row: 2 + Math.floor(rng() * 5), lane: Math.floor(rng() * 3) } : null;
+  let anomaly = anomalyActs(seed).includes(act.index) ? { row: 2 + Math.floor(rng() * 5), lane: Math.floor(rng() * 3) } : null;
+  if (anomaly && act.rival && anomaly.row === rivalRows[anomaly.lane]) anomaly = { ...anomaly, row: anomaly.row - 1 };
   const nodes = [];
   lanes.forEach((lane, li) => {
     let prev = null;
@@ -134,7 +135,7 @@ export function actMap(seed, act) {
       const wave = act.fromWave + r;
       let type = r === 0 ? "battle" : r === rows - 1 ? (rng() < 0.5 ? "training" : "shop") : weightedPick(lane.weights, rng, prev === "battle" ? null : prev);
       if (act.rival && r === rivalRows[li]) type = "rival";
-      if (anomaly && anomaly.row === r && anomaly.lane === li && type !== "rival") type = "anomaly";
+      if (anomaly && anomaly.row === r && anomaly.lane === li) type = "anomaly";
       prev = type;
       nodes.push({ nodeId: `${act.id}:${wave}:${li}`, actId: act.id, wave, row: r, lane: li, type, laneId: lane.id, laneName: lane.name,
         locationId: lane.scenarioId, environment: lane.env, jitter: Math.round((rng() - 0.5) * 10) });

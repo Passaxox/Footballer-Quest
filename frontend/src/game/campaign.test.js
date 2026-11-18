@@ -48,3 +48,10 @@ test("act 3 branch decides the Alius checkpoint, act 1 always has the Royal riva
 test("random picks across lanes also complete 50 waves", () => {
   expect(playThrough(SEEDS[1], (n, w) => (w * 7) % n)).toHaveLength(50);
 });
+
+test("acts 2-4 always contain at least one anomaly", () => {
+  for (let seed = 0; seed < 600; seed++) {
+    const count = ACTS.slice(1, 4).reduce((n, act) => n + actMap(seed, act).nodes.filter((x) => x.type === "anomaly").length, 0);
+    expect(count).toBeGreaterThan(0);
+  }
+});

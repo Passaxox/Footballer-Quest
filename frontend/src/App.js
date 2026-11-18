@@ -4,6 +4,11 @@ import { useCallback, useRef, useState } from "react";
 import { hasOverworld, completeOverworldNode } from "@/game/overworld";
 import { unlockStarter } from "@/game/collection";
 import { spiritFor } from "@/game/spirits";
+import { applyMixi } from "@/game/mixi";
+import { perkOffer, addRunPerk, runPerkFx, runSpiritReward } from "@/game/perks";
+import PerkOfferScreen from "@/components/game/PerkOfferScreen";
+import PerksScreen from "@/components/game/PerksScreen";
+import SaveCodeScreen from "@/components/game/SaveCodeScreen";
 import { BossIntro, Consequence, Anomaly } from "@/components/game/StoryScreen";
 import { beginOverworldNode } from "@/game/engine";
 import "@/App.css";
@@ -48,9 +53,23 @@ function App() {
   }, []);
 
   const startRun = (ids, difficultyId) => {
-    updateRun(newRun(ids, difficultyId));
+    const offer = perkOffer(meta, null, Math.random, { start: true });
+    const fresh = newRun(ids, difficultyId);
+    const r = updateRun(offer.normal.length || offer.cursed ? { ...fresh, pending: { type: "perk", offer, start: true, context: null } } : fresh);
     updateMeta(ids.reduce((nextMeta, id) => recruitVersion(nextMeta, id), meta));
-    setScreen("hub");
+    if (r.pending) gotoPending(r); else setScreen("hub");
+  };
+
+  // Perk pick (run start or after a checkpoint); then the stored reward context, if any.
+  const onPickPerks = (ids) => {
+    if (!isCurrentAction() || run.pending?.type !== "perk") return;
+    let r = ids.reduce((acc, id) => addRunPerk(acc, meta, id), run);
+    const fx = runPerkFx({ perks: r.perks.filter((p) => ids.includes(p.id)) });
+    if (run.pending.start && fx.startLevels) r = { ...r, team: r.team.map((p) => recalcStats({ ...p, level: p.level + fx.startLevels, hp: p.maxHp })).map((p) => ({ ...p, hp: p.maxHp })) };
+    const context = run.pending.context;
+    if (!context) { updateRun({ ...r, pending: null }); setScreen("hub"); return; }
+    updateRun({ ...r, pending: { type: "reward", context } });
+    setCtx(context); setScreen("reward");
   };
 
   const gotoPending = (r) => {
@@ -60,6 +79,7 @@ function App() {
       setScreen(p.kind === "boss" && p.introSeen === false ? "boss-intro" : "battle");
     }
     else if (p.type === "consequence") { setCtx(p.context); setScreen("consequence"); }
+    else if (p.type === "perk") setScreen("perk");
     else if (p.type === "recruit") { setCtx({ mode: "encounter", offer: p.player, price: p.price, after: "advance", ...p.context }); setScreen("recruit"); }
     else if (p.type === "reward") { setCtx(p.context); setScreen("reward"); }
     else setScreen(p.type);
@@ -84,16 +104,18 @@ function App() {
   };
 
   const finishRun = (r, result) => {
-    updateMeta(recordFinishedRun(meta, r, result));
+    const spiritGained = runSpiritReward(r, result);
+    const recorded = recordFinishedRun(meta, r, result);
+    updateMeta({ ...recorded, teamSpirit: (recorded.teamSpirit || 0) + spiritGained });
     clearRun(); runRef.current = null; setRun(null);
-    setCtx({ result, finalRun: r });
+    setCtx({ result, finalRun: r, spiritGained });
     setScreen("end");
   };
 
   const advanceWave = (r, nonCombat = false) => {
     if (!isCurrentAction()) return;
     if (nonCombat) r = completeNonCombatNode(r);
-    if (r.wave >= FINAL_WAVE) { finishRun(r, "win"); return; }
+    if (r.wave >= FINAL_WAVE) { finishRun(completeOverworldNode(r), "win"); return; }
     updateRun({ ...completeOverworldNode(r), wave: r.wave + 1, pending: null });
     setScreen("hub");
   };
@@ -103,10 +125,12 @@ function App() {
     const xpReport = mergeXpReports(run.pending.progression?.report, combatReport);
     const enc = run.pending;
     const boss = enc.kind === "boss";
-    const gain = (20 + run.wave * 3) * (boss ? 3 : enc.kind === "team" ? 1.6 : 1);
+    const fx = runPerkFx(run);
+    const gain = Math.max(0, (20 + run.wave * 3) * (boss ? 3 : enc.kind === "team" ? 1.6 : 1) * (1 + (fx.moneyPct || 0) / 100));
+    if (fx.healPct && !boss) team = team.map((p) => (p.hp > 0 ? { ...p, hp: Math.min(p.maxHp, p.hp + Math.round(p.maxHp * fx.healPct / 100)) } : p));
     let r = { ...run, lastProgression: { wave: run.wave, report: xpReport }, activeUid, team: boss ? team.map((p) => ({ ...p, hp: p.maxHp })) : team, items, money: run.money + Math.round(gain), stats: { ...run.stats, wins: run.stats.wins + 1, ...(boss ? { lastBossDefeated: enc.teamName } : {}) } };
     // Final victory keeps earned growth/money, but has no next-node item phase.
-    if (r.wave >= FINAL_WAVE) { finishRun(r, "win"); return; }
+    if (r.wave >= FINAL_WAVE) { finishRun(completeOverworldNode(r), "win"); return; }
     const rewards = generateRewards(r);
     const base = { rewards, bonus: enc.rewardItem, money: Math.round(gain), xpReport };
     if (boss && enc.actId) {
@@ -115,9 +139,17 @@ function App() {
     }
     if (enc.kind === "anomaly") {
       const target = r.team.find((p) => p.uid === enc.spiritUid && spiritFor(p));
+      const receiver = enc.variant === "mixi" && r.team.find((p) => p.uid === enc.mixiUid && !p.mixi);
       let notice = "Lo squarcio si richiude. Avete ottenuto un premio raro.";
-      let bonus = enc.spiritUid ? null : "pallone";
-      if (target) {
+      let bonus = enc.spiritUid || receiver ? null : "pallone";
+      if (receiver) {
+        r = { ...r, team: r.team.map((p) => (p.uid === receiver.uid ? applyMixi(p, enc.cameo) : p)) };
+        const mixed = r.team.find((p) => p.uid === receiver.uid);
+        notice = `Mixi Max riuscito: ${receiver.name} riceve l'aura di ${enc.cameo.name} (${mixed.mixi.label})!`;
+        const forms = meta.forms || [];
+        const formId = `${receiver.characterId || receiver.baseId}:mixi:${enc.cameo.characterId || enc.cameo.baseId}`;
+        if (!forms.some((f) => f.formId === formId)) updateMeta({ ...meta, forms: [...forms, { formId, kind: "mixi", name: `${receiver.name} × ${enc.cameo.name}`, owner: receiver.name }] });
+      } else if (target) {
         r = { ...r, team: r.team.map((p) => (p.uid === target.uid ? { ...p, spiritUnlocked: true } : p)) };
         notice = `Spirito Guerriero sbloccato: ${target.name} può evocare ${spiritFor(target).name} in partita!`;
         const forms = meta.forms || [];
@@ -129,7 +161,7 @@ function App() {
       setCtx(context); setScreen("reward"); return;
     }
     const epsilonOffer = epsilonRecruitOffer(enc, r.team);
-    if (epsilonOffer || (enc.kind === "wild" && canRecruitPlayer(r.team, enc.enemies[0]) && (r.fischietto || enc.forceRecruit || chance(40)))) {
+    if (epsilonOffer || (enc.kind === "wild" && canRecruitPlayer(r.team, enc.enemies[0]) && (r.fischietto || enc.forceRecruit || chance(40 + (fx.recruitBonus || 0))))) {
       const e = epsilonOffer || enc.enemies[0];
       const fresh = { ...createPlayer(e.versionId || e.baseId, e.level), uid: e.uid };
       r = { ...r, fischietto: epsilonOffer ? r.fischietto : false };
@@ -242,14 +274,17 @@ function App() {
       updateMeta(recruitVersion(unlockStarter(meta, unlockId), unlockId));
     }
     const context = run.pending.context;
+    const perkChoices = perkOffer(meta, r);
+    if (perkChoices.normal.length || perkChoices.cursed) { const next = updateRun({ ...r, pending: { type: "perk", offer: perkChoices, context } }); gotoPending(next); return; }
     updateRun({ ...r, pending: { type: "reward", context } });
     setCtx(context); setScreen("reward");
   };
 
-  const acceptAnomaly = (spiritUid) => {
+  const acceptAnomaly = (uid) => {
     if (!isCurrentAction() || run.pending?.type !== "anomaly") return;
     const cameo = run.pending.cameo;
-    gotoPending(updateRun({ ...run, pending: { ...run.pending, type: "battle", kind: "anomaly", elite: true, spiritUid, teamName: "Anomalia temporale",
+    const target = run.pending.variant === "mixi" ? { mixiUid: uid } : { spiritUid: uid };
+    gotoPending(updateRun({ ...run, pending: { ...run.pending, type: "battle", kind: "anomaly", elite: true, ...target, teamName: "Anomalia temporale",
       intro: `Il tempo si piega: ${cameo.name} esce dallo squarcio e vi sfida!`, enemies: [cameo] } }));
   };
 
@@ -257,10 +292,13 @@ function App() {
 
   const render = () => {
     switch (screen) {
-      case "title": return <TitleScreen hasRun={!!run} meta={meta} onNew={() => { if (!run || window.confirm("Esiste una run in corso. Iniziando una nuova run perderai quei progressi. Continuare?")) setScreen("select"); }} onContinue={() => setScreen("hub")} onRecords={() => setScreen("records")} onCollection={() => setScreen("collection")} onToggleSound={toggleSound} />;
+      case "title": return <TitleScreen hasRun={!!run} meta={meta} onNew={() => { if (!run || window.confirm("Esiste una run in corso. Iniziando una nuova run perderai quei progressi. Continuare?")) setScreen("select"); }} onContinue={() => setScreen("hub")} onRecords={() => setScreen("records")} onCollection={() => setScreen("collection")} onPerks={() => setScreen("perks")} onSaveCode={() => setScreen("savecode")} onToggleSound={toggleSound} />;
       case "select": return <TeamSelect meta={meta} onStart={startRun} onBack={() => setScreen("title")} />;
       case "records": return <RecordsScreen meta={meta} onBack={() => setScreen("title")} />;
       case "collection": return <CollectionScreen meta={meta} onBack={() => setScreen("title")} />;
+      case "perks": return <PerksScreen meta={meta} onUpdate={updateMeta} onBack={() => setScreen("title")} />;
+      case "savecode": return <SaveCodeScreen meta={meta} run={run} onImport={(data) => { updateMeta(data.meta); if (data.run) updateRun(normalizeRun(data.run)); else { clearRun(); runRef.current = null; setRun(null); } setScreen("title"); }} onBack={() => setScreen("title")} />;
+      case "perk": return <PerkOfferScreen key={run.wave} run={run} meta={meta} offer={run.pending.offer} onPick={onPickPerks} />;
       case "hub": return <HubScreen run={run} onSelectNode={selectNode} onPause={() => { saveRun(run); setCtx({}); setScreen("title"); }} onNext={next} onTeam={() => setScreen("team")} onIntroSeen={(i) => updateRun({ ...run, overworld: { ...run.overworld, introSeen: i } })} onAbandon={() => { if (window.confirm("Abbandonare la run? Il progresso andrà perso.")) finishRun(run, "lose"); }} />;
       case "team": return <TeamScreen run={run} onUpdate={(patch) => updateRun({ ...run, ...patch })} onFusion={() => setScreen("fusion")} onBack={() => setScreen("hub")} />;
       case "fusion": return <FusionScreen run={run} onFuse={onFuse} onBack={() => setScreen("team")} />;
@@ -268,7 +306,7 @@ function App() {
       case "reward": return <RewardScreen rewards={ctx.rewards} bonus={ctx.bonus} money={ctx.money} xpReport={ctx.xpReport} notice={ctx.notice} onPick={onPickReward} />;
       case "boss-intro": return <BossIntro run={run} encounter={run.pending} onStart={() => { const r = updateRun({ ...run, pending: { ...run.pending, introSeen: true } }); gotoPending(r); }} />;
       case "consequence": return <Consequence key={run.wave} run={run} pending={run.pending} onResolve={onConsequence} />;
-      case "anomaly": return <Anomaly key={run.wave} run={run} pending={run.pending} onAccept={acceptAnomaly} onLeave={() => advanceWave(run, true)} />;
+      case "anomaly": return <Anomaly key={run.wave} run={run} pending={run.pending} onAccept={acceptAnomaly} onLeave={() => advanceWave({ ...run, pending: { ...run.pending, skipped: true } }, true)} />;
       case "event": return <EventScreen key={run.wave} run={run} event={EVENTS.find((e) => e.id === run.pending.eventId)} onChoose={(result) => updateRun({ ...run, pending: { ...run.pending, result } })} onResolve={onEventResolve} />;
       case "shop": return <ShopScreen run={run} stock={run.pending.stock} onBuy={(index) => {
         if (!isCurrentAction()) return;
@@ -276,10 +314,10 @@ function App() {
         const entry = pending.stock[index];
         if (!entry || (pending.bought || []).includes(index) || run.money < entry.price) return;
         updateRun({ ...run, money: run.money - entry.price, items: addItem(run.items, entry.id), pending: { ...pending, bought: [...(pending.bought || []), index] } });
-      }} onLeave={() => advanceWave(run, true)} />;
+      }} onLeave={() => advanceWave({ ...run, pending: { ...run.pending, skipped: true } }, true)} />;
       case "training": return <TrainingScreen run={run} onDone={(team, hadOwnXp = false) => advanceWave({ ...run, team, pending: { ...run.pending, progression: { hadOwnXp, report: reportXpChanges(run.team, team, "node") } } }, true)} />;
       case "recruit": return <RecruitScreen onDiscover={onDiscover} run={run} player={ctx.offer} price={ctx.price} mode={ctx.mode} xpReport={ctx.xpReport} onChallenge={challengeRecruit} onJoin={joinTeam} onSkip={() => continueAfterRecruit(run)} />;
-      case "end": return <EndScreen run={ctx.finalRun} result={ctx.result} onRetry={() => { setCtx({}); setScreen("select"); }} onHome={() => setScreen("title")} />;
+      case "end": return <EndScreen run={ctx.finalRun} result={ctx.result} spiritGained={ctx.spiritGained} onRetry={() => { setCtx({}); setScreen("select"); }} onHome={() => setScreen("title")} />;
       default: return null;
     }
   };

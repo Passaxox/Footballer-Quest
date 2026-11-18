@@ -19,6 +19,8 @@ export default function CollectionScreen({ meta, onBack }) {
           return <div key={id} data-testid={`collection-form-${id}`} className="font-body text-base text-slate-300 border border-fuchsia-800 px-2 py-1 mb-1">
             Spirito Guerriero · {got ? <b className="text-fuchsia-200">{sp.name} ({CHARACTERS[id]?.displayName})</b> : "??? · da risvegliare in un'anomalia temporale"}</div>;
         })}
+        {(meta.forms || []).filter((f) => f.kind === "mixi").map((f) => <div key={f.formId} data-testid={`collection-form-${f.formId}`} className="font-body text-base text-cyan-200 border border-cyan-800 px-2 py-1 mb-1">Mixi Max · {f.name}</div>)}
+        {!(meta.forms || []).some((f) => f.kind === "mixi") && <div className="font-body text-base text-slate-400 border border-cyan-900 px-2 py-1 mb-1">Mixi Max · ??? · da ottenere in un'anomalia temporale</div>}
       </div>
       <div className="p-3 grid grid-cols-2 gap-2 overflow-y-auto">
         {versions.map(v => {

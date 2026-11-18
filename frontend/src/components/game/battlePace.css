@@ -7,3 +7,14 @@
 .battle-spirit-aura { filter: drop-shadow(0 0 6px var(--spirit-color)) drop-shadow(0 0 14px var(--spirit-color)); animation: spirit-pulse 1.4s ease-in-out infinite; }
 @keyframes spirit-pulse { 50% { filter: drop-shadow(0 0 10px var(--spirit-color)) drop-shadow(0 0 22px var(--spirit-color)); } }
 .battle-spirit-tag { animation: spirit-pulse 1.4s ease-in-out infinite; }
+
+.spirit-cutin { position:fixed; inset:0; z-index:60; display:grid; place-items:center; background:radial-gradient(circle, color-mix(in srgb, var(--spirit-color) 35%, transparent), #000d 70%); animation:cutin-in .25s ease-out; pointer-events:none; overflow:hidden; }
+.spirit-cutin-rays { position:absolute; width:180vmax; height:180vmax; background:repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--spirit-color) 45%, transparent) 0 6deg, transparent 6deg 18deg); animation:rift-spin 5s linear infinite; opacity:.6; }
+.spirit-cutin-text { position:relative; text-align:center; padding:18px 10px; width:100%; background:linear-gradient(90deg, transparent, #000c 20%, #000c 80%, transparent); border-block:3px solid var(--spirit-color); animation:cutin-slash .5s cubic-bezier(.2,.9,.3,1.2); }
+.spirit-cutin-text small { display:block; font-size:18px; color:#e2e8f0; }
+.spirit-cutin-text strong { display:block; font-family:'Press Start 2P',monospace; font-size:22px; color:#fff; text-shadow:0 0 12px var(--spirit-color), 3px 3px 0 #000; margin:8px 0; }
+.spirit-cutin-text span { font-size:17px; color:var(--spirit-color); }
+@keyframes cutin-in { from { opacity:0; } }
+@keyframes cutin-slash { from { transform:translateX(-110%) skewX(-20deg); } to { transform:none; } }
+@keyframes rift-spin { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spirit-cutin-rays, .spirit-cutin-text { animation:none; } }

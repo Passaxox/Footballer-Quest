@@ -2,7 +2,9 @@ import { useMemo, useState } from "react";
 import { createPlayer } from "@/game/engine";
 import { canonicalCharacterId, resolveVersion } from "@/game/catalog";
 import { ACTS, bossDef } from "@/game/campaign";
+import { TEAMS } from "@/game/catalogMetadata";
 import { spiritFor, spiritEligible } from "@/game/spirits";
+import { canReceiveMixi, mixiPassive } from "@/game/mixi";
 import { Avatar, Btn, PlayerCard } from "./ui";
 import { MapPin, Swords, Flag, Sparkles, Zap } from "lucide-react";
 import "./story.css";
@@ -68,7 +70,7 @@ export function Consequence({ run, pending, onResolve }) {
         <Sparkles size={16} /><div className="flex-1 min-w-0"><b>Nuova versione sbloccata</b><p>{act.consequence.unlockText}</p>
           <p className="text-amber-200">Sbloccato anche come titolare per le prossime run.</p>
           <PlayerCard p={offer} testId="consequence-offer-card" />
-          {sameIdx >= 0 && !sameVersion && <p className="text-sky-200">Hai già {run.team[sameIdx].name} ({resolveVersion(run.team[sameIdx].versionId)?.primaryTeamId || "squadra"}): puoi passare a questa versione sullo stesso slot, mantenendo livello ed esperienza.</p>}
+          {sameIdx >= 0 && !sameVersion && <p className="text-sky-200">Hai già {run.team[sameIdx].name} ({TEAMS.find((t) => t.teamId === resolveVersion(run.team[sameIdx].versionId)?.primaryTeamId)?.displayName || "altra versione"}): puoi passare a questa versione sullo stesso slot, mantenendo livello ed esperienza.</p>}
         </div></section>}
       <div className="grid gap-2 mt-auto">
         {offer && sameIdx >= 0 && !sameVersion && <Btn data-testid="consequence-swap" variant="primary" onClick={() => onResolve("swap", offer, sameIdx)}>Cambia versione sullo stesso slot</Btn>}
@@ -80,21 +82,24 @@ export function Consequence({ run, pending, onResolve }) {
 }
 
 export function Anomaly({ run, pending, onAccept, onLeave }) {
-  const eligible = run.team.filter((p) => p.hp > 0 && spiritEligible(p));
+  const mixi = pending.variant === "mixi";
+  const eligible = run.team.filter((p) => (mixi ? canReceiveMixi(p) : p.hp > 0 && spiritEligible(p)));
   const [pickUid, setPick] = useState(eligible[0]?.uid || null);
   const act = ACTS.find((a) => run.wave >= a.fromWave && run.wave <= a.toWave);
   return (
     <Frame act={act} testId="anomaly-screen">
-      <div className="story-eyebrow anomaly-glitch">ANOMALIA TEMPORALE · W{run.wave}</div>
+      <div className="story-eyebrow anomaly-glitch" data-testid="anomaly-variant">ANOMALIA TEMPORALE · {mixi ? "MIXI MAX" : "SPIRITO GUERRIERO"} · W{run.wave}</div>
       <h1 className="story-title">Uno squarcio nel tempo</h1>
       <div className="anomaly-rift"><Avatar p={pending.cameo} size={96} /></div>
-      <p className="story-sub" data-testid="anomaly-cameo">Dallo squarcio emerge {pending.cameo.name}, un'eco di un altro momento della storia. Chi lo batte può risvegliare una forza che appartiene al futuro: lo Spirito Guerriero.</p>
+      <p className="story-sub" data-testid="anomaly-cameo">Dallo squarcio emerge {pending.cameo.name}, un'eco di un altro momento della storia. {mixi
+        ? `Battetelo e la sua aura potrà legarsi a un vostro giocatore con il Mixi Max (meccanica dell'era Chrono Stone): ${mixiPassive(pending.cameo.versionId).label}.`
+        : "Chi lo batte può risvegliare una forza che appartiene al futuro: lo Spirito Guerriero."}</p>
       {eligible.length ? (
-        <section className="story-card"><Zap size={16} /><div className="flex-1"><b>Chi tenterà il risveglio?</b>
+        <section className="story-card"><Zap size={16} /><div className="flex-1"><b>{mixi ? "Chi riceverà l'aura?" : "Chi tenterà il risveglio?"}</b>
           {eligible.map((p) => <PlayerCard key={p.uid} p={p} compact selected={pickUid === p.uid} testId={`anomaly-pick-${p.uid}`} onClick={() => setPick(p.uid)}
-            right={<span className="font-body text-amber-300 text-sm">{spiritFor(p).name}</span>} />)}
+            right={<span className="font-body text-amber-300 text-sm">{mixi ? "Mixi Max" : spiritFor(p).name}</span>} />)}
         </div></section>
-      ) : <p className="story-card" data-testid="anomaly-no-eligible">Nessun giocatore idoneo allo Spirito Guerriero (servono Mark Evans o Axel Blaze). Vincendo otterrete comunque un premio raro.</p>}
+      ) : <p className="story-card" data-testid="anomaly-no-eligible">{mixi ? "Tutti i giocatori hanno già un Mixi Max." : "Nessun giocatore idoneo allo Spirito Guerriero (servono Mark Evans o Axel Blaze)."} Vincendo otterrete comunque un premio raro.</p>}
       <div className="grid gap-2 mt-auto">
         <Btn data-testid="anomaly-accept" variant="fusion" onClick={() => onAccept(pickUid)}>Entra nello squarcio</Btn>
         <Btn data-testid="anomaly-leave" variant="ghost" onClick={onLeave}>Ignora e prosegui</Btn>
@@ -114,7 +119,7 @@ export function JourneyLog({ run }) {
         const steps = journey.filter((j) => j.actId === a.id);
         const lanes = [...new Set(steps.filter((j) => j.type !== "boss").map((j) => j.lane))];
         const boss = steps.find((j) => j.type === "boss");
-        const extra = steps.filter((j) => j.type === "rival" || j.type === "anomaly").length;
+        const extra = steps.filter((j) => (j.type === "rival" || j.type === "anomaly") && !j.skipped).length;
         return <div key={a.id} data-testid={`journey-${a.id}`} className="border-l-4 border-amber-500 pl-2 font-body text-base leading-tight text-slate-200">
           <b className="text-amber-200">Atto {a.index} · {a.title}</b>
           <div>Strada: {lanes.join(" → ") || "—"}</div>

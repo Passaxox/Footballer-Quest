@@ -2,7 +2,7 @@ import { Btn, Panel } from "./ui";
 import { Volume2, VolumeX } from "lucide-react";
 import { sfx } from "@/game/audio";
 
-export default function TitleScreen({ hasRun, meta, onNew, onContinue, onRecords, onCollection, onToggleSound }) {
+export default function TitleScreen({ hasRun, meta, onNew, onContinue, onRecords, onCollection, onPerks, onSaveCode, onToggleSound }) {
   return (
     <div data-testid="title-screen-container" className="flex flex-col flex-1 p-5 title-bg">
       <div className="flex justify-end">
@@ -25,6 +25,8 @@ export default function TitleScreen({ hasRun, meta, onNew, onContinue, onRecords
         <div className="grid grid-cols-2 gap-3">
           <Btn data-testid="records-btn" onClick={() => { sfx.select(); onRecords(); }}>Albo d'Oro</Btn>
           <Btn data-testid="collection-btn" onClick={() => { sfx.select(); onCollection(); }}>Collezione</Btn>
+          <Btn data-testid="perks-btn" onClick={() => { sfx.select(); onPerks?.(); }}>Vantaggi · {meta?.teamSpirit || 0}</Btn>
+          <Btn data-testid="savecode-btn" onClick={() => { sfx.select(); onSaveCode?.(); }}>Codice salvataggio</Btn>
         </div>
       </div>
       <Panel className="mt-auto font-body text-slate-400 text-base leading-tight">
