@@ -1,0 +1,28 @@
+{
+  "summary": "Frontend-only testing of Fusion (Cuneo DNA) + Spirito Guerriero on the preview URL, at 390x844 and 1920x1080. All requested flows passed and no page errors appeared. SG badges show on Mark and Axel cards on the team screen and on fusion picks. Fusion flow: A=Jude (base) + B=Mark (donor) showed preview 'Mantenuto: Jude Sharp · Assorbito: Mark Evans', 'Sinergia ereditata: Raimon (Spirito Raimon)', the stat table with deltas, fusion-move-a/b toggling the preview technique, and 'Slot squadra: 3/6 → 2/6'. Confirming created one fused 'Jude Sharp ✦' with Mano di Luce (inherited). Team went 3→2, cuneo was consumed, stats.fusions=1, and no SG badge appeared because base Jude has no spirit. In the reverse case (A=Mark) the fused Mark keeps SG and can summon Gran Majin in battle. With cuneo re-injected after a fusion, bag-use-cuneo is disabled. Battle: spirit-button only appears in the main menu (not pre-battle). Tapping it logs 'Mark Evans evoca lo Spirito Guerriero Gran Majin!' plus '+1 punto sinergia: Spirito Raimon T3!'. It shows the player-spirit-status 'SPIRITO: Gran Majin' badge with the .battle-spirit-aura glow. The button becomes disabled 'Spirito attivo: Gran Majin'. No enemy turn is consumed (HP unchanged) and the menu returns. The status stays through an attack. Switching to Jude shows no spirit button. Axel then shows 'Spirito Guerriero già usato' (disabled), so it is once per match. Switching Mark back shows the status and aura removed. Regression: attack, switch, items menu (use-item-barretta/items-cancel) and synergy strip all work.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Battle main menu", "issues": ["Disabled spirit-button (fusion variant) has quite low contrast text (pink on dark magenta). This is acceptable for a disabled state, but 'Spirito attivo: X' is useful info and could be more legible."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Optional/design decision: the +1 synergy point (and the stat buff applied via applySynergyBuffs) from the spirit stays after the spirit user is switched out. The strip still shows 'Spirito Raimon T3' after switching Mark out and status.spirit is cleared. If the point is meant to be tied to the active spirit, recompute st.synergies on switch-out.",
+    "Optional: fusion-used-msg in FusionScreen can't be reached in normal UI because bag-use-cuneo is disabled once stats.fusions>0. It is defensive only, so it was not verified visually."
+  ],
+  "critical_code_review_comments": [
+    "fuseRunPlayers inserts the fused player at min(a,b). Picking A at a later index (e.g. Jude idx 2) moves the fused player to idx 0. This is harmless, but the order changes and the captain (activeUid) moves to the fused player if either parent was captain.",
+    "summon() sets st.spiritUsed before the async say(). If the component unmounts mid-say it just returns, which is fine.",
+    "spiritCharacterId for fused players relies on parentVersionIds[0] (A). This was verified to work for both A=Mark (keeps SG) and A=Jude (no SG)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "test_credentials": "N/A (no auth)",
+  "seed_data_creation": "None server-side. Only localStorage runs in ephemeral browser sessions.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Each browser_automation call is a fresh context, so recreate the run in each script: new-run-btn → add-mark/add-axel/add-jude → start-run-btn. To get the cuneo, edit localStorage inazuma_rogue_run.items.cuneo=1, reload, then continue-run-btn → team-btn → bag-use-cuneo. To reach battle: click map-node-riverside-1 (force) → map-enter → wait for pre-battle-keep → attack-button. The spirit button only renders in the main menu after pre-battle."
+}

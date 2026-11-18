@@ -382,7 +382,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
               <span className="text-[8px] opacity-70">POT {p.move.power}</span>
             </Btn>
             {spiritFor(p) && (
-              <Btn data-testid="spirit-button" variant="fusion" className="col-span-2" disabled={!canSummonSpirit(p, st.spiritUsed) || st.phase !== "menu"} onClick={summon}>
+              <Btn data-testid="spirit-button" variant="fusion" className={`col-span-2 ${p.status.spirit ? "!opacity-100 !text-amber-200 !bg-amber-900/60 !border-amber-500" : ""}`} disabled={!canSummonSpirit(p, st.spiritUsed) || st.phase !== "menu"} onClick={summon}>
                 {p.status.spirit ? `Spirito attivo: ${spiritFor(p).name}` : st.spiritUsed ? "Spirito Guerriero già usato" : `Spirito Guerriero: ${spiritFor(p).name}`}
               </Btn>
             )}

@@ -22,7 +22,17 @@ Gioco mobile-first, misto Pokerogue x Pokelike, a tema Inazuma Eleven: lotta 1v1
 - Salvataggio automatico run + collezione/record; game over/vittoria con invio punteggio globale
 - Sprite reali DS/3DS per tutti i 44 giocatori, fusione mostra sprite diviso
 
+## Iterazione 06/2026 (FOOTBALLER QUEST)
+- Rebranding FOOTBALLER QUEST, fix env/build
+- Sinergie/Traits stile Pokelike 2 (`game/traits.js`, `SynergyPanel.jsx`): 6 tier, buff solo runtime, x1.5 in Torre
+- Fusione (Cuneo DNA): ricompensa rara (non più in negozio), 1 volta per run; A = base mantenuto (nome, ruolo, elemento, squadra-sinergia), B = donatore; tecnica ereditabile; slot liberato
+- Spirito Guerriero (`game/spirits.js`): solo personaggi canonici (Mark = Gran Majin, Axel = Enma Gazard), pulsante in battaglia 1 volta per match, azione gratuita, moltiplicatori ATK/DIF finché resta in campo, +1 punto sinergia temporaneo per il match; badge "SG"
+
 ## Backlog
+- P1: Mixi Max (donatore aura, passiva ereditata, doppio ritratto)
+- P1: Torre delle Sfide (dopo prima run vinta, roster scoperto, record separato, sinergie x1.5)
+- P2: test salvataggio/refresh durante scelta ricompensa; playtest fino a wave 50
+- P2: ampliare lista Spiriti Guerrieri
 - P1: sprite delle tecniche/animazioni d'attacco, più eventi e boss rush post-50
 - P1: bilanciamento avanzato (difficoltà, scaling nemici late game)
 - P2: modalità Endless, sfide giornaliere, achievement/sblocchi per squadra
