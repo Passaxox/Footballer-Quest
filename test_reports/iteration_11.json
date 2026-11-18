@@ -1,0 +1,23 @@
+{
+  "summary": "Frontend-only test with Playwright at 430x900 on the preview URL, plus jest. Everything in scope passed. (1) Rival Diary: the rival-diary-btn shows 'Diario Rivali · 0'. The empty screen shows rival-diary-empty and Menu goes back to the title. After injecting meta.rivals, the button shows '· 2'. The boss-dark-emperors entry shows wins 2 / W30 / KO 0 with the real image /crests/dark-emperors.png (naturalWidth 64). The miniboss-occult entry shows 1 / W5 / 1 with /crests/occult.png. Boss entries are listed before minibosses. (2) Real win: I mutated the pending W1 battle into an Occult miniboss with 1 HP, then continue -> next-wave-btn -> MANTIENI -> attack. This reached the 'MINIBOSS BATTUTO!' screen and meta.rivals['miniboss:occult'] was written (wins 1, bestWave 1, fewestKo 0). The diary showed it with the real crest after reload. (3) Rotating challenge: the Act 1 intro shows bonus-challenge-card. Seed 1153907807 % 6 = 5 gave 'Occhio da talent scout' (+40), which matches the code. Act 1 crests act-intro-crest-0/1 are real images (/crests/occult.png, /crests/royal-academy.png), not initials. hub-bonus-challenge appears in the Diario panel. Abandoning shows end-challenge-bonus with '· non riuscita, nessuna penalità'. The Sfide tab shows challenge-rotating-note. (4) Neutro: the starter Elemento filter includes choice-neutro (0 results, since the new Dark Emperors are not starters). Collection opens without a crash. engine.js handles beats:null safely. The sprites de-shadow-cimmerian, de-malcolm-night, de-thomas-feldt, canon-bomber and canon-andre-pinson exist. (5) No page errors or console errors in any flow. Jest: 122/124 pass, including rivals.test.js 3/3. The 2 failures are the known CollectionScreen and SuzetteIdentity axios mock issues.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Title screen", "issues": ["The 'DIARIO RIVALI · 0' button wraps onto 2 lines at 430px wide, which looks cramped next to the single-line buttons (minor)."]}
+    ]
+  },
+  "test_report_links": ["/app/frontend/src/game/rivals.test.js"],
+  "action_items": ["Optional: shorten the diary button label or use a smaller font so it stays on one line on mobile."],
+  "critical_code_review_comments": [
+    "App.js onWin anomaly branch: updateMeta({...meta, forms}) uses the closure meta. This is safe today because recordRival only changes meta for boss/miniboss encounters, which return earlier. If rival recording or other meta writes are ever combined with the anomaly path in the same handler, chain from rivalMeta to avoid lost writes.",
+    "The Neutro element is added to filters, but no Neutro starter exists, so choosing that filter always gives an empty list. Consider hiding elements that have no starters."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "seed_data_creation": "None persistent: browser contexts are isolated and localStorage was used per session only.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "To force a miniboss win: new run -> pick 3 starters (add-* buttons) -> start-run-btn -> perk-offer-skip -> act-intro-start -> click the first enabled map-node -> map-enter. Then in localStorage inazuma_rogue_run set pending.miniboss=true, bossId='occult', and enemies hp=1. Reload -> continue-run-btn -> next-wave-btn -> wait for pre-battle-keep -> attack-button. abandon-btn is inside the details panel (open it with details-btn first)."
+}

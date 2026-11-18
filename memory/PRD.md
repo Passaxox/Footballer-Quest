@@ -65,3 +65,16 @@ Gioco mobile-first, misto Pokerogue x Pokelike, a tema Inazuma Eleven: lotta 1v1
 - P1: bilanciamento avanzato (difficoltà, scaling nemici late game)
 - P2: modalità Endless, sfide giornaliere, achievement/sblocchi per squadra
 - P2: musica 8-bit di sottofondo
+
+## Iterazione 06/2026 · Asset Pack reale, Diario Rivali, Sfide a rotazione
+- Asset pack (indice: memory/assets_pack_index.json): 26 stemmi reali in public/crests (WebP convertiti in PNG), CREST_FILES in TeamCrest; Epsilon Kai con crestId proprio. Stemmi copiati anche per squadre non ancora in gioco (kirkwood, brainwashing, wild, jukai, the-kingdom, red-matador).
+- Ritratti reali: canon-bomber (Prominence, confermato non Dark Emperors), canon-andre-pinson (Rose Griffon D), de-shadow-cimmerian (A), de-malcolm-night (D), de-thomas-feldt (P). Tutte le 153 versioni hanno ora un ritratto reale.
+- Nuovo elemento "neutro" (nessun vantaggio/svantaggio) per elementi non verificati; Dark Emperors 11/11 nel pool boss.
+- Diario Rivali (game/rivals.js, RivalDiaryScreen): meta.rivals per kind:bossId con vittorie, miglior wave, minor KO subiti, stemma; pulsante nel menu principale.
+- Sfida a rotazione (talents.js ROTATING_CHALLENGES, 6 sfide, contentSeed % 6): Spirito x2, nessuna penalità; mostrata in intro Atto 1, Diario squadra in hub, EndScreen.
+- Senza stemma reale (placeholder): Chaos, Neo Japan, Desert Lion, Big Waves, Alius Academy, Absolute Royal Academy, selezioni speciali.
+
+## Backlog aggiornato
+- P1: Torre delle Sfide (dopo prima run vinta, roster scoperto, record separato, sinergie x1.5)
+- P2: Armatura Spirito; personaggi GO + campagna 100 wave
+- P2: Brainwashing/Wild/Kirkwood/The Kingdom/Red Matador quando i roster/elementi sono verificati (stemmi già pronti)
