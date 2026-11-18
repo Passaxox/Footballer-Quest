@@ -55,7 +55,7 @@ class RunRecord(BaseDocument, RunCreate):
 
 @api_router.get("/")
 async def root():
-    return {"message": "Inazuma Rogue API"}
+    return {"message": "Footballer Quest API"}
 
 
 @api_router.post("/runs", response_model=RunRecord, response_model_by_alias=False)

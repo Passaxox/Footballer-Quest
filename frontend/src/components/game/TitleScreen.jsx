@@ -11,12 +11,12 @@ export default function TitleScreen({ hasRun, meta, onNew, onContinue, onRecords
         </button>
       </div>
       <div className="mt-10 mb-8">
-        <div className="font-pixel text-[10px] text-sky-300 tracking-widest mb-3 animate-fade-1">FOOTBALL FRONTIER ROGUE</div>
+        <div className="font-pixel text-[10px] text-sky-300 tracking-widest mb-3 animate-fade-1">JRPG CALCISTICO · ROGUELIKE</div>
         <h1 className="font-pixel text-3xl sm:text-4xl leading-tight text-amber-300 drop-shadow-[4px_4px_0_#000] animate-fade-2">
-          INAZUMA<br /><span className="text-white">ROGUE</span>
+          FOOTBALLER<br /><span className="text-white">QUEST</span>
         </h1>
         <p className="font-body text-slate-300 text-xl leading-tight mt-4 max-w-xs animate-fade-3">
-          Una squadra. Una mossa a testa. Cinquanta ondate. Recluta calciatori, fondi il loro DNA e conquista il Football Frontier.
+          Una squadra. Una tecnica a testa. Cinquanta ondate. Recluta calciatori, fondi il loro DNA e conquista il torneo.
         </p>
       </div>
       <div className="grid gap-3 animate-fade-3">
