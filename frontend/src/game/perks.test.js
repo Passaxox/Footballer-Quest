@@ -31,3 +31,12 @@ test("offer, effects, buffs, spirit reward and save code", () => {
   expect(data.meta.note).toBe("àè"); expect(data.run.perks).toHaveLength(2);
   expect(() => decodeSave("nope")).toThrow();
 });
+
+test("fusion perks exclude their components and mixi uses catalog roles", () => {
+  const meta = { perks: { tiro: 3, scatto: 3, inazumabreak: 1 } };
+  expect(perkOffer(meta, { perks: [{ id: "tiro", level: 3 }] }, () => 0.5).normal).not.toContain("inazumabreak");
+  expect(perkOffer(meta, { perks: [{ id: "inazumabreak", level: 1 }] }, () => 0.5).normal).toEqual([]);
+  const { mixiPassive } = require("./mixi");
+  expect(mixiPassive("torch").stat).toBe("atkPct");
+  expect(mixiPassive("mark").stat).toBe("hpPct");
+});

@@ -2,13 +2,13 @@ import { resolveVersion } from "./catalog";
 
 // Mixi Max (fan anomaly, Chrono Stone mechanic): donor aura grants a passive by donor role; receiver keeps identity.
 const PASSIVES = {
-  FW: { stat: "atkPct", value: 10, label: "+10% ATK" },
-  MF: { stat: "spdPct", value: 10, label: "+10% VEL" },
-  DF: { stat: "defPct", value: 10, label: "+10% DIF" },
-  GK: { stat: "hpPct", value: 12, label: "+12% HP massimi" },
+  A: { stat: "atkPct", value: 10, label: "+10% ATK" },
+  C: { stat: "spdPct", value: 10, label: "+10% VEL" },
+  D: { stat: "defPct", value: 10, label: "+10% DIF" },
+  P: { stat: "hpPct", value: 12, label: "+12% HP massimi" },
 };
 
-export const mixiPassive = (donorVersionId) => PASSIVES[resolveVersion(donorVersionId)?.role] || PASSIVES.MF;
+export const mixiPassive = (donorVersionId) => PASSIVES[resolveVersion(donorVersionId)?.role] || PASSIVES.C;
 export const canReceiveMixi = (p) => !!p && p.hp > 0 && !p.mixi;
 
 export const applyMixi = (p, donor) => ({ ...p, mixi: { donorVersionId: donor.versionId, donorName: donor.name, donorElement: donor.element, ...mixiPassive(donor.versionId) } });

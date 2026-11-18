@@ -13,7 +13,7 @@ export const PerkCard = ({ id, level, selected, onClick, testId }) => {
       style={{ borderColor: selected ? "#facc15" : r.color }}>
       <div className="flex-1 min-w-0">
         <div className="font-pixel text-[9px] text-white">{p.name} {ROMAN[level]}</div>
-        <div className="font-body text-sm" style={{ color: r.color }}>{r.label} · {PERK_CATEGORIES.find((c) => c.id === p.cat).label}</div>
+        <div className="font-body text-sm" style={{ color: r.color }}>{p.cat === "curse" ? r.label : `${r.label} · ${PERK_CATEGORIES.find((c) => c.id === p.cat).label}`}</div>
         <div className="font-body text-base text-slate-200 leading-tight mt-1">{perkText(id, level)}</div>
       </div>
       {p.cat === "curse" ? <Skull className="text-rose-400 shrink-0" size={18} /> : selected ? <Check className="text-amber-300 shrink-0" size={18} /> : null}

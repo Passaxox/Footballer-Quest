@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import { createPlayer } from "@/game/engine";
-import { canonicalCharacterId, resolveVersion } from "@/game/catalog";
+import { canonicalCharacterId } from "@/game/catalog";
 import { ACTS, bossDef } from "@/game/campaign";
-import { TEAMS } from "@/game/catalogMetadata";
 import { spiritFor, spiritEligible } from "@/game/spirits";
 import { canReceiveMixi, mixiPassive } from "@/game/mixi";
 import { Avatar, Btn, PlayerCard } from "./ui";
@@ -70,7 +69,7 @@ export function Consequence({ run, pending, onResolve }) {
         <Sparkles size={16} /><div className="flex-1 min-w-0"><b>Nuova versione sbloccata</b><p>{act.consequence.unlockText}</p>
           <p className="text-amber-200">Sbloccato anche come titolare per le prossime run.</p>
           <PlayerCard p={offer} testId="consequence-offer-card" />
-          {sameIdx >= 0 && !sameVersion && <p className="text-sky-200">Hai già {run.team[sameIdx].name} ({TEAMS.find((t) => t.teamId === resolveVersion(run.team[sameIdx].versionId)?.primaryTeamId)?.displayName || "altra versione"}): puoi passare a questa versione sullo stesso slot, mantenendo livello ed esperienza.</p>}
+          {sameIdx >= 0 && !sameVersion && <p className="text-sky-200">Hai già {run.team[sameIdx].name}: puoi passare a questa versione sullo stesso slot, mantenendo livello ed esperienza.</p>}
         </div></section>}
       <div className="grid gap-2 mt-auto">
         {offer && sameIdx >= 0 && !sameVersion && <Btn data-testid="consequence-swap" variant="primary" onClick={() => onResolve("swap", offer, sameIdx)}>Cambia versione sullo stesso slot</Btn>}

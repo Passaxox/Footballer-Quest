@@ -8,15 +8,15 @@ const META_KEY = "inazuma_rogue_meta";
 
 const defaultMeta = () => migrateCollection({ unlocked: [...STARTER_IDS], records: [], runs: 0, bestWave: 0, sound: true });
 
+export const normalizeMeta = (m) => {
+  if (!m || typeof m !== "object") return defaultMeta();
+  return migrateCollection({ ...defaultMeta(), ...m,
+    unlocked: Array.isArray(m.unlocked) ? m.unlocked : [...STARTER_IDS],
+    records: Array.isArray(m.records) ? m.records.filter(r => r && typeof r === "object") : [],
+  });
+};
 export const loadMeta = () => {
-  try {
-    const m = JSON.parse(localStorage.getItem(META_KEY));
-    if (!m || typeof m !== "object") return defaultMeta();
-    return migrateCollection({ ...defaultMeta(), ...m,
-      unlocked: Array.isArray(m.unlocked) ? m.unlocked : [...STARTER_IDS],
-      records: Array.isArray(m.records) ? m.records.filter(r => r && typeof r === "object") : [],
-    });
-  } catch { return defaultMeta(); }
+  try { return normalizeMeta(JSON.parse(localStorage.getItem(META_KEY))); } catch { return defaultMeta(); }
 };
 export const saveMeta = (m) => localStorage.setItem(META_KEY, JSON.stringify(migrateCollection(m)));
 

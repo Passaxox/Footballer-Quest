@@ -1,0 +1,39 @@
+{
+  "summary": "Frontend-only E2E (Playwright, 390x844 / 360x640 / 1920x1080) of iteration_4 features on the preview URL. PASSED: starter screen (chip filters + search + filters-reset, face grid, inspector version-<id> buttons, add-<id>, 3-slot dock showing name + TEAM e.g. 'Jude Sharp / Royal Academy', segmented difficulty, start button no overlap at 390 and 360px, full-roster notice); title perks-btn/savecode-btn; Perks screen (balance, 9 category tabs with counts, free Comune I, costs 20/45 deducted correctly, disabled when unaffordable, fusion inazumabreak locked until tiro III + scatto III then 400, persistence); start-run perk offer (3 normals + optional cursed, confirm count, cassa +100 money applied, quaderno +3 levels, skip); HUD hud-perk chips + banner toggle; checkpoint flow boss-intro -> battle -> consequence -> perk-offer -> reward -> Act 2 intro; end-of-run spirit (+88 lose at W21 with Ray Dark = 70*1.25, +235 W50 win, meta updated); save code export/copy (clipboard matches)/invalid msg/confirm dialog/import restores meta+run; Mixi Max anomaly (variant label, pick, win, reward-notice, run.mixi, meta.forms, team card -mixi-donor + -mixi-info, Collection entry); spirit cut-in full-screen 'Gran Majin' ~1.7s then battle continues; regressions (W50 journey act5 checkpoint passed, skipped anomaly not counted, swap hint shows team display name, '1 TURNO' singular). Jest: 114 pass / 2 fail (same as baseline). FOUND 2 real bugs: Mixi Max donor-role passive never resolves (always +10% VEL) and negative HP perks (Ray Dark) permanently shrink current HP after every battle (compounding). Plus a crash when importing a save code with a partial meta.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "game/mixi.js PASSIVES", "issue": "PASSIVES is keyed FW/MF/DF/GK but catalog roles are A/C/D/P (data.js ROLES), so mixiPassive() always falls back to MF (+10% VEL). Verified in UI: Torch (role 'A', attacker) gave 'Mixi Max · aura di Torch (+10% VEL)' and not +10% ATK. ATK/DIF/HP passives can never happen.", "selector": "[data-testid$='-mixi-info']", "priority": "HIGH"},
+      {"component": "BattleScreen onWin/onFlee/onLose + perks.applyPerkBuffs (hpPct < 0)", "issue": "Runtime HP scaling leaks back into the saved HP. With Patto di Ray Dark I (-15% HP), a battle where the team took no damage (DEF+5000) returned the team at 92/108, 67/79, 65/77. The next battle scales it down again (92*0.85...), so the penalty stacks on every match. RCA: in battle hp = round(hp*scaledMax/max), but on the way out it only does hp = min(clean.maxHp, battleHp) and never undoes the scaling. Positive hpPct (mano, muraglia, Mixi GK) gets the opposite skew.", "selector": "battle -> reward", "priority": "HIGH"},
+      {"component": "SaveCodeScreen onImport (App.js)", "issue": "An import code with v:1 and a partial meta (e.g. {teamSpirit:5}) passes decodeSave and is given to updateMeta as-is. TitleScreen then crashes: 'Cannot read properties of undefined (reading length)'. A reload fixes it because loadMeta normalizes. The imported meta should go through the same defaults + migrateCollection as loadMeta (and the run through validation) before setMeta.", "selector": "[data-testid='savecode-load']", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Perk offer / Perks", "issues": ["A fusion perk (Inazuma Break) is offered and can be stacked while its own components (Tiro Potente III) are already active, e.g. Tiro +10% plus Inazuma Break +12% ATK. The 'occupa un unico posto' copy suggests the fusion should replace or exclude its components.", "Cursed cards read 'Maledetto · Maledetto' because the rarity and the category share the label."]},
+      {"screen": "Consequence swap hint", "issues": ["Redundant text: 'Hai già Jude Sharp (Royal) (Royal Academy)'. The player name already includes the version tag."]},
+      {"screen": "Starter dock 360px", "issues": ["Long names are cut with an ellipsis ('Nathan S…') at 360px width. Acceptable, but 390px is the minimum where names show in full."]},
+      {"screen": "HUD perk banner", "issues": ["The banner sits in the HUD's normal flow, so opening it pushes the map down instead of overlaying it (minor)."]}
+    ]
+  },
+  "test_report_links": ["/app/tests/ui_helpers.md"],
+  "action_items": [
+    "Fix mixi.js PASSIVES keys to the catalog roles: A -> atkPct, C -> spdPct, D -> defPct, P -> hpPct (and add a unit test with an attacker donor).",
+    "Make perk/Mixi HP scaling runtime-only: when leaving battle (win, flee, lose), convert battle HP back with hp = round(battleHp * clean.maxHp / battleMaxHp), or keep a separate unscaled HP, so Ray Dark does not drain HP after every match.",
+    "Normalize imported save data in the SaveCodeScreen onImport path (meta defaults + migrateCollection, the same as loadMeta) to avoid the TitleScreen crash.",
+    "Optional: exclude or replace fusion components when a fusion perk is active; deduplicate the 'Maledetto · Maledetto' label; drop the duplicate version tag in the swap hint."
+  ],
+  "critical_code_review_comments": [
+    "mixi.js: role key mismatch (FW/MF/DF/GK vs A/C/D/P). This is a silent fallback with no test coverage.",
+    "BattleScreen.jsx L182-185 and L296: recalcStats strips stat buffs, but HP is not rescaled when hpPct perks or Mixi GK are active.",
+    "applyPerkBuffs writes critBonus onto player objects. Because it ends up in st.team, it is persisted into run.team after battle (harmless now, since it is overwritten each battle, but it leaks a runtime field into saved data).",
+    "App.onConsequence calls updateMeta twice in a row from the same stale meta (unlockStarter then recruitVersion(unlockStarter(meta))). It works today but is fragile; prefer the functional setMeta.",
+    "perkOffer computes the offer and only then checks MAX_ACTIVE_PERKS. Fine, but the order could be simpler."
+  ],
+  "updated_files": ["/app/tests/ui_helpers.md"],
+  "success_rate": {"backend": "N/A (frontend only)", "frontend": "~90% (all requested flows work; 2 logic bugs + 1 import crash)"},
+  "seed_data_creation": "None. Only browser localStorage in ephemeral Playwright sessions.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Each browser_automation call is a fresh browser. Setup: localStorage.clear -> optionally set inazuma_rogue_meta.perks/teamSpirit/collection (e.g. 'jude:royal':{starterUnlocked:true}) -> reload -> new-run-btn -> add-<id> -> start-run-btn. Abandon is inside details-btn (Diario) panel, then abandon-btn (confirm dialog). Map anomaly position varies with the run. Reliable approach: loop waves 11-29 (contentSeed=1, path=[], completedWave=w-1, introSeen=act), reload + continue-run-btn, look for map-node-*:not([disabled])[aria-label*='Anomalia temporale'] (found W24/W26 in act 3). A team without Mark/Axel (nathan/jack/kevin) forces the Mixi variant. The W10 boss node id is map-node-act1:boss:royal and W50 is map-node-act5:boss:allstars. To verify fixes: (1) Mixi with an attacker donor (Torch) should show +10% ATK; (2) with Ray Dark and an undamaged win, HP should stay 108/108.",
+  "rca of the issue": "Mixi: PASSIVES lookup uses resolveVersion(id).role, which returns 'A'/'C'/'D'/'P', and the keys don't match, so it always falls back to MF. HP leak: applyPerkBuffs/applyMixiBuffs scale hp into a different maxHp space, and the battle exit paths only clamp to clean.maxHp without rescaling, so the scaled HP gets persisted. Repro: unlock raydark, pick it at run start, give the team DEF+5000, win W1, then read run.team hp (92/108). Import crash: craft base64 {v:1, meta:{teamSpirit:5}, run:null}, then Codice salvataggio -> Carica: TitleScreen throws."
+}

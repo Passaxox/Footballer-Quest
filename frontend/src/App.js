@@ -14,7 +14,7 @@ import { beginOverworldNode } from "@/game/engine";
 import "@/App.css";
 import { EVENTS, FINAL_WAVE } from "@/game/data";
 import { generateWave, epsilonRecruitOffer, recruitChallengePlayer, generateRewards, addItem, createPlayer, randomRosterId, enemiesForEffect, fuseRunPlayers, gainXp, recalcStats, chance, newRun, normalizeRun, resolveActiveUid, applyEventDamage, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
-import { loadMeta, saveMeta, loadRun, saveRun, clearRun, recordFinishedRun } from "@/game/storage";
+import { loadMeta, saveMeta, loadRun, saveRun, clearRun, recordFinishedRun, normalizeMeta } from "@/game/storage";
 import { setSoundEnabled } from "@/game/audio";
 import TitleScreen from "@/components/game/TitleScreen";
 import TeamSelect from "@/components/game/TeamSelect";
@@ -297,7 +297,7 @@ function App() {
       case "records": return <RecordsScreen meta={meta} onBack={() => setScreen("title")} />;
       case "collection": return <CollectionScreen meta={meta} onBack={() => setScreen("title")} />;
       case "perks": return <PerksScreen meta={meta} onUpdate={updateMeta} onBack={() => setScreen("title")} />;
-      case "savecode": return <SaveCodeScreen meta={meta} run={run} onImport={(data) => { updateMeta(data.meta); if (data.run) updateRun(normalizeRun(data.run)); else { clearRun(); runRef.current = null; setRun(null); } setScreen("title"); }} onBack={() => setScreen("title")} />;
+      case "savecode": return <SaveCodeScreen meta={meta} run={run} onImport={(data) => { updateMeta(normalizeMeta(data.meta)); let imported = null; try { imported = data.run && Array.isArray(data.run.team) && data.run.team.length ? normalizeRun(data.run) : null; } catch { imported = null; } if (imported) updateRun(imported); else { clearRun(); runRef.current = null; setRun(null); } setScreen("title"); }} onBack={() => setScreen("title")} />;
       case "perk": return <PerkOfferScreen key={run.wave} run={run} meta={meta} offer={run.pending.offer} onPick={onPickPerks} />;
       case "hub": return <HubScreen run={run} onSelectNode={selectNode} onPause={() => { saveRun(run); setCtx({}); setScreen("title"); }} onNext={next} onTeam={() => setScreen("team")} onIntroSeen={(i) => updateRun({ ...run, overworld: { ...run.overworld, introSeen: i } })} onAbandon={() => { if (window.confirm("Abbandonare la run? Il progresso andrà perso.")) finishRun(run, "lose"); }} />;
       case "team": return <TeamScreen run={run} onUpdate={(patch) => updateRun({ ...run, ...patch })} onFusion={() => setScreen("fusion")} onBack={() => setScreen("hub")} />;

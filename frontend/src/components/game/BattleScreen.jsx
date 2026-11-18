@@ -45,6 +45,9 @@ const Dots = ({ team, active }) => (
   </div>
 );
 
+// Runtime max-HP buffs (perks, Mixi, synergies) are undone proportionally when leaving the match.
+const settleHp = (p, clean) => (p.hp === 0 ? 0 : Math.max(1, Math.min(clean.maxHp, Math.round(p.hp * clean.maxHp / p.maxHp))));
+
 export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, onActiveChange, onDiscover, manualMoment = null }) {
   const pace = useBattlePace(manualMoment);
   const s = useRef(null);
@@ -180,8 +183,8 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
         if (!mounted.current) return;
         st.phase = "end"; pace.stop(); rr();
         onWin(st.team.map((p) => {
-          const clean = recalcStats({ ...p, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false, spirit: false } });
-          return { ...clean, hp: Math.min(clean.maxHp, p.hp) };
+          const clean = recalcStats({ ...p, critBonus: undefined, status: { ...p.status, atkMod: 0, defMod: 0, guard: false, talisman: false, spirit: false } });
+          return { ...clean, hp: settleHp(p, clean) };
         }), st.items, resolveActiveUid(st.team, active()?.uid), finishCombatReport(st.team, st.xpReport));
         return;
       }
@@ -293,7 +296,7 @@ export default function BattleScreen({ run, encounter, onWin, onLose, onFlee, on
     sfx.cancel();
     st.phase = "busy"; rr();
     const ok = chance(45 + Math.max(-30, Math.min(30, (active().spd - enemy().spd) * 2)));
-    if (ok) { await say("Siete fuggiti con successo!", 900); if (!mounted.current) return; st.phase = "end"; pace.stop(); rr(); onFlee(st.team.map((p) => { const c = recalcStats(p); return { ...c, hp: Math.min(c.maxHp, p.hp) }; }), st.items, active()?.uid, finishCombatReport(st.team, st.xpReport)); return; }
+    if (ok) { await say("Siete fuggiti con successo!", 900); if (!mounted.current) return; st.phase = "end"; pace.stop(); rr(); onFlee(st.team.map((p) => { const c = recalcStats({ ...p, critBonus: undefined }); return { ...c, hp: settleHp(p, c) }; }), st.items, active()?.uid, finishCombatReport(st.team, st.xpReport)); return; }
     if (!await say("La fuga è fallita!", 700)) return;
     await enemyFreeTurn();
   };
