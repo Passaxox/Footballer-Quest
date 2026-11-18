@@ -55,3 +55,22 @@ test("acts 2-4 always contain at least one anomaly", () => {
     expect(count).toBeGreaterThan(0);
   }
 });
+
+test("boss identities vary by seed, W50 is always Little Gigant, minibosses sit at W5/15/25/35/45", () => {
+  const { runPlan } = require("./campaign");
+  const { minibossOptions, newRun: nr } = require("./engine");
+  const plans = Array.from({ length: 40 }, (_, s) => runPlan(s * 7919));
+  plans.forEach((p) => {
+    expect(p[50]).toEqual(["little-gigant"]);
+    expect(p[10][0]).not.toBe(p[20][0]);
+    expect(p[30]).toHaveLength(2);
+  });
+  expect(new Set(plans.map((p) => p[10][0] + p[40][0])).size).toBeGreaterThan(3);
+  for (const act of ACTS) {
+    const minis = actMap(SEEDS[0], act).nodes.filter((n) => n.type === "miniboss");
+    expect(minis).toHaveLength(3);
+    minis.forEach((n) => expect(n.wave).toBe(act.fromWave + 4));
+  }
+  const opts = minibossOptions(nr(["mark", "axel", "nathan"]), { bossId: "occult", enemies: [{ level: 6 }] }, () => 0.3);
+  expect(opts).toHaveLength(2);
+});

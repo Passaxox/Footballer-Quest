@@ -277,12 +277,18 @@ export const generateWave = (run, random = Math.random) => {
 const ANOMALY_CAMEOS = ["byron", "xavier", "rococo", "torch", "gazelle", "kruger", "fidio"];
 const specialNode = (run, node, random) => {
   const act = actForWave(run.wave);
-  if (node.type === "boss") {
+  if (node.type === "boss" || node.type === "miniboss") {
     const boss = bossDef(node.actId, node.bossId);
+    const ids = [boss.leader, ...[...boss.members].sort(() => random() - 0.5).slice(0, node.type === "boss" || act.index >= 3 ? 2 : 1)];
+    if (node.type === "miniboss") {
+      const level = levelFor(run, random, "challenge", 2);
+      return { type: "battle", kind: "team", elite: true, miniboss: true, encounterType: boss.encounterType, teamId: boss.teamId, teamName: `Miniboss · ${boss.team}`,
+        intro: boss.intro, bossId: boss.id, enemies: ids.map((id) => createPlayer(id, level, random)) };
+    }
     const rules = getRules(run.rulesetId);
     const level = cappedEnemyLevel(run.wave + (rules.checkpoints[run.wave]?.levelOffset ?? rules.defaultBossLevelOffset), run.team, run.rulesetId, "boss");
     return { type: "battle", kind: "boss", encounterType: boss.encounterType, teamId: boss.teamId, teamName: boss.team, intro: boss.intro,
-      actId: node.actId, bossId: boss.id, introSeen: false, enemies: boss.ids.map((id) => createPlayer(id, level, random)) };
+      actId: node.actId, bossId: boss.id, introSeen: false, enemies: ids.map((id) => createPlayer(id, level, random)) };
   }
   if (node.type === "rival") {
     const ids = [...act.rival.pool].sort(() => random() - 0.5).slice(0, act.rival.count);
@@ -315,6 +321,22 @@ export const generateShop = (wave, random = Math.random) => {
   while (ids.length < 4) { const id = pick(SHOP_POOL, random); if (!ids.includes(id)) ids.push(id); }
   return ids.map((id) => ({ id, price: Math.round(ITEMS[id].price * (1 + wave * 0.01)) }));
 };
+
+// Miniboss: choice between two of {specific recruit, rare non-exclusive item, Warrior Spirit awakening}.
+const MINIBOSS_ITEMS = ["pallone", "fischietto", "talismano", "azzardo", "bibita"];
+export function minibossOptions(run, enc, random = Math.random) {
+  const boss = bossDef(null, enc.bossId);
+  const owned = ownedCharacterIds(run.team);
+  const locked = storyLockedVersions(run);
+  const recruitId = [boss.leader, ...boss.members].filter((id) => !owned.has(canonicalCharacterId(id)) && !locked.includes(resolveVersion(id)?.versionId)).sort(() => random() - 0.5)[0];
+  const spiritTarget = run.team.find((p) => spiritFor(p) && !p.spiritUnlocked);
+  const opts = [];
+  if (recruitId && run.team.length < 6) opts.push({ kind: "recruit", player: createPlayer(recruitId, Math.max(1, (enc.enemies[0]?.level || run.wave) - 2), random) });
+  if (spiritTarget) opts.push({ kind: "spirit", uid: spiritTarget.uid, name: spiritTarget.name, spirit: spiritFor(spiritTarget).name });
+  opts.push({ kind: "item", id: pick(MINIBOSS_ITEMS, random) });
+  if (opts.length < 2) opts.push({ kind: "item", id: pick(MINIBOSS_ITEMS.filter((i) => i !== opts[0].id), random) });
+  return opts.sort(() => random() - 0.5).slice(0, 2);
+}
 
 export const fusionUsed = (run) => (run?.stats?.fusions || 0) > 0;
 
@@ -519,6 +541,7 @@ export const applyItemTo = (item, p) => {
     case "scarpini": return recalcStats({ ...p, bonus: { ...p.bonus, spd: p.bonus.spd + 6 } });
     case "proteine": { const q = recalcStats({ ...p, bonus: { ...p.bonus, hp: p.bonus.hp + 15 } }); return { ...q, hp: p.hp === 0 ? 0 : Math.min(q.maxHp, q.hp + 15) }; }
     case "talismano": return { ...p, status: { ...p.status, talisman: true } };
+    case "medaglia": { const q = recalcStats({ ...p, bonus: { ...p.bonus, atk: p.bonus.atk + 4, def: p.bonus.def + 4, spd: p.bonus.spd + 4, hp: p.bonus.hp + 12 } }); return { ...q, hp: p.hp === 0 ? 0 : Math.min(q.maxHp, q.hp + 12) }; }
     default: return p;
   }
 };

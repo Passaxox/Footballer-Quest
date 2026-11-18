@@ -3,7 +3,7 @@ import { FINAL_WAVE } from "./data";
 
 export const OVERWORLD_NODE_LABELS = {
   battle: "Incontro", recruit: "Scouting", shop: "Negozio", training: "Allenamento", event: "Evento",
-  rival: "Rivale", anomaly: "Anomalia temporale", boss: "Boss",
+  rival: "Rivale", anomaly: "Anomalia temporale", boss: "Boss", miniboss: "Miniboss",
 };
 export const nodeRandom = seededRandom;
 

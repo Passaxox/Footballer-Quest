@@ -24,6 +24,9 @@ export const TEAMS = [
   { teamId: "raimon", displayName: "Raimon" },
   { teamId: "zeus", displayName: "Zeus" },
   { teamId: "genesis", displayName: "Genesis" },
+  { teamId: "occult", displayName: "Occult" },
+  { teamId: "rose-griffon", displayName: "Rose Griffon" },
+  { teamId: "brockenborg", displayName: "Brockenborg" },
   { teamId: "little-gigant", displayName: "Little Gigant" },
 ];
 export const ERAS = [{ eraId: "original", displayName: "Original" }, { eraId: "go", displayName: "GO" }];

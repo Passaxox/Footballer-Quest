@@ -15,7 +15,7 @@ const asPortrait = (v) => v && { uid: v.versionId, name: v.displayName, element:
 
 // Visual hint only: a deterministic face from the location pool, never the generated opponent.
 export const nodePortrait = (node) => {
-  if (node.type === "boss") return asPortrait(resolveVersion(bossDef(node.actId, node.bossId).leader));
+  if (node.type === "boss" || node.type === "miniboss") return asPortrait(resolveVersion(bossDef(node.actId, node.bossId).leader));
   if (node.type === "rival") return asPortrait(resolveVersion(actForWave(node.wave).rival.pool[0]));
   if (node.type !== "battle") return null;
   const pool = scenarioPool(node.locationId, node.wave, 4);

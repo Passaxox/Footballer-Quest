@@ -7,12 +7,13 @@ import { spiritFor } from "@/game/spirits";
 import { applyMixi } from "@/game/mixi";
 import { perkOffer, addRunPerk, runPerkFx, runSpiritReward } from "@/game/perks";
 import PerkOfferScreen from "@/components/game/PerkOfferScreen";
+import MinibossRewardScreen from "@/components/game/MinibossRewardScreen";
 import PerksScreen from "@/components/game/PerksScreen";
 import SaveCodeScreen from "@/components/game/SaveCodeScreen";
 import { BossIntro, Consequence, Anomaly } from "@/components/game/StoryScreen";
-import { beginOverworldNode } from "@/game/engine";
+import { beginOverworldNode, minibossOptions } from "@/game/engine";
 import "@/App.css";
-import { EVENTS, FINAL_WAVE } from "@/game/data";
+import { EVENTS, FINAL_WAVE, ITEMS } from "@/game/data";
 import { generateWave, epsilonRecruitOffer, recruitChallengePlayer, generateRewards, addItem, createPlayer, randomRosterId, enemiesForEffect, fuseRunPlayers, gainXp, recalcStats, chance, newRun, normalizeRun, resolveActiveUid, applyEventDamage, completeNonCombatNode, reportXpChanges, mergeXpReports } from "@/game/engine";
 import { loadMeta, saveMeta, loadRun, saveRun, clearRun, recordFinishedRun, normalizeMeta } from "@/game/storage";
 import { setSoundEnabled } from "@/game/audio";
@@ -80,6 +81,7 @@ function App() {
     }
     else if (p.type === "consequence") { setCtx(p.context); setScreen("consequence"); }
     else if (p.type === "perk") setScreen("perk");
+    else if (p.type === "miniboss-reward") { setCtx(p.context); setScreen("miniboss-reward"); }
     else if (p.type === "recruit") { setCtx({ mode: "encounter", offer: p.player, price: p.price, after: "advance", ...p.context }); setScreen("recruit"); }
     else if (p.type === "reward") { setCtx(p.context); setScreen("reward"); }
     else setScreen(p.type);
@@ -136,6 +138,10 @@ function App() {
     if (boss && enc.actId) {
       updateRun({ ...r, pending: { type: "consequence", actId: enc.actId, bossId: enc.bossId, context: base, overworldNodeId: enc.overworldNodeId } });
       setCtx(base); setScreen("consequence"); return;
+    }
+    if (enc.miniboss) {
+      const pending = { type: "miniboss-reward", teamName: enc.teamName, options: minibossOptions(r, enc), context: base };
+      updateRun({ ...r, pending }); setCtx(base); setScreen("miniboss-reward"); return;
     }
     if (enc.kind === "anomaly") {
       const target = r.team.find((p) => p.uid === enc.spiritUid && spiritFor(p));
@@ -273,9 +279,31 @@ function App() {
       r = { ...r, team: r.team.map((p, i) => (i === idx ? { ...swapped, hp: swapped.maxHp } : p)) };
       updateMeta(recruitVersion(unlockStarter(meta, unlockId), unlockId));
     }
-    const context = run.pending.context;
+    r = { ...r, items: addItem(r.items, "medaglia") };
+    const context = { ...run.pending.context, notice: "Ricompensa esclusiva del boss: Medaglia del Checkpoint." };
     const perkChoices = perkOffer(meta, r);
     if (perkChoices.normal.length || perkChoices.cursed) { const next = updateRun({ ...r, pending: { type: "perk", offer: perkChoices, context } }); gotoPending(next); return; }
+    updateRun({ ...r, pending: { type: "reward", context } });
+    setCtx(context); setScreen("reward");
+  };
+
+  const onMinibossPick = (o) => {
+    if (!isCurrentAction() || run.pending?.type !== "miniboss-reward") return;
+    let r = run;
+    let notice = null;
+    if (o?.kind === "recruit" && r.team.length < 6 && canRecruitPlayer(r.team, o.player)) {
+      r = { ...r, team: [...r.team, o.player], stats: { ...r.stats, recruits: r.stats.recruits + 1 } };
+      updateMeta(recruitVersion(meta, o.player.versionId)); notice = `${o.player.name} si unisce alla squadra!`;
+    }
+    if (o?.kind === "item") { r = { ...r, items: addItem(r.items, o.id) }; notice = `Ottenuto: ${ITEMS[o.id].name}`; }
+    if (o?.kind === "spirit") {
+      r = { ...r, team: r.team.map((p) => (p.uid === o.uid ? { ...p, spiritUnlocked: true } : p)) };
+      notice = `Spirito Guerriero sbloccato: ${o.name} può evocare ${o.spirit}!`;
+      const target = run.team.find((p) => p.uid === o.uid);
+      const formId = `${target.characterId || target.baseId}:keshin`;
+      if (!(meta.forms || []).some((f) => f.formId === formId)) updateMeta({ ...meta, forms: [...(meta.forms || []), { formId, kind: "keshin", name: o.spirit, owner: o.name }] });
+    }
+    const context = { ...run.pending.context, notice };
     updateRun({ ...r, pending: { type: "reward", context } });
     setCtx(context); setScreen("reward");
   };
@@ -298,6 +326,7 @@ function App() {
       case "collection": return <CollectionScreen meta={meta} onBack={() => setScreen("title")} />;
       case "perks": return <PerksScreen meta={meta} onUpdate={updateMeta} onBack={() => setScreen("title")} />;
       case "savecode": return <SaveCodeScreen meta={meta} run={run} onImport={(data) => { updateMeta(normalizeMeta(data.meta)); let imported = null; try { imported = data.run && Array.isArray(data.run.team) && data.run.team.length ? normalizeRun(data.run) : null; } catch { imported = null; } if (imported) updateRun(imported); else { clearRun(); runRef.current = null; setRun(null); } setScreen("title"); }} onBack={() => setScreen("title")} />;
+      case "miniboss-reward": return <MinibossRewardScreen key={run.wave} pending={run.pending} onPick={onMinibossPick} />;
       case "perk": return <PerkOfferScreen key={run.wave} run={run} meta={meta} offer={run.pending.offer} onPick={onPickPerks} />;
       case "hub": return <HubScreen run={run} onSelectNode={selectNode} onPause={() => { saveRun(run); setCtx({}); setScreen("title"); }} onNext={next} onTeam={() => setScreen("team")} onIntroSeen={(i) => updateRun({ ...run, overworld: { ...run.overworld, introSeen: i } })} onAbandon={() => { if (window.confirm("Abbandonare la run? Il progresso andrà perso.")) finishRun(run, "lose"); }} />;
       case "team": return <TeamScreen run={run} onUpdate={(patch) => updateRun({ ...run, ...patch })} onFusion={() => setScreen("fusion")} onBack={() => setScreen("hub")} />;

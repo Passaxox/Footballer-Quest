@@ -87,6 +87,7 @@ const itemDefinitions = {
   guanti: { id: "guanti", rarity: "UNCOMMON", name: "Guanti Rinforzati", desc: "+5 DIF permanente a un giocatore.", price: 120, battle: false },
   scarpini: { id: "scarpini", rarity: "UNCOMMON", name: "Scarpini Turbo", desc: "+6 VEL permanente a un giocatore.", price: 120, battle: false },
   proteine: { id: "proteine", rarity: "UNCOMMON", name: "Proteine Kudo", desc: "+15 HP max permanente a un giocatore.", price: 120, battle: false },
+  medaglia: { id: "medaglia", rarity: "EPIC", shopWeight: 0, dropFactor: 0, exclusive: true, name: "Medaglia del Checkpoint", desc: "Esclusiva dei boss: +4 ATK, +4 DIF, +4 VEL e +12 HP max permanenti a un giocatore.", price: 400, battle: false },
   trofeo: { id: "trofeo", rarity: "UNCOMMON", dropFactor: 8/9, name: "Mini Trofeo", desc: "Tutta la squadra guadagna esperienza.", price: 100, battle: false },
   fischietto: { id: "fischietto", rarity: "RARE", dropFactor: 4/5, name: "Fischietto d'Argento", desc: "Il prossimo avversario singolo si unirà a te se lo sconfiggi.", price: 200, battle: false },
   talismano: { id: "talismano", rarity: "RARE", battleOnly: true, name: "Talismano Elementale", desc: "In battaglia: la tua mossa colpisce sempre come superefficace per 1 turno.", price: 110, battle: true },

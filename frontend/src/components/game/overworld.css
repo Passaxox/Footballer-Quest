@@ -90,3 +90,6 @@
 .ow-perk-banner { position:absolute; left:8px; right:8px; top:100%; z-index:30; box-shadow:0 6px 16px #000a; background:#0b101df2; border:2px solid var(--ow-accent); padding:6px 8px; font-size:16px; line-height:1.1; color:#e2e8f0; animation:story-in .2s ease-out; }
 .ow-perk-banner b { display:block; font-family:'Press Start 2P',monospace; font-size:8px; color:var(--ow-accent); margin-bottom:3px; }
 @keyframes story-in { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+
+.ow-type-miniboss .ow-node { width:58px; height:58px; border-radius:8px; border:3px solid #fb923c; box-shadow:0 0 10px #fb923c88; }
+.ow-type-miniboss .ow-place { color:#fdba74; font-family:'Press Start 2P',monospace; font-size:6px; line-height:1.4; }

@@ -1,0 +1,78 @@
+// Boss/miniboss pools tagged by arc and difficulty (reusable by a future 100-wave campaign).
+// Only canon dataset v2 teams with verified members in the catalog; reduced teams are flagged.
+const v2 = (team, ids) => ids.map((id) => `${id}:${team}`);
+const DIALOGUE = (rival, captain) => [{ who: "rival", text: rival }, { who: "captain", text: captain }];
+
+export const BOSS_POOL = [
+  { id: "royal", team: "Royal Academy", teamId: "royal-academy", encounterType: "canonical-team", arc: "ie1", difficulty: 3,
+    leader: "jude:royal", members: ["herman-waldon:royal", "daniel-hatch:royal", "david", "joseph", "peter-drent:royal", "alan-master:royal"],
+    intro: "La Royal Academy di Ray Dark vi sbarra la strada.",
+    dialogue: DIALOGUE("La Royal non lascia spazio al caso. Mostratemi il vostro calcio.", "Allora ve lo dimostreremo in campo, Jude!") },
+  { id: "occult", team: "Occult", teamId: "occult", encounterType: "canonical-team", arc: "ie1", difficulty: 1,
+    leader: "burado-kiba:occult", members: v2("occult", ["nata-juuzou", "yuukoku-hiroyuki", "reigen-michihisa", "kinoi-mami", "sanzu-wataru", "yatsuhaka-tataru"]),
+    intro: "L'Occult scende in campo tra nebbia e maledizioni.",
+    dialogue: DIALOGUE("Le nostre maledizioni vi faranno tremare le gambe.", "Non crediamo ai fantasmi: crediamo nel calcio!") },
+  { id: "zeus", team: "Zeus", teamId: "zeus", encounterType: "canonical-team", arc: "ie1", difficulty: 4,
+    leader: "byron", members: ["poseidon:zeus", "athena:zeus", "apollon:zeus", "hephais:zeus", "ares:zeus", "hermes:zeus"],
+    intro: "Gli dèi dello stadio scendono in campo. Byron Love sorride con aria di superiorità.", unlock: "byron:base",
+    dialogue: DIALOGUE("Gli umani non possono battere un dio.", "Il calcio non è matematica. È cuore!") },
+  { id: "epsilon-kai", team: "Epsilon Kai", teamId: "epsilon", encounterType: "canonical-team", arc: "ie2", difficulty: 4,
+    leader: "dvalin:epsilon-ie2", members: ["tytan:epsilon-ie2", "krypto:epsilon-ie2", "zell:epsilon-ie2"],
+    intro: "Epsilon torna potenziato: è l'Epsilon Kai.", dialogue: DIALOGUE("Questa volta Epsilon non perderà.", "Vi batteremo di nuovo!") },
+  { id: "prominence", team: "Prominence", teamId: "prominence", encounterType: "canonical-team", arc: "ie2", difficulty: 3,
+    leader: "torch", members: v2("prominence", ["claude-beacons", "nepper", "heat", "rean", "grent", "barra"]),
+    intro: "Prominence, la squadra del fuoco di Torch, incendia il campo.", unlock: "torch:base",
+    dialogue: DIALOGUE("Vi brucerò fino all'ultima scintilla!", "Le nostre fiamme sono più calde delle tue!") },
+  { id: "ghiaccio", team: "Selezione Alius · Ghiaccio", teamId: null, encounterType: "special", arc: "ie2", difficulty: 3, reduced: "Diamond Dust incompleta nel dataset: selezione dichiarata",
+    leader: "gazelle", members: ["krypto:epsilon-ie2", "zell:epsilon-ie2"], intro: "Gazelle guida una selezione di rivali del Ghiaccio.", unlock: "gazelle:base",
+    dialogue: DIALOGUE("Il fuoco della vostra passione si spegnerà nel ghiaccio.", "Allora lo scioglieremo!") },
+  { id: "genesis", team: "The Genesis", teamId: "genesis", encounterType: "canonical-team", arc: "ie2", difficulty: 5, reduced: "Solo membri con posizione verificata",
+    leader: "xavier", members: v2("genesis", ["gale", "wheeze", "ulvida"]), intro: "The Genesis, il rango supremo dell'Alius. Xavier Foster vi aspetta.", unlock: "xavier:base",
+    dialogue: DIALOGUE("Siete pronti alla Genesi?", "Siamo pronti a tutto, Xavier!") },
+  { id: "alius-sel", team: "Selezione Alius", teamId: null, encounterType: "special", arc: "ie2", difficulty: 4,
+    leader: "xavier", members: ["jordan", "dvalin", "torch"], intro: "Selezione di rivali Alius: i capitani uniscono le forze.", unlock: "xavier:base",
+    dialogue: DIALOGUE("Questa è una selezione dei migliori dell'Alius.", "E noi siamo la squadra che li ha battuti tutti!") },
+  { id: "fire-dragon", team: "Fire Dragon", teamId: "fire-dragon", encounterType: "special", arc: "ie3", difficulty: 3, reduced: "Solo i giocatori chiave del dataset",
+    leader: "chae", members: ["byron", "gazelle"], intro: "La Fire Dragon coreana, con Byron e Gazelle in prestito.",
+    dialogue: DIALOGUE("Il drago di fuoco non perdona.", "Nemmeno il fulmine di Inazuma!") },
+  { id: "knights", team: "Knights of Queen", teamId: "knights-of-queen", encounterType: "canonical-team", arc: "ie3", difficulty: 4,
+    leader: "edgar", members: v2("knights-of-queen", ["philip-owen", "peter-cole", "gary-links", "freddie-mcqueen", "johnny-gascoigne"]),
+    intro: "L'Inghilterra: Edgar Valtinas e i Knights of Queen.", dialogue: DIALOGUE("Un cavaliere non si arrende mai.", "Neanche un calciatore!") },
+  { id: "empire", team: "The Empire", teamId: "the-empire", encounterType: "canonical-team", arc: "ie3", difficulty: 4,
+    leader: "teres", members: v2("the-empire", ["leone-batigo", "diego-oro", "esteban-carlos", "jorge-ortega", "julio-acosta"]),
+    intro: "L'Argentina di The Empire, un muro difensivo impenetrabile.", dialogue: DIALOGUE("La nostra difesa è un impero.", "E noi lo conquisteremo!") },
+  { id: "rose-griffon", team: "Rose Griffon", teamId: "rose-griffon", encounterType: "canonical-team", arc: "ie3", difficulty: 3,
+    leader: "pierre-godin:rose-griffon", members: v2("rose-griffon", ["jerome-eloi", "julien-rousseau", "laurent-perec", "ladji-paara", "ronny-weiss"]),
+    intro: "La Francia di Rose Griffon, eleganza e velocità.", dialogue: DIALOGUE("Giochiamo con stile.", "Noi giochiamo per vincere!") },
+  { id: "brockenborg", team: "Brockenborg", teamId: "brockenborg", encounterType: "canonical-team", arc: "ie3", difficulty: 3, reduced: "Solo 6 posizioni verificate",
+    leader: "thorsten-berger:brockenborg", members: v2("brockenborg", ["theodor-ulrich", "alexander-hausen", "heinrich-fritz"]),
+    intro: "La Germania di Brockenborg, disciplina assoluta.", dialogue: DIALOGUE("Ordine e precisione.", "E noi porteremo il caos del fulmine!") },
+  { id: "unicorn", team: "Unicorn", teamId: "unicorn", encounterType: "special", arc: "ie3", difficulty: 3, reduced: "Posizioni Unicorn in gran parte non verificate",
+    leader: "kruger", members: ["dylan", "erik", "bobby", "steve-woodmack:unicorn"], intro: "Gli USA di Unicorn, con Erik e Bobby trasferiti.",
+    dialogue: DIALOGUE("Vediamo cosa sa fare il Giappone.", "Ve lo mostriamo subito!") },
+  { id: "orpheus", team: "Orpheus", teamId: "orpheus", encounterType: "special", arc: "ie3", difficulty: 4, reduced: "Solo Paolo, Fidio e Nakata verificati",
+    leader: "paolo", members: ["fidio", "nakata-hidetoshi:orpheus"], intro: "L'Italia di Orpheus: Paolo Bianchi e Fidio Aldena.",
+    dialogue: DIALOGUE("Il calcio italiano è arte.", "E noi siamo un fulmine!") },
+  { id: "little-gigant", team: "Little Gigant", teamId: "little-gigant", encounterType: "canonical-team", arc: "ie3", difficulty: 5,
+    leader: "rococo", members: v2("little-gigant", ["maxi-kuu", "ghoshu-flare", "drago-hill", "shinti-hanpa", "windy-fasta"]),
+    intro: "Finale del FFI: i Piccoli Giganti di Cotarl e il leggendario Rococo Urupa.",
+    dialogue: DIALOGUE("Il mondo intero è qui per vedere chi è il più forte.", "Il nostro viaggio è iniziato su un campetto. Finisce qui, con la coppa!") },
+];
+export const POOL_BY_ID = Object.fromEntries(BOSS_POOL.map((b) => [b.id, b]));
+
+// Per-wave pools. W50 is fixed. Picks avoid repeating a team already used earlier in the run.
+export const PHASE_POOLS = {
+  5: { kind: "miniboss", pool: ["occult", "royal"] },
+  10: { kind: "boss", pool: ["royal", "occult"] },
+  15: { kind: "miniboss", pool: ["occult", "royal", "zeus"] },
+  20: { kind: "boss", pool: ["zeus", "royal"] },
+  25: { kind: "miniboss", pool: ["epsilon-kai", "prominence", "ghiaccio"] },
+  30: { kind: "boss", pool: ["epsilon-kai", "prominence", "ghiaccio"], branches: 2 },
+  35: { kind: "miniboss", pool: ["prominence", "epsilon-kai", "ghiaccio", "alius-sel"] },
+  40: { kind: "boss", pool: ["genesis", "alius-sel", "fire-dragon", "knights", "empire", "rose-griffon", "unicorn", "orpheus"] },
+  45: { kind: "miniboss", pool: ["orpheus", "knights", "empire", "brockenborg", "unicorn", "rose-griffon", "fire-dragon"] },
+  50: { kind: "boss", pool: ["little-gigant"] },
+};
+
+// Data gaps from dataset v2, shown in the docs instead of inventing members.
+export const MISSING_TEAMS = ["Kirkwood", "Brainwashing", "Wild", "Dark Emperors", "Gemini Storm (solo Jordan)", "Diamond Dust", "The Kingdom", "Red Matador"];

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createPlayer } from "@/game/engine";
 import { canonicalCharacterId } from "@/game/catalog";
-import { ACTS, bossDef } from "@/game/campaign";
+import { ACTS, bossDef, actBosses, actMiniboss } from "@/game/campaign";
 import { spiritFor, spiritEligible } from "@/game/spirits";
 import { canReceiveMixi, mixiPassive } from "@/game/mixi";
 import { Avatar, Btn, PlayerCard } from "./ui";
@@ -15,14 +15,17 @@ const Frame = ({ act, testId, children }) => (
 );
 
 export function ActIntro({ run, act, onStart }) {
-  const rivalIds = act.bosses.map((b) => b.leader);
+  const bosses = actBosses(run.overworld.contentSeed, act);
+  const mini = actMiniboss(run.overworld.contentSeed, act);
+  const rivalIds = [mini.leader, ...bosses.map((b) => b.leader)];
   return (
     <Frame act={act} testId="act-intro">
       <div className="story-eyebrow">ATTO {act.index} / {ACTS.length} · W{act.fromWave}–{act.toWave}</div>
       <h1 className="story-title" data-testid="act-intro-title">{act.title}</h1>
       <div className="story-rivals">{rivalIds.map((id) => <Avatar key={id} p={portrait(id)} size={84} />)}</div>
       <section className="story-card"><MapPin size={16} /><div><b>Dove siamo</b><p>{act.where}</p></div></section>
-      <section className="story-card"><Swords size={16} /><div><b>Chi affrontiamo</b><p>{act.who}</p></div></section>
+      <section className="story-card"><Swords size={16} /><div><b>Chi affrontiamo</b><p>{act.who}</p>
+        <p data-testid="act-intro-bosses" className="text-amber-200">Miniboss W{act.fromWave + 4}: {mini.team} · Boss W{act.toWave}: {bosses.map((b) => b.team).join(" oppure ")}</p></div></section>
       <section className="story-card"><Flag size={16} /><div><b>Perché conta</b><p>{act.why}</p></div></section>
       <Btn data-testid="act-intro-start" variant="primary" className="w-full mt-auto" onClick={onStart}>Si parte!</Btn>
     </Frame>
@@ -56,7 +59,7 @@ export function BossIntro({ run, encounter, onStart }) {
 export function Consequence({ run, pending, onResolve }) {
   const act = ACTS.find((a) => a.id === pending.actId);
   const boss = bossDef(pending.actId, pending.bossId);
-  const unlockId = boss.unlock || act.consequence.unlock;
+  const unlockId = act.consequence.unlock || boss.unlock;
   const offer = useMemo(() => unlockId && createPlayer(unlockId, Math.max(1, run.wave - 1)), [unlockId, run.wave]);
   const sameIdx = offer ? run.team.findIndex((p) => !p.fused && canonicalCharacterId(p) === canonicalCharacterId(offer)) : -1;
   const sameVersion = sameIdx >= 0 && run.team[sameIdx].versionId === offer.versionId;
@@ -64,7 +67,8 @@ export function Consequence({ run, pending, onResolve }) {
     <Frame act={act} testId="consequence-screen">
       <div className="story-eyebrow">ATTO {act.index} COMPLETATO</div>
       <h1 className="story-title" data-testid="consequence-title">{act.consequence.title}</h1>
-      <p className="story-sub">{act.consequence.text}</p>
+      <p className="story-sub">{act.consequence.text.replace("{boss}", boss.team)}</p>
+      <p data-testid="consequence-exclusive" className="story-card">Ricompensa esclusiva: Medaglia del Checkpoint (+4 ATK/DIF/VEL, +12 HP a un giocatore).</p>
       {offer && <section className="story-card story-unlock" data-testid="consequence-unlock">
         <Sparkles size={16} /><div className="flex-1 min-w-0"><b>Nuova versione sbloccata</b><p>{act.consequence.unlockText}</p>
           <p className="text-amber-200">Sbloccato anche come titolare per le prossime run.</p>

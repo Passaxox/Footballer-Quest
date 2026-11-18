@@ -1,3 +1,4 @@
+import { CANON_V2_ROWS } from "./catalogCanonV2";
 // Portrait identities: user VERIFIED mapping in docs/royal-zeus-assets.json.
 // Roles follow the original Football Frontier lineup (see integration notes).
 // Elements, stats, tier and generic moves are authored gameplay balance, not DS stat data.
@@ -285,5 +286,16 @@ for (const [id, name, role, element, rarityId] of epsilon) {
     encounterTier: 3,
   });
   // Same role budgets/generic techniques as Royal/Zeus; rarity never scales power.
+  EXPANSION_MOVES.push({ moveId: `${versionId}:primary`, element, ...moveProfiles[role] });
+}
+
+// Canon dataset v2 batch: verified rosters for boss/miniboss pools (reduced where positions are unverified).
+for (const [id, name, role, element, team, arcId, gameOrigin, tier] of CANON_V2_ROWS) {
+  const versionId = `${id}:${team}`;
+  EXPANSION_CHARACTERS.push({ characterId: id, displayName: name });
+  EXPANSION_VERSIONS.push({ versionId, characterId: id, legacyRosterId: null, displayName: name, kind: "player", role, gender: null,
+    spriteId: `canon-${id}`, teamTags: [team], primaryTeamId: team, legacyOnly: false, element, types: [element],
+    baseStats: { ...profiles[role] }, primaryMoveId: `${versionId}:primary`, secondaryMoveId: null, rarityId: null,
+    variantId: "canon-v2", categoryId: null, arcId, eraId: "original", gameOrigin, encounterTier: tier });
   EXPANSION_MOVES.push({ moveId: `${versionId}:primary`, element, ...moveProfiles[role] });
 }
