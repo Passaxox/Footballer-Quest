@@ -86,3 +86,9 @@ android-sdk/
 # Private Android signing material
 *.jks
 *.keystore
+.env
+.env.*
+*.env
+credentials.json
+*.key
+.credentials
