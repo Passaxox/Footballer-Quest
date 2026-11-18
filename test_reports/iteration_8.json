@@ -1,0 +1,17 @@
+{
+  "summary": "Frontend-only retest of the iteration_7 fixes, done with Playwright at 400x860 on the preview URL. ALL PASS. (1) Act intro: tested 11 fresh runs and 4 seeds x acts 2-5 (localStorage jumps to W11/21/31/41). The crests never contain <img> (imgs=0) and render immediately as shield placeholders. Initials come from the team name only: Occult=O, Royal Academy=RA, Zeus=Z, The Empire=E, Epsilon Kai=EK, Selezione Alius=SA, Selezione Alius · Ghiaccio=AG, Knights of Queen=KQ, Little Gigant=LG. Captions read 'Miniboss · X' / 'Boss · Y'. X was never equal to Y, and act-intro-why mentioned both X and Y in every case. Contrast: Zeus is #854d0e on #f8fafc and The Empire is #0c4a6e on #7dd3fc, both readable dark text. Act 1 matchups vary across random seeds (RA/Occult, Occult/RA, Zeus/Occult, RA/Zeus, Occult/Zeus). (2) Talenti tab opens without crashing. With 20 PT, Colpo di Testa and the Maestria node are locked at first; buying Tiro di Base takes the balance to 19 and unlocks Colpo di Testa. All 3 tabs are present. (3) The act 1 consequence with the Occult boss (pending injected at W11) reads: 'La vittoria su Occult fa il giro di Tokyo... Jude Sharp, che vi osservava dalla tribuna, lascia la Royal e sceglie la Raimon.' It reads coherently. (4) Abandoning at W1: the end screen has no journey-log and no empty panel. The uncompleted challenges are rgb(148,163,184) (slate-400) and readable. No page errors.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "TeamCrest: CREST_FILES is an empty Set, so the <img> path is dead code until crests are added. That is fine, but the useState initialiser will not react if the teamId prop changes on the same instance (minor).",
+    "Notes from iteration_7 that are still open (not retested): runTalentPoints uses floor(reached/10), and the W10 threshold for 'Nessuna fuga' is ambiguous."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "seed_data_creation": "None. Only browser localStorage was used, in disposable Playwright contexts.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "To inject the consequence screen: create a run, set run.pending={type:'consequence',actId:'act1',bossId:'occult',context:{}}, wave=11, completedWave=10, introSeen=1, then reload -> continue-run-btn -> next-wave-btn. The act intro crest initials are in the first inner div of act-intro-crest-N, and the caption is in its span."
+}

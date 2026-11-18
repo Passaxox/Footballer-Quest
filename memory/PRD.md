@@ -42,9 +42,14 @@ Gioco mobile-first, misto Pokerogue x Pokelike, a tema Inazuma Eleven: lotta 1v1
 - Miniboss W5/15/25/35/45 (tutte le corsie), premio a scelta tra due: reclutamento specifico, oggetto raro, risveglio Spirito. Boss: Medaglia del Checkpoint esclusiva.
 - Dataset canon v2: 78 giocatori con posizione verificata (`catalogCanonV2.js`, avatar pixel senza sprite DS). Squadre mancanti/ridotte: Kirkwood, Brainwashing, Wild, Dark Emperors, Gemini Storm (solo Jordan), Diamond Dust, The Kingdom, Red Matador; Genesis/Unicorn/Orpheus ridotte.
 
+## Iterazione 06/2026 · Talenti, Sfide, fix intro atto
+- Fix: testo "Perché conta" generato da miniboss/boss estratti; nessun duplicato miniboss/boss nello stesso atto (runPlan sameAct); stemmi = TeamCrest (placeholder con iniziali/colore/nome, immagini reali da /public/crests/<teamId>.png aggiungendo l'id in CREST_FILES).
+- Talenti (`game/talents.js`, TalentsPanel): 3 vie (Bomber/Portiere/Mister) + maestrie, Punti Talento da boss battuti e Checkpoint perfetti, snapshot run.talentFx a inizio run, azzeramento con rimborso.
+- Sfide: Checkpoint perfetto, Nessuna fuga, Cuore Raimon, Pochi ma buoni → Spirito extra a fine run (EndScreen).
+- Rimandati alla versione 100 wave: personaggi GO, Armatura Spirito.
+
 ## Backlog
 - P1: sprite DS per i giocatori canon v2
-- P1: Talenti (albero abilità, secondo giro meta-progressione)
 - P1: Armatura (Armed) dello Spirito Guerriero
 - P2: aggiungere personaggi GO (Tenma, Tsurugi, Shindou) con sprite per più Spiriti canon
 - P1: Torre delle Sfide (dopo prima run vinta, roster scoperto, record separato, sinergie x1.5)
