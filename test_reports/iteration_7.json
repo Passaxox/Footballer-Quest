@@ -1,0 +1,36 @@
+{
+  "summary": "Frontend-only test, done with Playwright at 400x860 on the preview URL plus a temporary Jest check over 3000 seeds (file deleted afterwards). BUG FIX verified: in 7 fresh runs plus 4 seeds x 5 acts (via localStorage jumps), the miniboss and boss were never the same team. act-intro-why and act-intro-bosses always name the same miniboss/boss as the crests (for example 'superare Zeus e poi battere Occult'). The seed check found 0 duplicates and why-text coherence in every case. Crests are shield badges in team colours (no pixel face, skull or checkered pattern). Map: leaders without a DS sprite (Occult, Rose Griffon, Brockenborg) render map-crest-<nodeId>; the others keep their sprite. CRITICAL BUG FOUND AND FIXED: the Talenti tab crashed the whole app ('Cannot read properties of undefined (reading nodes)'). After the fix: points 20; Colpo di Testa locked until Tiro di Base is at 1; m-bomber locked until tiro-base, testa and corsa are all at 3, then costs 3 PT (11 -> 8); the change survives a reload; talents-reset refunds everything (back to 20, talents {}). Sfide tab lists all 4 challenges. Talent effects: with Tiro di Base 1, run.talentFx.atkPct=2; Tattica del Nonno gives money 200 instead of 100. W10 boss won with boosted stats and no KO: run.challenges.perfect=1. Abandoning at W11 showed '+85 Spirito di squadra · +2 Punti Talento' with Checkpoint perfetto and Nessuna fuga ticked, and meta went 0->85 spirit, 0->2 PT. Fleeing at W11 set challenges.fled=true; abandoning showed '+37 · +1' with Nessuna fuga not awarded. Jest: 119 pass, 2 pre-existing unrelated failures.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "TalentsPanel", "issue": "FIXED by testing agent. TalentNode got raw TALENT_PATHS[].nodes entries, which have no path/index fields. talentAvailable() then ran TALENT_PATHS.find(p => p.id === undefined).nodes and threw a TypeError, so opening meta-tab-talents blanked the app. Fix: pass TALENT_BY_ID[n.id].", "selector": "[data-testid='meta-tab-talents']", "priority": "CRITICAL"},
+      {"component": "TeamCrest / ActIntro", "issue": "The crest initials include the role prefix, because ActIntro passes name='Miniboss · Occult' and initials() runs on that string. Crests read 'MO', 'BRA', 'MZ', 'MEK', 'BE', 'BSA' instead of 'O', 'RA', 'Z', 'EK', 'E', 'SA'. Fix: pass the team name for the initials and a separate label for the caption.", "selector": "[data-testid='act-intro-crest-0']", "priority": "MEDIUM"},
+      {"component": "TeamCrest", "issue": "/crests/ does not exist, and the SPA fallback answers /crests/<id>.png with 200 text/html. Every crest with a teamId first renders an <img> that is blank or broken, then switches to the placeholder after onError. A screenshot taken right after the intro opened showed empty crest slots. Fix: use a manifest of the crests that exist, or default to the placeholder.", "selector": "[data-testid^='act-intro-crest-']", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Act intro crests", "issues": ["The Empire crest (#7dd3fc background, #f8fafc text) and the Zeus crest (#f8fafc background, #ca8a04 text) have low contrast, so the initials are hard to read."]},
+      {"screen": "EndScreen", "issues": ["When JourneyLog returns null (abandon at W1), an empty bordered Panel is still drawn.", "Uncompleted challenges use text-slate-500 on a dark background, which is low contrast."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Keep (or rework) the TalentsPanel fix: pass the TALENT_BY_ID node, or make talentAvailable() not depend on node.path/index. Add a render test for TalentsPanel.",
+    "Compute crest initials from the team name, not from the 'Miniboss · X' / 'Boss · Y' caption.",
+    "Avoid the blank-image flash for crests that do not exist (crest manifest or placeholder by default).",
+    "Narrative: the act 1 consequence text is fixed to 'Jude Sharp lascia la Royal e sceglie la Raimon' and unlocks jude:base even when the W10 boss was Occult. This is the same kind of incoherence as the user's bug report.",
+    "Improve the contrast of the light-coloured crest palettes (the-empire, zeus)."
+  ],
+  "critical_code_review_comments": [
+    "talents.js talentAvailable depends on derived fields (path, index) that exist only in TALENT_BY_ID. Fragile: the unit tests pass but the UI crashed.",
+    "runTalentPoints counts floor(reached/10), not the bosses actually beaten. This is equivalent in normal play, but a save that jumps waves earns points without a boss win.",
+    "Nessuna fuga uses reached = wave-1 on a loss, so losing at the W10 boss does not earn it, although the text says 'Arriva almeno alla W10'. The wording or the threshold is ambiguous.",
+    "The talentFx 'money' key also flows into runPerkFx. It is harmless but unused there."
+  ],
+  "updated_files": ["/app/frontend/src/components/game/TalentsPanel.jsx"],
+  "success_rate": {"backend": "N/A", "frontend": "92% (all requested flows pass after the Talenti crash fix; crest initials bug remains)"},
+  "seed_data_creation": "None. Only browser localStorage was used, in disposable Playwright contexts.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Each browser_automation call gets a fresh localStorage, so do the whole flow in one script. Jump: run.wave=N, pending=null, overworld.completedWave=N-1, path=[], selectedNodeId=null, introSeen=act-1, then reload and click continue-run-btn. Boost: base/atk 3000, def 5000, spd 3000. Fight loop: click battle-acknowledge, pre-battle-keep or attack-button. Abandon: details-btn then abandon-btn (accept the confirm). Seeds 3277043427 and 3722705318 give the W10 Occult boss with map-crest-act1:boss:occult. Seed 1 act5 gives a Brockenborg miniboss crest."
+}

@@ -27,7 +27,8 @@ export const TALENT_BY_ID = Object.fromEntries(NODES.map((n) => [n.id, n]));
 export const talentLevel = (meta, id) => meta?.talents?.[id] || 0;
 export const talentCost = (node) => (node.mastery ? 3 : 1);
 // A node needs the previous one at level 1; a mastery needs all previous nodes maxed.
-export const talentAvailable = (meta, node) => {
+export const talentAvailable = (meta, raw) => {
+  const node = TALENT_BY_ID[raw.id];
   const path = TALENT_PATHS.find((p) => p.id === node.path).nodes;
   if (node.mastery) return path.slice(0, node.index).every((n) => talentLevel(meta, n.id) >= n.values.length);
   return node.index === 0 || talentLevel(meta, path[node.index - 1].id) > 0;

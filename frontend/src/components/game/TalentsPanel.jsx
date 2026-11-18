@@ -1,4 +1,4 @@
-import { TALENT_PATHS, talentLevel, talentCost, talentAvailable, buyTalent, resetTalents, CHALLENGES } from "@/game/talents";
+import { TALENT_PATHS, TALENT_BY_ID, talentLevel, talentCost, talentAvailable, buyTalent, resetTalents, CHALLENGES } from "@/game/talents";
 import { sfx } from "@/game/audio";
 import { Btn } from "./ui";
 import { Star, Lock } from "lucide-react";
@@ -29,7 +29,7 @@ export function TalentsPanel({ meta, onUpdate }) {
       {TALENT_PATHS.map((p) => (
         <section key={p.id} data-testid={`talent-path-${p.id}`} className="space-y-2">
           <div className="font-pixel text-[9px] text-amber-300 uppercase">{p.name}</div>
-          <div className="grid grid-cols-2 gap-2">{p.nodes.map((n) => <TalentNode key={n.id} node={n} meta={meta} onUpdate={onUpdate} />)}</div>
+          <div className="grid grid-cols-2 gap-2">{p.nodes.map((n) => <TalentNode key={n.id} node={TALENT_BY_ID[n.id]} meta={meta} onUpdate={onUpdate} />)}</div>
         </section>
       ))}
       <p className="font-body text-sm text-slate-400">Guadagni 1 Punto Talento per ogni boss battuto e 1 per ogni Checkpoint perfetto. I talenti sono sempre attivi in ogni run. Le maestrie richiedono tutta la via al massimo.</p>

@@ -16,7 +16,7 @@ export const ACTS = [
     ],
     rival: { teamName: "Royal Academy", teamId: "royal-academy", count: 2, pool: ["jude:royal", "david", "joseph", "herman-waldon:royal", "daniel-hatch:royal", "peter-drent:royal", "ben-simmons:royal", "alan-master:royal", "gus-martin:royal"],
       intro: "Gli esploratori della Royal Academy vi osservano da bordo campo. «Vediamo se meritate la nostra attenzione.»" },
-    consequence: { title: "Accesso al Football Frontier", text: "La vittoria su {boss} fa il giro di Tokyo: la vostra squadra è iscritta al Football Frontier. Jude Sharp lascia la Royal e sceglie la Raimon.",
+    consequence: { title: "Accesso al Football Frontier", text: "La vittoria su {boss} fa il giro di Tokyo: la vostra squadra è iscritta al Football Frontier. Jude Sharp, che vi osservava dalla tribuna, lascia la Royal e sceglie la Raimon.",
       unlock: "jude:base", unlockText: "Jude Sharp (Raimon) è disponibile nello scouting." } },
   { id: "act2", index: 2, fromWave: 11, toWave: 20, palette: "act2", title: "Football Frontier", macro: "Football Frontier",
     where: "Il torneo nazionale: gironi, tribune piene e trasferte tra gli stadi.",

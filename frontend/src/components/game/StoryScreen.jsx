@@ -23,7 +23,7 @@ export function ActIntro({ run, act, onStart }) {
     <Frame act={act} testId="act-intro">
       <div className="story-eyebrow">ATTO {act.index} / {ACTS.length} · W{act.fromWave}–{act.toWave}</div>
       <h1 className="story-title" data-testid="act-intro-title">{act.title}</h1>
-      <div className="story-rivals">{[mini, ...bosses].map((b, i) => <TeamCrest key={b.id} teamId={b.teamId} name={`${i === 0 ? "Miniboss" : "Boss"} · ${b.team}`} size={64} testId={`act-intro-crest-${i}`} />)}</div>
+      <div className="story-rivals">{[mini, ...bosses].map((b, i) => <TeamCrest key={b.id} teamId={b.teamId} name={b.team} label={`${i === 0 ? "Miniboss" : "Boss"} · ${b.team}`} size={64} testId={`act-intro-crest-${i}`} />)}</div>
       <section className="story-card"><MapPin size={16} /><div><b>Dove siamo</b><p>{act.where}</p></div></section>
       <section className="story-card"><Swords size={16} /><div><b>Chi affrontiamo</b><p>{act.who}</p>
         <p data-testid="act-intro-bosses" className="text-amber-200">Miniboss W{act.fromWave + 4}: {mini.team} · Boss W{act.toWave}: {bosses.map((b) => b.team).join(" oppure ")}</p></div></section>
